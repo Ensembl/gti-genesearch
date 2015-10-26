@@ -9,6 +9,9 @@ curl -XDELETE "${url}/"
 # create a new index
 echo "Creating index"
 curl -XPUT "${url}/"
+# disable replicas
+curl -XPUT -d '{"index" : {"number_of_replicas" : 0}}' "${url}/_mapping/gene" 
+
 ## genome mapping - ignore for now
 #echo "Loading genome mapping"
 #curl -XPUT -d @${dir}/genome_mapping.json "${url}/_mapping/genome"
@@ -16,3 +19,4 @@ curl -XPUT "${url}/"
 # gene mapping
 echo "Loading gene mapping"
 curl -XPUT -d @${dir}/gene_mapping.json "${url}/_mapping/gene" 
+
