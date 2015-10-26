@@ -1,0 +1,480 @@
+[
+    {
+        "type": "record",
+        "name": "Source",
+        "fields": [
+            {
+                "type": "string",
+                "name": "primary_id"
+            },
+            {
+                "type": "string",
+                "name": "dbname"
+            },
+            {
+                "type": "string",
+                "name": "display_id"
+            }
+        ],
+        "namespace": "org.ensembl.genesearch.avro"
+    },
+    {
+        "type": "record",
+        "fields": [
+            {
+                "type": "string",
+                "name": "phenotype"
+            },
+            {
+                "name": "host",
+                "type": "string"
+            },
+            {
+                "type": "string",
+                "name": "condition"
+            }
+        ],
+        "name": "Annotation",
+        "namespace": "org.ensembl.genesearch.avro"
+    },
+    {
+        "namespace": "org.ensembl.genesearch.avro",
+        "name": "Homologue",
+        "fields": [
+            {
+                "type": "string",
+                "name": "genome"
+            },
+            {
+                "name": "description",
+                "type": "string"
+            },
+            {
+                "name": "stable_id",
+                "type": "string"
+            }
+        ],
+        "type": "record"
+    },
+    {
+        "namespace": "org.ensembl.genesearch.avro",
+        "fields": [
+            {
+                "type": "string",
+                "name": "evidence"
+            },
+            {
+                "name": "source",
+                "type": {
+                    "type": "array",
+                    "items": "Source"
+                }
+            }
+        ],
+        "name": "Linkage_type",
+        "type": "record"
+    },
+    {
+        "name": "Phenotype",
+        "fields": [
+            {
+                "type": "string",
+                "name": "primary_id"
+            },
+            {
+                "type": "string",
+                "name": "dbname"
+            },
+            {
+                "name": "source",
+                "type": {
+                    "items": "Source",
+                    "type": "array"
+                }
+            },
+            {
+                "name": "rank",
+                "type": "int"
+            },
+            {
+                "name": "display_id",
+                "type": "string"
+            }
+        ],
+        "namespace": "org.ensembl.genesearch.avro",
+        "type": "record"
+    },
+    {
+        "namespace": "org.ensembl.genesearch.avro",
+        "name": "Host",
+        "fields": [
+            {
+                "name": "dbname",
+                "type": "string"
+            },
+            {
+                "type": "string",
+                "name": "primary_id"
+            },
+            {
+                "name": "rank",
+                "type": "int"
+            },
+            {
+                "type": {
+                    "type": "array",
+                    "items": "Source"
+                },
+                "name": "source"
+            },
+            {
+                "type": "string",
+                "name": "display_id"
+            }
+        ],
+        "type": "record"
+    },
+    {
+        "type": "record",
+        "name": "Experimental_evidence",
+        "fields": [
+            {
+                "type": "string",
+                "name": "primary_id"
+            },
+            {
+                "name": "dbname",
+                "type": "string"
+            },
+            {
+                "type": "string",
+                "name": "display_id"
+            },
+            {
+                "name": "source",
+                "type": {
+                    "type": "array",
+                    "items": "Source"
+                }
+            },
+            {
+                "name": "rank",
+                "type": "int"
+            }
+        ],
+        "namespace": "org.ensembl.genesearch.avro"
+    },
+    {
+        "type": "record",
+        "name": "Associated_xref",
+        "fields": [
+            {
+                "name": "experimental_evidence",
+                "type": {
+                    "type": "array",
+                    "items": "Experimental_evidence"
+                }
+            },
+            {
+                "name": "host",
+                "type": {
+                    "items": "Host",
+                    "type": "array"
+                }
+            },
+            {
+                "name": "phenotype",
+                "type": {
+                    "type": "array",
+                    "items": "Phenotype"
+                }
+            }
+        ],
+        "namespace": "org.ensembl.genesearch.avro"
+    },
+    {
+        "namespace": "org.ensembl.genesearch.avro",
+        "fields": [
+            {
+                "name": "display_id",
+                "type": "string"
+            },
+            {
+                "type": {
+                    "type": "array",
+                    "items": "Linkage_type"
+                },
+                "name": "linkage_types"
+            },
+            {
+                "type": "string",
+                "name": "primary_id"
+            },
+            {
+                "type": "string",
+                "name": "dbname"
+            },
+            {
+                "type": {
+                    "type": "array",
+                    "items": "Associated_xref"
+                },
+                "name": "associated_xrefs"
+            },
+            {
+                "name": "parents",
+                "type": "string"
+            }
+        ],
+        "name": "Xref",
+        "type": "record"
+    },
+    {
+        "type": "record",
+        "name": "Protein_feature",
+        "fields": [
+            {
+                "type": "int",
+                "name": "start"
+            },
+            {
+                "name": "end",
+                "type": "int"
+            },
+            {
+                "name": "dbname",
+                "type": "string"
+            },
+            {
+                "name": "interpro_ac",
+                "type": "string"
+            },
+            {
+                "name": "description",
+                "type": "string"
+            },
+            {
+                "type": "string",
+                "name": "name"
+            }
+        ],
+        "namespace": "org.ensembl.genesearch.avro"
+    },
+    {
+        "fields": [
+            {
+                "type": "string",
+                "name": "id"
+            },
+            {
+                "type": "int",
+                "name": "coding_start"
+            },
+            {
+                "type": "int",
+                "name": "coding_end"
+            },
+            {
+                "name": "xrefs",
+                "type": {
+                    "type": "array",
+                    "items": "Xref"
+                }
+            },
+            {
+                "type": {
+                    "items": "Protein_feature",
+                    "type": "array"
+                },
+                "name": "protein_features"
+            }
+        ],
+        "name": "Translation",
+        "namespace": "org.ensembl.genesearch.avro",
+        "type": "record"
+    },
+    {
+        "type": "record",
+        "namespace": "org.ensembl.genesearch.avro",
+        "fields": [
+            {
+                "type": "string",
+                "name": "biotype"
+            },
+            {
+                "name": "end",
+                "type": "int"
+            },
+            {
+                "type": "string",
+                "name": "description"
+            },
+            {
+                "name": "id",
+                "type": "string"
+            },
+            {
+                "type": "int",
+                "name": "start"
+            },
+            {
+                "name": "strand",
+                "type": "boolean"
+            },
+            {
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "name": "seq_region_name",
+                "type": "string"
+            },
+            {
+                "name": "translations",
+                "type": {
+                    "type": "array",
+                    "items": "Translation"
+                }
+            },
+            {
+                "name": "xrefs",
+                "type": {
+                    "items": "Xref",
+                    "type": "array"
+                }
+            }
+        ],
+        "name": "Transcript"
+    },
+    {
+        "fields": [
+            {
+                "type": "string",
+                "name": "lineage"
+            },
+            {
+                "type": "string",
+                "name": "Interpro"
+            },
+            {
+                "name": "seq_region_name",
+                "type": "string"
+            },
+            {
+                "type": "string",
+                "name": "genome"
+            },
+            {
+                "type": "string",
+                "name": "EMBL"
+            },
+            {
+                "name": "RFAM",
+                "type": "string"
+            },
+            {
+                "type": "int",
+                "name": "end"
+            },
+            {
+                "type": "string",
+                "name": "UniParc"
+            },
+            {
+                "type": "string",
+                "name": "description"
+            },
+            {
+                "type": "string",
+                "name": "taxon_id"
+            },
+            {
+                "type": "string",
+                "name": "hmmpanther"
+            },
+            {
+                "type": "string",
+                "name": "Uniprot_SWISSPROT"
+            },
+            {
+                "name": "id",
+                "type": "string"
+            },
+            {
+                "name": "protein_id",
+                "type": "string"
+            },
+            {
+                "name": "hamap",
+                "type": "string"
+            },
+            {
+                "type": "string",
+                "name": "scanprosite"
+            },
+            {
+                "type": "string",
+                "name": "KEGG"
+            },
+            {
+                "type": "int",
+                "name": "start"
+            },
+            {
+                "name": "strand",
+                "type": "boolean"
+            },
+            {
+                "type": "string",
+                "name": "name"
+            },
+            {
+                "type": "string",
+                "name": "PDB"
+            },
+            {
+                "type": {
+                    "items": "Transcript",
+                    "type": "array"
+                },
+                "name": "transcripts"
+            },
+            {
+                "name": "xrefs",
+                "type": {
+                    "items": "Xref",
+                    "type": "array"
+                }
+            },
+            {
+                "name": "annotations",
+                "type": {
+                    "type": "array",
+                    "items": "Annotation"
+                }
+            },
+            {
+                "name": "Uniprot_SPTREMBL",
+                "type": "string"
+            },
+            {
+                "name": "biotype",
+                "type": "string"
+            },
+            {
+                "name": "homologues",
+                "type": {
+                    "type": "array",
+                    "items": "Homologue"
+                }
+            },
+            {
+                "type": "string",
+                "name": "GO"
+            }
+        ],
+        "name": "Gene",
+        "namespace": "org.ensembl.genesearch.avro",
+        "type": "record"
+    }
+]
