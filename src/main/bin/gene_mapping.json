@@ -41,11 +41,11 @@
             "strand": {
                 "type": "short"
             },
-            "Uniprot/SWISSPROT": {
+            "Uniprot_SWISSPROT": {
                 "type": "string",
                 "index": "not_analyzed"
             },
-            "Uniprot/SPTREMBL": {
+            "Uniprot_SPTREMBL": {
                 "type": "string",
                 "index": "not_analyzed"
             },
