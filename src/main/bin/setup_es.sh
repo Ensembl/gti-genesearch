@@ -6,11 +6,14 @@ echo "Setting up $url"
 # delete the old index
 echo "Deleting old index"
 curl -XDELETE "${url}/" 
+echo
 # create a new index
 echo "Creating index"
 curl -XPUT "${url}/"
+echo
 # disable replicas
-curl -XPUT -d '{"index" : {"number_of_replicas" : 0}}' "${url}/_mapping/gene" 
+curl -XPUT -d '{"index" : {"number_of_replicas" : 0}}' "${url}/_settings" 
+echo
 
 ## genome mapping - ignore for now
 #echo "Loading genome mapping"
@@ -19,4 +22,4 @@ curl -XPUT -d '{"index" : {"number_of_replicas" : 0}}' "${url}/_mapping/gene"
 # gene mapping
 echo "Loading gene mapping"
 curl -XPUT -d @${dir}/gene_mapping.json "${url}/_mapping/gene" 
-
+echo
