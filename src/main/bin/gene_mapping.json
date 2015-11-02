@@ -81,15 +81,71 @@
                 "type": "string",
                 "index": "not_analyzed"
             },
-            "hamap": {
+            "PRINTS": {
                 "type": "string",
                 "index": "not_analyzed"
             },
-            "hmmpanther": {
+            "Gene3D": {
                 "type": "string",
                 "index": "not_analyzed"
             },
-            "scanprosite": {
+            "HAMAP": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "PANTHER": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "Pfam": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "PIRSF": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "ProDom": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "Prosite_patterns": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "Superfamily": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "TIGRfam": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "ncoils": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "Prosite_profiles": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "Tmhmm": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "Smart": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "SignalP": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "chainp": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "Seg": {
                 "type": "string",
                 "index": "not_analyzed"
             },
