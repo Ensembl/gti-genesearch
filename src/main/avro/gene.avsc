@@ -47,7 +47,7 @@
             },
             {
                 "name": "description",
-                "type": "string"
+                "type": ["string","null"]
             },
             {
                 "name": "stable_id",
@@ -247,11 +247,11 @@
             },
             {
                 "name": "interpro_ac",
-                "type": "string"
+                "type": ["string","null"]
             },
             {
                 "name": "description",
-                "type": "string"
+                "type": ["string","null"]
             },
             {
                 "type": "string",
@@ -267,11 +267,11 @@
                 "name": "id"
             },
             {
-                "type": "int",
+                "type": ["int","null"],
                 "name": "coding_start"
             },
             {
-                "type": "int",
+                "type": ["int","null"],
                 "name": "coding_end"
             },
             {
@@ -306,7 +306,7 @@
                 "type": "int"
             },
             {
-                "type": "string",
+                "type": ["string","null"],
                 "name": "description"
             },
             {
@@ -381,7 +381,7 @@
                 "name": "UniParc"
             },
             {
-                "type": "string",
+                "type": ["string","null"],
                 "name": "description"
             },
             {
