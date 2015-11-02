@@ -29,7 +29,7 @@ sub pipeline_analyses {
 		   -meadow_type => 'LOCAL',
 		   -input_ids   => [ { dumps_dir => $self->o('dumps_dir') } ],
 		   -flow_into => { '1' => ['IndexJsonFile'] } }, {
-		   -logic_name => 'index_json',
+		   -logic_name => 'IndexJsonFile',
 		   -module => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
 		   -meadow_type   => 'LSF',
 		   -hive_capacity => 10,
