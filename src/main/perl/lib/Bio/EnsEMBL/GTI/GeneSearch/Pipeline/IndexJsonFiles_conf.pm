@@ -7,7 +7,10 @@ use base ('Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf');
 
 sub resource_classes {
 	my ($self) = @_;
-	return { 'default' => { 'LSF' => '-q production-rh6' } };
+	return { 'default' => { 'LSF' => '-q production-rh6' },
+			 'himem' =>
+			   { 'LSF' => '-q production-rh6 -M  16000 -R "rusage[mem=16000]"' }
+	};
 }
 
 sub default_options {
@@ -20,18 +23,25 @@ sub default_options {
 sub pipeline_analyses {
 	my ($self) = @_;
 	return [ {
-		   -logic_name => 'find_files',
+		   -logic_name => 'JsonFileFactory',
 		   -module =>
 			 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::JsonFileFactory',
 		   -meadow_type => 'LOCAL',
 		   -input_ids   => [ { dumps_dir => $self->o('dumps_dir') } ],
-		   -flow_into => { '1' => ['index_json'] } }, {
+		   -flow_into => { '1' => ['IndexJsonFile'] } }, {
 		   -logic_name => 'index_json',
 		   -module => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
 		   -meadow_type   => 'LSF',
 		   -hive_capacity => 10,
 		   -rc_name       => 'default',
-		   -parameters    => { 'es_url' => $self->o('es_url') } } ];
+		   -flow_into     => { -1 => 'IndexJsonFileHiMem', },
+		   -parameters    => { 'es_url' => $self->o('es_url') } }, {
+		   -logic_name => 'IndexJsonFileHiMem',
+		   -module => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
+		   -hive_capacity => 10,
+		   -rc_name       => 'himem',
+		   -parameters    => { 'es_url' => $self->o('es_url') } }
+	];
 }
 
 1;
