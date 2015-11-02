@@ -28,7 +28,7 @@ sub pipeline_analyses {
 		   -flow_into => { '1' => ['index_json'] } }, {
 		   -logic_name => 'index_json',
 		   -module => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-		   -meadow_type   => 'LOCAL',
+		   -meadow_type   => 'LSF',
 		   -hive_capacity => 10,
 		   -rc_name       => 'default',
 		   -parameters    => { 'es_url' => $self->o('es_url') } } ];
