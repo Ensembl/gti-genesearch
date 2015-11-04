@@ -7,7 +7,7 @@ package org.ensembl.genesearch.avro;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Annotation extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Annotation\",\"namespace\":\"org.ensembl.genesearch.avro\",\"fields\":[{\"name\":\"phenotype\",\"type\":\"string\"},{\"name\":\"host\",\"type\":\"string\"},{\"name\":\"condition\",\"type\":\"string\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Annotation\",\"namespace\":\"org.ensembl.genesearch.avro\",\"fields\":[{\"name\":\"phenotype\",\"type\":[\"string\",\"null\"]},{\"name\":\"host\",\"type\":[\"string\",\"null\"]},{\"name\":\"condition\",\"type\":[\"string\",\"null\"]}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public java.lang.CharSequence phenotype;
   @Deprecated public java.lang.CharSequence host;

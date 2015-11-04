@@ -7,14 +7,14 @@ package org.ensembl.genesearch.avro;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Transcript extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Transcript\",\"namespace\":\"org.ensembl.genesearch.avro\",\"fields\":[{\"name\":\"biotype\",\"type\":\"string\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"strand\",\"type\":\"boolean\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"seq_region_name\",\"type\":\"string\"},{\"name\":\"translations\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Translation\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"coding_start\",\"type\":\"int\"},{\"name\":\"coding_end\",\"type\":\"int\"},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Xref\",\"fields\":[{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"linkage_types\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Linkage_type\",\"fields\":[{\"name\":\"evidence\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Source\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"associated_xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Associated_xref\",\"fields\":[{\"name\":\"experimental_evidence\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Experimental_evidence\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"}]}}},{\"name\":\"host\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Host\",\"fields\":[{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"display_id\",\"type\":\"string\"}]}}},{\"name\":\"phenotype\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Phenotype\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"parents\",\"type\":\"string\"}]}}},{\"name\":\"protein_features\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Protein_feature\",\"fields\":[{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"interpro_ac\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"name\",\"type\":\"string\"}]}}}]}}},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":\"Xref\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Transcript\",\"namespace\":\"org.ensembl.genesearch.avro\",\"fields\":[{\"name\":\"biotype\",\"type\":\"string\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"description\",\"type\":[\"string\",\"null\"]},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"strand\",\"type\":\"int\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"seq_region_name\",\"type\":\"string\"},{\"name\":\"translations\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Translation\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"coding_start\",\"type\":[\"int\",\"null\"]},{\"name\":\"coding_end\",\"type\":[\"int\",\"null\"]},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Xref\",\"fields\":[{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"linkage_types\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"LinkageType\",\"fields\":[{\"name\":\"evidence\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Source\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"associated_xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"AssociatedXref\",\"fields\":[{\"name\":\"experimental_evidence\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"ExperimentalEvidence\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"}]}}},{\"name\":\"host\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Host\",\"fields\":[{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"display_id\",\"type\":\"string\"}]}}},{\"name\":\"phenotype\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Phenotype\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"parents\",\"type\":{\"type\":\"array\",\"items\":\"string\"}}]}}},{\"name\":\"protein_features\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"ProteinFeature\",\"fields\":[{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"interpro_ac\",\"type\":[\"string\",\"null\"]},{\"name\":\"description\",\"type\":[\"string\",\"null\"]},{\"name\":\"name\",\"type\":\"string\"}]}}}]}}},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":\"Xref\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public java.lang.CharSequence biotype;
   @Deprecated public int end;
   @Deprecated public java.lang.CharSequence description;
   @Deprecated public java.lang.CharSequence id;
   @Deprecated public int start;
-  @Deprecated public boolean strand;
+  @Deprecated public int strand;
   @Deprecated public java.lang.CharSequence name;
   @Deprecated public java.lang.CharSequence seq_region_name;
   @Deprecated public java.util.List<org.ensembl.genesearch.avro.Translation> translations;
@@ -30,7 +30,7 @@ public class Transcript extends org.apache.avro.specific.SpecificRecordBase impl
   /**
    * All-args constructor.
    */
-  public Transcript(java.lang.CharSequence biotype, java.lang.Integer end, java.lang.CharSequence description, java.lang.CharSequence id, java.lang.Integer start, java.lang.Boolean strand, java.lang.CharSequence name, java.lang.CharSequence seq_region_name, java.util.List<org.ensembl.genesearch.avro.Translation> translations, java.util.List<org.ensembl.genesearch.avro.Xref> xrefs) {
+  public Transcript(java.lang.CharSequence biotype, java.lang.Integer end, java.lang.CharSequence description, java.lang.CharSequence id, java.lang.Integer start, java.lang.Integer strand, java.lang.CharSequence name, java.lang.CharSequence seq_region_name, java.util.List<org.ensembl.genesearch.avro.Translation> translations, java.util.List<org.ensembl.genesearch.avro.Xref> xrefs) {
     this.biotype = biotype;
     this.end = end;
     this.description = description;
@@ -69,7 +69,7 @@ public class Transcript extends org.apache.avro.specific.SpecificRecordBase impl
     case 2: description = (java.lang.CharSequence)value$; break;
     case 3: id = (java.lang.CharSequence)value$; break;
     case 4: start = (java.lang.Integer)value$; break;
-    case 5: strand = (java.lang.Boolean)value$; break;
+    case 5: strand = (java.lang.Integer)value$; break;
     case 6: name = (java.lang.CharSequence)value$; break;
     case 7: seq_region_name = (java.lang.CharSequence)value$; break;
     case 8: translations = (java.util.List<org.ensembl.genesearch.avro.Translation>)value$; break;
@@ -156,7 +156,7 @@ public class Transcript extends org.apache.avro.specific.SpecificRecordBase impl
   /**
    * Gets the value of the 'strand' field.
    */
-  public java.lang.Boolean getStrand() {
+  public java.lang.Integer getStrand() {
     return strand;
   }
 
@@ -164,7 +164,7 @@ public class Transcript extends org.apache.avro.specific.SpecificRecordBase impl
    * Sets the value of the 'strand' field.
    * @param value the value to set.
    */
-  public void setStrand(java.lang.Boolean value) {
+  public void setStrand(java.lang.Integer value) {
     this.strand = value;
   }
 
@@ -254,7 +254,7 @@ public class Transcript extends org.apache.avro.specific.SpecificRecordBase impl
     private java.lang.CharSequence description;
     private java.lang.CharSequence id;
     private int start;
-    private boolean strand;
+    private int strand;
     private java.lang.CharSequence name;
     private java.lang.CharSequence seq_region_name;
     private java.util.List<org.ensembl.genesearch.avro.Translation> translations;
@@ -479,12 +479,12 @@ public class Transcript extends org.apache.avro.specific.SpecificRecordBase impl
     }
 
     /** Gets the value of the 'strand' field */
-    public java.lang.Boolean getStrand() {
+    public java.lang.Integer getStrand() {
       return strand;
     }
     
     /** Sets the value of the 'strand' field */
-    public org.ensembl.genesearch.avro.Transcript.Builder setStrand(boolean value) {
+    public org.ensembl.genesearch.avro.Transcript.Builder setStrand(int value) {
       validate(fields()[5], value);
       this.strand = value;
       fieldSetFlags()[5] = true;
@@ -611,7 +611,7 @@ public class Transcript extends org.apache.avro.specific.SpecificRecordBase impl
         record.description = fieldSetFlags()[2] ? this.description : (java.lang.CharSequence) defaultValue(fields()[2]);
         record.id = fieldSetFlags()[3] ? this.id : (java.lang.CharSequence) defaultValue(fields()[3]);
         record.start = fieldSetFlags()[4] ? this.start : (java.lang.Integer) defaultValue(fields()[4]);
-        record.strand = fieldSetFlags()[5] ? this.strand : (java.lang.Boolean) defaultValue(fields()[5]);
+        record.strand = fieldSetFlags()[5] ? this.strand : (java.lang.Integer) defaultValue(fields()[5]);
         record.name = fieldSetFlags()[6] ? this.name : (java.lang.CharSequence) defaultValue(fields()[6]);
         record.seq_region_name = fieldSetFlags()[7] ? this.seq_region_name : (java.lang.CharSequence) defaultValue(fields()[7]);
         record.translations = fieldSetFlags()[8] ? this.translations : (java.util.List<org.ensembl.genesearch.avro.Translation>) defaultValue(fields()[8]);

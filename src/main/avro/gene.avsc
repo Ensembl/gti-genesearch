@@ -22,15 +22,15 @@
         "type": "record",
         "fields": [
             {
-                "type": "string",
+                "type": ["string","null"],
                 "name": "phenotype"
             },
             {
                 "name": "host",
-                "type": "string"
+                "type": ["string","null"]
             },
             {
-                "type": "string",
+                "type": ["string","null"],
                 "name": "condition"
             }
         ],
@@ -47,7 +47,7 @@
             },
             {
                 "name": "description",
-                "type": ["string","null"]
+                "type": "string"
             },
             {
                 "name": "stable_id",
@@ -71,7 +71,7 @@
                 }
             }
         ],
-        "name": "Linkage_type",
+        "name": "LinkageType",
         "type": "record"
     },
     {
@@ -136,7 +136,7 @@
     },
     {
         "type": "record",
-        "name": "Experimental_evidence",
+        "name": "ExperimentalEvidence",
         "fields": [
             {
                 "type": "string",
@@ -166,13 +166,13 @@
     },
     {
         "type": "record",
-        "name": "Associated_xref",
+        "name": "AssociatedXref",
         "fields": [
             {
                 "name": "experimental_evidence",
                 "type": {
                     "type": "array",
-                    "items": "Experimental_evidence"
+                    "items": "ExperimentalEvidence"
                 }
             },
             {
@@ -202,7 +202,7 @@
             {
                 "type": {
                     "type": "array",
-                    "items": "Linkage_type"
+                    "items": "LinkageType"
                 },
                 "name": "linkage_types"
             },
@@ -217,13 +217,16 @@
             {
                 "type": {
                     "type": "array",
-                    "items": "Associated_xref"
+                    "items": "AssociatedXref"
                 },
                 "name": "associated_xrefs"
             },
             {
                 "name": "parents",
-                "type": "string"
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                }
             }
         ],
         "name": "Xref",
@@ -231,7 +234,7 @@
     },
     {
         "type": "record",
-        "name": "Protein_feature",
+        "name": "ProteinFeature",
         "fields": [
             {
                 "type": "int",
@@ -283,7 +286,7 @@
             },
             {
                 "type": {
-                    "items": "Protein_feature",
+                    "items": "ProteinFeature",
                     "type": "array"
                 },
                 "name": "protein_features"
@@ -319,7 +322,7 @@
             },
             {
                 "name": "strand",
-                "type": "boolean"
+                "type": "int"
             },
             {
                 "name": "name",
@@ -349,11 +352,17 @@
     {
         "fields": [
             {
-                "type": "string",
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                },
                 "name": "lineage"
             },
             {
-                "type": "string",
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                },
                 "name": "Interpro"
             },
             {
@@ -365,19 +374,28 @@
                 "name": "genome"
             },
             {
-                "type": "string",
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                },
                 "name": "EMBL"
             },
             {
                 "name": "RFAM",
-                "type": "string"
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                }
             },
             {
                 "type": "int",
                 "name": "end"
             },
             {
-                "type": "string",
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                },
                 "name": "UniParc"
             },
             {
@@ -389,11 +407,17 @@
                 "name": "taxon_id"
             },
             {
-                "type": "string",
-                "name": "hmmpanther"
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                },
+                "name": "PANTHER"
             },
             {
-                "type": "string",
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                },
                 "name": "Uniprot_SWISSPROT"
             },
             {
@@ -402,18 +426,30 @@
             },
             {
                 "name": "protein_id",
-                "type": "string"
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                }
             },
             {
-                "name": "hamap",
-                "type": "string"
+                "name": "HAMAP",
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                }
             },
             {
-                "type": "string",
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                },
                 "name": "scanprosite"
             },
             {
-                "type": "string",
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                },
                 "name": "KEGG"
             },
             {
@@ -422,15 +458,18 @@
             },
             {
                 "name": "strand",
-                "type": "boolean"
+                "type": "int"
             },
             {
                 "type": "string",
                 "name": "name"
             },
             {
-                "type": "string",
-                "name": "PDB"
+                "name": "PDB",
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                }
             },
             {
                 "type": {
@@ -455,7 +494,10 @@
             },
             {
                 "name": "Uniprot_SPTREMBL",
-                "type": "string"
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                }
             },
             {
                 "name": "biotype",
@@ -469,7 +511,10 @@
                 }
             },
             {
-                "type": "string",
+                "type": {
+                    "type": "array",
+                    "items": "string"
+                },
                 "name": "GO"
             }
         ],

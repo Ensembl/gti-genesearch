@@ -7,13 +7,13 @@ package org.ensembl.genesearch.avro;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Translation extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Translation\",\"namespace\":\"org.ensembl.genesearch.avro\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"coding_start\",\"type\":\"int\"},{\"name\":\"coding_end\",\"type\":\"int\"},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Xref\",\"fields\":[{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"linkage_types\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Linkage_type\",\"fields\":[{\"name\":\"evidence\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Source\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"associated_xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Associated_xref\",\"fields\":[{\"name\":\"experimental_evidence\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Experimental_evidence\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"}]}}},{\"name\":\"host\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Host\",\"fields\":[{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"display_id\",\"type\":\"string\"}]}}},{\"name\":\"phenotype\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Phenotype\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"parents\",\"type\":\"string\"}]}}},{\"name\":\"protein_features\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Protein_feature\",\"fields\":[{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"interpro_ac\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"name\",\"type\":\"string\"}]}}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Translation\",\"namespace\":\"org.ensembl.genesearch.avro\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"coding_start\",\"type\":[\"int\",\"null\"]},{\"name\":\"coding_end\",\"type\":[\"int\",\"null\"]},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Xref\",\"fields\":[{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"linkage_types\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"LinkageType\",\"fields\":[{\"name\":\"evidence\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Source\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"associated_xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"AssociatedXref\",\"fields\":[{\"name\":\"experimental_evidence\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"ExperimentalEvidence\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"}]}}},{\"name\":\"host\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Host\",\"fields\":[{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"display_id\",\"type\":\"string\"}]}}},{\"name\":\"phenotype\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Phenotype\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"parents\",\"type\":{\"type\":\"array\",\"items\":\"string\"}}]}}},{\"name\":\"protein_features\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"ProteinFeature\",\"fields\":[{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"interpro_ac\",\"type\":[\"string\",\"null\"]},{\"name\":\"description\",\"type\":[\"string\",\"null\"]},{\"name\":\"name\",\"type\":\"string\"}]}}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public java.lang.CharSequence id;
-  @Deprecated public int coding_start;
-  @Deprecated public int coding_end;
+  @Deprecated public java.lang.Integer coding_start;
+  @Deprecated public java.lang.Integer coding_end;
   @Deprecated public java.util.List<org.ensembl.genesearch.avro.Xref> xrefs;
-  @Deprecated public java.util.List<org.ensembl.genesearch.avro.Protein_feature> protein_features;
+  @Deprecated public java.util.List<org.ensembl.genesearch.avro.ProteinFeature> protein_features;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -25,7 +25,7 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
   /**
    * All-args constructor.
    */
-  public Translation(java.lang.CharSequence id, java.lang.Integer coding_start, java.lang.Integer coding_end, java.util.List<org.ensembl.genesearch.avro.Xref> xrefs, java.util.List<org.ensembl.genesearch.avro.Protein_feature> protein_features) {
+  public Translation(java.lang.CharSequence id, java.lang.Integer coding_start, java.lang.Integer coding_end, java.util.List<org.ensembl.genesearch.avro.Xref> xrefs, java.util.List<org.ensembl.genesearch.avro.ProteinFeature> protein_features) {
     this.id = id;
     this.coding_start = coding_start;
     this.coding_end = coding_end;
@@ -53,7 +53,7 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
     case 1: coding_start = (java.lang.Integer)value$; break;
     case 2: coding_end = (java.lang.Integer)value$; break;
     case 3: xrefs = (java.util.List<org.ensembl.genesearch.avro.Xref>)value$; break;
-    case 4: protein_features = (java.util.List<org.ensembl.genesearch.avro.Protein_feature>)value$; break;
+    case 4: protein_features = (java.util.List<org.ensembl.genesearch.avro.ProteinFeature>)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -121,7 +121,7 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
   /**
    * Gets the value of the 'protein_features' field.
    */
-  public java.util.List<org.ensembl.genesearch.avro.Protein_feature> getProteinFeatures() {
+  public java.util.List<org.ensembl.genesearch.avro.ProteinFeature> getProteinFeatures() {
     return protein_features;
   }
 
@@ -129,7 +129,7 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
    * Sets the value of the 'protein_features' field.
    * @param value the value to set.
    */
-  public void setProteinFeatures(java.util.List<org.ensembl.genesearch.avro.Protein_feature> value) {
+  public void setProteinFeatures(java.util.List<org.ensembl.genesearch.avro.ProteinFeature> value) {
     this.protein_features = value;
   }
 
@@ -155,10 +155,10 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
     implements org.apache.avro.data.RecordBuilder<Translation> {
 
     private java.lang.CharSequence id;
-    private int coding_start;
-    private int coding_end;
+    private java.lang.Integer coding_start;
+    private java.lang.Integer coding_end;
     private java.util.List<org.ensembl.genesearch.avro.Xref> xrefs;
-    private java.util.List<org.ensembl.genesearch.avro.Protein_feature> protein_features;
+    private java.util.List<org.ensembl.genesearch.avro.ProteinFeature> protein_features;
 
     /** Creates a new Builder */
     private Builder() {
@@ -246,7 +246,7 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'coding_start' field */
-    public org.ensembl.genesearch.avro.Translation.Builder setCodingStart(int value) {
+    public org.ensembl.genesearch.avro.Translation.Builder setCodingStart(java.lang.Integer value) {
       validate(fields()[1], value);
       this.coding_start = value;
       fieldSetFlags()[1] = true;
@@ -260,6 +260,7 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Clears the value of the 'coding_start' field */
     public org.ensembl.genesearch.avro.Translation.Builder clearCodingStart() {
+      coding_start = null;
       fieldSetFlags()[1] = false;
       return this;
     }
@@ -270,7 +271,7 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'coding_end' field */
-    public org.ensembl.genesearch.avro.Translation.Builder setCodingEnd(int value) {
+    public org.ensembl.genesearch.avro.Translation.Builder setCodingEnd(java.lang.Integer value) {
       validate(fields()[2], value);
       this.coding_end = value;
       fieldSetFlags()[2] = true;
@@ -284,6 +285,7 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Clears the value of the 'coding_end' field */
     public org.ensembl.genesearch.avro.Translation.Builder clearCodingEnd() {
+      coding_end = null;
       fieldSetFlags()[2] = false;
       return this;
     }
@@ -314,12 +316,12 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
     }
 
     /** Gets the value of the 'protein_features' field */
-    public java.util.List<org.ensembl.genesearch.avro.Protein_feature> getProteinFeatures() {
+    public java.util.List<org.ensembl.genesearch.avro.ProteinFeature> getProteinFeatures() {
       return protein_features;
     }
     
     /** Sets the value of the 'protein_features' field */
-    public org.ensembl.genesearch.avro.Translation.Builder setProteinFeatures(java.util.List<org.ensembl.genesearch.avro.Protein_feature> value) {
+    public org.ensembl.genesearch.avro.Translation.Builder setProteinFeatures(java.util.List<org.ensembl.genesearch.avro.ProteinFeature> value) {
       validate(fields()[4], value);
       this.protein_features = value;
       fieldSetFlags()[4] = true;
@@ -346,7 +348,7 @@ public class Translation extends org.apache.avro.specific.SpecificRecordBase imp
         record.coding_start = fieldSetFlags()[1] ? this.coding_start : (java.lang.Integer) defaultValue(fields()[1]);
         record.coding_end = fieldSetFlags()[2] ? this.coding_end : (java.lang.Integer) defaultValue(fields()[2]);
         record.xrefs = fieldSetFlags()[3] ? this.xrefs : (java.util.List<org.ensembl.genesearch.avro.Xref>) defaultValue(fields()[3]);
-        record.protein_features = fieldSetFlags()[4] ? this.protein_features : (java.util.List<org.ensembl.genesearch.avro.Protein_feature>) defaultValue(fields()[4]);
+        record.protein_features = fieldSetFlags()[4] ? this.protein_features : (java.util.List<org.ensembl.genesearch.avro.ProteinFeature>) defaultValue(fields()[4]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);

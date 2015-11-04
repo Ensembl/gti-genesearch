@@ -7,36 +7,36 @@ package org.ensembl.genesearch.avro;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Gene extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Gene\",\"namespace\":\"org.ensembl.genesearch.avro\",\"fields\":[{\"name\":\"lineage\",\"type\":\"string\"},{\"name\":\"Interpro\",\"type\":\"string\"},{\"name\":\"seq_region_name\",\"type\":\"string\"},{\"name\":\"genome\",\"type\":\"string\"},{\"name\":\"EMBL\",\"type\":\"string\"},{\"name\":\"RFAM\",\"type\":\"string\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"UniParc\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"taxon_id\",\"type\":\"string\"},{\"name\":\"hmmpanther\",\"type\":\"string\"},{\"name\":\"Uniprot_SWISSPROT\",\"type\":\"string\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"protein_id\",\"type\":\"string\"},{\"name\":\"hamap\",\"type\":\"string\"},{\"name\":\"scanprosite\",\"type\":\"string\"},{\"name\":\"KEGG\",\"type\":\"string\"},{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"strand\",\"type\":\"boolean\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"PDB\",\"type\":\"string\"},{\"name\":\"transcripts\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Transcript\",\"fields\":[{\"name\":\"biotype\",\"type\":\"string\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"strand\",\"type\":\"boolean\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"seq_region_name\",\"type\":\"string\"},{\"name\":\"translations\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Translation\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"coding_start\",\"type\":\"int\"},{\"name\":\"coding_end\",\"type\":\"int\"},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Xref\",\"fields\":[{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"linkage_types\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Linkage_type\",\"fields\":[{\"name\":\"evidence\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Source\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"associated_xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Associated_xref\",\"fields\":[{\"name\":\"experimental_evidence\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Experimental_evidence\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"}]}}},{\"name\":\"host\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Host\",\"fields\":[{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"display_id\",\"type\":\"string\"}]}}},{\"name\":\"phenotype\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Phenotype\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"parents\",\"type\":\"string\"}]}}},{\"name\":\"protein_features\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Protein_feature\",\"fields\":[{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"interpro_ac\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"name\",\"type\":\"string\"}]}}}]}}},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":\"Xref\"}}]}}},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":\"Xref\"}},{\"name\":\"annotations\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Annotation\",\"fields\":[{\"name\":\"phenotype\",\"type\":\"string\"},{\"name\":\"host\",\"type\":\"string\"},{\"name\":\"condition\",\"type\":\"string\"}]}}},{\"name\":\"Uniprot_SPTREMBL\",\"type\":\"string\"},{\"name\":\"biotype\",\"type\":\"string\"},{\"name\":\"homologues\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Homologue\",\"fields\":[{\"name\":\"genome\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"stable_id\",\"type\":\"string\"}]}}},{\"name\":\"GO\",\"type\":\"string\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Gene\",\"namespace\":\"org.ensembl.genesearch.avro\",\"fields\":[{\"name\":\"lineage\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"Interpro\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"seq_region_name\",\"type\":\"string\"},{\"name\":\"genome\",\"type\":\"string\"},{\"name\":\"EMBL\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"RFAM\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"UniParc\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"description\",\"type\":[\"string\",\"null\"]},{\"name\":\"taxon_id\",\"type\":\"string\"},{\"name\":\"PANTHER\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"Uniprot_SWISSPROT\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"protein_id\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"HAMAP\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"scanprosite\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"KEGG\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"strand\",\"type\":\"int\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"PDB\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"transcripts\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Transcript\",\"fields\":[{\"name\":\"biotype\",\"type\":\"string\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"description\",\"type\":[\"string\",\"null\"]},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"strand\",\"type\":\"int\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"seq_region_name\",\"type\":\"string\"},{\"name\":\"translations\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Translation\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"coding_start\",\"type\":[\"int\",\"null\"]},{\"name\":\"coding_end\",\"type\":[\"int\",\"null\"]},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Xref\",\"fields\":[{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"linkage_types\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"LinkageType\",\"fields\":[{\"name\":\"evidence\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Source\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"associated_xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"AssociatedXref\",\"fields\":[{\"name\":\"experimental_evidence\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"ExperimentalEvidence\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"}]}}},{\"name\":\"host\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Host\",\"fields\":[{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"display_id\",\"type\":\"string\"}]}}},{\"name\":\"phenotype\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Phenotype\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"parents\",\"type\":{\"type\":\"array\",\"items\":\"string\"}}]}}},{\"name\":\"protein_features\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"ProteinFeature\",\"fields\":[{\"name\":\"start\",\"type\":\"int\"},{\"name\":\"end\",\"type\":\"int\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"interpro_ac\",\"type\":[\"string\",\"null\"]},{\"name\":\"description\",\"type\":[\"string\",\"null\"]},{\"name\":\"name\",\"type\":\"string\"}]}}}]}}},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":\"Xref\"}}]}}},{\"name\":\"xrefs\",\"type\":{\"type\":\"array\",\"items\":\"Xref\"}},{\"name\":\"annotations\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Annotation\",\"fields\":[{\"name\":\"phenotype\",\"type\":[\"string\",\"null\"]},{\"name\":\"host\",\"type\":[\"string\",\"null\"]},{\"name\":\"condition\",\"type\":[\"string\",\"null\"]}]}}},{\"name\":\"Uniprot_SPTREMBL\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"biotype\",\"type\":\"string\"},{\"name\":\"homologues\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Homologue\",\"fields\":[{\"name\":\"genome\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"stable_id\",\"type\":\"string\"}]}}},{\"name\":\"GO\",\"type\":{\"type\":\"array\",\"items\":\"string\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
-  @Deprecated public java.lang.CharSequence lineage;
-  @Deprecated public java.lang.CharSequence Interpro;
+  @Deprecated public java.util.List<java.lang.CharSequence> lineage;
+  @Deprecated public java.util.List<java.lang.CharSequence> Interpro;
   @Deprecated public java.lang.CharSequence seq_region_name;
   @Deprecated public java.lang.CharSequence genome;
-  @Deprecated public java.lang.CharSequence EMBL;
-  @Deprecated public java.lang.CharSequence RFAM;
+  @Deprecated public java.util.List<java.lang.CharSequence> EMBL;
+  @Deprecated public java.util.List<java.lang.CharSequence> RFAM;
   @Deprecated public int end;
-  @Deprecated public java.lang.CharSequence UniParc;
+  @Deprecated public java.util.List<java.lang.CharSequence> UniParc;
   @Deprecated public java.lang.CharSequence description;
   @Deprecated public java.lang.CharSequence taxon_id;
-  @Deprecated public java.lang.CharSequence hmmpanther;
-  @Deprecated public java.lang.CharSequence Uniprot_SWISSPROT;
+  @Deprecated public java.util.List<java.lang.CharSequence> PANTHER;
+  @Deprecated public java.util.List<java.lang.CharSequence> Uniprot_SWISSPROT;
   @Deprecated public java.lang.CharSequence id;
-  @Deprecated public java.lang.CharSequence protein_id;
-  @Deprecated public java.lang.CharSequence hamap;
-  @Deprecated public java.lang.CharSequence scanprosite;
-  @Deprecated public java.lang.CharSequence KEGG;
+  @Deprecated public java.util.List<java.lang.CharSequence> protein_id;
+  @Deprecated public java.util.List<java.lang.CharSequence> HAMAP;
+  @Deprecated public java.util.List<java.lang.CharSequence> scanprosite;
+  @Deprecated public java.util.List<java.lang.CharSequence> KEGG;
   @Deprecated public int start;
-  @Deprecated public boolean strand;
+  @Deprecated public int strand;
   @Deprecated public java.lang.CharSequence name;
-  @Deprecated public java.lang.CharSequence PDB;
+  @Deprecated public java.util.List<java.lang.CharSequence> PDB;
   @Deprecated public java.util.List<org.ensembl.genesearch.avro.Transcript> transcripts;
   @Deprecated public java.util.List<org.ensembl.genesearch.avro.Xref> xrefs;
   @Deprecated public java.util.List<org.ensembl.genesearch.avro.Annotation> annotations;
-  @Deprecated public java.lang.CharSequence Uniprot_SPTREMBL;
+  @Deprecated public java.util.List<java.lang.CharSequence> Uniprot_SPTREMBL;
   @Deprecated public java.lang.CharSequence biotype;
   @Deprecated public java.util.List<org.ensembl.genesearch.avro.Homologue> homologues;
-  @Deprecated public java.lang.CharSequence GO;
+  @Deprecated public java.util.List<java.lang.CharSequence> GO;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -48,7 +48,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * All-args constructor.
    */
-  public Gene(java.lang.CharSequence lineage, java.lang.CharSequence Interpro, java.lang.CharSequence seq_region_name, java.lang.CharSequence genome, java.lang.CharSequence EMBL, java.lang.CharSequence RFAM, java.lang.Integer end, java.lang.CharSequence UniParc, java.lang.CharSequence description, java.lang.CharSequence taxon_id, java.lang.CharSequence hmmpanther, java.lang.CharSequence Uniprot_SWISSPROT, java.lang.CharSequence id, java.lang.CharSequence protein_id, java.lang.CharSequence hamap, java.lang.CharSequence scanprosite, java.lang.CharSequence KEGG, java.lang.Integer start, java.lang.Boolean strand, java.lang.CharSequence name, java.lang.CharSequence PDB, java.util.List<org.ensembl.genesearch.avro.Transcript> transcripts, java.util.List<org.ensembl.genesearch.avro.Xref> xrefs, java.util.List<org.ensembl.genesearch.avro.Annotation> annotations, java.lang.CharSequence Uniprot_SPTREMBL, java.lang.CharSequence biotype, java.util.List<org.ensembl.genesearch.avro.Homologue> homologues, java.lang.CharSequence GO) {
+  public Gene(java.util.List<java.lang.CharSequence> lineage, java.util.List<java.lang.CharSequence> Interpro, java.lang.CharSequence seq_region_name, java.lang.CharSequence genome, java.util.List<java.lang.CharSequence> EMBL, java.util.List<java.lang.CharSequence> RFAM, java.lang.Integer end, java.util.List<java.lang.CharSequence> UniParc, java.lang.CharSequence description, java.lang.CharSequence taxon_id, java.util.List<java.lang.CharSequence> PANTHER, java.util.List<java.lang.CharSequence> Uniprot_SWISSPROT, java.lang.CharSequence id, java.util.List<java.lang.CharSequence> protein_id, java.util.List<java.lang.CharSequence> HAMAP, java.util.List<java.lang.CharSequence> scanprosite, java.util.List<java.lang.CharSequence> KEGG, java.lang.Integer start, java.lang.Integer strand, java.lang.CharSequence name, java.util.List<java.lang.CharSequence> PDB, java.util.List<org.ensembl.genesearch.avro.Transcript> transcripts, java.util.List<org.ensembl.genesearch.avro.Xref> xrefs, java.util.List<org.ensembl.genesearch.avro.Annotation> annotations, java.util.List<java.lang.CharSequence> Uniprot_SPTREMBL, java.lang.CharSequence biotype, java.util.List<org.ensembl.genesearch.avro.Homologue> homologues, java.util.List<java.lang.CharSequence> GO) {
     this.lineage = lineage;
     this.Interpro = Interpro;
     this.seq_region_name = seq_region_name;
@@ -59,11 +59,11 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     this.UniParc = UniParc;
     this.description = description;
     this.taxon_id = taxon_id;
-    this.hmmpanther = hmmpanther;
+    this.PANTHER = PANTHER;
     this.Uniprot_SWISSPROT = Uniprot_SWISSPROT;
     this.id = id;
     this.protein_id = protein_id;
-    this.hamap = hamap;
+    this.HAMAP = HAMAP;
     this.scanprosite = scanprosite;
     this.KEGG = KEGG;
     this.start = start;
@@ -93,11 +93,11 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     case 7: return UniParc;
     case 8: return description;
     case 9: return taxon_id;
-    case 10: return hmmpanther;
+    case 10: return PANTHER;
     case 11: return Uniprot_SWISSPROT;
     case 12: return id;
     case 13: return protein_id;
-    case 14: return hamap;
+    case 14: return HAMAP;
     case 15: return scanprosite;
     case 16: return KEGG;
     case 17: return start;
@@ -118,34 +118,34 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: lineage = (java.lang.CharSequence)value$; break;
-    case 1: Interpro = (java.lang.CharSequence)value$; break;
+    case 0: lineage = (java.util.List<java.lang.CharSequence>)value$; break;
+    case 1: Interpro = (java.util.List<java.lang.CharSequence>)value$; break;
     case 2: seq_region_name = (java.lang.CharSequence)value$; break;
     case 3: genome = (java.lang.CharSequence)value$; break;
-    case 4: EMBL = (java.lang.CharSequence)value$; break;
-    case 5: RFAM = (java.lang.CharSequence)value$; break;
+    case 4: EMBL = (java.util.List<java.lang.CharSequence>)value$; break;
+    case 5: RFAM = (java.util.List<java.lang.CharSequence>)value$; break;
     case 6: end = (java.lang.Integer)value$; break;
-    case 7: UniParc = (java.lang.CharSequence)value$; break;
+    case 7: UniParc = (java.util.List<java.lang.CharSequence>)value$; break;
     case 8: description = (java.lang.CharSequence)value$; break;
     case 9: taxon_id = (java.lang.CharSequence)value$; break;
-    case 10: hmmpanther = (java.lang.CharSequence)value$; break;
-    case 11: Uniprot_SWISSPROT = (java.lang.CharSequence)value$; break;
+    case 10: PANTHER = (java.util.List<java.lang.CharSequence>)value$; break;
+    case 11: Uniprot_SWISSPROT = (java.util.List<java.lang.CharSequence>)value$; break;
     case 12: id = (java.lang.CharSequence)value$; break;
-    case 13: protein_id = (java.lang.CharSequence)value$; break;
-    case 14: hamap = (java.lang.CharSequence)value$; break;
-    case 15: scanprosite = (java.lang.CharSequence)value$; break;
-    case 16: KEGG = (java.lang.CharSequence)value$; break;
+    case 13: protein_id = (java.util.List<java.lang.CharSequence>)value$; break;
+    case 14: HAMAP = (java.util.List<java.lang.CharSequence>)value$; break;
+    case 15: scanprosite = (java.util.List<java.lang.CharSequence>)value$; break;
+    case 16: KEGG = (java.util.List<java.lang.CharSequence>)value$; break;
     case 17: start = (java.lang.Integer)value$; break;
-    case 18: strand = (java.lang.Boolean)value$; break;
+    case 18: strand = (java.lang.Integer)value$; break;
     case 19: name = (java.lang.CharSequence)value$; break;
-    case 20: PDB = (java.lang.CharSequence)value$; break;
+    case 20: PDB = (java.util.List<java.lang.CharSequence>)value$; break;
     case 21: transcripts = (java.util.List<org.ensembl.genesearch.avro.Transcript>)value$; break;
     case 22: xrefs = (java.util.List<org.ensembl.genesearch.avro.Xref>)value$; break;
     case 23: annotations = (java.util.List<org.ensembl.genesearch.avro.Annotation>)value$; break;
-    case 24: Uniprot_SPTREMBL = (java.lang.CharSequence)value$; break;
+    case 24: Uniprot_SPTREMBL = (java.util.List<java.lang.CharSequence>)value$; break;
     case 25: biotype = (java.lang.CharSequence)value$; break;
     case 26: homologues = (java.util.List<org.ensembl.genesearch.avro.Homologue>)value$; break;
-    case 27: GO = (java.lang.CharSequence)value$; break;
+    case 27: GO = (java.util.List<java.lang.CharSequence>)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -153,7 +153,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Gets the value of the 'lineage' field.
    */
-  public java.lang.CharSequence getLineage() {
+  public java.util.List<java.lang.CharSequence> getLineage() {
     return lineage;
   }
 
@@ -161,14 +161,14 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'lineage' field.
    * @param value the value to set.
    */
-  public void setLineage(java.lang.CharSequence value) {
+  public void setLineage(java.util.List<java.lang.CharSequence> value) {
     this.lineage = value;
   }
 
   /**
    * Gets the value of the 'Interpro' field.
    */
-  public java.lang.CharSequence getInterpro() {
+  public java.util.List<java.lang.CharSequence> getInterpro() {
     return Interpro;
   }
 
@@ -176,7 +176,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'Interpro' field.
    * @param value the value to set.
    */
-  public void setInterpro(java.lang.CharSequence value) {
+  public void setInterpro(java.util.List<java.lang.CharSequence> value) {
     this.Interpro = value;
   }
 
@@ -213,7 +213,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Gets the value of the 'EMBL' field.
    */
-  public java.lang.CharSequence getEMBL() {
+  public java.util.List<java.lang.CharSequence> getEMBL() {
     return EMBL;
   }
 
@@ -221,14 +221,14 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'EMBL' field.
    * @param value the value to set.
    */
-  public void setEMBL(java.lang.CharSequence value) {
+  public void setEMBL(java.util.List<java.lang.CharSequence> value) {
     this.EMBL = value;
   }
 
   /**
    * Gets the value of the 'RFAM' field.
    */
-  public java.lang.CharSequence getRFAM() {
+  public java.util.List<java.lang.CharSequence> getRFAM() {
     return RFAM;
   }
 
@@ -236,7 +236,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'RFAM' field.
    * @param value the value to set.
    */
-  public void setRFAM(java.lang.CharSequence value) {
+  public void setRFAM(java.util.List<java.lang.CharSequence> value) {
     this.RFAM = value;
   }
 
@@ -258,7 +258,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Gets the value of the 'UniParc' field.
    */
-  public java.lang.CharSequence getUniParc() {
+  public java.util.List<java.lang.CharSequence> getUniParc() {
     return UniParc;
   }
 
@@ -266,7 +266,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'UniParc' field.
    * @param value the value to set.
    */
-  public void setUniParc(java.lang.CharSequence value) {
+  public void setUniParc(java.util.List<java.lang.CharSequence> value) {
     this.UniParc = value;
   }
 
@@ -301,24 +301,24 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   }
 
   /**
-   * Gets the value of the 'hmmpanther' field.
+   * Gets the value of the 'PANTHER' field.
    */
-  public java.lang.CharSequence getHmmpanther() {
-    return hmmpanther;
+  public java.util.List<java.lang.CharSequence> getPANTHER() {
+    return PANTHER;
   }
 
   /**
-   * Sets the value of the 'hmmpanther' field.
+   * Sets the value of the 'PANTHER' field.
    * @param value the value to set.
    */
-  public void setHmmpanther(java.lang.CharSequence value) {
-    this.hmmpanther = value;
+  public void setPANTHER(java.util.List<java.lang.CharSequence> value) {
+    this.PANTHER = value;
   }
 
   /**
    * Gets the value of the 'Uniprot_SWISSPROT' field.
    */
-  public java.lang.CharSequence getUniprotSWISSPROT() {
+  public java.util.List<java.lang.CharSequence> getUniprotSWISSPROT() {
     return Uniprot_SWISSPROT;
   }
 
@@ -326,7 +326,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'Uniprot_SWISSPROT' field.
    * @param value the value to set.
    */
-  public void setUniprotSWISSPROT(java.lang.CharSequence value) {
+  public void setUniprotSWISSPROT(java.util.List<java.lang.CharSequence> value) {
     this.Uniprot_SWISSPROT = value;
   }
 
@@ -348,7 +348,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Gets the value of the 'protein_id' field.
    */
-  public java.lang.CharSequence getProteinId() {
+  public java.util.List<java.lang.CharSequence> getProteinId() {
     return protein_id;
   }
 
@@ -356,29 +356,29 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'protein_id' field.
    * @param value the value to set.
    */
-  public void setProteinId(java.lang.CharSequence value) {
+  public void setProteinId(java.util.List<java.lang.CharSequence> value) {
     this.protein_id = value;
   }
 
   /**
-   * Gets the value of the 'hamap' field.
+   * Gets the value of the 'HAMAP' field.
    */
-  public java.lang.CharSequence getHamap() {
-    return hamap;
+  public java.util.List<java.lang.CharSequence> getHAMAP() {
+    return HAMAP;
   }
 
   /**
-   * Sets the value of the 'hamap' field.
+   * Sets the value of the 'HAMAP' field.
    * @param value the value to set.
    */
-  public void setHamap(java.lang.CharSequence value) {
-    this.hamap = value;
+  public void setHAMAP(java.util.List<java.lang.CharSequence> value) {
+    this.HAMAP = value;
   }
 
   /**
    * Gets the value of the 'scanprosite' field.
    */
-  public java.lang.CharSequence getScanprosite() {
+  public java.util.List<java.lang.CharSequence> getScanprosite() {
     return scanprosite;
   }
 
@@ -386,14 +386,14 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'scanprosite' field.
    * @param value the value to set.
    */
-  public void setScanprosite(java.lang.CharSequence value) {
+  public void setScanprosite(java.util.List<java.lang.CharSequence> value) {
     this.scanprosite = value;
   }
 
   /**
    * Gets the value of the 'KEGG' field.
    */
-  public java.lang.CharSequence getKEGG() {
+  public java.util.List<java.lang.CharSequence> getKEGG() {
     return KEGG;
   }
 
@@ -401,7 +401,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'KEGG' field.
    * @param value the value to set.
    */
-  public void setKEGG(java.lang.CharSequence value) {
+  public void setKEGG(java.util.List<java.lang.CharSequence> value) {
     this.KEGG = value;
   }
 
@@ -423,7 +423,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Gets the value of the 'strand' field.
    */
-  public java.lang.Boolean getStrand() {
+  public java.lang.Integer getStrand() {
     return strand;
   }
 
@@ -431,7 +431,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'strand' field.
    * @param value the value to set.
    */
-  public void setStrand(java.lang.Boolean value) {
+  public void setStrand(java.lang.Integer value) {
     this.strand = value;
   }
 
@@ -453,7 +453,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Gets the value of the 'PDB' field.
    */
-  public java.lang.CharSequence getPDB() {
+  public java.util.List<java.lang.CharSequence> getPDB() {
     return PDB;
   }
 
@@ -461,7 +461,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'PDB' field.
    * @param value the value to set.
    */
-  public void setPDB(java.lang.CharSequence value) {
+  public void setPDB(java.util.List<java.lang.CharSequence> value) {
     this.PDB = value;
   }
 
@@ -513,7 +513,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Gets the value of the 'Uniprot_SPTREMBL' field.
    */
-  public java.lang.CharSequence getUniprotSPTREMBL() {
+  public java.util.List<java.lang.CharSequence> getUniprotSPTREMBL() {
     return Uniprot_SPTREMBL;
   }
 
@@ -521,7 +521,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'Uniprot_SPTREMBL' field.
    * @param value the value to set.
    */
-  public void setUniprotSPTREMBL(java.lang.CharSequence value) {
+  public void setUniprotSPTREMBL(java.util.List<java.lang.CharSequence> value) {
     this.Uniprot_SPTREMBL = value;
   }
 
@@ -558,7 +558,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Gets the value of the 'GO' field.
    */
-  public java.lang.CharSequence getGO() {
+  public java.util.List<java.lang.CharSequence> getGO() {
     return GO;
   }
 
@@ -566,7 +566,7 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'GO' field.
    * @param value the value to set.
    */
-  public void setGO(java.lang.CharSequence value) {
+  public void setGO(java.util.List<java.lang.CharSequence> value) {
     this.GO = value;
   }
 
@@ -591,34 +591,34 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<Gene>
     implements org.apache.avro.data.RecordBuilder<Gene> {
 
-    private java.lang.CharSequence lineage;
-    private java.lang.CharSequence Interpro;
+    private java.util.List<java.lang.CharSequence> lineage;
+    private java.util.List<java.lang.CharSequence> Interpro;
     private java.lang.CharSequence seq_region_name;
     private java.lang.CharSequence genome;
-    private java.lang.CharSequence EMBL;
-    private java.lang.CharSequence RFAM;
+    private java.util.List<java.lang.CharSequence> EMBL;
+    private java.util.List<java.lang.CharSequence> RFAM;
     private int end;
-    private java.lang.CharSequence UniParc;
+    private java.util.List<java.lang.CharSequence> UniParc;
     private java.lang.CharSequence description;
     private java.lang.CharSequence taxon_id;
-    private java.lang.CharSequence hmmpanther;
-    private java.lang.CharSequence Uniprot_SWISSPROT;
+    private java.util.List<java.lang.CharSequence> PANTHER;
+    private java.util.List<java.lang.CharSequence> Uniprot_SWISSPROT;
     private java.lang.CharSequence id;
-    private java.lang.CharSequence protein_id;
-    private java.lang.CharSequence hamap;
-    private java.lang.CharSequence scanprosite;
-    private java.lang.CharSequence KEGG;
+    private java.util.List<java.lang.CharSequence> protein_id;
+    private java.util.List<java.lang.CharSequence> HAMAP;
+    private java.util.List<java.lang.CharSequence> scanprosite;
+    private java.util.List<java.lang.CharSequence> KEGG;
     private int start;
-    private boolean strand;
+    private int strand;
     private java.lang.CharSequence name;
-    private java.lang.CharSequence PDB;
+    private java.util.List<java.lang.CharSequence> PDB;
     private java.util.List<org.ensembl.genesearch.avro.Transcript> transcripts;
     private java.util.List<org.ensembl.genesearch.avro.Xref> xrefs;
     private java.util.List<org.ensembl.genesearch.avro.Annotation> annotations;
-    private java.lang.CharSequence Uniprot_SPTREMBL;
+    private java.util.List<java.lang.CharSequence> Uniprot_SPTREMBL;
     private java.lang.CharSequence biotype;
     private java.util.List<org.ensembl.genesearch.avro.Homologue> homologues;
-    private java.lang.CharSequence GO;
+    private java.util.List<java.lang.CharSequence> GO;
 
     /** Creates a new Builder */
     private Builder() {
@@ -668,8 +668,8 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
         this.taxon_id = data().deepCopy(fields()[9].schema(), other.taxon_id);
         fieldSetFlags()[9] = true;
       }
-      if (isValidValue(fields()[10], other.hmmpanther)) {
-        this.hmmpanther = data().deepCopy(fields()[10].schema(), other.hmmpanther);
+      if (isValidValue(fields()[10], other.PANTHER)) {
+        this.PANTHER = data().deepCopy(fields()[10].schema(), other.PANTHER);
         fieldSetFlags()[10] = true;
       }
       if (isValidValue(fields()[11], other.Uniprot_SWISSPROT)) {
@@ -684,8 +684,8 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
         this.protein_id = data().deepCopy(fields()[13].schema(), other.protein_id);
         fieldSetFlags()[13] = true;
       }
-      if (isValidValue(fields()[14], other.hamap)) {
-        this.hamap = data().deepCopy(fields()[14].schema(), other.hamap);
+      if (isValidValue(fields()[14], other.HAMAP)) {
+        this.HAMAP = data().deepCopy(fields()[14].schema(), other.HAMAP);
         fieldSetFlags()[14] = true;
       }
       if (isValidValue(fields()[15], other.scanprosite)) {
@@ -785,8 +785,8 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
         this.taxon_id = data().deepCopy(fields()[9].schema(), other.taxon_id);
         fieldSetFlags()[9] = true;
       }
-      if (isValidValue(fields()[10], other.hmmpanther)) {
-        this.hmmpanther = data().deepCopy(fields()[10].schema(), other.hmmpanther);
+      if (isValidValue(fields()[10], other.PANTHER)) {
+        this.PANTHER = data().deepCopy(fields()[10].schema(), other.PANTHER);
         fieldSetFlags()[10] = true;
       }
       if (isValidValue(fields()[11], other.Uniprot_SWISSPROT)) {
@@ -801,8 +801,8 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
         this.protein_id = data().deepCopy(fields()[13].schema(), other.protein_id);
         fieldSetFlags()[13] = true;
       }
-      if (isValidValue(fields()[14], other.hamap)) {
-        this.hamap = data().deepCopy(fields()[14].schema(), other.hamap);
+      if (isValidValue(fields()[14], other.HAMAP)) {
+        this.HAMAP = data().deepCopy(fields()[14].schema(), other.HAMAP);
         fieldSetFlags()[14] = true;
       }
       if (isValidValue(fields()[15], other.scanprosite)) {
@@ -860,12 +860,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'lineage' field */
-    public java.lang.CharSequence getLineage() {
+    public java.util.List<java.lang.CharSequence> getLineage() {
       return lineage;
     }
     
     /** Sets the value of the 'lineage' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setLineage(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setLineage(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[0], value);
       this.lineage = value;
       fieldSetFlags()[0] = true;
@@ -885,12 +885,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'Interpro' field */
-    public java.lang.CharSequence getInterpro() {
+    public java.util.List<java.lang.CharSequence> getInterpro() {
       return Interpro;
     }
     
     /** Sets the value of the 'Interpro' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setInterpro(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setInterpro(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[1], value);
       this.Interpro = value;
       fieldSetFlags()[1] = true;
@@ -960,12 +960,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'EMBL' field */
-    public java.lang.CharSequence getEMBL() {
+    public java.util.List<java.lang.CharSequence> getEMBL() {
       return EMBL;
     }
     
     /** Sets the value of the 'EMBL' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setEMBL(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setEMBL(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[4], value);
       this.EMBL = value;
       fieldSetFlags()[4] = true;
@@ -985,12 +985,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'RFAM' field */
-    public java.lang.CharSequence getRFAM() {
+    public java.util.List<java.lang.CharSequence> getRFAM() {
       return RFAM;
     }
     
     /** Sets the value of the 'RFAM' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setRFAM(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setRFAM(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[5], value);
       this.RFAM = value;
       fieldSetFlags()[5] = true;
@@ -1034,12 +1034,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'UniParc' field */
-    public java.lang.CharSequence getUniParc() {
+    public java.util.List<java.lang.CharSequence> getUniParc() {
       return UniParc;
     }
     
     /** Sets the value of the 'UniParc' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setUniParc(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setUniParc(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[7], value);
       this.UniParc = value;
       fieldSetFlags()[7] = true;
@@ -1108,38 +1108,38 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
       return this;
     }
 
-    /** Gets the value of the 'hmmpanther' field */
-    public java.lang.CharSequence getHmmpanther() {
-      return hmmpanther;
+    /** Gets the value of the 'PANTHER' field */
+    public java.util.List<java.lang.CharSequence> getPANTHER() {
+      return PANTHER;
     }
     
-    /** Sets the value of the 'hmmpanther' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setHmmpanther(java.lang.CharSequence value) {
+    /** Sets the value of the 'PANTHER' field */
+    public org.ensembl.genesearch.avro.Gene.Builder setPANTHER(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[10], value);
-      this.hmmpanther = value;
+      this.PANTHER = value;
       fieldSetFlags()[10] = true;
       return this; 
     }
     
-    /** Checks whether the 'hmmpanther' field has been set */
-    public boolean hasHmmpanther() {
+    /** Checks whether the 'PANTHER' field has been set */
+    public boolean hasPANTHER() {
       return fieldSetFlags()[10];
     }
     
-    /** Clears the value of the 'hmmpanther' field */
-    public org.ensembl.genesearch.avro.Gene.Builder clearHmmpanther() {
-      hmmpanther = null;
+    /** Clears the value of the 'PANTHER' field */
+    public org.ensembl.genesearch.avro.Gene.Builder clearPANTHER() {
+      PANTHER = null;
       fieldSetFlags()[10] = false;
       return this;
     }
 
     /** Gets the value of the 'Uniprot_SWISSPROT' field */
-    public java.lang.CharSequence getUniprotSWISSPROT() {
+    public java.util.List<java.lang.CharSequence> getUniprotSWISSPROT() {
       return Uniprot_SWISSPROT;
     }
     
     /** Sets the value of the 'Uniprot_SWISSPROT' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setUniprotSWISSPROT(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setUniprotSWISSPROT(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[11], value);
       this.Uniprot_SWISSPROT = value;
       fieldSetFlags()[11] = true;
@@ -1184,12 +1184,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'protein_id' field */
-    public java.lang.CharSequence getProteinId() {
+    public java.util.List<java.lang.CharSequence> getProteinId() {
       return protein_id;
     }
     
     /** Sets the value of the 'protein_id' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setProteinId(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setProteinId(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[13], value);
       this.protein_id = value;
       fieldSetFlags()[13] = true;
@@ -1208,38 +1208,38 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
       return this;
     }
 
-    /** Gets the value of the 'hamap' field */
-    public java.lang.CharSequence getHamap() {
-      return hamap;
+    /** Gets the value of the 'HAMAP' field */
+    public java.util.List<java.lang.CharSequence> getHAMAP() {
+      return HAMAP;
     }
     
-    /** Sets the value of the 'hamap' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setHamap(java.lang.CharSequence value) {
+    /** Sets the value of the 'HAMAP' field */
+    public org.ensembl.genesearch.avro.Gene.Builder setHAMAP(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[14], value);
-      this.hamap = value;
+      this.HAMAP = value;
       fieldSetFlags()[14] = true;
       return this; 
     }
     
-    /** Checks whether the 'hamap' field has been set */
-    public boolean hasHamap() {
+    /** Checks whether the 'HAMAP' field has been set */
+    public boolean hasHAMAP() {
       return fieldSetFlags()[14];
     }
     
-    /** Clears the value of the 'hamap' field */
-    public org.ensembl.genesearch.avro.Gene.Builder clearHamap() {
-      hamap = null;
+    /** Clears the value of the 'HAMAP' field */
+    public org.ensembl.genesearch.avro.Gene.Builder clearHAMAP() {
+      HAMAP = null;
       fieldSetFlags()[14] = false;
       return this;
     }
 
     /** Gets the value of the 'scanprosite' field */
-    public java.lang.CharSequence getScanprosite() {
+    public java.util.List<java.lang.CharSequence> getScanprosite() {
       return scanprosite;
     }
     
     /** Sets the value of the 'scanprosite' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setScanprosite(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setScanprosite(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[15], value);
       this.scanprosite = value;
       fieldSetFlags()[15] = true;
@@ -1259,12 +1259,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'KEGG' field */
-    public java.lang.CharSequence getKEGG() {
+    public java.util.List<java.lang.CharSequence> getKEGG() {
       return KEGG;
     }
     
     /** Sets the value of the 'KEGG' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setKEGG(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setKEGG(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[16], value);
       this.KEGG = value;
       fieldSetFlags()[16] = true;
@@ -1308,12 +1308,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'strand' field */
-    public java.lang.Boolean getStrand() {
+    public java.lang.Integer getStrand() {
       return strand;
     }
     
     /** Sets the value of the 'strand' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setStrand(boolean value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setStrand(int value) {
       validate(fields()[18], value);
       this.strand = value;
       fieldSetFlags()[18] = true;
@@ -1357,12 +1357,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'PDB' field */
-    public java.lang.CharSequence getPDB() {
+    public java.util.List<java.lang.CharSequence> getPDB() {
       return PDB;
     }
     
     /** Sets the value of the 'PDB' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setPDB(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setPDB(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[20], value);
       this.PDB = value;
       fieldSetFlags()[20] = true;
@@ -1457,12 +1457,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'Uniprot_SPTREMBL' field */
-    public java.lang.CharSequence getUniprotSPTREMBL() {
+    public java.util.List<java.lang.CharSequence> getUniprotSPTREMBL() {
       return Uniprot_SPTREMBL;
     }
     
     /** Sets the value of the 'Uniprot_SPTREMBL' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setUniprotSPTREMBL(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setUniprotSPTREMBL(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[24], value);
       this.Uniprot_SPTREMBL = value;
       fieldSetFlags()[24] = true;
@@ -1532,12 +1532,12 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'GO' field */
-    public java.lang.CharSequence getGO() {
+    public java.util.List<java.lang.CharSequence> getGO() {
       return GO;
     }
     
     /** Sets the value of the 'GO' field */
-    public org.ensembl.genesearch.avro.Gene.Builder setGO(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Gene.Builder setGO(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[27], value);
       this.GO = value;
       fieldSetFlags()[27] = true;
@@ -1560,34 +1560,34 @@ public class Gene extends org.apache.avro.specific.SpecificRecordBase implements
     public Gene build() {
       try {
         Gene record = new Gene();
-        record.lineage = fieldSetFlags()[0] ? this.lineage : (java.lang.CharSequence) defaultValue(fields()[0]);
-        record.Interpro = fieldSetFlags()[1] ? this.Interpro : (java.lang.CharSequence) defaultValue(fields()[1]);
+        record.lineage = fieldSetFlags()[0] ? this.lineage : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[0]);
+        record.Interpro = fieldSetFlags()[1] ? this.Interpro : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[1]);
         record.seq_region_name = fieldSetFlags()[2] ? this.seq_region_name : (java.lang.CharSequence) defaultValue(fields()[2]);
         record.genome = fieldSetFlags()[3] ? this.genome : (java.lang.CharSequence) defaultValue(fields()[3]);
-        record.EMBL = fieldSetFlags()[4] ? this.EMBL : (java.lang.CharSequence) defaultValue(fields()[4]);
-        record.RFAM = fieldSetFlags()[5] ? this.RFAM : (java.lang.CharSequence) defaultValue(fields()[5]);
+        record.EMBL = fieldSetFlags()[4] ? this.EMBL : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[4]);
+        record.RFAM = fieldSetFlags()[5] ? this.RFAM : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[5]);
         record.end = fieldSetFlags()[6] ? this.end : (java.lang.Integer) defaultValue(fields()[6]);
-        record.UniParc = fieldSetFlags()[7] ? this.UniParc : (java.lang.CharSequence) defaultValue(fields()[7]);
+        record.UniParc = fieldSetFlags()[7] ? this.UniParc : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[7]);
         record.description = fieldSetFlags()[8] ? this.description : (java.lang.CharSequence) defaultValue(fields()[8]);
         record.taxon_id = fieldSetFlags()[9] ? this.taxon_id : (java.lang.CharSequence) defaultValue(fields()[9]);
-        record.hmmpanther = fieldSetFlags()[10] ? this.hmmpanther : (java.lang.CharSequence) defaultValue(fields()[10]);
-        record.Uniprot_SWISSPROT = fieldSetFlags()[11] ? this.Uniprot_SWISSPROT : (java.lang.CharSequence) defaultValue(fields()[11]);
+        record.PANTHER = fieldSetFlags()[10] ? this.PANTHER : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[10]);
+        record.Uniprot_SWISSPROT = fieldSetFlags()[11] ? this.Uniprot_SWISSPROT : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[11]);
         record.id = fieldSetFlags()[12] ? this.id : (java.lang.CharSequence) defaultValue(fields()[12]);
-        record.protein_id = fieldSetFlags()[13] ? this.protein_id : (java.lang.CharSequence) defaultValue(fields()[13]);
-        record.hamap = fieldSetFlags()[14] ? this.hamap : (java.lang.CharSequence) defaultValue(fields()[14]);
-        record.scanprosite = fieldSetFlags()[15] ? this.scanprosite : (java.lang.CharSequence) defaultValue(fields()[15]);
-        record.KEGG = fieldSetFlags()[16] ? this.KEGG : (java.lang.CharSequence) defaultValue(fields()[16]);
+        record.protein_id = fieldSetFlags()[13] ? this.protein_id : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[13]);
+        record.HAMAP = fieldSetFlags()[14] ? this.HAMAP : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[14]);
+        record.scanprosite = fieldSetFlags()[15] ? this.scanprosite : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[15]);
+        record.KEGG = fieldSetFlags()[16] ? this.KEGG : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[16]);
         record.start = fieldSetFlags()[17] ? this.start : (java.lang.Integer) defaultValue(fields()[17]);
-        record.strand = fieldSetFlags()[18] ? this.strand : (java.lang.Boolean) defaultValue(fields()[18]);
+        record.strand = fieldSetFlags()[18] ? this.strand : (java.lang.Integer) defaultValue(fields()[18]);
         record.name = fieldSetFlags()[19] ? this.name : (java.lang.CharSequence) defaultValue(fields()[19]);
-        record.PDB = fieldSetFlags()[20] ? this.PDB : (java.lang.CharSequence) defaultValue(fields()[20]);
+        record.PDB = fieldSetFlags()[20] ? this.PDB : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[20]);
         record.transcripts = fieldSetFlags()[21] ? this.transcripts : (java.util.List<org.ensembl.genesearch.avro.Transcript>) defaultValue(fields()[21]);
         record.xrefs = fieldSetFlags()[22] ? this.xrefs : (java.util.List<org.ensembl.genesearch.avro.Xref>) defaultValue(fields()[22]);
         record.annotations = fieldSetFlags()[23] ? this.annotations : (java.util.List<org.ensembl.genesearch.avro.Annotation>) defaultValue(fields()[23]);
-        record.Uniprot_SPTREMBL = fieldSetFlags()[24] ? this.Uniprot_SPTREMBL : (java.lang.CharSequence) defaultValue(fields()[24]);
+        record.Uniprot_SPTREMBL = fieldSetFlags()[24] ? this.Uniprot_SPTREMBL : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[24]);
         record.biotype = fieldSetFlags()[25] ? this.biotype : (java.lang.CharSequence) defaultValue(fields()[25]);
         record.homologues = fieldSetFlags()[26] ? this.homologues : (java.util.List<org.ensembl.genesearch.avro.Homologue>) defaultValue(fields()[26]);
-        record.GO = fieldSetFlags()[27] ? this.GO : (java.lang.CharSequence) defaultValue(fields()[27]);
+        record.GO = fieldSetFlags()[27] ? this.GO : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[27]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);

@@ -7,14 +7,14 @@ package org.ensembl.genesearch.avro;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Xref extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Xref\",\"namespace\":\"org.ensembl.genesearch.avro\",\"fields\":[{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"linkage_types\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Linkage_type\",\"fields\":[{\"name\":\"evidence\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Source\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"associated_xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Associated_xref\",\"fields\":[{\"name\":\"experimental_evidence\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Experimental_evidence\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"}]}}},{\"name\":\"host\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Host\",\"fields\":[{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"display_id\",\"type\":\"string\"}]}}},{\"name\":\"phenotype\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Phenotype\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"parents\",\"type\":\"string\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Xref\",\"namespace\":\"org.ensembl.genesearch.avro\",\"fields\":[{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"linkage_types\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"LinkageType\",\"fields\":[{\"name\":\"evidence\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Source\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"associated_xrefs\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"AssociatedXref\",\"fields\":[{\"name\":\"experimental_evidence\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"ExperimentalEvidence\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"display_id\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"}]}}},{\"name\":\"host\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Host\",\"fields\":[{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"display_id\",\"type\":\"string\"}]}}},{\"name\":\"phenotype\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Phenotype\",\"fields\":[{\"name\":\"primary_id\",\"type\":\"string\"},{\"name\":\"dbname\",\"type\":\"string\"},{\"name\":\"source\",\"type\":{\"type\":\"array\",\"items\":\"Source\"}},{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"display_id\",\"type\":\"string\"}]}}}]}}},{\"name\":\"parents\",\"type\":{\"type\":\"array\",\"items\":\"string\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public java.lang.CharSequence display_id;
-  @Deprecated public java.util.List<org.ensembl.genesearch.avro.Linkage_type> linkage_types;
+  @Deprecated public java.util.List<org.ensembl.genesearch.avro.LinkageType> linkage_types;
   @Deprecated public java.lang.CharSequence primary_id;
   @Deprecated public java.lang.CharSequence dbname;
-  @Deprecated public java.util.List<org.ensembl.genesearch.avro.Associated_xref> associated_xrefs;
-  @Deprecated public java.lang.CharSequence parents;
+  @Deprecated public java.util.List<org.ensembl.genesearch.avro.AssociatedXref> associated_xrefs;
+  @Deprecated public java.util.List<java.lang.CharSequence> parents;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -26,7 +26,7 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * All-args constructor.
    */
-  public Xref(java.lang.CharSequence display_id, java.util.List<org.ensembl.genesearch.avro.Linkage_type> linkage_types, java.lang.CharSequence primary_id, java.lang.CharSequence dbname, java.util.List<org.ensembl.genesearch.avro.Associated_xref> associated_xrefs, java.lang.CharSequence parents) {
+  public Xref(java.lang.CharSequence display_id, java.util.List<org.ensembl.genesearch.avro.LinkageType> linkage_types, java.lang.CharSequence primary_id, java.lang.CharSequence dbname, java.util.List<org.ensembl.genesearch.avro.AssociatedXref> associated_xrefs, java.util.List<java.lang.CharSequence> parents) {
     this.display_id = display_id;
     this.linkage_types = linkage_types;
     this.primary_id = primary_id;
@@ -53,11 +53,11 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
     case 0: display_id = (java.lang.CharSequence)value$; break;
-    case 1: linkage_types = (java.util.List<org.ensembl.genesearch.avro.Linkage_type>)value$; break;
+    case 1: linkage_types = (java.util.List<org.ensembl.genesearch.avro.LinkageType>)value$; break;
     case 2: primary_id = (java.lang.CharSequence)value$; break;
     case 3: dbname = (java.lang.CharSequence)value$; break;
-    case 4: associated_xrefs = (java.util.List<org.ensembl.genesearch.avro.Associated_xref>)value$; break;
-    case 5: parents = (java.lang.CharSequence)value$; break;
+    case 4: associated_xrefs = (java.util.List<org.ensembl.genesearch.avro.AssociatedXref>)value$; break;
+    case 5: parents = (java.util.List<java.lang.CharSequence>)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -80,7 +80,7 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Gets the value of the 'linkage_types' field.
    */
-  public java.util.List<org.ensembl.genesearch.avro.Linkage_type> getLinkageTypes() {
+  public java.util.List<org.ensembl.genesearch.avro.LinkageType> getLinkageTypes() {
     return linkage_types;
   }
 
@@ -88,7 +88,7 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'linkage_types' field.
    * @param value the value to set.
    */
-  public void setLinkageTypes(java.util.List<org.ensembl.genesearch.avro.Linkage_type> value) {
+  public void setLinkageTypes(java.util.List<org.ensembl.genesearch.avro.LinkageType> value) {
     this.linkage_types = value;
   }
 
@@ -125,7 +125,7 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Gets the value of the 'associated_xrefs' field.
    */
-  public java.util.List<org.ensembl.genesearch.avro.Associated_xref> getAssociatedXrefs() {
+  public java.util.List<org.ensembl.genesearch.avro.AssociatedXref> getAssociatedXrefs() {
     return associated_xrefs;
   }
 
@@ -133,14 +133,14 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'associated_xrefs' field.
    * @param value the value to set.
    */
-  public void setAssociatedXrefs(java.util.List<org.ensembl.genesearch.avro.Associated_xref> value) {
+  public void setAssociatedXrefs(java.util.List<org.ensembl.genesearch.avro.AssociatedXref> value) {
     this.associated_xrefs = value;
   }
 
   /**
    * Gets the value of the 'parents' field.
    */
-  public java.lang.CharSequence getParents() {
+  public java.util.List<java.lang.CharSequence> getParents() {
     return parents;
   }
 
@@ -148,7 +148,7 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
    * Sets the value of the 'parents' field.
    * @param value the value to set.
    */
-  public void setParents(java.lang.CharSequence value) {
+  public void setParents(java.util.List<java.lang.CharSequence> value) {
     this.parents = value;
   }
 
@@ -174,11 +174,11 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
     implements org.apache.avro.data.RecordBuilder<Xref> {
 
     private java.lang.CharSequence display_id;
-    private java.util.List<org.ensembl.genesearch.avro.Linkage_type> linkage_types;
+    private java.util.List<org.ensembl.genesearch.avro.LinkageType> linkage_types;
     private java.lang.CharSequence primary_id;
     private java.lang.CharSequence dbname;
-    private java.util.List<org.ensembl.genesearch.avro.Associated_xref> associated_xrefs;
-    private java.lang.CharSequence parents;
+    private java.util.List<org.ensembl.genesearch.avro.AssociatedXref> associated_xrefs;
+    private java.util.List<java.lang.CharSequence> parents;
 
     /** Creates a new Builder */
     private Builder() {
@@ -269,12 +269,12 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'linkage_types' field */
-    public java.util.List<org.ensembl.genesearch.avro.Linkage_type> getLinkageTypes() {
+    public java.util.List<org.ensembl.genesearch.avro.LinkageType> getLinkageTypes() {
       return linkage_types;
     }
     
     /** Sets the value of the 'linkage_types' field */
-    public org.ensembl.genesearch.avro.Xref.Builder setLinkageTypes(java.util.List<org.ensembl.genesearch.avro.Linkage_type> value) {
+    public org.ensembl.genesearch.avro.Xref.Builder setLinkageTypes(java.util.List<org.ensembl.genesearch.avro.LinkageType> value) {
       validate(fields()[1], value);
       this.linkage_types = value;
       fieldSetFlags()[1] = true;
@@ -344,12 +344,12 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'associated_xrefs' field */
-    public java.util.List<org.ensembl.genesearch.avro.Associated_xref> getAssociatedXrefs() {
+    public java.util.List<org.ensembl.genesearch.avro.AssociatedXref> getAssociatedXrefs() {
       return associated_xrefs;
     }
     
     /** Sets the value of the 'associated_xrefs' field */
-    public org.ensembl.genesearch.avro.Xref.Builder setAssociatedXrefs(java.util.List<org.ensembl.genesearch.avro.Associated_xref> value) {
+    public org.ensembl.genesearch.avro.Xref.Builder setAssociatedXrefs(java.util.List<org.ensembl.genesearch.avro.AssociatedXref> value) {
       validate(fields()[4], value);
       this.associated_xrefs = value;
       fieldSetFlags()[4] = true;
@@ -369,12 +369,12 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /** Gets the value of the 'parents' field */
-    public java.lang.CharSequence getParents() {
+    public java.util.List<java.lang.CharSequence> getParents() {
       return parents;
     }
     
     /** Sets the value of the 'parents' field */
-    public org.ensembl.genesearch.avro.Xref.Builder setParents(java.lang.CharSequence value) {
+    public org.ensembl.genesearch.avro.Xref.Builder setParents(java.util.List<java.lang.CharSequence> value) {
       validate(fields()[5], value);
       this.parents = value;
       fieldSetFlags()[5] = true;
@@ -398,11 +398,11 @@ public class Xref extends org.apache.avro.specific.SpecificRecordBase implements
       try {
         Xref record = new Xref();
         record.display_id = fieldSetFlags()[0] ? this.display_id : (java.lang.CharSequence) defaultValue(fields()[0]);
-        record.linkage_types = fieldSetFlags()[1] ? this.linkage_types : (java.util.List<org.ensembl.genesearch.avro.Linkage_type>) defaultValue(fields()[1]);
+        record.linkage_types = fieldSetFlags()[1] ? this.linkage_types : (java.util.List<org.ensembl.genesearch.avro.LinkageType>) defaultValue(fields()[1]);
         record.primary_id = fieldSetFlags()[2] ? this.primary_id : (java.lang.CharSequence) defaultValue(fields()[2]);
         record.dbname = fieldSetFlags()[3] ? this.dbname : (java.lang.CharSequence) defaultValue(fields()[3]);
-        record.associated_xrefs = fieldSetFlags()[4] ? this.associated_xrefs : (java.util.List<org.ensembl.genesearch.avro.Associated_xref>) defaultValue(fields()[4]);
-        record.parents = fieldSetFlags()[5] ? this.parents : (java.lang.CharSequence) defaultValue(fields()[5]);
+        record.associated_xrefs = fieldSetFlags()[4] ? this.associated_xrefs : (java.util.List<org.ensembl.genesearch.avro.AssociatedXref>) defaultValue(fields()[4]);
+        record.parents = fieldSetFlags()[5] ? this.parents : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[5]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
