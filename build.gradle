@@ -1,0 +1,23 @@
+apply plugin: 'application'
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	compile 'org.elasticsearch:elasticsearch:2.1.1'
+}
+	
+test {	
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+    }
+    useJUnit {
+    }
+}
+ 
