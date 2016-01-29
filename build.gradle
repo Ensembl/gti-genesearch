@@ -9,7 +9,10 @@ repositories {
 }
 
 dependencies {
-	compile 'org.elasticsearch:elasticsearch:2.1.1'
+	compile 'org.elasticsearch:elasticsearch:2.0.2'
+	compile 'com.beust:jcommander:1.48'
+	compile 'org.apache.commons:commons-lang3:3.4'
+	compile 'org.slf4j:slf4j-log4j12:1.7.12'
 }
 	
 test {	
@@ -21,3 +24,4 @@ test {
     }
 }
  
+mainClassName = 'org.ensembl.genesearch.clients.IdLookupClient'
