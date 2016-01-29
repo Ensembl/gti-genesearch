@@ -35,6 +35,7 @@ import com.beust.jcommander.Parameter;
 
 /**
  * A simple standalone CLI client for querying by one field at a time
+ * 
  * @author dstaines
  *
  */
@@ -92,10 +93,11 @@ public class IdLookupClient {
 		Client client = null;
 		if (!isEmpty(params.hostName)) {
 			Settings settings = Settings.settingsBuilder()
-			        .put("cluster.name",params.clusterName).build();
+					.put("cluster.name", params.clusterName).build();
 			log.info("Connecting to " + params.hostName);
 			client = TransportClient
-					.builder().settings(settings)
+					.builder()
+					.settings(settings)
 					.build()
 					.addTransportAddress(
 							new InetSocketTransportAddress(InetAddress
@@ -126,13 +128,22 @@ public class IdLookupClient {
 
 			QueryBuilder query = null;
 			if (params.queryIds != null && params.queryIds.size() > 0) {
-				query = QueryBuilders.termsQuery(params.queryField,
-						params.queryIds);
+				if (params.queryField.equals("_id")) {
+					query = QueryBuilders.idsQuery("gene").addIds(
+							params.queryIds);
+				} else {
+					query = QueryBuilders.termsQuery(params.queryField,
+							params.queryIds);
+				}
 			} else if (!isEmpty(params.queryFile)) {
 				List<String> ids = Files.lines(
 						new File(params.queryFile).toPath()).collect(
 						Collectors.toList());
-				query = QueryBuilders.termsQuery(params.queryField, ids);
+				if (params.queryField.equals("_id")) {
+					query = QueryBuilders.idsQuery("gene").addIds(ids);
+				} else {
+					query = QueryBuilders.termsQuery(params.queryField, ids);
+				}
 			} else {
 				query = QueryBuilders.matchAllQuery();
 			}
@@ -144,9 +155,9 @@ public class IdLookupClient {
 					.addFields(fields).setSearchType(SearchType.SCAN)
 					.setScroll(new TimeValue(TIMEOUT)).setSize(SCROLL_SIZE)
 					.execute().actionGet();
-			log.info("Retrieved "+response.getHits().totalHits()+" in "+response.getTookInMillis()+" ms");
+			log.info("Retrieved " + response.getHits().totalHits() + " in "
+					+ response.getTookInMillis() + " ms");
 
-			
 			// Scroll until no hits are returned
 			while (true) {
 
