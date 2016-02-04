@@ -14,7 +14,7 @@ echo
 # create a new index
 echo "Creating index"
 # disable replicas
-curl -XPUT -d "{\"settings:\" : {\"number_of_shards\": $n, \"number_of_replicas\" : 0}}" "${url}/"
+curl -XPUT -d "{\"number_of_shards\": $n, \"number_of_replicas\" : 0}" "${url}/"
 echo
 
 ## genome mapping - ignore for now
