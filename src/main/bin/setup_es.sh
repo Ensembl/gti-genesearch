@@ -2,6 +2,10 @@
 
 dir=$(dirname $0)
 url=$1
+n=$2
+if [ -z "$n" ]; then
+    n=8
+fi
 echo "Setting up $url"
 # delete the old index
 echo "Deleting old index"
@@ -9,10 +13,8 @@ curl -XDELETE "${url}/"
 echo
 # create a new index
 echo "Creating index"
-curl -XPUT "${url}/"
-echo
 # disable replicas
-curl -XPUT -d '{"index" : {"number_of_replicas" : 0}}' "${url}/_settings" 
+curl -XPUT -d "{\"settings:\" : {\"number_of_shards\": $n, \"number_of_replicas\" : 0}}" "${url}/"
 echo
 
 ## genome mapping - ignore for now
