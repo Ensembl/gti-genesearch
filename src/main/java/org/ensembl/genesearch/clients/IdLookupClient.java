@@ -11,22 +11,20 @@ import java.io.Writer;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHitField;
+import org.ensembl.genesearch.GeneSearch;
+import org.ensembl.genesearch.GeneSearch.GeneQuery;
+import org.ensembl.genesearch.GeneSearch.GeneQuery.GeneQueryType;
+import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,11 +78,11 @@ public class IdLookupClient {
 	}
 
 	private final static String INDEX = "genes";
+	private final static Logger log = LoggerFactory
+			.getLogger(IdLookupClient.class);
 
 	public static void main(String[] args) throws InterruptedException,
 			IOException {
-
-		final Logger log = LoggerFactory.getLogger(IdLookupClient.class);
 
 		Params params = new Params();
 		JCommander jc = new JCommander(params, args);
@@ -115,77 +113,30 @@ public class IdLookupClient {
 		// do query stuff
 		if (client != null) {
 
-			Writer out = null;
-			if (!isEmpty(params.outFile)) {
-				log.info("Writing output to " + params.outFile);
-				out = new FileWriter(new File(params.outFile));
-			} else {
-				out = new OutputStreamWriter(System.out);
-			}
+			final Writer out = getWriter(params);
 
-			String[] fields = params.resultField
-					.toArray(new String[params.resultField.size()]);
+			GeneSearch search = new ESGeneSearch(client);
 
-			QueryBuilder query = null;
-			if (params.queryIds != null && params.queryIds.size() > 0) {
-				if (params.queryField.equals("_id")) {
-					query = QueryBuilders.idsQuery("gene").addIds(
-							params.queryIds);
-				} else {
-					query = QueryBuilders.termsQuery(params.queryField,
-							params.queryIds);
-				}
-			} else if (!isEmpty(params.queryFile)) {
-				List<String> ids = Files.lines(
-						new File(params.queryFile).toPath()).collect(
+			List<String> ids = params.queryIds;
+			if (ids == null && !isEmpty(params.queryFile)) {
+				ids = Files.lines(new File(params.queryFile).toPath()).collect(
 						Collectors.toList());
-				if (params.queryField.equals("_id")) {
-					query = QueryBuilders.idsQuery("gene").addIds(ids);
-				} else {
-					query = QueryBuilders.termsQuery(params.queryField, ids);
-				}
-			} else {
-				query = QueryBuilders.matchAllQuery();
 			}
 
-			log.info("Starting query");
-
-			SearchResponse response = client.prepareSearch(INDEX)
-					.setPostFilter(query).setFetchSource(params.source)
-					.addFields(fields).setSearchType(SearchType.SCAN)
-					.setScroll(new TimeValue(TIMEOUT)).setSize(SCROLL_SIZE)
-					.execute().actionGet();
-			log.info("Retrieved " + response.getHits().totalHits() + " in "
-					+ response.getTookInMillis() + " ms");
-
-			// Scroll until no hits are returned
-			while (true) {
-
-				for (SearchHit hit : response.getHits().getHits()) {
-					if (params.source) {
-						out.write(hit.getSourceAsString());
-					} else {
-						out.write(hit.getId());
-						for (String fieldName : params.resultField) {
-							SearchHitField field = hit.field(fieldName);
-							String val = null;
-							if (field != null && field.getValues() != null) {
-								val = StringUtils.join(field.getValues()
-										.toArray(), ",");
-							}
-							out.write("\t" + val);
-						}
-						out.write("\n");
-					}
+			Collection<GeneQuery> queries = Arrays
+					.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.TERM,
+							params.queryField, ids) });
+			search.query(row -> {
+				try {
+					out.write(StringUtils.join(row.values(), "\t"));
+					out.write('\n');
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				} finally {
 				}
-				// next scroll response
-				response = client.prepareSearchScroll(response.getScrollId())
-						.setScroll(new TimeValue(60000)).execute().actionGet();
-				// Break condition: No hits are returned
-				if (response.getHits().getHits().length == 0) {
-					break;
-				}
-			}
+			}, queries, params.resultField
+					.toArray(new String[params.resultField.size()]));
+
 			log.info("Completed retrieval");
 			out.flush();
 			out.close();
@@ -198,5 +149,16 @@ public class IdLookupClient {
 			node.close();
 		}
 
+	}
+
+	protected static Writer getWriter(Params params) throws IOException {
+		Writer out = null;
+		if (!isEmpty(params.outFile)) {
+			log.info("Writing output to " + params.outFile);
+			out = new FileWriter(new File(params.outFile));
+		} else {
+			out = new OutputStreamWriter(System.out);
+		}
+		return out;
 	}
 }

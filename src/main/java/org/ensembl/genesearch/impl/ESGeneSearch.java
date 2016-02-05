@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -68,10 +69,11 @@ public class ESGeneSearch implements GeneSearch {
 		log.info("Starting query");
 
 		boolean source = fieldNames.length == 0;
-		SearchResponse response = client.prepareSearch(INDEX)
+		SearchRequestBuilder request = client.prepareSearch(INDEX)
 				.setPostFilter(query).setFetchSource(source)
 				.addFields(fieldNames).setSearchType(SearchType.SCAN)
-				.setScroll(new TimeValue(TIMEOUT)).setSize(SCROLL_SIZE)
+				.setScroll(new TimeValue(TIMEOUT)).setSize(SCROLL_SIZE);
+		SearchResponse response = request
 				.execute().actionGet();
 		log.info("Retrieved " + response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
@@ -87,6 +89,9 @@ public class ESGeneSearch implements GeneSearch {
 				} else {
 					for (String fieldName : fieldNames) {
 						SearchHitField field = hit.field(fieldName);
+						if(field==null) {
+							throw new RuntimeException("Cannot find field "+fieldName);
+						}
 						Object val = field.getValue();
 						if (val == null) {
 							val = field.getValues();
