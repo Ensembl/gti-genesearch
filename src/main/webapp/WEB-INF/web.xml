@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="JerseyHelloWorld" version="2.4"
+   xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
+   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+   <display-name>hanbo-jersey-sample</display-name>
+  
+   <servlet>
+      <servlet-name>jersey-servlet</servlet-name>
+      <servlet-class>
+         org.glassfish.jersey.servlet.ServletContainer
+      </servlet-class>
+      <init-param>
+         <param-name>jersey.config.server.provider.packages</param-name>
+         <param-value>org.ensembl.gti.genesearch.services</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>jersey-servlet</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+</web-app>

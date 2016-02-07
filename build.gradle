@@ -1,0 +1,20 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'jetty'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+group = 'org.ensembl.gti'
+version = '0.1'
+
+repositories {
+    mavenLocal() 
+    mavenCentral()
+}
+
+dependencies {
+   compile 'org.ensembl.gti:gti-genesearch:0.1'
+   compile 'org.glassfish.jersey.core:jersey-server:2.22.1'
+   compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.22.1'
+}
