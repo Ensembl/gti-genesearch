@@ -49,23 +49,24 @@ public class ESGeneSearch implements GeneSearch {
 			Collection<GeneQuery> queries, String... fieldNames) {
 
 		log.info("Building query");
-		
+
 		BoolQueryBuilder query = null;
 		for (GeneQuery geneQ : queries) {
 			QueryBuilder subQuery = null;
 			if (geneQ.getFieldName().equals("_id")) {
-				subQuery = QueryBuilders.idsQuery("gene").addIds(geneQ.getValues());
+				subQuery = QueryBuilders.idsQuery("gene").addIds(
+						geneQ.getValues());
 			} else {
 				subQuery = QueryBuilders.termsQuery(geneQ.getFieldName(),
 						geneQ.getValues());
 			}
-			if(query==null) {
-				query = QueryBuilders.boolQuery().must(subQuery);				
+			if (query == null) {
+				query = QueryBuilders.boolQuery().must(subQuery);
 			} else {
 				query = query.must(subQuery);
 			}
 		}
-		
+
 		log.info("Starting query");
 
 		boolean source = fieldNames.length == 0;
@@ -73,8 +74,7 @@ public class ESGeneSearch implements GeneSearch {
 				.setPostFilter(query).setFetchSource(source)
 				.addFields(fieldNames).setSearchType(SearchType.SCAN)
 				.setScroll(new TimeValue(TIMEOUT)).setSize(SCROLL_SIZE);
-		SearchResponse response = request
-				.execute().actionGet();
+		SearchResponse response = request.execute().actionGet();
 		log.info("Retrieved " + response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
@@ -89,12 +89,12 @@ public class ESGeneSearch implements GeneSearch {
 				} else {
 					for (String fieldName : fieldNames) {
 						SearchHitField field = hit.field(fieldName);
-						if(field==null) {
-							throw new RuntimeException("Cannot find field "+fieldName);
-						}
-						Object val = field.getValue();
-						if (val == null) {
+						Object val = null;
+						if (field != null) {
 							val = field.getValues();
+							if(((List<?>)val).size()==1) {
+								val = ((List<?>)val).get(0);
+							}
 						}
 						row.put(fieldName, val);
 					}

@@ -39,9 +39,6 @@ import com.beust.jcommander.Parameter;
  */
 public class IdLookupClient {
 
-	private static final int SCROLL_SIZE = 1000;
-	private static final int TIMEOUT = 600000;
-
 	public static class Params {
 
 		@Parameter(names = "-query", description = "Field to query")
@@ -77,7 +74,6 @@ public class IdLookupClient {
 
 	}
 
-	private final static String INDEX = "genes";
 	private final static Logger log = LoggerFactory
 			.getLogger(IdLookupClient.class);
 
