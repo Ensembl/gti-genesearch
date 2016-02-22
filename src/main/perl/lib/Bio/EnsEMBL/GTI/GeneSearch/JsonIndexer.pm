@@ -15,7 +15,7 @@ has 'url'   => ( is => 'ro', isa => 'Str', required => 1 );
 has 'index' => ( is => 'ro', isa => 'Str', default  => 'genes' );
 has 'type'  => ( is => 'ro', isa => 'Str', default  => 'gene' );
 has 'bulk' => ( is => 'rw', isa => 'Search::Elasticsearch::Bulk' );
-has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
+has 'timeout' => ( is => 'rw', isa => 'Int', default => 300 );
 
 sub BUILD {
 	my ($self) = @_;
