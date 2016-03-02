@@ -17,6 +17,7 @@ sub default_options {
 	my ($self) = @_;
 	return { %{ $self->SUPER::default_options() },
 			 dumps_dir => '.',
+		 blacklist=>undef,
 			 es_url    => 'http://127.0.0.1:9200/' };
 }
 
@@ -28,6 +29,7 @@ sub pipeline_analyses {
 			 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::JsonFileFactory',
 		   -meadow_type => 'LOCAL',
 		   -input_ids   => [ { dumps_dir => $self->o('dumps_dir') } ],
+		   -parameters => {blacklist=>$self->o('blacklist')},    
 		   -flow_into => { '1' => ['IndexJsonFile'] } }, {
 		   -logic_name => 'IndexJsonFile',
 		   -module => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
