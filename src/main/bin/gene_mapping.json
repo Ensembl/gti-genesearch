@@ -66,6 +66,20 @@
             "strand": {
                 "type": "short"
             },
+            "consequence_types": {
+                "type": "string",
+                "index": "not_analyzed",
+                "norms": {
+                    "enabled": false
+                }
+            },
+            "clinical_significance": {
+                "type": "string",
+                "index": "not_analyzed",
+                "norms": {
+                    "enabled": false
+                }
+            },
             "Uniprot_SWISSPROT": {
                 "type": "string",
                 "index": "not_analyzed",
@@ -338,176 +352,6 @@
                             "enabled": false
                         }
                     },
-                    "associated_xrefs": {
-                        "type": "nested",
-                        "properties": {
-                            "experimental evidence": {
-                                "type": "nested",
-                                "properties": {
-                                    "dbname": {
-                                        "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
-                                    },
-                                    "primary_id": {
-                                        "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
-                                    },
-                                    "display_id": {
-                                        "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
-                                    },
-                                    "rank": {
-                                        "type": "integer"
-                                    },
-                                    "source": {
-                                        "type": "nested",
-                                        "properties": {
-                                            "dbname": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "primary_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "display_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            "phenotype": {
-                                "type": "nested",
-                                "properties": {
-                                    "dbname": {
-                                        "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
-                                    },
-                                    "primary_id": {
-                                        "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
-                                    },
-                                    "display_id": {
-                                        "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
-                                    },
-                                    "rank": {
-                                        "type": "integer"
-                                    },
-                                    "source": {
-                                        "type": "nested",
-                                        "properties": {
-                                            "dbname": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "primary_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "display_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            "host": {
-                                "type": "nested",
-                                "properties": {
-                                    "dbname": {
-                                        "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
-                                    },
-                                    "primary_id": {
-                                        "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
-                                    },
-                                    "display_id": {
-                                        "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
-                                    },
-                                    "rank": {
-                                        "type": "integer"
-                                    },
-                                    "source": {
-                                        "type": "nested",
-                                        "properties": {
-                                            "dbname": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "primary_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "display_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
                     "linkage_types": {
                         "type": "nested",
                         "properties": {
@@ -523,24 +367,15 @@
                                 "properties": {
                                     "dbname": {
                                         "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
+                                        "index": "no"
                                     },
                                     "primary_id": {
                                         "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
+                                        "index": "no"
                                     },
                                     "display_id": {
                                         "type": "string",
-                                        "index": "not_analyzed",
-                                        "norms": {
-                                            "enabled": false
-                                        }
+                                        "index": "no"
                                     }
                                 }
                             }
@@ -608,7 +443,7 @@
                                     "enabled": false
                                 }
                             },
-                            "display_id": {
+                            "display_name": {
                                 "type": "string",
                                 "index": "not_analyzed",
                                 "norms": {
@@ -620,176 +455,6 @@
                                 "index": "not_analyzed",
                                 "norms": {
                                     "enabled": false
-                                }
-                            },
-                            "associated_xrefs": {
-                                "type": "nested",
-                                "properties": {
-                                    "experimental evidence": {
-                                        "type": "nested",
-                                        "properties": {
-                                            "dbname": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "primary_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "display_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "rank": {
-                                                "type": "integer"
-                                            },
-                                            "source": {
-                                                "type": "nested",
-                                                "properties": {
-                                                    "dbname": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "primary_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "display_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    "host": {
-                                        "type": "nested",
-                                        "properties": {
-                                            "dbname": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "primary_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "display_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "rank": {
-                                                "type": "integer"
-                                            },
-                                            "source": {
-                                                "type": "nested",
-                                                "properties": {
-                                                    "dbname": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "primary_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "display_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    "phenotype": {
-                                        "type": "nested",
-                                        "properties": {
-                                            "dbname": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "primary_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "display_id": {
-                                                "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
-                                            },
-                                            "rank": {
-                                                "type": "integer"
-                                            },
-                                            "source": {
-                                                "type": "nested",
-                                                "properties": {
-                                                    "dbname": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "primary_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "display_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
                                 }
                             },
                             "linkage_types": {
@@ -807,24 +472,15 @@
                                         "properties": {
                                             "dbname": {
                                                 "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
+                                                "index": "no"
                                             },
                                             "primary_id": {
                                                 "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
+                                                "index": "no"
                                             },
                                             "display_id": {
                                                 "type": "string",
-                                                "index": "not_analyzed",
-                                                "norms": {
-                                                    "enabled": false
-                                                }
+                                                "index": "no"
                                             }
                                         }
                                     }
@@ -900,7 +556,7 @@
                                             "enabled": false
                                         }
                                     },
-                                    "display_id": {
+                                    "display_name": {
                                         "type": "string",
                                         "index": "not_analyzed",
                                         "norms": {
@@ -929,194 +585,15 @@
                                                 "properties": {
                                                     "dbname": {
                                                         "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
+                                                        "index": "no"
                                                     },
                                                     "primary_id": {
                                                         "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
+                                                        "index": "no"
                                                     },
                                                     "display_id": {
                                                         "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    "associated_xrefs": {
-                                        "type": "nested",
-                                        "properties": {
-                                            "experimental evidence": {
-                                                "type": "nested",
-                                                "properties": {
-                                                    "dbname": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "primary_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "display_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "rank": {
-                                                        "type": "integer"
-                                                    },
-                                                    "source": {
-                                                        "type": "nested",
-                                                        "properties": {
-                                                            "dbname": {
-                                                                "type": "string",
-                                                                "index": "not_analyzed",
-                                                                "norms": {
-                                                                    "enabled": false
-                                                                }
-                                                            },
-                                                            "primary_id": {
-                                                                "type": "string",
-                                                                "index": "not_analyzed",
-                                                                "norms": {
-                                                                    "enabled": false
-                                                                }
-                                                            },
-                                                            "display_id": {
-                                                                "type": "string",
-                                                                "index": "not_analyzed",
-                                                                "norms": {
-                                                                    "enabled": false
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            "host": {
-                                                "type": "nested",
-                                                "properties": {
-                                                    "dbname": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "primary_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "display_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "rank": {
-                                                        "type": "integer"
-                                                    },
-                                                    "source": {
-                                                        "type": "nested",
-                                                        "properties": {
-                                                            "dbname": {
-                                                                "type": "string",
-                                                                "index": "not_analyzed",
-                                                                "norms": {
-                                                                    "enabled": false
-                                                                }
-                                                            },
-                                                            "primary_id": {
-                                                                "type": "string",
-                                                                "index": "not_analyzed",
-                                                                "norms": {
-                                                                    "enabled": false
-                                                                }
-                                                            },
-                                                            "display_id": {
-                                                                "type": "string",
-                                                                "index": "not_analyzed",
-                                                                "norms": {
-                                                                    "enabled": false
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            "phenotype": {
-                                                "type": "nested",
-                                                "properties": {
-                                                    "dbname": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "primary_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "display_id": {
-                                                        "type": "string",
-                                                        "index": "not_analyzed",
-                                                        "norms": {
-                                                            "enabled": false
-                                                        }
-                                                    },
-                                                    "rank": {
-                                                        "type": "integer"
-                                                    },
-                                                    "source": {
-                                                        "type": "nested",
-                                                        "properties": {
-                                                            "dbname": {
-                                                                "type": "string",
-                                                                "index": "not_analyzed",
-                                                                "norms": {
-                                                                    "enabled": false
-                                                                }
-                                                            },
-                                                            "primary_id": {
-                                                                "type": "string",
-                                                                "index": "not_analyzed",
-                                                                "norms": {
-                                                                    "enabled": false
-                                                                }
-                                                            },
-                                                            "display_id": {
-                                                                "type": "string",
-                                                                "index": "not_analyzed",
-                                                                "norms": {
-                                                                    "enabled": false
-                                                                }
-                                                            }
-                                                        }
+                                                        "index": "no"
                                                     }
                                                 }
                                             }
