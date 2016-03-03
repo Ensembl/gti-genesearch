@@ -486,6 +486,69 @@
                                     }
                                 }
                             }
+                        },
+                        "variants": {
+                            "type": "nested",
+                            "properties": {
+                                "variant_name": {
+                                    "type": "string",
+                                    "index": "not_analyzed",
+                                    "norms": {
+                                        "enabled": false
+                                    }
+                                },
+                                "source": {
+                                    "type": "string",
+                                    "index": "not_analyzed",
+                                    "norms": {
+                                        "enabled": false
+                                    }
+                                },
+                                "seq_region_name": {
+                                    "type": "string",
+                                    "index": "not_analyzed",
+                                    "norms": {
+                                        "enabled": false
+                                    }
+                                },
+                                "start": {
+                                    "type": "integer"
+                                },
+                                "end": {
+                                    "type": "integer"
+                                },
+                                "strand": {
+                                    "type": "short"
+                                },
+                                "sift_prediction": {
+                                    "type": "string",
+                                    "index": "not_analyzed",
+                                    "norms": {
+                                        "enabled": false
+                                    }
+                                },
+                                "polyphen_prediction": {
+                                    "type": "string",
+                                    "index": "not_analyzed",
+                                    "norms": {
+                                        "enabled": false
+                                    }
+                                },
+                                "consequence_types": {
+                                    "type": "string",
+                                    "index": "not_analyzed",
+                                    "norms": {
+                                        "enabled": false
+                                    }
+                                },
+                                "clinical_significance": {
+                                    "type": "string",
+                                    "index": "not_analyzed",
+                                    "norms": {
+                                        "enabled": false
+                                    }
+                                }
+                            }
                         }
                     },
                     "translations": {
