@@ -17,22 +17,22 @@ public class ESGeneSearchBuilder {
 	private static final Logger log = LoggerFactory.getLogger(ESGeneSearchBuilder.class);
 	
 	public static QueryBuilder buildQuery(GeneQuery... geneQs) {
-		return buildQuery(new ArrayList<String>(), geneQs);
+		return buildQueryWithParents(new ArrayList<String>(), geneQs);
 	}
 
-	protected static QueryBuilder buildQuery(List<String> parents,
+	protected static QueryBuilder buildQueryWithParents(List<String> parents,
 			GeneQuery... geneQs) {
-		log.info("Parents "+parents);
+		log.trace("Parents "+parents);
 		if (geneQs.length == 1) {
 			GeneQuery geneQ = geneQs[0];
 			QueryBuilder query = null;
 			if (geneQ.getType().equals(GeneQueryType.NESTED)) {
-				log.info("Nested "+geneQ.getFieldName());
-				QueryBuilder subQuery = buildQuery(extendPath(parents, geneQ),
+				log.trace("Nested "+geneQ.getFieldName());
+				QueryBuilder subQuery = buildQueryWithParents(extendPath(parents, geneQ),
 						geneQ.getSubQueries());
 				query = QueryBuilders.nestedQuery(StringUtils.join(extendPath(parents, geneQ), '.'), subQuery);
 			} else {
-				log.info("Single "+geneQ.getFieldName());
+				log.trace("Single "+geneQ.getFieldName());
 				if (geneQ.getFieldName().equals("_id")) {
 					query = QueryBuilders.idsQuery("gene").addIds(
 							geneQ.getValues());
@@ -49,11 +49,11 @@ public class ESGeneSearchBuilder {
 			}
 			return query;
 		} else {
-			log.info("Multiples");
+			log.trace("Multiples");
 			BoolQueryBuilder query = null;
 			for (GeneQuery geneQ : geneQs) {
-				log.info("Multiple "+geneQ.getFieldName());
-				QueryBuilder subQuery = buildQuery(parents,
+				log.trace("Multiple "+geneQ.getFieldName());
+				QueryBuilder subQuery = buildQueryWithParents(parents,
 						geneQ);
 				if (query == null) {
 					query = QueryBuilders.boolQuery().must(subQuery);
