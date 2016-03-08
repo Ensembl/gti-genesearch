@@ -57,7 +57,7 @@ public class ESGeneSearch implements GeneSearch {
 			Collection<GeneQuery> queries, String... fieldNames) {
 
 		log.info("Building query");
-		QueryBuilder query = buildQuery(queries.toArray(new GeneQuery[queries
+		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new GeneQuery[queries
 				.size()]));
 
 		log.info("Starting query");
@@ -105,57 +105,6 @@ public class ESGeneSearch implements GeneSearch {
 		}
 	}
 
-	protected static QueryBuilder buildQuery(GeneQuery... geneQs) {
-		return buildQuery(new ArrayList<String>(), geneQs);
-	}
 
-	protected static QueryBuilder buildQuery(List<String> parents,
-			GeneQuery... geneQs) {
-		if (geneQs.length == 1) {
-			GeneQuery geneQ = geneQs[0];
-			QueryBuilder query = null;
-			if (geneQ.getType().equals(GeneQueryType.NESTED)) {
-				parents = extendPath(parents, geneQ);
-				QueryBuilder subQuery = buildQuery(parents,
-						geneQ.getSubQueries());
-				query = QueryBuilders.nestedQuery(StringUtils.join(parents, '.'), subQuery);
-			} else {
-				if (geneQ.getFieldName().equals("_id")) {
-					query = QueryBuilders.idsQuery("gene").addIds(
-							geneQ.getValues());
-				} else {
-					String path = StringUtils.join(parents, '.');
-					if (geneQ.getValues().length == 1) {
-						query = QueryBuilders.termQuery(path,
-								geneQ.getValues()[0]);
-					} else {
-						query = QueryBuilders.termsQuery(path,
-								geneQ.getValues());
-					}
-				}
-			}
-			return query;
-		} else {
-			BoolQueryBuilder query = null;
-			for (GeneQuery geneQ : geneQs) {
-				QueryBuilder subQuery = buildQuery(extendPath(parents, geneQ),
-						geneQ);
-				if (query == null) {
-					query = QueryBuilders.boolQuery().must(subQuery);
-				} else {
-					query = query.must(subQuery);
-				}
-			}
-			return query;
-		}
-	}
-
-	protected static List<String> extendPath(List<String> parents,
-			GeneQuery geneQ) {
-		List<String> newParents = new ArrayList<>(parents.size() + 1);
-		newParents.addAll(parents);
-		newParents.add(geneQ.getFieldName());
-		return newParents;
-	}
 
 }
