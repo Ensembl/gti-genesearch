@@ -1,14 +1,12 @@
 package org.ensembl.genesearch.clients;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,10 +15,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.node.Node;
 import org.ensembl.genesearch.GeneSearch;
 import org.ensembl.genesearch.GeneSearch.GeneQuery;
 import org.ensembl.genesearch.GeneSearch.GeneQuery.GeneQueryType;
@@ -39,7 +33,7 @@ import com.beust.jcommander.Parameter;
  */
 public class IdLookupClient {
 
-	public static class Params {
+	public static class Params extends ClientParams {
 
 		@Parameter(names = "-query", description = "Field to query")
 		private String queryField = "_id";
@@ -60,18 +54,6 @@ public class IdLookupClient {
 		@Parameter(names = "-source", description = "Retrieve source")
 		private boolean source = false;
 
-		@Parameter(names = "-cluster", description = "Cluster to join")
-		private String clusterName = "genesearch";
-
-		@Parameter(names = "-host", description = "Host to query")
-		private String hostName;
-
-		@Parameter(names = "-port", description = "Port to query")
-		private int port = 9300;
-
-		@Parameter(names = "-help", help = true)
-		private boolean help;
-
 	}
 
 	private final static Logger log = LoggerFactory
@@ -83,67 +65,43 @@ public class IdLookupClient {
 		Params params = new Params();
 		JCommander jc = new JCommander(params, args);
 		jc.setProgramName(IdLookupClient.class.getSimpleName());
-		Node node = null;
-		Client client = null;
-		if (!isEmpty(params.hostName)) {
-			Settings settings = Settings.settingsBuilder()
-					.put("cluster.name", params.clusterName).build();
-			log.info("Connecting to " + params.hostName);
-			client = TransportClient
-					.builder()
-					.settings(settings)
-					.build()
-					.addTransportAddress(
-							new InetSocketTransportAddress(InetAddress
-									.getByName(params.hostName), params.port));
-		} else if (!isEmpty(params.clusterName)) {
-			// on startup
-			log.info("Joining cluster " + params.clusterName);
-			node = nodeBuilder().clusterName(params.clusterName).node();
-			client = node.client();
-		} else {
+		Client client = ClientBuilder.buildClient(params);
+
+		if (client == null) {
 			jc.usage();
 			System.exit(1);
 		}
 
-		// do query stuff
-		if (client != null) {
+		final Writer out = getWriter(params);
 
-			final Writer out = getWriter(params);
+		GeneSearch search = new ESGeneSearch(client);
 
-			GeneSearch search = new ESGeneSearch(client);
+		List<String> ids = params.queryIds;
+		if (ids == null && !isEmpty(params.queryFile)) {
+			ids = Files.lines(new File(params.queryFile).toPath()).collect(
+					Collectors.toList());
+		}
 
-			List<String> ids = params.queryIds;
-			if (ids == null && !isEmpty(params.queryFile)) {
-				ids = Files.lines(new File(params.queryFile).toPath()).collect(
-						Collectors.toList());
+		Collection<GeneQuery> queries = Arrays
+				.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.TERM,
+						params.queryField, ids) });
+		search.query(row -> {
+			try {
+				out.write(StringUtils.join(row.values(), "\t"));
+				out.write('\n');
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			} finally {
 			}
+		}, queries, params.resultField.toArray(new String[params.resultField
+				.size()]));
 
-			Collection<GeneQuery> queries = Arrays
-					.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.TERM,
-							params.queryField, ids) });
-			search.query(row -> {
-				try {
-					out.write(StringUtils.join(row.values(), "\t"));
-					out.write('\n');
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				} finally {
-				}
-			}, queries, params.resultField
-					.toArray(new String[params.resultField.size()]));
+		log.info("Completed retrieval");
+		out.flush();
+		out.close();
 
-			log.info("Completed retrieval");
-			out.flush();
-			out.close();
-
-			log.info("Closing client");
-			client.close();
-		}
-		if (node != null) {
-			log.info("Closing node");
-			node.close();
-		}
+		log.info("Closing client");
+		client.close();
 
 	}
 
