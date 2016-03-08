@@ -15,12 +15,14 @@ public interface GeneSearch {
 
 		private final String fieldName;
 		private final String[] values;
+		private final GeneQuery[] subQueries;
 		private final GeneQueryType type;
 
-		public GeneQuery(GeneQueryType type, String fieldName, String[] values) {
+		public GeneQuery(GeneQueryType type, String fieldName, String... values) {
 			this.type = type;
 			this.fieldName = fieldName;
 			this.values = values;
+			this.subQueries = null;
 		}
 
 		public GeneQuery(GeneQueryType type, String fieldName,
@@ -28,6 +30,15 @@ public interface GeneSearch {
 			this.type = type;
 			this.fieldName = fieldName;
 			this.values = valuesC.toArray(new String[valuesC.size()]);
+			this.subQueries = null;
+		}
+
+		public GeneQuery(GeneQueryType type, String fieldName,
+				GeneQuery... subQueries) {
+			this.type = type;
+			this.fieldName = fieldName;
+			this.values = null;
+			this.subQueries = subQueries;
 		}
 
 		public String getFieldName() {
@@ -40,6 +51,10 @@ public interface GeneSearch {
 
 		public GeneQueryType getType() {
 			return type;
+		}
+
+		public GeneQuery[] getSubQueries() {
+			return subQueries;
 		}
 
 	}
