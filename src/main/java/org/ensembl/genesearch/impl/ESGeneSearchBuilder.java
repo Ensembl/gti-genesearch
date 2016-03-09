@@ -48,6 +48,9 @@ public class ESGeneSearchBuilder {
 				}
 			}
 			return query;
+		} else if(geneQs.length==0) {
+			log.trace("All IDs");
+			return QueryBuilders.matchAllQuery();
 		} else {
 			log.trace("Multiples");
 			BoolQueryBuilder query = null;

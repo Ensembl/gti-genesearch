@@ -7,19 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 import org.ensembl.genesearch.GeneSearch;
-import org.ensembl.genesearch.GeneSearch.GeneQuery.GeneQueryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +24,7 @@ public class ESGeneSearch implements GeneSearch {
 	private static final int SCROLL_SIZE = 1000;
 	private static final int TIMEOUT = 600000;
 	public final static String DEFAULT_INDEX = "genes";
+	public final static String DEFAULT_TYPE = "gene";
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final Client client;
@@ -57,8 +54,8 @@ public class ESGeneSearch implements GeneSearch {
 			Collection<GeneQuery> queries, String... fieldNames) {
 
 		log.info("Building query");
-		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new GeneQuery[queries
-				.size()]));
+		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries
+				.toArray(new GeneQuery[queries.size()]));
 
 		log.info("Starting query");
 		log.info(query.toString());
@@ -104,7 +101,5 @@ public class ESGeneSearch implements GeneSearch {
 			}
 		}
 	}
-
-
 
 }
