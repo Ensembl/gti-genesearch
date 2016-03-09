@@ -1,29 +1,31 @@
 package org.ensembl.genesearch;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-
 import org.ensembl.genesearch.GeneSearch.GeneQuery;
+import org.ensembl.genesearch.GeneSearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.impl.ESGeneSearch;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ESGeneSearchTest {
 
-	Logger log = LoggerFactory.getLogger(this.getClass());
+	static Logger log = LoggerFactory.getLogger(ESGeneSearchTest.class);
 
-	ESTestServer testServer = new ESTestServer();
-	ESGeneSearch search = new ESGeneSearch(testServer.getClient());
+	static ESTestServer testServer = new ESTestServer();
+	static ESGeneSearch search = new ESGeneSearch(testServer.getClient());
 
-	@Before
-	public void setUp() throws IOException {
+	@BeforeClass
+	public static void setUp() throws IOException {
 		// index a sample of JSON
 		log.info("Reading documents");
 		String json = ESTestServer
@@ -38,11 +40,57 @@ public class ESGeneSearchTest {
 		List<Map<String, Object>> ids = search.query(
 				new ArrayList<GeneQuery>(), "_id");
 		log.info("Fetched " + ids.size() + " genes");
-		assertEquals("Number of genes",598,ids.size());
+		assertEquals("Number of genes", 598, ids.size());
 	}
 
-	@After
-	public void tearDown() {
+	@Test
+	public void fetchHomologues() {
+		String genomeName = "escherichia_coli_str_k_12_substr_mg1655";
+		log.info("Fetching homologues to " + genomeName);
+		GeneQuery genome = new GeneQuery(GeneQueryType.TERM, "genome",
+				genomeName);
+
+		List<Map<String, Object>> ids = search.query(Arrays
+				.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.NESTED,
+						"homologues", genome) }), "_id");
+		log.info("Fetched " + ids.size() + " genes");
+		assertEquals("Number of genes", 79, ids.size());
+	}
+
+	@Test
+	public void fetchTypedOrthologues() {
+		String genomeName = "escherichia_coli_str_k_12_substr_mg1655";
+		String orthologyType = "ortholog_one2one";
+		log.info("Fetching " + orthologyType + " homologues to " + genomeName);
+		GeneQuery orthology = new GeneQuery(GeneQueryType.TERM, "description",
+				orthologyType);
+		GeneQuery genome = new GeneQuery(GeneQueryType.TERM, "genome",
+				genomeName);
+
+		List<Map<String, Object>> ids = search.query(Arrays
+				.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.NESTED,
+						"homologues", genome, orthology) }), "_id");
+		log.info("Fetched " + ids.size() + " genes");
+		assertEquals("Number of genes", 63, ids.size());
+	}
+
+	@Test
+	public void fetchTranslationById() {
+		String id = "AAR39271";
+		log.info("Fetching genes with translation ID=" + id);
+
+		GeneQuery tIdQuery = new GeneQuery(GeneQueryType.NESTED, "transcripts",
+				new GeneQuery(GeneQueryType.NESTED, "translations",
+						new GeneQuery(GeneQueryType.TERM, "id", id)));
+
+		List<Map<String, Object>> ids = search.query(
+				Arrays.asList(new GeneQuery[] { tIdQuery }), "_id");
+		log.info("Fetched " + ids.size() + " genes");
+		assertEquals("Number of genes", 1, ids.size());
+	}
+
+	@AfterClass
+	public static void tearDown() {
 		log.info("Disconnecting server");
 		testServer.disconnect();
 	}
