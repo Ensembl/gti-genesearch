@@ -43,10 +43,10 @@ sub run {
   my $result =
     $self->{indexer}->search()->mget( index => 'genes',
                                       type  => 'gene',
-                                      body  => { ids => $self->{gene_ids} } );
-
+                                      body  => { ids => $self->{gene_ids} , _source=>"true" });
+                               
   # create an ID to transcript hash
-  my @gene_docs = map { $_->{_source} } @{ $result->{docs} };
+  my @gene_docs = map { $_->{_source} } grep {$_->{found}} @{ $result->{docs} };
   $self->log()->info( "Retrieved " . scalar @gene_docs . " genes for update" );
 
   my $remodeller = EGExt::FTP::JSON::JsonRemodeller->new(
