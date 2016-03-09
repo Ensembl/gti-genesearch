@@ -23,5 +23,5 @@ echo
 
 # gene mapping
 echo "Loading gene mapping"
-curl -XPUT -d @${dir}/gene_mapping.json "${url}/_mapping/gene" 
+curl -XPUT -d @${dir}/../resources/gene_mapping.json "${url}/_mapping/gene" 
 echo
