@@ -14,10 +14,13 @@ repositories {
 }
 
 dependencies {
-	compile 'org.elasticsearch:elasticsearch:2.0.2'
+	compile 'org.elasticsearch:elasticsearch:2.2.0'
 	compile 'com.beust:jcommander:1.48'
 	compile 'org.apache.commons:commons-lang3:3.4'
 	compile 'org.slf4j:slf4j-log4j12:1.7.12'
+	testCompile 'com.fasterxml.jackson.core:jackson-core:2.7.2'
+	testCompile 'com.fasterxml.jackson.core:jackson-databind:2.7.2'
+	testCompile 'commons-io:commons-io:2.4'
 }
 	
 test {	
