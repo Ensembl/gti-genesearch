@@ -1,9 +1,12 @@
 package org.ensembl.genesearch;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import org.apache.commons.lang3.StringUtils;
 
 public interface GeneSearch {
 
@@ -55,6 +58,18 @@ public interface GeneSearch {
 
 		public GeneQuery[] getSubQueries() {
 			return subQueries;
+		}
+
+		public String toString() {
+			if (type == GeneQueryType.NESTED) {
+				return StringUtils.join(
+						Arrays.asList(this.type, this.fieldName,
+								Arrays.asList(this.subQueries)), ":");
+			} else {
+				return StringUtils.join(
+						Arrays.asList(this.type, this.fieldName,
+								Arrays.asList(this.values)), ":");
+			}
 		}
 
 	}
