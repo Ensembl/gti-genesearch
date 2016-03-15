@@ -39,17 +39,18 @@ public class DefaultQueryHandler implements QueryHandler {
 			Object value = query.getValue();
 			Class<? extends Object> clazz = value.getClass();
 			if (Map.class.isAssignableFrom(clazz)) {
-				queries.addAll(parseQuery((Map<String, Object>) value));
+				List<GeneQuery> subQs = parseQuery((Map<String, Object>) value);
+				queries.add(new GeneQuery(GeneQueryType.NESTED, key, subQs
+						.toArray(new GeneQuery[subQs.size()])));
 			} else {
 				if (List.class.isAssignableFrom(clazz)) {
 					List<String> vals = ((List<Object>) value).stream()
 							.map(o -> String.valueOf(o))
 							.collect(Collectors.<String> toList());
-					queries.add(new GeneQuery(GeneQueryType.TERM, key,
-							vals));
+					queries.add(new GeneQuery(GeneQueryType.TERM, key, vals));
 				} else {
-					queries.add(new GeneQuery(GeneQueryType.TERM, key,
-							String.valueOf(value)));
+					queries.add(new GeneQuery(GeneQueryType.TERM, key, String
+							.valueOf(value)));
 				}
 			}
 		}
