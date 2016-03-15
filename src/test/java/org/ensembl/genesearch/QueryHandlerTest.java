@@ -23,4 +23,32 @@ public class QueryHandlerTest {
 		assertEquals("Query value", "value", q.get(0).getValues()[0]);
 	}
 
+	@Test
+	public void testSimpleMultiple() {
+		QueryHandler handler = new DefaultQueryHandler();
+		List<GeneQuery> q = handler.parseQuery("{\"key\":[\"1\",\"2\"]}");
+		assertEquals("Single query", 1, q.size());
+		assertEquals("Query type", GeneQueryType.TERM, q.get(0).getType());
+		assertEquals("Query field", "key", q.get(0).getFieldName());
+		assertEquals("Query value size", 2, q.get(0).getValues().length);
+		assertEquals("Query value", "1", q.get(0).getValues()[0]);
+		assertEquals("Query value", "2", q.get(0).getValues()[1]);
+	}
+	
+	@Test
+	public void testDouble() {
+		QueryHandler handler = new DefaultQueryHandler();
+		List<GeneQuery> q = handler.parseQuery("{\"key1\":\"1\",\"key2\":\"2\"}");
+		System.out.println(q);
+		assertEquals("Double query", 2, q.size());
+		assertEquals("Query type", GeneQueryType.TERM, q.get(0).getType());
+		assertEquals("Query field", "key1", q.get(0).getFieldName());
+		assertEquals("Query value size", 1, q.get(0).getValues().length);
+		assertEquals("Query value", "1", q.get(0).getValues()[0]);
+		assertEquals("Query type", GeneQueryType.TERM, q.get(1).getType());
+		assertEquals("Query field", "key2", q.get(1).getFieldName());
+		assertEquals("Query value size", 1, q.get(1).getValues().length);
+		assertEquals("Query value", "2", q.get(1).getValues()[0]);
+	}
+
 }
