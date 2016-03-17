@@ -15,26 +15,66 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClientBuilder {
+	
+	public static class ClientBuilderException extends RuntimeException {
+		
+		private static final long serialVersionUID = 1L;
 
-	private final static Logger log = LoggerFactory
+		public ClientBuilderException(String message, Throwable cause) {
+			super(message, cause);
+		}
+
+		public ClientBuilderException(String message) {
+			super(message);
+		}
+
+		public ClientBuilderException(Throwable cause) {
+			super(cause);
+		}
+		
+	}
+
+	
+	private static final Logger log = LoggerFactory
 			.getLogger(ClientBuilder.class);
+	
+	private ClientBuilder() {
+	}
 
 	public static Client buildClient(ClientParams params) {
 		Client client = null;
-		if (!isEmpty(params.hostName)) {
-			client = buildClient(params.clusterName, params.hostName,
-					params.port);
+		if (params.joinCluster) {
+			client = buildClusterClient(params.clusterName, params.hostName);
 		} else if (!isEmpty(params.clusterName)) {
-			client = buildClient(params.clusterName);
+			client = buildTransportClient(params.clusterName, params.hostName,
+					params.port);			
 		}
 		return client;
 	}
 
-	public static Client buildClient(String clusterName, String hostName,
+	public static Client buildClusterClient(String clusterName, String hostName) {
+		// on startup
+		log.info("Joining cluster " + clusterName);
+
+	      Settings settings = Settings.builder()
+	        .put("discovery.zen.ping.multicast.enabled", "false")
+	        .put("discovery.zen.ping.unicast.hosts", hostName)
+	        .put("path.home","/")
+	        .build();
+		Node node = nodeBuilder().data(false).client(true).clusterName(clusterName).settings(settings).build().start();
+		// close the node when we're shutdown
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> 
+			node.close()
+		));
+		return node.client();
+
+	}
+
+	public static Client buildTransportClient(String clusterName, String hostName,
 			int port) {
 		Settings settings = Settings.settingsBuilder()
 				.put("cluster.name", clusterName).build();
-		log.info("Connecting to " + hostName);
+		log.info("Connecting to " + hostName + ":" + port);
 		try {
 			return TransportClient
 					.builder()
@@ -44,20 +84,8 @@ public class ClientBuilder {
 							new InetSocketTransportAddress(InetAddress
 									.getByName(hostName), port));
 		} catch (UnknownHostException e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new ClientBuilderException(e.getMessage(), e);
 		}
-
-	}
-
-	public static Client buildClient(String clusterName) {
-		// on startup
-		log.info("Joining cluster " + clusterName);
-		Node node = nodeBuilder().clusterName(clusterName).node();
-		// close the node when we're shutdown
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			node.close();
-		}));
-		return node.client();
 
 	}
 
