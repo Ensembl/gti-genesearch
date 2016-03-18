@@ -4,8 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.ensembl.genesearch.GeneSearch.GeneQuery;
-import org.ensembl.genesearch.GeneSearch.GeneQuery.GeneQueryType;
+import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
 import org.junit.Test;

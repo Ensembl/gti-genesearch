@@ -8,8 +8,10 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.elasticsearch.index.query.QueryBuilder;
-import org.ensembl.genesearch.GeneSearch.GeneQuery;
-import org.ensembl.genesearch.GeneSearch.GeneQuery.GeneQueryType;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
+import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.impl.ESGeneSearchBuilder;
 import org.junit.Test;
 
@@ -83,6 +85,24 @@ public class ESGeneSearchBuilderTest {
 				+ "{query={term={transcripts.translations.id=DDB0231518}}, "
 				+ "path=transcripts.translations}}, path=transcripts}}", obj);
 
+	}
+	
+	@Test
+	public void testSimpleFacet() {
+		AbstractAggregationBuilder buildAggregation = ESGeneSearchBuilder.buildAggregation("GO");
+		assertEquals("Class check", TermsBuilder.class, buildAggregation.getClass());
+	}
+
+	@Test
+	public void testNestedFacet() {
+		AbstractAggregationBuilder buildAggregation = ESGeneSearchBuilder.buildAggregation("homologues.genome");
+		assertEquals("Class check", NestedBuilder.class, buildAggregation.getClass());
+	}
+	
+	@Test
+	public void testDoubleNestedFacet() {
+		AbstractAggregationBuilder buildAggregation = ESGeneSearchBuilder.buildAggregation("homologues.genome.banana");
+		assertEquals("Class check", NestedBuilder.class, buildAggregation.getClass());
 	}
 
 	protected Map<String, Object> jsonToMap(String json) {
