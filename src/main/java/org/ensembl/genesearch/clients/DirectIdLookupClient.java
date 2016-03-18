@@ -1,14 +1,12 @@
 package org.ensembl.genesearch.clients;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
@@ -19,13 +17,9 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 import org.slf4j.Logger;
@@ -68,7 +62,10 @@ public class DirectIdLookupClient {
 
 	}
 
-	private final static String INDEX = "genes";
+	private static final String INDEX = "genes";
+	
+	private DirectIdLookupClient() {
+	}
 
 	public static void main(String[] args) throws InterruptedException,
 			IOException {
@@ -85,13 +82,7 @@ public class DirectIdLookupClient {
 			System.exit(1);
 		}
 
-		// do query stuff
-		if (client == null) {
-			jc.usage();
-			System.exit(1);
-		}
-
-		Writer out = null;
+		Writer out;
 		if (!isEmpty(params.outFile)) {
 			log.info("Writing output to " + params.outFile);
 			out = new FileWriter(new File(params.outFile));
@@ -102,9 +93,9 @@ public class DirectIdLookupClient {
 		String[] fields = params.resultField
 				.toArray(new String[params.resultField.size()]);
 
-		QueryBuilder query = null;
-		if (params.queryIds != null && params.queryIds.size() > 0) {
-			if (params.queryField.equals("_id")) {
+		QueryBuilder query;
+		if (params.queryIds != null && params.queryIds.isEmpty()) {
+			if ("_id".equals(params.queryField)) {
 				query = QueryBuilders.idsQuery("gene").addIds(params.queryIds);
 			} else {
 				query = QueryBuilders.termsQuery(params.queryField,
@@ -113,7 +104,7 @@ public class DirectIdLookupClient {
 		} else if (!isEmpty(params.queryFile)) {
 			List<String> ids = Files.lines(new File(params.queryFile).toPath())
 					.collect(Collectors.toList());
-			if (params.queryField.equals("_id")) {
+			if ("_id".equals(params.queryField)) {
 				query = QueryBuilders.idsQuery("gene").addIds(ids);
 			} else {
 				query = QueryBuilders.termsQuery(params.queryField, ids);
@@ -132,34 +123,7 @@ public class DirectIdLookupClient {
 		log.info("Retrieved " + response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
-		// Scroll until no hits are returned
-		while (true) {
-
-			for (SearchHit hit : response.getHits().getHits()) {
-				if (params.source) {
-					out.write(hit.getSourceAsString());
-				} else {
-					out.write(hit.getId());
-					for (String fieldName : params.resultField) {
-						SearchHitField field = hit.field(fieldName);
-						String val = null;
-						if (field != null && field.getValues() != null) {
-							val = StringUtils.join(field.getValues().toArray(),
-									",");
-						}
-						out.write("\t" + val);
-					}
-					out.write("\n");
-				}
-			}
-			// next scroll response
-			response = client.prepareSearchScroll(response.getScrollId())
-					.setScroll(new TimeValue(60000)).execute().actionGet();
-			// Break condition: No hits are returned
-			if (response.getHits().getHits().length == 0) {
-				break;
-			}
-		}
+		retrieveAllHits(params, client, out, response);
 		log.info("Completed retrieval");
 		out.flush();
 		out.close();
@@ -167,5 +131,48 @@ public class DirectIdLookupClient {
 		log.info("Closing client");
 		client.close();
 
+	}
+
+	protected static SearchResponse retrieveAllHits(Params params, Client client,
+			Writer out, SearchResponse response) throws IOException {
+		// Scroll until no hits are returned
+		SearchResponse currResponse = response;
+		while (true) {
+			retrieveHits(params, out, currResponse);
+			// next scroll response
+			currResponse = client.prepareSearchScroll(response.getScrollId())
+					.setScroll(new TimeValue(60000)).execute().actionGet();
+			// Break condition: No hits are returned
+			if (response.getHits().getHits().length == 0) {
+				break;
+			}
+		}
+		return response;
+	}
+
+	protected static void retrieveHits(Params params, Writer out,
+			SearchResponse response) throws IOException {
+		for (SearchHit hit : response.getHits().getHits()) {
+			if (params.source) {
+				out.write(hit.getSourceAsString());
+			} else {
+				writeFields(params, out, hit);
+			}
+		}
+	}
+
+	protected static void writeFields(Params params, Writer out, SearchHit hit)
+			throws IOException {
+		out.write(hit.getId());
+		for (String fieldName : params.resultField) {
+			SearchHitField field = hit.field(fieldName);
+			String val = null;
+			if (field != null && field.getValues() != null) {
+				val = StringUtils.join(field.getValues().toArray(),
+						",");
+			}
+			out.write("\t" + val);
+		}
+		out.write("\n");
 	}
 }

@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.ensembl.genesearch.GeneSearch.GeneQuery;
-import org.ensembl.genesearch.GeneSearch.GeneQuery.GeneQueryType;
+import org.ensembl.genesearch.GeneQuery;
+import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

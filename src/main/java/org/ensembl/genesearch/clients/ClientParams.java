@@ -12,6 +12,9 @@ public class ClientParams {
 
 	@Parameter(names = "-port", description = "Port to query")
 	protected int port = 9300;
+	
+	@Parameter(names = "-join_cluster", description = "Whether to join cluster")
+	protected boolean joinCluster = false;	
 
 	@Parameter(names = "-help", help = true)
 	protected boolean help;

@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.client.Client;
+import org.ensembl.genesearch.GeneQuery;
+import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.GeneSearch;
-import org.ensembl.genesearch.GeneSearch.GeneQuery;
-import org.ensembl.genesearch.GeneSearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +106,7 @@ public class IdLookupClient {
 	}
 
 	protected static Writer getWriter(Params params) throws IOException {
-		Writer out = null;
+		Writer out;
 		if (!isEmpty(params.outFile)) {
 			log.info("Writing output to " + params.outFile);
 			out = new FileWriter(new File(params.outFile));
