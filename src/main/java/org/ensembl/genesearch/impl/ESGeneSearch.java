@@ -176,7 +176,6 @@ public class ESGeneSearch implements GeneSearch {
 	protected Map<String, Object> processHit(SearchHit hit) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("id", hit.getId());
-		System.out.println(hit.getSource());
 		map.putAll(hit.getSource());
 		hit.getFields();
 		return map;
