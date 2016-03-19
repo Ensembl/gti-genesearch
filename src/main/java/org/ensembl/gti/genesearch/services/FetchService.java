@@ -41,11 +41,11 @@ public class FetchService {
 
 	final Logger log = LoggerFactory.getLogger(FetchService.class);
 	private final ESGeneSearch search;
-	//@Value("#{es_host}")
+	@Value("${es.host}")
 	private String hostName = "127.0.0.1";
-	//@Value("#{es_cluster}")
+	@Value("${es.cluster}")
 	private String clusterName = "genesearch";
-	//@Value("#{es_port}")
+	@Value("${es.port}")
 	private int port = 9300;
 
 	public FetchService() {

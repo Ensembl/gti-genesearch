@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.BeanParam;
@@ -16,13 +17,16 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.GeneQuery;
+import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.GeneSearch.QuerySort;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.clients.ClientBuilder;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
+import org.ensembl.gti.genesearch.services.FetchService.QueryParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,7 +34,7 @@ import org.springframework.stereotype.Component;
 public class QueryService {
 
 	public static class QueryParams {
-
+		
 		@QueryParam("query")
 		@DefaultValue("_id")
 		private String queryString;
@@ -59,11 +63,11 @@ public class QueryService {
 
 	final Logger log = LoggerFactory.getLogger(QueryService.class);
 	private final ESGeneSearch search;
-	// @Value("#{es_host}")
+	@Value("${es.host}")
 	private String hostName = "127.0.0.1";
-	// @Value("#{es_cluster}")
+	@Value("${es.cluster}")
 	private String clusterName = "genesearch";
-	// @Value("#{es_port}")
+	@Value("${es.port}")
 	private int port = 9300;
 
 	public QueryService() {
@@ -74,6 +78,7 @@ public class QueryService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public QueryResult query(@BeanParam QueryParams params) {
+
 		log.info("query:|" + params.queryString + "|");
 		log.info("fields:|" + params.fields + "|");
 		log.info("facets:|" + params.facets + "|");
@@ -93,11 +98,11 @@ public class QueryService {
 	}
 
 	private static List<String> stringToList(String s) {
-		if(StringUtils.isEmpty(s)) {
+		if (StringUtils.isEmpty(s)) {
 			return Collections.EMPTY_LIST;
 		} else {
-		return Arrays.asList(s.split(","));
+			return Arrays.asList(s.split(","));
 		}
-		}
+	}
 
 }
