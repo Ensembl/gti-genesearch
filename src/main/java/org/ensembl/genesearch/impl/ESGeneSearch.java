@@ -3,6 +3,7 @@ package org.ensembl.genesearch.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,14 +11,15 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHitField;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
@@ -41,8 +43,8 @@ public class ESGeneSearch implements GeneSearch {
 
 	private static final int SCROLL_SIZE = 1000;
 	private static final int TIMEOUT = 600000;
-	public final static String DEFAULT_INDEX = "genes";
-	public final static String DEFAULT_TYPE = "gene";
+	public static final String DEFAULT_INDEX = "genes";
+	public static final String DEFAULT_TYPE = "gene";
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final Client client;
@@ -58,18 +60,19 @@ public class ESGeneSearch implements GeneSearch {
 	}
 
 	@Override
-	public List<Map<String, Object>> query(Collection<GeneQuery> queries,
-			String... fieldNames) {
+	public List<Map<String, Object>> fetch(Collection<GeneQuery> queries,
+			List<String> fieldNames, List<QuerySort> sorts) {
 		final List<Map<String, Object>> results = new ArrayList<>();
-		query(row -> {
+		fetch(row -> {
 			results.add(row);
-		}, queries, fieldNames);
+		}, queries, fieldNames, sorts);
 		return results;
 	}
 
 	@Override
-	public void query(Consumer<Map<String, Object>> consumer,
-			Collection<GeneQuery> queries, String... fieldNames) {
+	public void fetch(Consumer<Map<String, Object>> consumer,
+			Collection<GeneQuery> queries, List<String> fieldNames,
+			List<QuerySort> sorts) {
 
 		log.info("Building query");
 		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries
@@ -78,50 +81,56 @@ public class ESGeneSearch implements GeneSearch {
 		log.info("Starting query");
 		log.info(query.toString());
 
-		boolean source = fieldNames.length == 0;
 		SearchRequestBuilder request = client.prepareSearch(index)
-				.setQuery(query).setFetchSource(source).addFields(fieldNames)
-				.setSearchType(SearchType.SCAN)
-				.setScroll(new TimeValue(TIMEOUT)).setSize(SCROLL_SIZE);
+				.setQuery(query).setScroll(new TimeValue(TIMEOUT))
+				.setSize(SCROLL_SIZE);
+
+		if (fieldNames == null || fieldNames.isEmpty()) {
+			request.setFetchSource(true);
+		} else {
+			request.setFetchSource(
+					fieldNames.toArray(new String[fieldNames.size()]), null);
+		}
+
 		SearchResponse response = request.execute().actionGet();
 		log.info("Retrieved " + response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
+		response = processAllHits(consumer, response);
+		log.info("Retrieved all hits");
+
+	}
+
+	
+	/**
+	 * Process hits using scan/scroll
+	 * @param consumer
+	 * @param response
+	 * @return
+	 */
+	protected SearchResponse processAllHits(
+			Consumer<Map<String, Object>> consumer, SearchResponse response) {
 		// scroll until no hits are returned
 		while (true) {
-			processHits(consumer, source, response, fieldNames);
+			processHits(consumer, response);
 			response = client.prepareSearchScroll(response.getScrollId())
 					.setScroll(new TimeValue(60000)).execute().actionGet();
 			if (response.getHits().getHits().length == 0) {
 				break;
 			}
 		}
-		log.info("Retrieved all hits");
-
+		return response;
 	}
 
+	/**
+	 * Process hits using the specified consumer
+	 * @param consumer
+	 * @param response
+	 */
 	protected void processHits(Consumer<Map<String, Object>> consumer,
-			boolean source, SearchResponse response, String... fieldNames) {
-
+			SearchResponse response) {
 		for (SearchHit hit : response.getHits().getHits()) {
-			Map<String, Object> row = new HashMap<>();
-			row.put("_id", hit.getId());
-			if (source) {
-				row.put("source", hit.getSourceAsString());
-			} else {
-				for (String fieldName : fieldNames) {
-					SearchHitField field = hit.field(fieldName);
-					Object val = null;
-					if (field != null) {
-						val = field.getValues();
-						if (((List<?>) val).size() == 1) {
-							val = ((List<?>) val).get(0);
-						}
-					}
-					row.put(fieldName, val);
-				}
-			}
-			consumer.accept(row);
+			consumer.accept(processHit(hit));
 		}
 	}
 
@@ -213,4 +222,22 @@ public class ESGeneSearch implements GeneSearch {
 			log.warn("Cannot handle " + aggregation.getClass());
 		}
 	}
+
+	@Override
+	public List<Map<String, Object>> fetchByIds(String... ids) {
+		SearchRequestBuilder request = client.prepareSearch(index).setQuery(new IdsQueryBuilder().addIds(ids));
+		SearchResponse response = request.execute().actionGet();
+		return processResults(response);
+	}
+
+	@Override
+	public Map<String, Object> fetchById(String id) {
+		List<Map<String, Object>> genes = this.fetchByIds(id);
+		if (genes.isEmpty()) {
+			return Collections.EMPTY_MAP;
+		} else {
+			return genes.get(0);
+		}
+	}
+
 }

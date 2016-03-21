@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,7 +86,7 @@ public class IdLookupClient {
 		Collection<GeneQuery> queries = Arrays
 				.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.TERM,
 						params.queryField, ids) });
-		search.query(row -> {
+		search.fetch(row -> {
 			try {
 				out.write(StringUtils.join(row.values(), "\t"));
 				out.write('\n');
@@ -93,8 +94,7 @@ public class IdLookupClient {
 				throw new RuntimeException(e);
 			} finally {
 			}
-		}, queries, params.resultField.toArray(new String[params.resultField
-				.size()]));
+		}, queries, params.resultField, Collections.EMPTY_LIST);
 
 		log.info("Completed retrieval");
 		out.flush();
