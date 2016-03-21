@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 public class JerseyConfig extends ResourceConfig {
 	public JerseyConfig() {
 		register(HealthService.class);
-		register(FetchService.class);
 		register(QueryService.class);
+		register(FetchService.class);
+		register(GeneService.class);
 	}
 }
