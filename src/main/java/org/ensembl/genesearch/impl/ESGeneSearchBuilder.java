@@ -18,8 +18,12 @@ import org.slf4j.LoggerFactory;
 
 public class ESGeneSearchBuilder {
 
+	private static final String ID_FIELD = "_id";
 	private static final Logger log = LoggerFactory
 			.getLogger(ESGeneSearchBuilder.class);
+	
+	private ESGeneSearchBuilder() {
+	}
 
 	public static QueryBuilder buildQuery(GeneQuery... geneQs) {
 		return buildQueryWithParents(new ArrayList<String>(), geneQs);
@@ -30,30 +34,11 @@ public class ESGeneSearchBuilder {
 		log.trace("Parents " + parents);
 		if (geneQs.length == 1) {
 			GeneQuery geneQ = geneQs[0];
-			QueryBuilder query = null;
+			QueryBuilder query;
 			if (geneQ.getType().equals(GeneQueryType.NESTED)) {
-				log.trace("Nested " + geneQ.getFieldName());
-				QueryBuilder subQuery = buildQueryWithParents(
-						extendPath(parents, geneQ), geneQ.getSubQueries());
-				query = QueryBuilders.nestedQuery(
-						StringUtils.join(extendPath(parents, geneQ), '.'),
-						subQuery);
+				query = processNested(parents, geneQ);
 			} else {
-				log.trace("Single " + geneQ.getFieldName());
-				if (geneQ.getFieldName().equals("_id")) {
-					query = QueryBuilders.idsQuery("gene").addIds(
-							geneQ.getValues());
-				} else {
-					String path = StringUtils.join(extendPath(parents, geneQ),
-							'.');
-					if (geneQ.getValues().length == 1) {
-						query = QueryBuilders.termQuery(path,
-								geneQ.getValues()[0]);
-					} else {
-						query = QueryBuilders.termsQuery(path,
-								geneQ.getValues());
-					}
-				}
+				query = processSingle(parents, geneQ);
 			}
 			return query;
 		} else if (geneQs.length == 0) {
@@ -61,18 +46,51 @@ public class ESGeneSearchBuilder {
 			return QueryBuilders.matchAllQuery();
 		} else {
 			log.trace("Multiples");
-			BoolQueryBuilder query = null;
-			for (GeneQuery geneQ : geneQs) {
-				log.trace("Multiple " + geneQ.getFieldName());
-				QueryBuilder subQuery = buildQueryWithParents(parents, geneQ);
-				if (query == null) {
-					query = QueryBuilders.boolQuery().must(subQuery);
-				} else {
-					query = query.must(subQuery);
-				}
-			}
-			return query;
+			return processMultiple(parents, geneQs);
 		}
+	}
+
+	protected static BoolQueryBuilder processMultiple(List<String> parents,
+			GeneQuery... geneQs) {
+		BoolQueryBuilder query = null;
+		for (GeneQuery geneQ : geneQs) {
+			log.trace("Multiple " + geneQ.getFieldName());
+			QueryBuilder subQuery = buildQueryWithParents(parents, geneQ);
+			if (query == null) {
+				query = QueryBuilders.boolQuery().must(subQuery);
+			} else {
+				query = query.must(subQuery);
+			}
+		}
+		return query;
+	}
+
+	protected static QueryBuilder processSingle(List<String> parents,
+			GeneQuery geneQ) {
+		QueryBuilder query;
+		log.trace("Single " + geneQ.getFieldName());
+		if (ID_FIELD.equals(geneQ.getFieldName())) {
+			query = QueryBuilders.idsQuery("gene").addIds(geneQ.getValues());
+		} else {
+			String path = StringUtils.join(extendPath(parents, geneQ), '.');
+			if (geneQ.getValues().length == 1) {
+				query = QueryBuilders.termQuery(path, geneQ.getValues()[0]);
+			} else {
+				query = QueryBuilders.termsQuery(path, geneQ.getValues());
+			}
+		}
+		return query;
+	}
+
+	protected static QueryBuilder processNested(List<String> parents,
+			GeneQuery geneQ) {
+		QueryBuilder query;
+		log.trace("Nested " + geneQ.getFieldName());
+		QueryBuilder subQuery = buildQueryWithParents(
+				extendPath(parents, geneQ), geneQ.getSubQueries());
+		query = QueryBuilders.nestedQuery(
+				StringUtils.join(extendPath(parents, geneQ), '.'), subQuery);
+		return query;
 	}
 
 	protected static List<String> extendPath(List<String> parents,
