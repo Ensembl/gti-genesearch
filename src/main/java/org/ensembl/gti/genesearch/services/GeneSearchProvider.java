@@ -1,5 +1,6 @@
 package org.ensembl.gti.genesearch.services;
 
+import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.GeneSearch;
 import org.ensembl.genesearch.clients.ClientBuilder;
 import org.ensembl.genesearch.impl.ESGeneSearch;
@@ -12,21 +13,31 @@ import org.springframework.stereotype.Component;
 public class GeneSearchProvider {
 
 	final Logger log = LoggerFactory.getLogger(this.getClass());
-	private final GeneSearch search;
+	private GeneSearch search;
 	@Value("${es.host}")
-	private String hostName = "127.0.0.1";
+	private String hostName;
 	@Value("${es.cluster}")
-	private String clusterName = "genesearch";
+	private String clusterName;
 	@Value("${es.port}")
-	private int port = 9300;
+	private int port;
+	@Value("${es.node}")
+	private boolean node;
 
-	public GeneSearchProvider() {
-		search = new ESGeneSearch(ClientBuilder.buildTransportClient(
-				this.clusterName, this.hostName, this.port));
-	}
-	
 	public GeneSearch getGeneSearch() {
+		if(search==null) {
+			Client client;
+			if (node) {
+				log.info("Joining cluster "+this.clusterName+" via "+this.hostName );
+				client = ClientBuilder.buildClusterClient(this.clusterName,
+						this.hostName);
+			} else {
+				log.info("Connecting to cluster "+this.clusterName+" on "+this.hostName+":"+this.port );
+				client = ClientBuilder.buildTransportClient(this.clusterName,
+						this.hostName, this.port);
+			}
+			search = new ESGeneSearch(client);
+		}
 		return search;
 	}
-	
+
 }
