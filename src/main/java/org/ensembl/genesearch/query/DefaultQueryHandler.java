@@ -2,11 +2,13 @@ package org.ensembl.genesearch.query;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.GeneQuery;
 import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 
@@ -17,6 +19,9 @@ public class DefaultQueryHandler implements QueryHandler {
 
 	@Override
 	public List<GeneQuery> parseQuery(String json) {
+		if(StringUtils.isEmpty(json)) {
+			return Collections.emptyList();
+		}
 		try {
 			Map<String, Object> query = new ObjectMapper().readValue(json,
 					new TypeReference<Map<String, Object>>() {
