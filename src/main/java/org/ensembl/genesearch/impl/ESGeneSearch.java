@@ -9,16 +9,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -61,7 +61,7 @@ public class ESGeneSearch implements GeneSearch {
 
 	@Override
 	public List<Map<String, Object>> fetch(Collection<GeneQuery> queries,
-			List<String> fieldNames, List<QuerySort> sorts) {
+			List<String> fieldNames, List<String> sorts) {
 		final List<Map<String, Object>> results = new ArrayList<>();
 		fetch(row -> {
 			results.add(row);
@@ -72,7 +72,7 @@ public class ESGeneSearch implements GeneSearch {
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer,
 			Collection<GeneQuery> queries, List<String> fieldNames,
-			List<QuerySort> sorts) {
+			List<String> sorts) {
 
 		log.info("Building query");
 		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries
@@ -101,9 +101,9 @@ public class ESGeneSearch implements GeneSearch {
 
 	}
 
-	
 	/**
 	 * Process hits using scan/scroll
+	 * 
 	 * @param consumer
 	 * @param response
 	 * @return
@@ -124,6 +124,7 @@ public class ESGeneSearch implements GeneSearch {
 
 	/**
 	 * Process hits using the specified consumer
+	 * 
 	 * @param consumer
 	 * @param response
 	 */
@@ -137,7 +138,7 @@ public class ESGeneSearch implements GeneSearch {
 	@Override
 	public QueryResult query(Collection<GeneQuery> queries,
 			List<String> output, List<String> facets, int limit,
-			List<QuerySort> sorts) {
+			List<String> sorts) {
 		log.debug("Building query");
 		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries
 				.toArray(new GeneQuery[queries.size()]));
@@ -150,11 +151,11 @@ public class ESGeneSearch implements GeneSearch {
 				.setFetchSource(output.toArray(new String[output.size()]), null)
 				.setSize(limit);
 
-		for (QuerySort sort : sorts) {
-			log.info("Adding sort on " + sort.field);
-			request.addSort(SortBuilders.fieldSort(sort.field)
-					.order(SortOrder.valueOf(sort.direction.name()))
-					.missing("_last"));
+		for (String sortStr : sorts) {
+			Sort sort = new Sort(sortStr);
+			log.info("Adding sort on " + sort.name);
+			request.addSort(SortBuilders.fieldSort(sort.name)
+					.order(sort.direction).missing("_last"));
 		}
 
 		for (String facet : facets) {
@@ -223,9 +224,34 @@ public class ESGeneSearch implements GeneSearch {
 		}
 	}
 
+	/**
+	 * Helper to parse strings of the form +field, -field, field
+	 * 
+	 * @author dstaines
+	 *
+	 */
+	private final class Sort {
+		private final Pattern sortPattern = Pattern.compile("([+-])(.*)");
+		public final String name;
+		public final SortOrder direction;
+
+		public Sort(String str) {
+			Matcher m = sortPattern.matcher(str);
+			if (m.matches()) {
+				name = m.group(2);
+				direction = "+".equals(m.group(1)) ? SortOrder.ASC
+						: SortOrder.DESC;
+			} else {
+				name = str;
+				direction = SortOrder.ASC;
+			}
+		}
+	}
+
 	@Override
 	public List<Map<String, Object>> fetchByIds(String... ids) {
-		SearchRequestBuilder request = client.prepareSearch(index).setQuery(new IdsQueryBuilder().addIds(ids));
+		SearchRequestBuilder request = client.prepareSearch(index).setQuery(
+				new IdsQueryBuilder().addIds(ids));
 		SearchResponse response = request.execute().actionGet();
 		return processResults(response);
 	}

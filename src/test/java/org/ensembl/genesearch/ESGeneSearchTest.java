@@ -13,8 +13,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ensembl.genesearch.GeneQuery.GeneQueryType;
-import org.ensembl.genesearch.GeneSearch.QuerySort;
-import org.ensembl.genesearch.GeneSearch.QuerySort.SortDirection;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -44,7 +42,7 @@ public class ESGeneSearchTest {
 		log.info("Fetching all genes");
 		List<Map<String, Object>> ids = search.fetch(
 				new ArrayList<GeneQuery>(), Arrays.asList("_id"),
-				Collections.EMPTY_LIST);
+				Collections.emptyList());
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 598, ids.size());
 	}
@@ -58,7 +56,8 @@ public class ESGeneSearchTest {
 
 		List<Map<String, Object>> ids = search.fetch(Arrays
 				.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.NESTED,
-						"homologues", genome) }), Arrays.asList("_id"), Collections.EMPTY_LIST);
+						"homologues", genome) }), Arrays.asList("_id"),
+				Collections.emptyList());
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 79, ids.size());
 	}
@@ -75,7 +74,8 @@ public class ESGeneSearchTest {
 
 		List<Map<String, Object>> ids = search.fetch(Arrays
 				.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.NESTED,
-						"homologues", genome, orthology) }), Arrays.asList("_id"), Collections.EMPTY_LIST);
+						"homologues", genome, orthology) }), Arrays
+				.asList("_id"), Collections.emptyList());
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 63, ids.size());
 	}
@@ -90,7 +90,8 @@ public class ESGeneSearchTest {
 						new GeneQuery(GeneQueryType.TERM, "id", id)));
 
 		List<Map<String, Object>> ids = search.fetch(
-				Arrays.asList(new GeneQuery[] { tIdQuery }), Arrays.asList("_id"), Collections.EMPTY_LIST);
+				Arrays.asList(new GeneQuery[] { tIdQuery }),
+				Arrays.asList("_id"), Collections.emptyList());
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 1, ids.size());
 	}
@@ -99,9 +100,9 @@ public class ESGeneSearchTest {
 	@Test
 	public void querySimple() {
 		log.info("Querying for all genes");
-		QueryResult result = search.query(Collections.EMPTY_LIST,
-				Arrays.asList("id"), Collections.EMPTY_LIST, 5,
-				Collections.EMPTY_LIST);
+		QueryResult result = search.query(Collections.emptyList(),
+				Arrays.asList("id"), Collections.emptyList(), 5,
+				Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -113,9 +114,9 @@ public class ESGeneSearchTest {
 	@Test
 	public void queryFacet() {
 		log.info("Querying for all genes faceted on genome");
-		QueryResult result = search.query(Collections.EMPTY_LIST,
+		QueryResult result = search.query(Collections.emptyList(),
 				Arrays.asList("id"), Arrays.asList("genome"), 5,
-				Collections.EMPTY_LIST);
+				Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 1, result.getFacets().size());
@@ -127,11 +128,11 @@ public class ESGeneSearchTest {
 	}
 
 	@Test
-	public void querySort() {
+	public void querySortAsc() {
 		log.info("Querying for all genes sorted by name");
-		QueryResult result = search.query(Collections.EMPTY_LIST,
-				Arrays.asList("id", "name"), Collections.EMPTY_LIST, 5,
-				Arrays.asList(new QuerySort("name", SortDirection.ASC)));
+		QueryResult result = search.query(Collections.emptyList(),
+				Arrays.asList("id", "name"), Collections.emptyList(), 5,
+				Arrays.asList("+name"));
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -139,11 +140,25 @@ public class ESGeneSearchTest {
 				result.getResults().get(0).get("name"));
 	}
 
+	@Test
+	public void querySortDesc() {
+		log.info("Querying for all genes reverse sorted by name");
+		QueryResult result = search.query(Collections.emptyList(),
+				Arrays.asList("id", "name"), Collections.emptyList(), 5,
+				Arrays.asList("-name"));
+		assertEquals("Total hits", 598, result.getResultCount());
+		assertEquals("Fetched hits", 5, result.getResults().size());
+		assertEquals("Total facets", 0, result.getFacets().size());
+		// nulls are always last, so will be the last name, alphabetically
+		assertEquals("Name found", "tRNA",
+				result.getResults().get(0).get("name"));
+	}
+
 	public void querySource() {
 		log.info("Querying for all genes sorted by name");
-		QueryResult result = search.query(Collections.EMPTY_LIST,
+		QueryResult result = search.query(Collections.emptyList(),
 				Arrays.asList("id", "name", "homologues"),
-				Collections.EMPTY_LIST, 5, Collections.EMPTY_LIST);
+				Collections.emptyList(), 5, Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -152,29 +167,29 @@ public class ESGeneSearchTest {
 		assertTrue("Name found",
 				result.getResults().get(0).containsKey("homologues"));
 	}
-	
+
 	public void fetchGene() {
 		log.info("Fetching a single gene");
 		String id = "NEQ392";
 		Map<String, Object> gene = search.fetchById(id);
-		assertTrue("Gene is not null",gene!=null);
+		assertTrue("Gene is not null", gene != null);
 		assertEquals("ID correct", id, gene.get("id"));
 	}
-	
+
 	public void fetchGenes() {
 		log.info("Fetching list of genes");
 		String id1 = "NEQ392";
 		String id2 = "NEQ175";
 		String id3 = "NEQ225";
-		List<Map<String, Object>> genes = search.fetchByIds(id1,id2,id3);
-		assertTrue("Genes are not null",genes!=null);
+		List<Map<String, Object>> genes = search.fetchByIds(id1, id2, id3);
+		assertTrue("Genes are not null", genes != null);
 		assertEquals("3 genes found", 3, genes.size());
-		Set<String> ids = genes.stream().map(gene -> (String)gene.get("id")).collect(Collectors.toSet());
+		Set<String> ids = genes.stream().map(gene -> (String) gene.get("id"))
+				.collect(Collectors.toSet());
 		assertTrue("id1 found", ids.contains(id1));
 		assertTrue("id2 found", ids.contains(id2));
 		assertTrue("id3 found", ids.contains(id3));
 	}
-
 
 	@AfterClass
 	public static void tearDown() {

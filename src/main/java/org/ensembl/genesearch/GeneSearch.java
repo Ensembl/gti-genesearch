@@ -7,20 +7,6 @@ import java.util.function.Consumer;
 
 public interface GeneSearch {
 
-	public class QuerySort {
-		public static enum SortDirection {
-			ASC, DESC
-		};
-
-		public final String field;
-		public final SortDirection direction;
-
-		public QuerySort(String field, SortDirection direction) {
-			this.field = field;
-			this.direction = direction;
-		}
-	}
-
 	/**
 	 * Retrieve all results matching the supplied queries
 	 * 
@@ -32,7 +18,7 @@ public interface GeneSearch {
 	 * @return
 	 */
 	public List<Map<String, Object>> fetch(Collection<GeneQuery> queries,
-			List<String> fieldNames, List<QuerySort> sorts);
+			List<String> fieldNames, List<String> sorts);
 
 	/**
 	 * Retrieve all results matching the supplied queries and process with the
@@ -48,7 +34,7 @@ public interface GeneSearch {
 	 */
 	public void fetch(Consumer<Map<String, Object>> consumer,
 			Collection<GeneQuery> queries, List<String> fieldNames,
-			List<QuerySort> sorts);
+			List<String> sorts);
 	
 	/**
 	 * Retrieve genes with the supplied IDs
@@ -80,6 +66,6 @@ public interface GeneSearch {
 	 */
 	public QueryResult query(Collection<GeneQuery> queries,
 			List<String> output, List<String> facets, int limit,
-			List<QuerySort> sorts);
+			List<String> sorts);
 
 }

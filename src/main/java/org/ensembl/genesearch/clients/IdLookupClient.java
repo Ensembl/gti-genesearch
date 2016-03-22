@@ -94,7 +94,7 @@ public class IdLookupClient {
 				throw new RuntimeException(e);
 			} finally {
 			}
-		}, queries, params.resultField, Collections.EMPTY_LIST);
+		}, queries, params.resultField, Collections.emptyList());
 
 		log.info("Completed retrieval");
 		out.flush();
