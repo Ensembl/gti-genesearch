@@ -7,11 +7,12 @@ To build and run:
 ./gradlew compile
 java -jar build/libs/gti-genesearch-web-0.1.jar
 ```
+Note that this requires you to have previously checked out and installed `gti-genesearch`
 
 This will automatically connect to an elasticsearch cluster named genesearch on localhost:9300 as a transport client
 To override, use the following command line options:
-- to connect as a client node `-es.node=true`
-- to override the cluster name `-es.cluster=mycluster`
+- to connect as a client node `--es.node=true`
+- to override the cluster name `--es.cluster=mycluster`
 - to override the ES host `--es.host=127.0.0.1`
 - to override the ES port `--es.port=9300`
 
