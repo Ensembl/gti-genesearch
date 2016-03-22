@@ -48,7 +48,9 @@ dependencies {
     // end::actuator[]
     // tag::jersey[]
     compile("org.springframework.boot:spring-boot-starter-jersey")
+    compile("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider")
     // end::jersey[]
+    
     testCompile("junit:junit")
 }
 

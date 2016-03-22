@@ -1,6 +1,5 @@
 package org.ensembl.gti.genesearch.services;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,11 +23,12 @@ public class GeneService {
 
 	final Logger log = LoggerFactory.getLogger(GeneService.class);
 	protected final GeneSearch search;
+
 	@Autowired
 	public GeneService(GeneSearchProvider provider) {
 		this.search = provider.getGeneSearch();
 	}
-	
+
 	@Path("{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
