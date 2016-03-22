@@ -52,6 +52,8 @@ dependencies {
     // end::jersey[]
     
     testCompile("junit:junit")
+    testCompile("org.springframework:spring-test")
+    testCompile("org.springframework:spring-boot-test")
 }
 
 task wrapper(type: Wrapper) {
