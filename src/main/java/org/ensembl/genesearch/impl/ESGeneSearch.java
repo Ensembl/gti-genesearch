@@ -63,9 +63,7 @@ public class ESGeneSearch implements GeneSearch {
 	public List<Map<String, Object>> fetch(Collection<GeneQuery> queries,
 			List<String> fieldNames, List<String> sorts) {
 		final List<Map<String, Object>> results = new ArrayList<>();
-		fetch(row -> {
-			results.add(row);
-		}, queries, fieldNames, sorts);
+		fetch(row -> results.add(row), queries, fieldNames, sorts);
 		return results;
 	}
 
@@ -96,7 +94,7 @@ public class ESGeneSearch implements GeneSearch {
 		log.info("Retrieved " + response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
-		response = processAllHits(consumer, response);
+		processAllHits(consumer, response);
 		log.info("Retrieved all hits");
 
 	}
@@ -153,7 +151,7 @@ public class ESGeneSearch implements GeneSearch {
 
 		for (String sortStr : sorts) {
 			Sort sort = new Sort(sortStr);
-			log.info("Adding sort on " + sort.name);
+			log.info("Adding "+sort.direction+" sort on '" + sort.name+"'");
 			request.addSort(SortBuilders.fieldSort(sort.name)
 					.order(sort.direction).missing("_last"));
 		}
@@ -184,7 +182,7 @@ public class ESGeneSearch implements GeneSearch {
 	}
 
 	protected Map<String, Object> processHit(SearchHit hit) {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("id", hit.getId());
 		map.putAll(hit.getSource());
 		hit.getFields();
@@ -236,6 +234,8 @@ public class ESGeneSearch implements GeneSearch {
 		public final SortOrder direction;
 
 		public Sort(String str) {
+			// deal with URL encoding which treats + as a space
+			str = str.replaceFirst("^ ", "+");
 			Matcher m = sortPattern.matcher(str);
 			if (m.matches()) {
 				name = m.group(2);
@@ -260,7 +260,7 @@ public class ESGeneSearch implements GeneSearch {
 	public Map<String, Object> fetchById(String id) {
 		List<Map<String, Object>> genes = this.fetchByIds(id);
 		if (genes.isEmpty()) {
-			return Collections.EMPTY_MAP;
+			return Collections.emptyMap();
 		} else {
 			return genes.get(0);
 		}
