@@ -22,6 +22,12 @@ public class GeneSearchProvider {
 	private int port;
 	@Value("${es.node}")
 	private boolean node;
+	
+	public GeneSearchProvider() {
+	}
+	public GeneSearchProvider(GeneSearch search) {
+		this.search = search;
+	}
 
 	public GeneSearch getGeneSearch() {
 		if(search==null) {

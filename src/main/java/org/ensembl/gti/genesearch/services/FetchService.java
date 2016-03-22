@@ -40,7 +40,7 @@ public class FetchService {
 		return fetch(params);
 	}
 	
-	protected List<Map<String, Object>> fetch(FetchParams params) {
+	public List<Map<String, Object>> fetch(FetchParams params) {
 		log.info("fetch:" + params.toString());
 		return search.fetch(params.getQueries(), params.getFields(),
 				params.getSorts());
