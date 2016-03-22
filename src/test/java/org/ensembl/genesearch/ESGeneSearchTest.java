@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.impl.ESGeneSearch;
+import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package org.ensembl.genesearch;
+package org.ensembl.genesearch.test;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.ensembl.genesearch.ESGeneSearchTest;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 
+/**
+ * Utility to create and load a test server. Found in main to allow reuse in downstream projects
+ * @author dstaines
+ *
+ */
 public class ESTestServer {
 
 	private final Node node;
