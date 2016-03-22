@@ -97,7 +97,6 @@ public class ESGeneSearchTest {
 		assertEquals("Number of genes", 1, ids.size());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void querySimple() {
 		log.info("Querying for all genes");
@@ -175,6 +174,8 @@ public class ESGeneSearchTest {
 		Map<String, Object> gene = search.fetchById(id);
 		assertTrue("Gene is not null", gene != null);
 		assertEquals("ID correct", id, gene.get("id"));
+		assertTrue("Homologues not null", gene.containsKey("homologues"));
+		assertTrue("Transcripts not null", gene.containsKey("transcripts"));
 	}
 
 	public void fetchGenes() {
