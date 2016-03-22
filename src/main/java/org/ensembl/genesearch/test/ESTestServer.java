@@ -12,7 +12,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
-import org.ensembl.genesearch.ESGeneSearchTest;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,12 +96,12 @@ public class ESTestServer {
 	}
 
 	public static String readGzipResource(String name) throws IOException {
-		return IOUtils.toString(new GZIPInputStream(ESGeneSearchTest.class
+		return IOUtils.toString(new GZIPInputStream(ESTestServer.class
 				.getResourceAsStream(name)));
 	}
 
 	public static String readResource(String name) throws IOException {
-		return IOUtils.toString(ESGeneSearchTest.class
+		return IOUtils.toString(ESTestServer.class
 				.getResourceAsStream(name));
 	}
 
