@@ -83,12 +83,8 @@ public class ESGeneSearch implements GeneSearch {
 				.setQuery(query).setScroll(new TimeValue(TIMEOUT))
 				.setSize(SCROLL_SIZE);
 
-		if (fieldNames == null || fieldNames.isEmpty()) {
-			request.setFetchSource(true);
-		} else {
-			request.setFetchSource(
-					fieldNames.toArray(new String[fieldNames.size()]), null);
-		}
+		request.setFetchSource(
+				fieldNames.toArray(new String[fieldNames.size()]), null);
 
 		SearchResponse response = request.execute().actionGet();
 		log.info("Retrieved " + response.getHits().totalHits() + " in "
@@ -151,7 +147,8 @@ public class ESGeneSearch implements GeneSearch {
 
 		for (String sortStr : sorts) {
 			Sort sort = new Sort(sortStr);
-			log.info("Adding "+sort.direction+" sort on '" + sort.name+"'");
+			log.info("Adding " + sort.direction + " sort on '" + sort.name
+					+ "'");
 			request.addSort(SortBuilders.fieldSort(sort.name)
 					.order(sort.direction).missing("_last"));
 		}
