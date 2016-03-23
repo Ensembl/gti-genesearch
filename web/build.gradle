@@ -35,7 +35,7 @@ configurations {
 }
 
 dependencies {
-    compile 'org.ensembl.gti:gti-genesearch:0.2'
+    compile project (':search')
     // explicitly force ES to avoid weird transitive behaviour
     compile 'org.elasticsearch:elasticsearch:2.2.0' 
     // tag::jetty[]
@@ -55,5 +55,5 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    gradleVersion = '2.12'
 }
