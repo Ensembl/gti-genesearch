@@ -1,0 +1,59 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.3.RELEASE")
+    }
+}
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.name == 'log4j') {
+            details.useTarget 'log4j:log4j:1.2.+'
+        }
+    }
+}
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+version =  '0.1'
+group = "org.ensembl.gti"
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    jcenter()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+configurations {
+  compile.exclude group: "org.slf4j", module: "slf4j-log4j12"
+}
+
+dependencies {
+    compile 'org.ensembl.gti:gti-genesearch:0.2'
+    // explicitly force ES to avoid weird transitive behaviour
+    compile 'org.elasticsearch:elasticsearch:2.2.0' 
+    // tag::jetty[]
+    compile("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    compile("org.springframework.boot:spring-boot-starter-jetty:1.3.3.RELEASE")
+    // end::jetty[]
+    // tag::actuator[]
+    compile("org.springframework.boot:spring-boot-starter-actuator:1.3.3.RELEASE")
+    // end::actuator[]
+    // tag::jersey[]
+    compile("org.springframework.boot:spring-boot-starter-jersey:1.3.3.RELEASE")
+    compile("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider")
+    // end::jersey[]
+    testCompile('org.springframework.boot:spring-boot-starter-test:1.3.3.RELEASE')
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
