@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class GeneSearchProvider {
 
 	final Logger log = LoggerFactory.getLogger(this.getClass());
-	private GeneSearch search;
+	protected GeneSearch search;
 	@Value("${es.host}")
 	private String hostName;
 	@Value("${es.cluster}")
@@ -44,6 +44,10 @@ public class GeneSearchProvider {
 			search = new ESGeneSearch(client);
 		}
 		return search;
+	}
+	
+	public void setGeneSearch(GeneSearch search) {
+		this.search = search;
 	}
 
 }
