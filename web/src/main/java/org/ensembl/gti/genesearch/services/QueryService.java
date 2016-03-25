@@ -14,17 +14,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @Path("/query")
 public class QueryService {
 
 	final Logger log = LoggerFactory.getLogger(QueryService.class);
-	protected final GeneSearch search;
+	protected final GeneSearchProvider provider;
 
 	@Autowired
 	public QueryService(GeneSearchProvider provider) {
-		this.search = provider.getGeneSearch();
+		this.provider = provider;
 	}
 
 	@GET
@@ -37,14 +38,14 @@ public class QueryService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public QueryResult post(QueryParams params) {
+	public QueryResult post(@RequestBody QueryParams params) {
 		log.info("Post to query");
 		return query(params);
 	}
 
 	public QueryResult query(QueryParams params) {
 		log.info("query:" + params);
-		return search.query(params.getQueries(), params.getFields(),
+		return provider.getGeneSearch().query(params.getQueries(), params.getFields(),
 				params.getFacets(), params.getLimit(), params.getSorts());
 	}
 
