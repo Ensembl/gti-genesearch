@@ -73,7 +73,7 @@ public class ClientBuilder {
 	public static Client buildTransportClient(String clusterName, String hostName,
 			int port) {
 		Settings settings = Settings.settingsBuilder()
-				.put("cluster.name", clusterName).build();
+				.put("cluster.name", clusterName).put("client.transport.sniff", true).build();
 		log.info("Connecting to " + hostName + ":" + port);
 		try {
 			return TransportClient
