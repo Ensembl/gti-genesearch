@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
@@ -73,7 +74,16 @@ public class ESGeneSearchBuilder {
 			query = QueryBuilders.idsQuery("gene").addIds(geneQ.getValues());
 		} else {
 			String path = StringUtils.join(extendPath(parents, geneQ), '.');
-			if (geneQ.getValues().length == 1) {
+			if(geneQ.getType() == GeneQueryType.RANGE) {
+				RangeQueryBuilder q = QueryBuilders.rangeQuery(path);
+				if(geneQ.getStart()!=null) {
+					q.from(geneQ.getStart());
+				}
+				if(geneQ.getEnd()!=null) {
+					q.to(geneQ.getEnd());
+				}
+				query = q;
+			} else if (geneQ.getValues().length == 1) {
 				query = QueryBuilders.termQuery(path, geneQ.getValues()[0]);
 			} else {
 				query = QueryBuilders.termsQuery(path, geneQ.getValues());
