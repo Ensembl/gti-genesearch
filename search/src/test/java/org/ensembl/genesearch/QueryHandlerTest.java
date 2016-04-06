@@ -76,7 +76,7 @@ public class QueryHandlerTest {
 	public void testLocation() {
 		QueryHandler handler = new DefaultQueryHandler();
 		List<GeneQuery> qs = handler
-				.parseQuery("{\"location\":{\"seq_region\":\"chr1\",\"start\":\"2\",\"end\":\"10\"}}");
+				.parseQuery("{\"location\":{\"seq_region_name\":\"chr1\",\"start\":\"2\",\"end\":\"10\"}}");
 		System.out.println(qs);
 		assertEquals("Multi query", 3, qs.size());
 		assertEquals("seq_region type", GeneQueryType.TERM, qs.get(0).getType());
@@ -91,7 +91,7 @@ public class QueryHandlerTest {
 	public void testLocationStranded() {
 		QueryHandler handler = new DefaultQueryHandler();
 		List<GeneQuery> qs = handler
-				.parseQuery("{\"location\":{\"seq_region\":\"chr1\",\"start\":\"2\",\"end\":\"10\",\"strand\":\"1\"}}");
+				.parseQuery("{\"location\":{\"seq_region_name\":\"chr1\",\"start\":\"2\",\"end\":\"10\",\"strand\":\"1\"}}");
 		System.out.println(qs);
 		assertEquals("Multi query", 4, qs.size());
 		assertEquals("seq_region type", GeneQueryType.TERM, qs.get(0).getType());
@@ -107,7 +107,7 @@ public class QueryHandlerTest {
 	@Test
 	public void testLocationStart() {
 		QueryHandler handler = new DefaultQueryHandler();
-		List<GeneQuery> qs = handler.parseQuery("{\"location\":{\"seq_region\":\"chr1\",\"start\":\"2\"}}");
+		List<GeneQuery> qs = handler.parseQuery("{\"location\":{\"seq_region_name\":\"chr1\",\"start\":\"2\"}}");
 		System.out.println(qs);
 		assertEquals("Multi query", 2, qs.size());
 		assertEquals("seq_region type", GeneQueryType.TERM, qs.get(0).getType());
@@ -119,7 +119,7 @@ public class QueryHandlerTest {
 	@Test
 	public void testLocationEnd() {
 		QueryHandler handler = new DefaultQueryHandler();
-		List<GeneQuery> qs = handler.parseQuery("{\"location\":{\"seq_region\":\"chr1\",\"end\":\"10\"}}");
+		List<GeneQuery> qs = handler.parseQuery("{\"location\":{\"seq_region_name\":\"chr1\",\"end\":\"10\"}}");
 		System.out.println(qs);
 		assertEquals("Multi query", 2, qs.size());
 		assertEquals("seq_region type", GeneQueryType.TERM, qs.get(0).getType());
