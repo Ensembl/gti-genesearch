@@ -37,8 +37,7 @@ public class QueryHandlerTest {
 	@Test
 	public void testDouble() {
 		QueryHandler handler = new DefaultQueryHandler();
-		List<GeneQuery> q = handler
-				.parseQuery("{\"key1\":\"1\",\"key2\":\"2\"}");
+		List<GeneQuery> q = handler.parseQuery("{\"key1\":\"1\",\"key2\":\"2\"}");
 		System.out.println(q);
 		assertEquals("Double query", 2, q.size());
 		assertEquals("Query type", GeneQueryType.TERM, q.get(0).getType());
@@ -54,8 +53,7 @@ public class QueryHandlerTest {
 	@Test
 	public void testNested() {
 		QueryHandler handler = new DefaultQueryHandler();
-		List<GeneQuery> qs = handler
-				.parseQuery("{\"key1\":{\"a\":\"1\",\"b\":\"2\"}}");
+		List<GeneQuery> qs = handler.parseQuery("{\"key1\":{\"a\":\"1\",\"b\":\"2\"}}");
 		System.out.println(qs);
 		assertEquals("Single query", 1, qs.size());
 		GeneQuery q = qs.get(0);
@@ -74,4 +72,59 @@ public class QueryHandlerTest {
 		assertEquals("Query value", "2", subQ2.getValues()[0]);
 	}
 
+	@Test
+	public void testLocation() {
+		QueryHandler handler = new DefaultQueryHandler();
+		List<GeneQuery> qs = handler
+				.parseQuery("{\"location\":{\"seq_region\":\"chr1\",\"start\":\"2\",\"end\":\"10\"}}");
+		System.out.println(qs);
+		assertEquals("Multi query", 3, qs.size());
+		assertEquals("seq_region type", GeneQueryType.TERM, qs.get(0).getType());
+		assertEquals("seq_region name", "chr1", qs.get(0).getValues()[0]);
+		assertEquals("start name", GeneQueryType.RANGE, qs.get(1).getType());
+		assertEquals("start type", new Long(2), qs.get(1).getStart());
+		assertEquals("end name", GeneQueryType.RANGE, qs.get(2).getType());
+		assertEquals("end type", new Long(10), qs.get(2).getEnd());
+	}
+
+	@Test
+	public void testLocationStranded() {
+		QueryHandler handler = new DefaultQueryHandler();
+		List<GeneQuery> qs = handler
+				.parseQuery("{\"location\":{\"seq_region\":\"chr1\",\"start\":\"2\",\"end\":\"10\",\"strand\":\"1\"}}");
+		System.out.println(qs);
+		assertEquals("Multi query", 4, qs.size());
+		assertEquals("seq_region type", GeneQueryType.TERM, qs.get(0).getType());
+		assertEquals("seq_region name", "chr1", qs.get(0).getValues()[0]);
+		assertEquals("start name", GeneQueryType.RANGE, qs.get(1).getType());
+		assertEquals("start type", new Long(2), qs.get(1).getStart());
+		assertEquals("end name", GeneQueryType.RANGE, qs.get(2).getType());
+		assertEquals("end type", new Long(10), qs.get(2).getEnd());
+		assertEquals("end name", GeneQueryType.TERM, qs.get(3).getType());
+		assertEquals("end type", "1", qs.get(3).getValues()[0]);
+	}
+
+	@Test
+	public void testLocationStart() {
+		QueryHandler handler = new DefaultQueryHandler();
+		List<GeneQuery> qs = handler.parseQuery("{\"location\":{\"seq_region\":\"chr1\",\"start\":\"2\"}}");
+		System.out.println(qs);
+		assertEquals("Multi query", 2, qs.size());
+		assertEquals("seq_region type", GeneQueryType.TERM, qs.get(0).getType());
+		assertEquals("seq_region name", "chr1", qs.get(0).getValues()[0]);
+		assertEquals("start name", GeneQueryType.RANGE, qs.get(1).getType());
+		assertEquals("start type", new Long(2), qs.get(1).getStart());
+	}
+
+	@Test
+	public void testLocationEnd() {
+		QueryHandler handler = new DefaultQueryHandler();
+		List<GeneQuery> qs = handler.parseQuery("{\"location\":{\"seq_region\":\"chr1\",\"end\":\"10\"}}");
+		System.out.println(qs);
+		assertEquals("Multi query", 2, qs.size());
+		assertEquals("seq_region type", GeneQueryType.TERM, qs.get(0).getType());
+		assertEquals("seq_region name", "chr1", qs.get(0).getValues()[0]);
+		assertEquals("end name", GeneQueryType.RANGE, qs.get(1).getType());
+		assertEquals("end type", new Long(10), qs.get(1).getEnd());
+	}
 }
