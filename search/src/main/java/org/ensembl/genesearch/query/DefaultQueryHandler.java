@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DefaultQueryHandler implements QueryHandler {
 
-	private static final String SEQ_REGION = "seq_region";
+	private static final String SEQ_REGION = "seq_region_name";
 	private static final String STRAND = "strand";
 	private static final String START = "start";
 	private static final String END = "end";
@@ -68,7 +68,7 @@ public class DefaultQueryHandler implements QueryHandler {
 	 * Parse a location hash
 	 * 
 	 * @param value
-	 *            hash to parse e.g. {"seq_region":"1", "start":"1",
+	 *            hash to parse e.g. {"seq_region_name":"1", "start":"1",
 	 *            "end":"1000", "strand":"1"}
 	 * @return list of gene queries corresponding to that location
 	 */
