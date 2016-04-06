@@ -12,8 +12,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.elasticsearch.index.query.QueryBuilder;
 import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.impl.ESGeneSearch;
+import org.ensembl.genesearch.impl.ESGeneSearchBuilder;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -95,6 +97,23 @@ public class ESGeneSearchTest {
 				Arrays.asList("_id"), Collections.emptyList());
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 1, ids.size());
+	}
+	
+	@Test
+	public void fetchRange() {
+		log.info("Fetching for Chromosome:30000-50000");
+		GeneQuery seqRegion = new GeneQuery(GeneQueryType.TERM, "seq_region_name", "Chromosome");
+		GeneQuery start = new GeneQuery(GeneQueryType.RANGE, "start", (long) 30000, null);
+		GeneQuery end = new GeneQuery(GeneQueryType.RANGE, "end", null, (long) 50000);
+		List<Map<String, Object>> results = search.fetch(
+				Arrays.asList(new GeneQuery[] { seqRegion,start,end }),
+				Arrays.asList("_id","seq_region_name","start","end"), Collections.emptyList());
+		assertEquals("Total hits", 26, results.size());
+		for(Map<String, Object> result: results) {
+			assertEquals("Chromosome name","Chromosome",result.get("seq_region_name"));
+			assertTrue("Start", (Long.parseLong(String.valueOf(result.get("start"))))>=30000);
+			assertTrue("End", (Long.parseLong(String.valueOf(result.get("end"))))<=50000);
+		}
 	}
 
 	@Test

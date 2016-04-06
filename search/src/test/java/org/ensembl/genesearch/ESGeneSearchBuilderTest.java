@@ -97,7 +97,7 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testRange() {
-		GeneQuery seqRegion = new GeneQuery(GeneQueryType.TERM, "seq_region", "DDB0231518");
+		GeneQuery seqRegion = new GeneQuery(GeneQueryType.TERM, "seq_region_name", "DDB0231518");
 		GeneQuery start = new GeneQuery(GeneQueryType.RANGE, "start", (long) 1, null);
 		GeneQuery end = new GeneQuery(GeneQueryType.RANGE, "end", null, (long) 100);
 		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(seqRegion, start, end);
@@ -107,7 +107,7 @@ public class ESGeneSearchBuilderTest {
 		Map<String, Object> bool = (Map<String, Object>) obj.get("bool");
 		assertTrue("Values set", bool.containsKey("must"));
 		assertObjCorrect("Object string check",
-				"[{term={seq_region=DDB0231518}}, "
+				"[{term={seq_region_name=DDB0231518}}, "
 						+ "{range={start={from=1, to=null, include_lower=true, include_upper=true}}}, "
 						+ "{range={end={from=null, to=100, include_lower=true, include_upper=true}}}]",
 				bool.get("must"));
