@@ -42,17 +42,16 @@ public class FetchService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response get(@BeanParam FetchParams params) {
-		return fetchAsResponse(params);
+		return resultsToResponse(fetch(params));
 	}
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response post(@RequestBody FetchParams params) throws JsonParseException, JsonMappingException, IOException {
-		return fetchAsResponse(params);
+		return resultsToResponse(fetch(params));
 	}
 
-	public Response fetchAsResponse(FetchParams params) {
-		List<Map<String, Object>> results = fetch(params);
+	public static Response resultsToResponse(List<Map<String, Object>> results) {
 		StreamingOutput stream = new StreamingOutput() {
 			@Override
 			public void write(OutputStream os) throws IOException, WebApplicationException {

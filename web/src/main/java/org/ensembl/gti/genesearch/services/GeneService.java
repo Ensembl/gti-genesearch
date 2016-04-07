@@ -10,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.ensembl.genesearch.GeneSearch;
 import org.slf4j.Logger;
@@ -39,8 +40,8 @@ public class GeneService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Map<String, Object>> post(List<String> ids) {
-		return search.fetchByIds(ids.toArray(new String[ids.size()]));
+	public Response post(List<String> ids) {
+		return FetchService.resultsToResponse(search.fetchByIds(ids.toArray(new String[ids.size()])));
 	}
 
 }
