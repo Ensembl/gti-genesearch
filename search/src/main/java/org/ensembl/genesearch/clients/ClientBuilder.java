@@ -56,9 +56,18 @@ public class ClientBuilder {
 		// on startup
 		log.info("Joining cluster " + clusterName);
 		try {
+
 			Path tempDir = Files.createTempDirectory("esgenesearch_");
-			Settings settings = Settings.builder().put("discovery.zen.ping.multicast.enabled", "false")
-					.put("discovery.zen.ping.unicast.hosts", hostName).put("path.home", tempDir.toString()).build();
+			
+			Settings settings = Settings.builder()
+					.put("http.enabled", "false")
+					.put("transport.tcp.port", "9300-9400")
+					.put("discovery.zen.ping.multicast.enabled", "false")
+					.put("discovery.zen.ping.unicast.hosts", hostName)
+					.put("path.home",tempDir.toString()).build();
+			
+			log.debug(settings.toDelimitedString(','));
+			
 			Node node = nodeBuilder().data(false).client(true).clusterName(clusterName).settings(settings).build()
 					.start();
 			// close the node when we're shutdown
