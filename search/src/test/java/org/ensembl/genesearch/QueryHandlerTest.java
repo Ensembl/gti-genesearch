@@ -2,11 +2,13 @@ package org.ensembl.genesearch;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
+import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.Test;
 
 public class QueryHandlerTest {
@@ -126,5 +128,12 @@ public class QueryHandlerTest {
 		assertEquals("seq_region name", "chr1", qs.get(0).getValues()[0]);
 		assertEquals("end name", GeneQueryType.RANGE, qs.get(1).getType());
 		assertEquals("end type", new Long(10), qs.get(1).getEnd());
+	}
+	
+	@Test
+	public void testLargeTerms() throws IOException {
+		QueryHandler handler = new DefaultQueryHandler();
+		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
+		List<GeneQuery> qs = handler.parseQuery(json);
 	}
 }

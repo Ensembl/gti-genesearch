@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
 import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.impl.ESGeneSearch;
+import org.ensembl.genesearch.query.DefaultQueryHandler;
+import org.ensembl.genesearch.query.QueryHandler;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -153,6 +155,7 @@ public class ESGeneSearchTest {
 		assertEquals("Name found", "tRNA", result.getResults().get(0).get("name"));
 	}
 
+	@Test
 	public void querySource() {
 		log.info("Querying for all genes sorted by name");
 		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id", "name", "homologues"),
@@ -164,16 +167,27 @@ public class ESGeneSearchTest {
 		assertTrue("Name found", result.getResults().get(0).containsKey("name"));
 		assertTrue("Name found", result.getResults().get(0).containsKey("homologues"));
 	}
+	
+	@Test
+	public void queryLargeTerms() throws IOException {
+		QueryHandler handler = new DefaultQueryHandler();
+		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
+		List<GeneQuery> qs = handler.parseQuery(json);
+		QueryResult result = search.query(qs, Arrays.asList("id", "name", "homologues"),
+				Collections.emptyList(), 5, Collections.emptyList());
+	}
+
 
 	public void fetchGene() {
 		log.info("Fetching a single gene");
-		String id = "NEQ392";
+		String id = "NEQ043";
 		Map<String, Object> gene = search.fetchById(id);
 		assertTrue("Gene is not null", gene != null);
 		assertEquals("ID correct", id, gene.get("id"));
 		assertTrue("Homologues not null", gene.containsKey("homologues"));
 		assertTrue("Transcripts not null", gene.containsKey("transcripts"));
 	}
+
 
 	public void fetchGenes() {
 		log.info("Fetching list of genes");
@@ -188,6 +202,8 @@ public class ESGeneSearchTest {
 		assertTrue("id2 found", ids.contains(id2));
 		assertTrue("id3 found", ids.contains(id3));
 	}
+	
+
 
 	@AfterClass
 	public static void tearDown() {

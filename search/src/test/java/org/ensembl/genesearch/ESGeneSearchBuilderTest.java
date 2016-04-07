@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.elasticsearch.index.query.QueryBuilder;
@@ -13,6 +14,9 @@ import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.impl.ESGeneSearchBuilder;
+import org.ensembl.genesearch.query.DefaultQueryHandler;
+import org.ensembl.genesearch.query.QueryHandler;
+import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -27,13 +31,7 @@ public class ESGeneSearchBuilderTest {
 
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
-		assertTrue("Ids set", obj.containsKey("ids"));
-		Map<String, Object> ids = (Map<String, Object>) obj.get("ids");
-		assertTrue("Values set", ids.containsKey("values"));
-		assertTrue("Values length 1", ((Collection<?>) ids.get("values")).size() == 1);
-		assertEquals("Type correct", "gene", ids.get("type"));
-
-		assertObjCorrect("Object string check", "{ids={type=gene, values=[DDB0231518]}}", obj);
+		assertObjCorrect("Object string check", "{constant_score={filter={ids={type=gene, values=[DDB0231518]}}}}", obj);
 	}
 
 	@Test
@@ -55,8 +53,8 @@ public class ESGeneSearchBuilderTest {
 		assertTrue("Bool set", query.containsKey("bool"));
 
 		assertObjCorrect("Object string check",
-				"{nested={query={" + "bool={must=[{term={homologues.genome=dictyostelium_fasciculatum}}, "
-						+ "{term={homologues.description=ortholog_one2one}}]}}, path=homologues}}",
+				"{nested={query={bool={must=[{constant_score={filter={term={homologues.genome=dictyostelium_fasciculatum}}}},"
+				+ "{constant_score={filter={term={homologues.description=ortholog_one2one}}}}]}},path=homologues}}",
 				obj);
 	}
 
@@ -71,8 +69,8 @@ public class ESGeneSearchBuilderTest {
 		assertTrue("Nested set", obj.containsKey("nested"));
 
 		assertObjCorrect("Object string check",
-				"{nested={query={nested=" + "{query={term={transcripts.translations.id=DDB0231518}}, "
-						+ "path=transcripts.translations}}, path=transcripts}}",
+				"{nested={query={nested={query={constant_score={filter={term={transcripts.translations.id=DDB0231518}}}}, "
+				+ "path=transcripts.translations}}, path=transcripts}}",
 				obj);
 
 	}
@@ -103,14 +101,33 @@ public class ESGeneSearchBuilderTest {
 		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(seqRegion, start, end);
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
-		assertTrue("Ids set", obj.containsKey("bool"));
+		assertTrue("Bool set", obj.containsKey("bool"));
 		Map<String, Object> bool = (Map<String, Object>) obj.get("bool");
 		assertTrue("Values set", bool.containsKey("must"));
 		assertObjCorrect("Object string check",
-				"[{term={seq_region_name=DDB0231518}}, "
-						+ "{range={start={from=1, to=null, include_lower=true, include_upper=true}}}, "
-						+ "{range={end={from=null, to=100, include_lower=true, include_upper=true}}}]",
+				"[{constant_score={filter={term={seq_region_name=DDB0231518}}}}, "
+				+ "{constant_score={filter={range={start={from=1, to=null, include_lower=true, include_upper=true}}}}}, "
+				+ "{constant_score={filter={range={end={from=null, to=100, include_lower=true, include_upper=true}}}}}]",
 				bool.get("must"));
+	}
+	
+	@Test
+	public void testLargeTerms() throws IOException {
+		QueryHandler handler = new DefaultQueryHandler();
+		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
+		List<GeneQuery> qs = handler.parseQuery(json);
+		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(qs.get(0));
+		Map<String, Object> obj = jsonToMap(builder.toString());
+		System.out.println(obj);
+		assertTrue("Constant_score set", obj.containsKey("constant_score"));
+		Map<String, Object> constant = (Map<String, Object>) obj.get("constant_score");
+		assertTrue("filter set", constant.containsKey("filter"));
+		Map<String, Object> filter = (Map<String, Object>) constant.get("filter");
+		assertTrue("Terms set", filter.containsKey("terms"));
+		Map<String, Object> terms = (Map<String, Object>) filter.get("terms");
+		assertTrue("Uniprot_SWISSPROT set", terms.containsKey("Uniprot_SWISSPROT"));
+		List<String> uniprot = (List<String>)(terms.get("Uniprot_SWISSPROT"));
+		assertEquals("Uniprot_SWISSPROT size",18920,uniprot.size());
 	}
 
 	protected Map<String, Object> jsonToMap(String json) {
