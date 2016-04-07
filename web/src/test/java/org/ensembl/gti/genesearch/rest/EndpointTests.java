@@ -9,15 +9,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.gti.genesearch.services.Application;
-import org.ensembl.gti.genesearch.services.FetchParams;
-import org.ensembl.gti.genesearch.services.FetchService;
 import org.ensembl.gti.genesearch.services.GeneSearchProvider;
-import org.ensembl.gti.genesearch.services.QueryParams;
-import org.ensembl.gti.genesearch.services.QueryService;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,7 +46,6 @@ public class EndpointTests {
 
 	@Autowired
 	GeneSearchProvider provider;
-	
 
 	private static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {
 	};
@@ -72,7 +66,7 @@ public class EndpointTests {
 		testServer.createTestIndex(json);
 		search = new ESGeneSearch(testServer.getClient());
 	}
-	
+
 	@Before
 	public void injectSearch() {
 		// ensure we always use our test instance
@@ -167,7 +161,8 @@ public class EndpointTests {
 		assertTrue("ID found", result.get(0).containsKey("id"));
 		assertTrue("Name found", result.get(0).containsKey("name"));
 		assertTrue("Description found", result.get(0).containsKey("description"));
-		//assertFalse("homologues not found", result.get(0).containsKey("homologues"));
+		// assertFalse("homologues not found",
+		// result.get(0).containsKey("homologues"));
 	}
 
 	@Test
@@ -239,7 +234,7 @@ public class EndpointTests {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			log.trace("Invoking "+url+" with "+json);
+			log.trace("Invoking " + url + " with " + json);
 			HttpEntity<String> entity = new HttpEntity<String>(json, headers);
 			ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 			log.trace("Post response: " + response.getBody());
