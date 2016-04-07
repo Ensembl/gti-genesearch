@@ -75,7 +75,7 @@ for my $query ( @{ $opts->{query} } ) {
     } ## end for ( my $i = 1; $i <= ...)
     my $avg_time = sum(@times)/( 1*$opts->{iterations} );
     $logger->info( $query_file . " took " . $avg_time . " s" );
-    printf $outfile "|%s|.2f|\n", $query_file, $avg_time;
+    printf $outfile "|%s|%.2f|\n", $query_file, $avg_time;
   } ## end for my $query_file ( glob...)
 } ## end for my $query ( @{ $opts...})
 close $outfile;
@@ -117,6 +117,8 @@ sub execute_post {
   if ( !$response->is_success() ) {
     croak $response->status_line();
   }
+  my $result = from_json($response->content());
+  $logger->debug(Dumper($result));
   $logger->debug( "Took " . $time );
   return $time;
 }
