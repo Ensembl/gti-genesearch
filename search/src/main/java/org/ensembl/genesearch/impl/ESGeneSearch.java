@@ -17,6 +17,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -41,8 +42,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ESGeneSearch implements GeneSearch {
 
-	private static final int SCROLL_SIZE = 1000;
-	private static final int TIMEOUT = 600000;
+	private static final int SCROLL_SIZE = 100;
+	private static final int TIMEOUT = 1000;
 	public static final String DEFAULT_INDEX = "genes";
 	public static final String DEFAULT_TYPE = "gene";
 
@@ -102,7 +103,7 @@ public class ESGeneSearch implements GeneSearch {
 		// scroll until no hits are returned
 		while (true) {
 			processHits(consumer, response);
-			response = client.prepareSearchScroll(response.getScrollId()).setScroll(new TimeValue(60000)).execute()
+			response = client.prepareSearchScroll(response.getScrollId()).setScroll(new TimeValue(TIMEOUT)).execute()
 					.actionGet();
 			if (response.getHits().getHits().length == 0) {
 				break;
@@ -246,14 +247,14 @@ public class ESGeneSearch implements GeneSearch {
 
 	@Override
 	public List<Map<String, Object>> fetchByIds(String... ids) {
-		SearchRequestBuilder request = client.prepareSearch(index).setQuery(new IdsQueryBuilder().addIds(ids));
+		SearchRequestBuilder request = client.prepareSearch(index).setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids)));
 		SearchResponse response = request.execute().actionGet();
 		return processResults(response);
 	}
 	
 	@Override
 	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids) {
-		SearchRequestBuilder request = client.prepareSearch(index).setQuery(new IdsQueryBuilder().addIds(ids));
+		SearchRequestBuilder request = client.prepareSearch(index).setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids)));
 		SearchResponse response = request.execute().actionGet();
 		processAllHits(consumer, response);
 		log.info("Retrieved all hits");
