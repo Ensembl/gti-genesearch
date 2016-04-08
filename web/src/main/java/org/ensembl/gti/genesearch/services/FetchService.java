@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.GET;
@@ -42,13 +43,13 @@ public class FetchService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response get(@BeanParam FetchParams params) {
-		return resultsToResponse(fetch(params));
+		return fetch(params);
 	}
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response post(@RequestBody FetchParams params) throws JsonParseException, JsonMappingException, IOException {
-		return resultsToResponse(fetch(params));
+		return fetch(params);
 	}
 
 	public static Response resultsToResponse(List<Map<String, Object>> results) {
@@ -69,9 +70,30 @@ public class FetchService {
 		return Response.ok().entity(stream).type(MediaType.APPLICATION_JSON).build();
 	}
 
-	public List<Map<String, Object>> fetch(FetchParams params) {
-		log.info("fetch:" + params.toString());
-		return provider.getGeneSearch().fetch(params.getQueries(), params.getFields(), params.getSorts());
-	}
+	public Response fetch(FetchParams params) {
+		log.info("fetch:" + params.toString());		
+		StreamingOutput stream = new StreamingOutput() {
+			@Override
+			public void write(OutputStream os) throws IOException, WebApplicationException {
+				JsonGenerator jg = new ObjectMapper().getFactory().createGenerator(os, JsonEncoding.UTF8);
+				jg.writeStartArray();
+				provider.getGeneSearch().fetch(new Consumer<Map<String,Object>>() {
+					
+					@Override
+					public void accept(Map<String, Object> t) {
+						try {
+							jg.writeObject(t);
+						} catch (IOException e) {
+							throw new RuntimeException("Could not write fetch results", e);
+						}
+					}
+				}, params.getQueries(), params.getFields(), params.getSorts());
+				jg.writeEndArray();
 
+				jg.flush();
+				jg.close();
+			}
+		};
+		return Response.ok().entity(stream).type(MediaType.APPLICATION_JSON).build();
+	}
 }
