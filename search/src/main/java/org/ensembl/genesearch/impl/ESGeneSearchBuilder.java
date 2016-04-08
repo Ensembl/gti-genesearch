@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class ESGeneSearchBuilder {
 
-	private static final String ID_FIELD = "_id";
+	private static final String ID_FIELD = "id";
 	private static final Logger log = LoggerFactory
 			.getLogger(ESGeneSearchBuilder.class);
 	
