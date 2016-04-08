@@ -1,13 +1,20 @@
 package org.ensembl.genesearch.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.queryparser.xml.builders.BooleanQueryBuilder;
+import org.apache.lucene.search.BooleanQuery;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
+import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
@@ -19,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class ESGeneSearchBuilder {
 
+	private static final int TERM_BATCH_SIZE = 5000;
 	private static final String ID_FIELD = "id";
 	private static final Logger log = LoggerFactory
 			.getLogger(ESGeneSearchBuilder.class);
@@ -71,7 +79,7 @@ public class ESGeneSearchBuilder {
 		QueryBuilder query;
 		log.trace("Single " + geneQ.getFieldName());
 		if (ID_FIELD.equals(geneQ.getFieldName())) {
-			query = QueryBuilders.idsQuery("gene").addIds(geneQ.getValues());
+			query = buildIds(geneQ);
 		} else {
 			String path = StringUtils.join(extendPath(parents, geneQ), '.');
 			if(geneQ.getType() == GeneQueryType.RANGE) {
@@ -86,10 +94,35 @@ public class ESGeneSearchBuilder {
 			} else if (geneQ.getValues().length == 1) {
 				query = QueryBuilders.termQuery(path, geneQ.getValues()[0]);
 			} else {
-				query = QueryBuilders.termsQuery(path, geneQ.getValues());
+				query = buildTerms(geneQ, path);
 			}
 		}
 		return QueryBuilders.constantScoreQuery(query);
+	}
+
+	private static QueryBuilder buildIds(GeneQuery geneQ) {
+		if(geneQ.getValues().length>TERM_BATCH_SIZE) {
+			BoolQueryBuilder query = QueryBuilders.boolQuery();
+			for(List<String> vals: ListUtils.partition(Arrays.asList(geneQ.getValues()), 5000)) {
+				query.should(QueryBuilders.constantScoreQuery(QueryBuilders.idsQuery().addIds(vals)));
+			}
+			return query;
+		} else {
+			return QueryBuilders.idsQuery().addIds(geneQ.getValues());
+		}
+	}
+	
+
+	private static QueryBuilder buildTerms(GeneQuery geneQ, String path) {
+		if(geneQ.getValues().length>TERM_BATCH_SIZE) {
+			BoolQueryBuilder query = QueryBuilders.boolQuery();
+			for(List<String> vals: ListUtils.partition(Arrays.asList(geneQ.getValues()), 5000)) {
+				query.should(QueryBuilders.constantScoreQuery(QueryBuilders.termsQuery(path, vals)));
+			}
+			return query;
+		} else {
+			return QueryBuilders.termsQuery(path, geneQ.getValues());
+		}
 	}
 
 	protected static QueryBuilder processNested(List<String> parents,
