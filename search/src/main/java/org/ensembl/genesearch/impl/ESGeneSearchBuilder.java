@@ -88,8 +88,9 @@ public class ESGeneSearchBuilder {
 			} else {
 				query = QueryBuilders.termsQuery(path, geneQ.getValues());
 			}
+			query = QueryBuilders.constantScoreQuery(query);
 		}
-		return QueryBuilders.constantScoreQuery(query);
+		return query;
 	}
 
 	protected static QueryBuilder processNested(List<String> parents,
