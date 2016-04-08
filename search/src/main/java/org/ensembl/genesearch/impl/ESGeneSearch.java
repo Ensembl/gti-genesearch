@@ -250,6 +250,15 @@ public class ESGeneSearch implements GeneSearch {
 		SearchResponse response = request.execute().actionGet();
 		return processResults(response);
 	}
+	
+	@Override
+	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids) {
+		SearchRequestBuilder request = client.prepareSearch(index).setQuery(new IdsQueryBuilder().addIds(ids));
+		SearchResponse response = request.execute().actionGet();
+		processAllHits(consumer, response);
+		log.info("Retrieved all hits");
+	}
+
 
 	@Override
 	public Map<String, Object> fetchById(String id) {

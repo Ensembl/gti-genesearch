@@ -68,4 +68,11 @@ public interface GeneSearch {
 			List<String> output, List<String> facets, int limit,
 			List<String> sorts);
 
+	/**
+	 * Retrieve genes with the supplied ID and write to the consumer
+	 * @param consumer
+	 * @param ids
+	 */
+	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids);
+
 }
