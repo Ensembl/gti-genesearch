@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ESGeneSearch implements GeneSearch {
 
-	public static final int DEFAULT_SCROLL_SIZE = 10000;
+	public static final int DEFAULT_SCROLL_SIZE = 1000;
 	public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
 	public static final String DEFAULT_INDEX = "genes";
 	public static final String DEFAULT_TYPE = "gene";
