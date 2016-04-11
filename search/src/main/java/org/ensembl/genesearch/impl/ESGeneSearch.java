@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -42,8 +43,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ESGeneSearch implements GeneSearch {
 
-	private static final int SCROLL_SIZE = 1000;
-	private static final int TIMEOUT = 60000;
+	public static final int DEFAULT_SCROLL_SIZE = 10000;
+	public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
 	public static final String DEFAULT_INDEX = "genes";
 	public static final String DEFAULT_TYPE = "gene";
 
@@ -52,12 +53,19 @@ public class ESGeneSearch implements GeneSearch {
 	private final String index;
 
 	public ESGeneSearch(Client client) {
-		this(client, DEFAULT_INDEX);
+		this(client, DEFAULT_INDEX,
+				Integer.parseInt(System.getProperty("es.scroll_size", String.valueOf(DEFAULT_SCROLL_SIZE))),
+				Integer.parseInt(System.getProperty("es.scroll_timeout", String.valueOf(DEFAULT_SCROLL_TIMEOUT))));
 	}
 
-	public ESGeneSearch(Client client, String index) {
+	private final int scrollSize;
+	private final int scrollTimeout;
+
+	public ESGeneSearch(Client client, String index, int scrollSize, int scrollTimeout) {
 		this.client = client;
 		this.index = index;
+		this.scrollSize = scrollSize;
+		this.scrollTimeout = scrollTimeout;
 	}
 
 	@Override
@@ -77,18 +85,24 @@ public class ESGeneSearch implements GeneSearch {
 		log.info("Starting query");
 		log.info(query.toString());
 
-		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query).setScroll(new TimeValue(TIMEOUT))
-				.setSize(SCROLL_SIZE);
+		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query).setScroll(new TimeValue(scrollSize))
+				.setSize(scrollTimeout);
 
+		if(sorts.isEmpty()) {
+			sorts = Arrays.asList("_doc");
+		}
+		
 		addSorts(sorts, request);
 
 		request.setFetchSource(fieldNames.toArray(new String[fieldNames.size()]), null);
 
 		SearchResponse response = request.execute().actionGet();
 		log.info("Retrieved " + response.getHits().totalHits() + " in " + response.getTookInMillis() + " ms");
-
+		StopWatch watch = new StopWatch();
+		watch.start();
 		processAllHits(consumer, response);
-		log.info("Retrieved all hits");
+		watch.stop();
+		log.info("Retrieved all hits in " + watch.getTime() + " ms");
 
 	}
 
@@ -101,11 +115,20 @@ public class ESGeneSearch implements GeneSearch {
 	 */
 	protected SearchResponse processAllHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
 		// scroll until no hits are returned
+		int n = 0;
+		StopWatch watch = new StopWatch();
 		while (true) {
+			log.debug("Processing scroll #" + (++n));
 			processHits(consumer, response);
-			response = client.prepareSearchScroll(response.getScrollId()).setScroll(new TimeValue(TIMEOUT)).execute()
-					.actionGet();
+			log.debug("Preparing new scroll");
+			watch.reset();
+			watch.start();
+			response = client.prepareSearchScroll(response.getScrollId())
+					.setScroll(new TimeValue(DEFAULT_SCROLL_TIMEOUT)).execute().actionGet();
+			watch.stop();
+			log.debug("Prepared scroll #" + n + " in " + watch.getTime() + "ms");
 			if (response.getHits().getHits().length == 0) {
+				log.info("Scroll complete");
 				break;
 			}
 		}
@@ -119,9 +142,15 @@ public class ESGeneSearch implements GeneSearch {
 	 * @param response
 	 */
 	protected void processHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
-		for (SearchHit hit : response.getHits().getHits()) {
+		SearchHit[] hits = response.getHits().getHits();
+		StopWatch watch = new StopWatch();
+		log.debug("Processing " + hits.length + " hits");
+		watch.start();
+		for (SearchHit hit : hits) {
 			consumer.accept(processHit(hit));
 		}
+		watch.stop();
+		log.debug("Completed processing " + hits.length + " hits in " + watch.getTime() + " ms");
 	}
 
 	@Override
@@ -247,19 +276,20 @@ public class ESGeneSearch implements GeneSearch {
 
 	@Override
 	public List<Map<String, Object>> fetchByIds(String... ids) {
-		SearchRequestBuilder request = client.prepareSearch(index).setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids)));
+		SearchRequestBuilder request = client.prepareSearch(index)
+				.setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids)));
 		SearchResponse response = request.execute().actionGet();
 		return processResults(response);
 	}
-	
+
 	@Override
 	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids) {
-		SearchRequestBuilder request = client.prepareSearch(index).setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids)));
+		SearchRequestBuilder request = client.prepareSearch(index)
+				.setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids)));
 		SearchResponse response = request.execute().actionGet();
 		processAllHits(consumer, response);
 		log.info("Retrieved all hits");
 	}
-
 
 	@Override
 	public Map<String, Object> fetchById(String id) {
