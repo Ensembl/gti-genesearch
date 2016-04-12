@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class ESGeneSearch implements GeneSearch {
 
 	public static final int DEFAULT_SCROLL_SIZE = 1000;
-	public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
+	public static final int DEFAULT_SCROLL_TIMEOUT = 30000;
 	public static final String DEFAULT_INDEX = "genes";
 	public static final String DEFAULT_TYPE = "gene";
 
@@ -85,8 +85,8 @@ public class ESGeneSearch implements GeneSearch {
 		log.info("Starting query");
 		log.info(query.toString());
 
-		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query).setScroll(new TimeValue(scrollSize))
-				.setSize(scrollTimeout);
+		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query).setScroll(new TimeValue(scrollTimeout))
+				.setSize(scrollSize);
 
 		if(sorts.isEmpty()) {
 			sorts = Arrays.asList("_doc");
