@@ -13,12 +13,10 @@ public interface GeneSearch {
 	 * @param queries
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
-	 * @param sorts
-	 *            fields to sort on
 	 * @return
 	 */
-	public List<Map<String, Object>> fetch(Collection<GeneQuery> queries,
-			List<String> fieldNames, List<String> sorts);
+	public List<Map<String, Object>> fetch(List<GeneQuery> queries,
+			List<String> fieldNames);
 
 	/**
 	 * Retrieve all results matching the supplied queries and process with the
@@ -28,13 +26,10 @@ public interface GeneSearch {
 	 * @param queries
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
-	 * @param sorts
-	 *            fields to sort on
 	 * @return
 	 */
 	public void fetch(Consumer<Map<String, Object>> consumer,
-			Collection<GeneQuery> queries, List<String> fieldNames,
-			List<String> sorts);
+			List<GeneQuery> queries, List<String> fieldNames);
 	
 	/**
 	 * Retrieve genes with the supplied IDs
@@ -64,7 +59,7 @@ public interface GeneSearch {
 	 *            number of hits to return
 	 * @return
 	 */
-	public QueryResult query(Collection<GeneQuery> queries,
+	public QueryResult query(List<GeneQuery> queries,
 			List<String> output, List<String> facets, int limit,
 			List<String> sorts);
 

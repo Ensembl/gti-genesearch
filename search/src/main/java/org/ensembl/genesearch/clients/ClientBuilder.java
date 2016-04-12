@@ -80,8 +80,9 @@ public class ClientBuilder {
 	}
 
 	public static Client buildTransportClient(String clusterName, String hostName, int port) {
+		boolean sniff = Boolean.parseBoolean(System.getProperty("es.sniff", "true"));
 		Settings settings = Settings.settingsBuilder().put("cluster.name", clusterName)
-				.put("client.transport.sniff", true).build();
+				.put("client.transport.sniff", sniff).build();
 		log.info("Connecting to " + hostName + ":" + port);
 		try {
 			return TransportClient.builder().settings(settings).build()

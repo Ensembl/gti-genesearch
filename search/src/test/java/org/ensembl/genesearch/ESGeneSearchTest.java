@@ -42,8 +42,7 @@ public class ESGeneSearchTest {
 	@Test
 	public void fetchAll() {
 		log.info("Fetching all genes");
-		List<Map<String, Object>> ids = search.fetch(new ArrayList<GeneQuery>(), Arrays.asList("_id"),
-				Collections.emptyList());
+		List<Map<String, Object>> ids = search.fetch(new ArrayList<GeneQuery>(), Arrays.asList("_id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 598, ids.size());
 	}
@@ -56,7 +55,7 @@ public class ESGeneSearchTest {
 
 		List<Map<String, Object>> ids = search.fetch(
 				Arrays.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.NESTED, "homologues", genome) }),
-				Arrays.asList("_id"), Collections.emptyList());
+				Arrays.asList("_id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 79, ids.size());
 	}
@@ -71,7 +70,7 @@ public class ESGeneSearchTest {
 
 		List<Map<String, Object>> ids = search.fetch(
 				Arrays.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.NESTED, "homologues", genome, orthology) }),
-				Arrays.asList("_id"), Collections.emptyList());
+				Arrays.asList("_id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 63, ids.size());
 	}
@@ -84,8 +83,7 @@ public class ESGeneSearchTest {
 		GeneQuery tIdQuery = new GeneQuery(GeneQueryType.NESTED, "transcripts",
 				new GeneQuery(GeneQueryType.NESTED, "translations", new GeneQuery(GeneQueryType.TERM, "id", id)));
 
-		List<Map<String, Object>> ids = search.fetch(Arrays.asList(new GeneQuery[] { tIdQuery }), Arrays.asList("_id"),
-				Collections.emptyList());
+		List<Map<String, Object>> ids = search.fetch(Arrays.asList(new GeneQuery[] { tIdQuery }), Arrays.asList("_id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 1, ids.size());
 	}
@@ -97,7 +95,7 @@ public class ESGeneSearchTest {
 		GeneQuery start = new GeneQuery(GeneQueryType.RANGE, "start", (long) 30000, null);
 		GeneQuery end = new GeneQuery(GeneQueryType.RANGE, "end", null, (long) 50000);
 		List<Map<String, Object>> results = search.fetch(Arrays.asList(new GeneQuery[] { seqRegion, start, end }),
-				Arrays.asList("_id", "seq_region_name", "start", "end"), Collections.emptyList());
+				Arrays.asList("_id", "seq_region_name", "start", "end"));
 		assertEquals("Total hits", 26, results.size());
 		for (Map<String, Object> result : results) {
 			assertEquals("Chromosome name", "Chromosome", result.get("seq_region_name"));

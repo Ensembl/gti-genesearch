@@ -2,7 +2,6 @@ package org.ensembl.genesearch.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -29,7 +29,9 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.sort.SortParseElement;
 import org.ensembl.genesearch.GeneQuery;
+import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.GeneSearch;
 import org.ensembl.genesearch.QueryResult;
 import org.slf4j.Logger;
@@ -43,8 +45,9 @@ import org.slf4j.LoggerFactory;
  */
 public class ESGeneSearch implements GeneSearch {
 
-	public static final int DEFAULT_SCROLL_SIZE = 1000;
-	public static final int DEFAULT_SCROLL_TIMEOUT = 30000;
+	public static final String ALL_FIELDS = "*";
+	public static final int DEFAULT_SCROLL_SIZE = 50000;
+	public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
 	public static final String DEFAULT_INDEX = "genes";
 	public static final String DEFAULT_TYPE = "gene";
 
@@ -69,41 +72,80 @@ public class ESGeneSearch implements GeneSearch {
 	}
 
 	@Override
-	public List<Map<String, Object>> fetch(Collection<GeneQuery> queries, List<String> fieldNames, List<String> sorts) {
+	public List<Map<String, Object>> fetch(List<GeneQuery> queries, List<String> fieldNames) {
 		final List<Map<String, Object>> results = new ArrayList<>();
-		fetch(row -> results.add(row), queries, fieldNames, sorts);
+		fetch(row -> results.add(row), queries, fieldNames);
 		return results;
 	}
 
 	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, Collection<GeneQuery> queries, List<String> fieldNames,
-			List<String> sorts) {
+	public void fetch(Consumer<Map<String, Object>> consumer, List<GeneQuery> queries, List<String> fieldNames) {
+		StopWatch watch = new StopWatch();
 
-		log.info("Building query");
+		int queryScrollSize = calculateScroll(fieldNames);
+
+		log.debug("Using scroll size "+queryScrollSize);
+		
+		// if we have more terms than entries in our scroll, do it piecemeal
+		if (queries.size() == 1) {
+			GeneQuery query = queries.get(0);
+			if (query.getType() == GeneQueryType.TERM && query.getValues().length > queryScrollSize) {
+				for (List<String> terms : ListUtils.partition(Arrays.asList(query.getValues()), queryScrollSize)) {
+					log.info("Querying " + terms.size() + "/" + query.getValues().length);
+					watch.start();
+					fetch(consumer, Arrays.asList(new GeneQuery(query.getType(), query.getFieldName(), terms)),
+							fieldNames);
+					watch.stop();
+					log.info("Queried " + terms.size() + "/" + query.getValues().length + " in " + watch.getTime()
+							+ " ms");
+					watch.reset();
+				}
+				return;
+			}
+
+		}
+
+		log.info("Building fetch query");
 		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new GeneQuery[queries.size()]));
 
-		log.info("Starting query");
-		log.info(query.toString());
+		log.debug(query.toString());
 
-		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query).setScroll(new TimeValue(scrollTimeout))
-				.setSize(scrollSize);
+		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query);
 
-		if(sorts.isEmpty()) {
-			sorts = Arrays.asList("_doc");
+		// force _doc order for more efficiency
+		request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
+
+		if (fieldNames.contains(ALL_FIELDS) || fieldNames.isEmpty()) {
+			fieldNames = Arrays.asList(ALL_FIELDS);
 		}
-		
-		addSorts(sorts, request);
 
 		request.setFetchSource(fieldNames.toArray(new String[fieldNames.size()]), null);
 
+		request.setScroll(new TimeValue(scrollTimeout)).setSize(queryScrollSize);
+
+		log.info("Executing fetch request");
+		log.debug(request.toString());
 		SearchResponse response = request.execute().actionGet();
 		log.info("Retrieved " + response.getHits().totalHits() + " in " + response.getTookInMillis() + " ms");
-		StopWatch watch = new StopWatch();
 		watch.start();
 		processAllHits(consumer, response);
 		watch.stop();
 		log.info("Retrieved all hits in " + watch.getTime() + " ms");
 
+	}
+
+	private int calculateScroll(List<String> fieldNames) {
+		// calculate a factor to adjust scroll by based on what we're retrieving
+		double scrollFactor = 0;
+		for (String field : fieldNames) {
+			if (ALL_FIELDS.equals(field)) {
+				scrollFactor += 50;
+			} else {
+				// TODO more sophistication needed here at some point
+				scrollFactor += 0.1;
+			}
+		}
+		return (int) (scrollSize / scrollFactor);
 	}
 
 	/**
@@ -154,7 +196,7 @@ public class ESGeneSearch implements GeneSearch {
 	}
 
 	@Override
-	public QueryResult query(Collection<GeneQuery> queries, List<String> output, List<String> facets, int limit,
+	public QueryResult query(List<GeneQuery> queries, List<String> output, List<String> facets, int limit,
 			List<String> sorts) {
 		log.debug("Building query");
 		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new GeneQuery[queries.size()]));

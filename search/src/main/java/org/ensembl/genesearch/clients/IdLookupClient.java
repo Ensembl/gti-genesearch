@@ -83,7 +83,7 @@ public class IdLookupClient {
 					Collectors.toList());
 		}
 
-		Collection<GeneQuery> queries = Arrays
+		List<GeneQuery> queries = Arrays
 				.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.TERM,
 						params.queryField, ids) });
 		search.fetch(row -> {
@@ -94,7 +94,7 @@ public class IdLookupClient {
 				throw new RuntimeException(e);
 			} finally {
 			}
-		}, queries, params.resultField, Collections.emptyList());
+		}, queries, params.resultField);
 
 		log.info("Completed retrieval");
 		out.flush();

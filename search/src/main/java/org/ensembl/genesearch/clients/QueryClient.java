@@ -72,7 +72,7 @@ public class QueryClient {
 
 		GeneSearch search = new ESGeneSearch(client);
 
-		Collection<GeneQuery> queries = new DefaultQueryHandler()
+		List<GeneQuery> queries = new DefaultQueryHandler()
 				.parseQuery(params.query);
 
 		log.info("Starting query");

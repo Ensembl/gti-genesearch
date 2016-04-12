@@ -13,6 +13,7 @@ public class QueryParams extends FetchParams {
 
 	private List<String> facets = Collections.emptyList();
 	private int limit = 10;
+	private List<String> sorts = Collections.emptyList();
 
 	public List<String> getFacets() {
 		return facets;
@@ -39,5 +40,13 @@ public class QueryParams extends FetchParams {
 	public void setLimit(int limit) {
 		this.limit = limit;
 	}
+
+	@QueryParam("sorts")
+	@DefaultValue("")
+	@JsonProperty("sorts")
+	public List<String> getSorts() {
+		return sorts;
+	}
+
 
 }

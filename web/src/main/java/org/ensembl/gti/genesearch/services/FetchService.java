@@ -87,7 +87,7 @@ public class FetchService {
 							throw new RuntimeException("Could not write fetch results", e);
 						}
 					}
-				}, params.getQueries(), params.getFields(), params.getSorts());
+				}, params.getQueries(), params.getFields());
 				jg.writeEndArray();
 
 				jg.flush();
