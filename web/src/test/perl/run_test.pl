@@ -14,12 +14,17 @@ use JSON;
 use List::Util qw(sum);
 
 my $lwp = LWP::UserAgent->new();
+$lwp->timeout(600);
 
 my $opts = {};
-GetOptions( $opts,       'query=s@',     'action:s', 'fields=s@',
-            'facets=s@', 'sort=s@',      'uri:s',    'limit:s',
-            'verbose',   'iterations:s', 'es_uri:s', 'outfile:s',
-            'warm',      'nocache' );
+GetOptions( $opts,       'query=s@',
+            'action:s',  'fields=s@',
+            'facets=s@', 'sort=s@',
+            'uri:s',     'limit:s',
+            'verbose',   'iterations:s',
+            'es_uri:s',  'outfile:s',
+            'warm',      'nocache',
+            'write_results' );
 
 if ( $opts->{verbose} ) {
   Log::Log4perl->easy_init($DEBUG);
@@ -62,11 +67,14 @@ for my $query ( @{ $opts->{query} } ) {
 
       }
       elsif ( $opts->{action} eq 'fetch' ) {
+        my $res_file;
+        if ( defined $opts->{write_results} ) {
+          ( $res_file = $query_file ) =~ s/.json/.results/;
+        }
         push @times,
-          execute_post( "$opts->{uri}/fetch", {
-                          query  => $query,
-                          fields => $opts->{fields},
-                          sort   => $opts->{sort} } );
+          execute_post( "$opts->{uri}/fetch",
+                        { query => $query, fields => $opts->{fields} },
+                        $res_file );
 
       }
       else {
@@ -106,7 +114,7 @@ sub warm {
 }
 
 sub execute_post {
-  my ( $uri, $payload ) = @_;
+  my ( $uri, $payload, $outfile ) = @_;
   $logger->debug("POSTing to $uri");
   my $req = HTTP::Request->new( 'POST', $uri );
   $req->header( 'Content-Type' => 'application/json' );
@@ -117,8 +125,9 @@ sub execute_post {
   if ( !$response->is_success() ) {
     croak $response->status_line();
   }
-  my $result = from_json($response->content());
-  $logger->debug(Dumper($result));
+  if ( defined $outfile ) {
+    write_file( $outfile, $response->content() );
+  }
   $logger->debug( "Took " . $time );
   return $time;
 }
