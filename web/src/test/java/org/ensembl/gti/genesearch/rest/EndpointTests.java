@@ -176,7 +176,6 @@ public class EndpointTests {
 		assertTrue("Name found", result.get(0).containsKey("name"));
 		assertTrue("Start found", result.get(0).containsKey("start"));
 		assertFalse("homologues not found", result.get(0).containsKey("homologues"));
-		assertEquals("Name found", "tRNA", result.get(0).get("name"));
 	}
 
 	@Test
@@ -191,7 +190,6 @@ public class EndpointTests {
 		assertTrue("Name found", result.get(0).containsKey("name"));
 		assertTrue("Start found", result.get(0).containsKey("start"));
 		assertFalse("homologues not found", result.get(0).containsKey("homologues"));
-		assertEquals("Name found", "tRNA", result.get(0).get("name"));
 	}
 
 	/**
