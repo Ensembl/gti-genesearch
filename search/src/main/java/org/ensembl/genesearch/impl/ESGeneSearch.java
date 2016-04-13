@@ -145,6 +145,11 @@ public class ESGeneSearch implements GeneSearch {
 				scrollFactor += 0.1;
 			}
 		}
+		if(scrollFactor<0.1) {
+			scrollFactor = 0.1;
+		} else if(scrollFactor>50) {
+			scrollFactor = 50;
+		}
 		return (int) (scrollSize / scrollFactor);
 	}
 
