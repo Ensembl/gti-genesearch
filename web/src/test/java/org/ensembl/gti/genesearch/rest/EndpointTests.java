@@ -167,7 +167,7 @@ public class EndpointTests {
 
 	@Test
 	public void testFullFetchGetEndpoint() {
-		String url = "http://localhost:8080/fetch" + "?query={query}" + "&fields=name,start" + "&sort=+name,-start";
+		String url = "http://localhost:8080/fetch" + "?query={query}" + "&fields=name,start";
 		// rest template expands {} as variables so supply JSON separately
 		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, url,
 				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
@@ -176,13 +176,13 @@ public class EndpointTests {
 		assertTrue("Name found", result.get(0).containsKey("name"));
 		assertTrue("Start found", result.get(0).containsKey("start"));
 		assertFalse("homologues not found", result.get(0).containsKey("homologues"));
-		assertEquals("Name found", "5S_rRNA", result.get(0).get("name"));
+		assertEquals("Name found", "tRNA", result.get(0).get("name"));
 	}
 
 	@Test
 	public void testFullFetchPostEndpoint() {
 		String paramJson = "{\"query\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"},"
-				+ "\"fields\":[\"name\",\"genome\",\"start\"]," + "\"sort\":[\"+name\",\"-start\"]}";
+				+ "\"fields\":[\"name\",\"genome\",\"start\"]}";
 		// rest template expands {} as variables so supply JSON separately
 		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, "http://localhost:8080/fetch",
 				paramJson);
@@ -191,7 +191,7 @@ public class EndpointTests {
 		assertTrue("Name found", result.get(0).containsKey("name"));
 		assertTrue("Start found", result.get(0).containsKey("start"));
 		assertFalse("homologues not found", result.get(0).containsKey("homologues"));
-		assertEquals("Name found", "5S_rRNA", result.get(0).get("name"));
+		assertEquals("Name found", "tRNA", result.get(0).get("name"));
 	}
 
 	/**
