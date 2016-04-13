@@ -107,7 +107,7 @@ public class ESGeneSearchTest {
 	@Test
 	public void querySimple() {
 		log.info("Querying for all genes");
-		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id"), Collections.emptyList(), 5,
+		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id"), Collections.emptyList(), 0, 5,
 				Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
@@ -119,7 +119,7 @@ public class ESGeneSearchTest {
 	@Test
 	public void queryFacet() {
 		log.info("Querying for all genes faceted on genome");
-		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id"), Arrays.asList("genome"), 5,
+		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id"), Arrays.asList("genome"), 0, 5,
 				Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
@@ -134,7 +134,7 @@ public class ESGeneSearchTest {
 	public void querySortAsc() {
 		log.info("Querying for all genes sorted by name");
 		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id", "name"), Collections.emptyList(),
-				5, Arrays.asList("+name"));
+				0, 5, Arrays.asList("+name"));
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -145,7 +145,7 @@ public class ESGeneSearchTest {
 	public void querySortDesc() {
 		log.info("Querying for all genes reverse sorted by name");
 		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id", "name"), Collections.emptyList(),
-				5, Arrays.asList("-name"));
+				0, 5, Arrays.asList("-name"));
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -157,7 +157,7 @@ public class ESGeneSearchTest {
 	public void querySource() {
 		log.info("Querying for all genes sorted by name");
 		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id", "name", "homologues"),
-				Collections.emptyList(), 5, Collections.emptyList());
+				Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -165,16 +165,30 @@ public class ESGeneSearchTest {
 		assertTrue("Name found", result.getResults().get(0).containsKey("name"));
 		assertTrue("Name found", result.getResults().get(0).containsKey("homologues"));
 	}
-	
+
 	@Test
 	public void queryLargeTerms() throws IOException {
 		QueryHandler handler = new DefaultQueryHandler();
 		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
 		List<GeneQuery> qs = handler.parseQuery(json);
-		QueryResult result = search.query(qs, Arrays.asList("id", "name", "homologues"),
-				Collections.emptyList(), 5, Collections.emptyList());
+		search.query(qs, Arrays.asList("id", "name", "homologues"), Collections.emptyList(), 0, 5,
+				Collections.emptyList());
 	}
 
+	@Test
+	public void queryWithOffset() throws IOException {
+		log.info("Querying for all genes");
+		QueryResult result1 = search.query(Collections.emptyList(), Arrays.asList("id"), Collections.emptyList(), 0, 2,
+				Collections.emptyList());
+		assertEquals("Got 2 results", 2, result1.getResults().size());
+
+		log.info("Querying for all genes with offset");
+		QueryResult result2 = search.query(Collections.emptyList(), Arrays.asList("id"), Collections.emptyList(), 1, 2,
+				Collections.emptyList());
+		assertEquals("Got 2 results", 2, result2.getResults().size());
+		assertTrue("Results 1.1 matches 2.0",
+				result1.getResults().get(1).get("id").equals(result2.getResults().get(0).get("id")));
+	}
 
 	public void fetchGene() {
 		log.info("Fetching a single gene");
@@ -185,7 +199,6 @@ public class ESGeneSearchTest {
 		assertTrue("Homologues not null", gene.containsKey("homologues"));
 		assertTrue("Transcripts not null", gene.containsKey("transcripts"));
 	}
-
 
 	public void fetchGenes() {
 		log.info("Fetching list of genes");
@@ -200,8 +213,6 @@ public class ESGeneSearchTest {
 		assertTrue("id2 found", ids.contains(id2));
 		assertTrue("id3 found", ids.contains(id3));
 	}
-	
-
 
 	@AfterClass
 	public static void tearDown() {

@@ -46,7 +46,7 @@ public class QueryService {
 	public QueryResult query(QueryParams params) {
 		log.info("query:" + params);
 		return provider.getGeneSearch().query(params.getQueries(), params.getFields(),
-				params.getFacets(), params.getLimit(), params.getSorts());
+				params.getFacets(), params.getOffset(), params.getLimit(), params.getSorts());
 	}
 
 }

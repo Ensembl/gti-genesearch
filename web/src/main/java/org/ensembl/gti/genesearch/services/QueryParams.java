@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class QueryParams extends FetchParams {
 
 	private int limit = 10;
+	private int offset = 0;
 	private List<String> facets = Collections.emptyList();
 	private List<String> sorts = Collections.emptyList();
 
@@ -39,6 +40,16 @@ public class QueryParams extends FetchParams {
 	@DefaultValue("10")
 	public void setLimit(int limit) {
 		this.limit = limit;
+	}
+	
+	public int getOffset() {
+		return offset;
+	}
+
+	@QueryParam("offset")
+	@DefaultValue("0")
+	public void setOffset(int offset) {
+		this.offset = offset;
 	}
 
 	@QueryParam("sorts")

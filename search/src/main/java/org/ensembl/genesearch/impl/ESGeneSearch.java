@@ -201,7 +201,7 @@ public class ESGeneSearch implements GeneSearch {
 	}
 
 	@Override
-	public QueryResult query(List<GeneQuery> queries, List<String> output, List<String> facets, int limit,
+	public QueryResult query(List<GeneQuery> queries, List<String> output, List<String> facets, int offset, int limit,
 			List<String> sorts) {
 		log.debug("Building query");
 		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new GeneQuery[queries.size()]));
@@ -209,7 +209,7 @@ public class ESGeneSearch implements GeneSearch {
 		log.info(query.toString());
 
 		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
-				.setFetchSource(output.toArray(new String[output.size()]), null).setSize(limit);
+				.setFetchSource(output.toArray(new String[output.size()]), null).setSize(limit).setFrom(offset);
 
 		setFields(output, request);
 

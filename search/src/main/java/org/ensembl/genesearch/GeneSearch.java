@@ -55,12 +55,14 @@ public interface GeneSearch {
 	 *            source fields to include
 	 * @param facets
 	 *            fields to facet over
+	 * @param offset
+	 *            place to start in query
 	 * @param limit
 	 *            number of hits to return
 	 * @return
 	 */
 	public QueryResult query(List<GeneQuery> queries,
-			List<String> output, List<String> facets, int limit,
+			List<String> output, List<String> facets, int offset, int limit,
 			List<String> sorts);
 
 	/**

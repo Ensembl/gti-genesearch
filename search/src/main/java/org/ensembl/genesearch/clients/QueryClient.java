@@ -33,20 +33,20 @@ public class QueryClient {
 		@Parameter(names = "-query", description = "JSON query string")
 		private String query = "{}";
 
-		@SuppressWarnings("unchecked")
 		@Parameter(names = "-fields", description = "Fields to retrieve")
 		private List<String> resultFields = Collections.emptyList();
 
-		@SuppressWarnings("unchecked")
 		@Parameter(names = "-facets", description = "Fields to facet by")
 		private List<String> facets = Collections.emptyList();
 
-		@SuppressWarnings("unchecked")
 		@Parameter(names = "-sort", description = "Fields to sort by")
 		private List<String> sorts = Collections.emptyList();
 
 		@Parameter(names = "-limit", description = "Number of rows to retrieve")
 		private int limit = 10;
+		
+		@Parameter(names = "-offset", description = "Place to start from")
+		private int offset = 0;
 
 		@Parameter(names = "-outfile", description = "File to write results to")
 		private String outFile = null;
@@ -78,7 +78,7 @@ public class QueryClient {
 		log.info("Starting query");
 
 		QueryResult res = search.query(queries, params.resultFields,
-				params.facets, params.limit, params.sorts);
+				params.facets, params.offset, params.limit, params.sorts);
 
 		if (!StringUtils.isEmpty(params.outFile)) {
 			log.info("Writing results to " + params.outFile);

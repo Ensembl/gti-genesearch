@@ -6,9 +6,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.gti.genesearch.services.Application;
@@ -119,6 +122,25 @@ public class EndpointTests {
 		assertEquals("Checking 1 facet retrieved", 1, facets.size());
 		assertTrue("Checking facets populated", facets.containsKey("biotype"));
 		assertEquals("Name found", "5S_rRNA", results.get(0).get("name"));
+	}
+	
+	public void testOffsetQueryGetEndpoint() {
+		String url1 = "http://localhost:8080/query" + "?query={query}" + "&limit=2" + "&fields=id";
+		String url2 = "http://localhost:8080/query" + "?query={query}" + "&limit=2&offset=1" + "&fields=id";
+		// rest template expands {} as variables so supply JSON separately
+		Map<String, Object> response1 = getUrlToObject(MAP_REF, restTemplate, url1,
+				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
+		Map<String, Object> response2 = getUrlToObject(MAP_REF, restTemplate, url2,
+				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
+		List<Map<String, Object>> results1 = (List<Map<String, Object>>) (response1.get("results"));
+		List<Map<String, Object>> results2 = (List<Map<String, Object>>) (response2.get("results"));
+		
+		assertEquals("Got 2 results", 2, results1.size());
+
+		log.info("Querying for all genes with offset");
+		assertEquals("Got 2 results", 2, results2.size());
+		assertTrue("Results 1.1 matches 2.0",
+				results1.get(1).get("id").equals(results2.get(0).get("id")));
 	}
 
 	@Test
