@@ -38,7 +38,6 @@ public class FetchParams {
 	
 	private List<String> fields = Collections.emptyList();
 	private List<GeneQuery> queries = Collections.emptyList();
-	private List<String> sorts = Collections.emptyList();
 	
 	public List<String> getFields() {
 		return fields;
@@ -46,11 +45,6 @@ public class FetchParams {
 
 	public List<GeneQuery> getQueries() {
 		return queries;
-	}
-
-	@JsonProperty("sorts")
-	public List<String> getSorts() {
-		return sorts;
 	}
 
 	@JsonProperty("fields")
@@ -80,18 +74,6 @@ public class FetchParams {
 	@JsonIgnore
 	public void setQuery(String query) {
 		setQueries(new DefaultQueryHandler().parseQuery(query));
-	}
-
-	@JsonProperty("sort")
-	public void setSorts(List<String> sorts) {
-		this.sorts = sorts;
-	}
-
-	@QueryParam("sort")
-	@DefaultValue("")
-	@JsonIgnore
-	public void setSorts(String sort) {
-		this.sorts = stringToList(sort);
 	}
 
 	@Override
