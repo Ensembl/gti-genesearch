@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QueryParams extends FetchParams {
 
-	private List<String> facets = Collections.emptyList();
 	private int limit = 10;
+	private List<String> facets = Collections.emptyList();
 	private List<String> sorts = Collections.emptyList();
 
 	public List<String> getFacets() {
@@ -48,5 +48,16 @@ public class QueryParams extends FetchParams {
 		return sorts;
 	}
 
+	@JsonProperty("sort")
+	public void setSorts(List<String> sorts) {
+		this.sorts = sorts;
+	}
+
+	@QueryParam("sort")
+	@DefaultValue("")
+	@JsonIgnore
+	public void setSorts(String sort) {
+		this.sorts = stringToList(sort);
+	}
 
 }
