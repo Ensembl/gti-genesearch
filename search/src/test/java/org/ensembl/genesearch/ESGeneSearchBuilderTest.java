@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -27,11 +26,12 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testId() {
-		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(new GeneQuery(GeneQueryType.TERM, "_id", "DDB0231518"));
+		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(new GeneQuery(GeneQueryType.TERM, "id", "DDB0231518"));
 
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
-		assertObjCorrect("Object string check", "{constant_score={filter={ids={type=gene, values=[DDB0231518]}}}}", obj);
+		assertObjCorrect("Object string check", "{constant_score={filter={ids={type=gene, values=[DDB0231518]}}}}",
+				obj);
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class ESGeneSearchBuilderTest {
 
 		assertObjCorrect("Object string check",
 				"{nested={query={bool={must=[{constant_score={filter={term={homologues.genome=dictyostelium_fasciculatum}}}},"
-				+ "{constant_score={filter={term={homologues.description=ortholog_one2one}}}}]}},path=homologues}}",
+						+ "{constant_score={filter={term={homologues.description=ortholog_one2one}}}}]}},path=homologues}}",
 				obj);
 	}
 
@@ -70,7 +70,7 @@ public class ESGeneSearchBuilderTest {
 
 		assertObjCorrect("Object string check",
 				"{nested={query={nested={query={constant_score={filter={term={transcripts.translations.id=DDB0231518}}}}, "
-				+ "path=transcripts.translations}}, path=transcripts}}",
+						+ "path=transcripts.translations}}, path=transcripts}}",
 				obj);
 
 	}
@@ -106,11 +106,11 @@ public class ESGeneSearchBuilderTest {
 		assertTrue("Values set", bool.containsKey("must"));
 		assertObjCorrect("Object string check",
 				"[{constant_score={filter={term={seq_region_name=DDB0231518}}}}, "
-				+ "{constant_score={filter={range={start={from=1, to=null, include_lower=true, include_upper=true}}}}}, "
-				+ "{constant_score={filter={range={end={from=null, to=100, include_lower=true, include_upper=true}}}}}]",
+						+ "{constant_score={filter={range={start={from=1, to=null, include_lower=true, include_upper=true}}}}}, "
+						+ "{constant_score={filter={range={end={from=null, to=100, include_lower=true, include_upper=true}}}}}]",
 				bool.get("must"));
 	}
-	
+
 	@Test
 	public void testLargeTerms() throws IOException {
 		QueryHandler handler = new DefaultQueryHandler();
@@ -126,8 +126,8 @@ public class ESGeneSearchBuilderTest {
 		assertTrue("Terms set", filter.containsKey("terms"));
 		Map<String, Object> terms = (Map<String, Object>) filter.get("terms");
 		assertTrue("Uniprot_SWISSPROT set", terms.containsKey("Uniprot_SWISSPROT"));
-		List<String> uniprot = (List<String>)(terms.get("Uniprot_SWISSPROT"));
-		assertEquals("Uniprot_SWISSPROT size",18920,uniprot.size());
+		List<String> uniprot = (List<String>) (terms.get("Uniprot_SWISSPROT"));
+		assertEquals("Uniprot_SWISSPROT size", 18920, uniprot.size());
 	}
 
 	protected Map<String, Object> jsonToMap(String json) {

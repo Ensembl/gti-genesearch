@@ -70,7 +70,7 @@ public class ESGeneSearchTest {
 
 		List<Map<String, Object>> ids = search.fetch(
 				Arrays.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.NESTED, "homologues", genome, orthology) }),
-				Arrays.asList("_id"));
+				Arrays.asList("id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 63, ids.size());
 	}
@@ -83,7 +83,7 @@ public class ESGeneSearchTest {
 		GeneQuery tIdQuery = new GeneQuery(GeneQueryType.NESTED, "transcripts",
 				new GeneQuery(GeneQueryType.NESTED, "translations", new GeneQuery(GeneQueryType.TERM, "id", id)));
 
-		List<Map<String, Object>> ids = search.fetch(Arrays.asList(new GeneQuery[] { tIdQuery }), Arrays.asList("_id"));
+		List<Map<String, Object>> ids = search.fetch(Arrays.asList(new GeneQuery[] { tIdQuery }), Arrays.asList("id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 1, ids.size());
 	}

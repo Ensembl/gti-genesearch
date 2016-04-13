@@ -70,7 +70,7 @@ public class ESGeneSearchBuilder {
 			GeneQuery geneQ) {
 		QueryBuilder query;
 		log.trace("Single " + geneQ.getFieldName());
-		if (ID_FIELD.equals(geneQ.getFieldName())) {
+		if (parents.size()==0 && ID_FIELD.equals(geneQ.getFieldName())) {
 			query = QueryBuilders.idsQuery("gene").addIds(geneQ.getValues());
 		} else {
 			String path = StringUtils.join(extendPath(parents, geneQ), '.');
