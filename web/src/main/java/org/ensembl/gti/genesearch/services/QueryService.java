@@ -8,8 +8,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.ensembl.genesearch.GeneSearch;
 import org.ensembl.genesearch.QueryResult;
+import org.glassfish.jersey.server.JSONP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @Path("/query")
+@Produces({ MediaType.APPLICATION_JSON, Application.APPLICATION_X_JAVASCRIPT })
 public class QueryService {
 
 	final Logger log = LoggerFactory.getLogger(QueryService.class);
@@ -29,7 +30,7 @@ public class QueryService {
 	}
 
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@JSONP
 	public QueryResult get(@BeanParam QueryParams params) {
 		log.info("Get from query");
 		return query(params);
@@ -37,7 +38,7 @@ public class QueryService {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@JSONP
 	public QueryResult post(@RequestBody QueryParams params) {
 		log.info("Post to query");
 		return query(params);
@@ -45,8 +46,8 @@ public class QueryService {
 
 	public QueryResult query(QueryParams params) {
 		log.info("query:" + params);
-		return provider.getGeneSearch().query(params.getQueries(), params.getFields(),
-				params.getFacets(), params.getOffset(), params.getLimit(), params.getSorts());
+		return provider.getGeneSearch().query(params.getQueries(), params.getFields(), params.getFacets(),
+				params.getOffset(), params.getLimit(), params.getSorts());
 	}
 
 }

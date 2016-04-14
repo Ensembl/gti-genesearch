@@ -15,6 +15,7 @@ public class QueryParams extends FetchParams {
 	private int offset = 0;
 	private List<String> facets = Collections.emptyList();
 	private List<String> sorts = Collections.emptyList();
+	private String callback;
 
 	public List<String> getFacets() {
 		return facets;
@@ -52,6 +53,17 @@ public class QueryParams extends FetchParams {
 		this.offset = offset;
 	}
 
+	public String getCallback() {
+		return callback;
+	}
+
+	@QueryParam("callback")
+	@DefaultValue("")
+	public void setCallback(String callback) {
+		this.callback = callback;
+	}
+
+	
 	@QueryParam("sorts")
 	@DefaultValue("")
 	@JsonProperty("sorts")

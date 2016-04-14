@@ -21,6 +21,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.ensembl.gti.genesearch.services.converter.MapXmlWriter;
+import org.glassfish.jersey.server.JSONP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Path("/fetch")
-@Produces({ MediaType.APPLICATION_JSON + ";qs=1", MediaType.TEXT_PLAIN + ";qs=0.1", MediaType.TEXT_HTML + ";qs=0.1" })
+@Produces({ MediaType.APPLICATION_JSON + ";qs=1", Application.APPLICATION_X_JAVASCRIPT, MediaType.TEXT_PLAIN + ";qs=0.1", MediaType.TEXT_HTML + ";qs=0.1" })
 @Consumes(MediaType.APPLICATION_JSON)
 public class FetchService {
 
@@ -48,17 +49,20 @@ public class FetchService {
 	}
 
 	@GET
+	@JSONP
 	public Response get(@BeanParam FetchParams params) {
 		return fetchAsJson(params);
 	}
 
 	@GET
+	@JSONP
 	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
 	public Response getAsXml(@BeanParam FetchParams params) {
 		return fetchAsXml(params);
 	}
 
 	@POST
+	@JSONP
 	public Response post(@RequestBody FetchParams params) throws JsonParseException, JsonMappingException, IOException {
 		return fetchAsJson(params);
 	}
