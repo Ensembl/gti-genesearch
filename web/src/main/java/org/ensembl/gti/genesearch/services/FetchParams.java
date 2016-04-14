@@ -36,8 +36,13 @@ public class FetchParams {
 		}
 	}
 	
+	private String fileName = "genes";
 	private List<String> fields = Collections.emptyList();
 	private List<GeneQuery> queries = Collections.emptyList();
+	
+	public String getFileName() {
+		return fileName;
+	}
 	
 	public List<String> getFields() {
 		return fields;
@@ -75,7 +80,13 @@ public class FetchParams {
 	public void setQuery(String query) {
 		setQueries(new DefaultQueryHandler().parseQuery(query));
 	}
-
+	
+	@QueryParam("filename")
+	@DefaultValue("genes")
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	
 	@Override
 	public String toString() {
 		try {
