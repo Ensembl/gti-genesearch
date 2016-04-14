@@ -1,10 +1,14 @@
 package org.ensembl.gti.genesearch.services.converter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -15,6 +19,27 @@ import javax.xml.stream.XMLStreamWriter;
  *
  */
 public class MapXmlWriter {
+	
+	/**
+	 * Transform a map into XML
+	 * @param name
+	 * @param map
+	 * @return
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws UnsupportedEncodingException
+	 */
+	public static String mapToXml(String name, Map<String,Object> map) throws XMLStreamException, FactoryConfigurationError, UnsupportedEncodingException {
+		ByteArrayOutputStream os = new ByteArrayOutputStream(); 
+		XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
+		MapXmlWriter writer = new MapXmlWriter(xsw);
+		xsw.writeStartDocument();
+		writer.writeMap(name, map);
+		xsw.writeEndDocument();
+		xsw.flush();
+		xsw.close();
+		return os.toString("UTF-8");
+	}
 
 	private final XMLStreamWriter writer;
 
