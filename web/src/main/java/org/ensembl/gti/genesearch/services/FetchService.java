@@ -2,8 +2,11 @@ package org.ensembl.gti.genesearch.services;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
@@ -20,6 +23,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ensembl.gti.genesearch.services.converter.MapXmlWriter;
 import org.glassfish.jersey.server.JSONP;
 import org.slf4j.Logger;
@@ -36,7 +40,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Path("/fetch")
-@Produces({ MediaType.APPLICATION_JSON + ";qs=1", Application.APPLICATION_X_JAVASCRIPT, MediaType.TEXT_PLAIN + ";qs=0.1", MediaType.TEXT_HTML + ";qs=0.1" })
+@Produces({ MediaType.APPLICATION_JSON + ";qs=1", Application.APPLICATION_X_JAVASCRIPT,
+		MediaType.TEXT_PLAIN + ";qs=0.1", MediaType.TEXT_HTML + ";qs=0.1" })
 @Consumes(MediaType.APPLICATION_JSON)
 public class FetchService {
 
@@ -55,10 +60,15 @@ public class FetchService {
 	}
 
 	@GET
-	@JSONP
 	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
 	public Response getAsXml(@BeanParam FetchParams params) {
 		return fetchAsXml(params);
+	}
+
+	@GET
+	@Produces({ Application.APPLICATION_EXCEL + ";qs=0.1", Application.TEXT_CSV + ";qs=0.1" })
+	public Response getAsCsv(@BeanParam FetchParams params) {
+		return fetchAsCsv(params);
 	}
 
 	@POST
@@ -74,6 +84,15 @@ public class FetchService {
 			throws JsonParseException, JsonMappingException, IOException {
 		return fetchAsXml(params);
 	}
+	
+	@POST
+	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
+	@Consumes({MediaType.APPLICATION_JSON})
+	public Response postAsCsv(@RequestBody FetchParams params)
+			throws JsonParseException, JsonMappingException, IOException {
+		return fetchAsCsv(params);
+	}
+
 
 	public Response fetchAsJson(FetchParams params) {
 		log.info("fetch to JSON:" + params.toString());
@@ -135,4 +154,33 @@ public class FetchService {
 		return Response.ok().entity(stream).type(MediaType.APPLICATION_XML)
 				.header("Content-Disposition", "attachment; filename=" + params.getFileName() + ".xml").build();
 	}
+
+	public Response fetchAsCsv(FetchParams params) {
+		log.info("fetch to CSV:" + params.toString());
+		StreamingOutput stream = new StreamingOutput() {
+			@Override
+			public void write(OutputStream os) throws IOException, WebApplicationException {
+
+				Writer writer = new OutputStreamWriter(os);
+				writer.write(StringUtils.join(params.getFields(),','));
+				writer.write('\n');				
+				provider.getGeneSearch().fetch(new Consumer<Map<String, Object>>() {
+					@Override
+					public void accept(Map<String, Object> t) {
+						try {
+							writer.write(params.getFields().stream().map(e -> String.valueOf(t.get(e)))
+									.collect(Collectors.joining(",")));
+							writer.write('\n');
+						} catch (IOException e) {
+							throw new WebApplicationException(e);
+						}
+					}
+				}, params.getQueries(), params.getFields());
+				writer.close();
+			}
+		};
+		return Response.ok().entity(stream).type(Application.TEXT_CSV)
+				.header("Content-Disposition", "attachment; filename=" + params.getFileName() + ".csv").build();
+	}
+
 }

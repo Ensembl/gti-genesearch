@@ -5,9 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+	
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
 
-	static final String APPLICATION_X_JAVASCRIPT = "application/x-javascript";
+	public static final String APPLICATION_X_JAVASCRIPT = "application/x-javascript";
+	public static final String TEXT_CSV = "text/csv";
+	public static final String APPLICATION_EXCEL = "application/vnd.ms-excel";
+	
 }
