@@ -2,6 +2,7 @@ package org.ensembl.gti.genesearch.services;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -15,8 +16,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
+import org.ensembl.gti.genesearch.services.converter.MapXmlWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +35,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Path("/genes")
+@Produces({ MediaType.APPLICATION_JSON + ";qs=1", MediaType.TEXT_PLAIN + ";qs=0.1", MediaType.TEXT_HTML + ";qs=0.1" })
+@Consumes(MediaType.APPLICATION_JSON)
 public class GeneService {
 
 	final Logger log = LoggerFactory.getLogger(GeneService.class);
@@ -73,6 +82,66 @@ public class GeneService {
 			}
 		};
 		return Response.ok().entity(stream).type(MediaType.APPLICATION_JSON).build();
+
+	}
+
+	@Path("{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	public Response getAsXml(@PathParam("id") String id) {
+		try {
+			Map<String, Object> gene = provider.getGeneSearch().fetchById(id);
+			if (gene.isEmpty()) {
+				return Response.status(Status.NOT_FOUND).build();
+			} else {
+				String xml = MapXmlWriter.mapToXml("gene", gene);
+				return Response.ok().entity(xml).type(MediaType.APPLICATION_XML)
+						.header("Content-Disposition", "attachment; filename=" + id + ".xml").build();
+			}
+		} catch (UnsupportedEncodingException | XMLStreamException | FactoryConfigurationError e) {
+			e.printStackTrace();
+			throw new WebApplicationException(e);
+		}
+
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_XML)
+	@Produces(MediaType.APPLICATION_XML)
+	public Response postAsXml(List<String> ids) {
+
+		log.info("genes to XML");
+		StreamingOutput stream = new StreamingOutput() {
+			@Override
+			public void write(OutputStream os) throws IOException, WebApplicationException {
+
+				try {
+					XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
+					xsw.writeStartDocument();
+					xsw.writeStartElement("genes");
+					MapXmlWriter writer = new MapXmlWriter(xsw);
+					provider.getGeneSearch().fetchByIds(new Consumer<Map<String, Object>>() {
+						@Override
+						public void accept(Map<String, Object> t) {
+							try {
+								writer.writeObject("gene", t);
+							} catch (XMLStreamException e) {
+								e.printStackTrace();
+							}
+						}
+
+					}, ids.toArray(new String[ids.size()]));
+					xsw.writeEndElement();
+					xsw.writeEndDocument();
+					xsw.close();
+				} catch (XMLStreamException | FactoryConfigurationError e) {
+					throw new WebApplicationException(e);
+				}
+			}
+		};
+
+		return Response.ok().entity(stream).type(MediaType.APPLICATION_XML)
+				.header("Content-Disposition", "attachment; filename=genes.xml").build();
 
 	}
 
