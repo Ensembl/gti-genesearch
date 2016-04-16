@@ -78,7 +78,7 @@ public class EndpointTests {
 
 	@Test
 	public void testQueryGetEndpoint() {
-		String url = "http://localhost:8080/query";
+		String url = "http://localhost:8080/api/query";
 		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, url);
 		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
 		assertEquals("Checking limited results retrieved", 10, ((List<?>) result.get("results")).size());
@@ -91,7 +91,7 @@ public class EndpointTests {
 
 	@Test
 	public void testQueryPostEndpoint() {
-		String url = "http://localhost:8080/query";
+		String url = "http://localhost:8080/api/query";
 		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, url, "{}");
 		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
 		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
@@ -106,7 +106,7 @@ public class EndpointTests {
 
 	@Test
 	public void testFullQueryGetEndpoint() {
-		String url = "http://localhost:8080/query" + "?query={query}" + "&limit=5" + "&fields=name,description"
+		String url = "http://localhost:8080/api/query" + "?query={query}" + "&limit=5" + "&fields=name,description"
 				+ "&sort=+name,-start" + "&facets=biotype";
 		// rest template expands {} as variables so supply JSON separately
 		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, url,
@@ -125,8 +125,8 @@ public class EndpointTests {
 	}
 	
 	public void testOffsetQueryGetEndpoint() {
-		String url1 = "http://localhost:8080/query" + "?query={query}" + "&limit=2" + "&fields=id";
-		String url2 = "http://localhost:8080/query" + "?query={query}" + "&limit=2&offset=1" + "&fields=id";
+		String url1 = "http://localhost:8080/api/query" + "?query={query}" + "&limit=2" + "&fields=id";
+		String url2 = "http://localhost:8080/api/query" + "?query={query}" + "&limit=2&offset=1" + "&fields=id";
 		// rest template expands {} as variables so supply JSON separately
 		Map<String, Object> response1 = getUrlToObject(MAP_REF, restTemplate, url1,
 				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
@@ -149,7 +149,7 @@ public class EndpointTests {
 				+ "\"limit\":5,\"fields\":[\"name\",\"genome\",\"description\"]," + "\"sort\":[\"+name\",\"-start\"],"
 				+ "\"facets\":[\"biotype\"]}";
 		// rest template expands {} as variables so supply JSON separately
-		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, "http://localhost:8080/query", paramJson);
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, "http://localhost:8080/api/query", paramJson);
 		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
 		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
 		assertEquals("Checking limited results retrieved", 5, results.size());
@@ -165,7 +165,7 @@ public class EndpointTests {
 
 	@Test
 	public void testFetchGetEndpoint() {
-		String url = "http://localhost:8080/fetch";
+		String url = "http://localhost:8080/api/fetch";
 		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, url);
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
@@ -177,7 +177,7 @@ public class EndpointTests {
 
 	@Test
 	public void testFetchPostEndpoint() {
-		String url = "http://localhost:8080/fetch";
+		String url = "http://localhost:8080/api/fetch";
 		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, url, "{}");
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
@@ -189,7 +189,7 @@ public class EndpointTests {
 
 	@Test
 	public void testFullFetchGetEndpoint() {
-		String url = "http://localhost:8080/fetch" + "?query={query}" + "&fields=name,start";
+		String url = "http://localhost:8080/api/fetch" + "?query={query}" + "&fields=name,start";
 		// rest template expands {} as variables so supply JSON separately
 		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, url,
 				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
@@ -205,7 +205,7 @@ public class EndpointTests {
 		String paramJson = "{\"query\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"},"
 				+ "\"fields\":[\"name\",\"genome\",\"start\"]}";
 		// rest template expands {} as variables so supply JSON separately
-		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, "http://localhost:8080/fetch",
+		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, "http://localhost:8080/api/fetch",
 				paramJson);
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
@@ -253,6 +253,7 @@ public class EndpointTests {
 			Object... params) {
 		try {
 			HttpHeaders headers = new HttpHeaders();
+			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			log.trace("Invoking " + url + " with " + json);
 			HttpEntity<String> entity = new HttpEntity<String>(json, headers);
