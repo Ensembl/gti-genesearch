@@ -73,6 +73,9 @@ public class ESGeneSearch implements GeneSearch {
 
 	@Override
 	public List<Map<String, Object>> fetch(List<GeneQuery> queries, List<String> fieldNames) {
+		if(queries.isEmpty()) {
+			throw new UnsupportedOperationException("Fetch requires at least one query term");
+		}
 		final List<Map<String, Object>> results = new ArrayList<>();
 		fetch(row -> results.add(row), queries, fieldNames);
 		return results;
