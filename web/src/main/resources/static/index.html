@@ -43,8 +43,10 @@
 <link rel="stylesheet"
 	href="http://www.ebi.ac.uk/web_guidelines/css/compliance/develop/984-24-col-fluid.css"
 	type="text/css" media="screen">
+<link rel="stylesheet" type="text/css"
+	href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css">
 
-
+<link rel="stylesheet" href="css/angular-datatables.css" type="text/css">
 
 <!-- you can replace this with [projectname]-colours.css. See http:http://frontier.ebi.ac.uk/web/style/colour for details of how to do this -->
 <!-- also inform ES so we can host your colour palette file -->
@@ -155,19 +157,50 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 		<div id="content" role="main" class="grid_24 clearfix" ng-app="search">
 
 			<div class="tab-content">
-				<div class="tab-pane fade in active" id="search">
+				<div class="tab-pane fade in active" id="search"
+					ng-controller="searchController as searchCtrl">
 					<h3>Search</h3>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-						sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+
+					<form novalidate class="form-horizontal" role="form">
+						<div class="form-group">
+							<div class="col-sm-10">
+								<label class="control-label col-sm-2" for="query">Query:</label>
+								<input type="text" id="query" ng-model="search.query"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10">
+								<label class="control-label col-sm-2" for="fields">Fields:</label>
+								<input type="text" id="fields" ng-model="search.fields" />
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-10">
+								<label class="control-label col-sm-2" for="facets">Facets:</label>
+								<input type="text" id="facets" ng-model="search.facets" />
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-2">
+								<input type="submit" ng-click="searchCtrl.search(search)"
+									value="Search" />
+							</div>
+						</div>
+					</form>
+
+					<table ng-if="searchCtrl.hasData" datatable=""
+						dt-options="searchCtrl.dtOptions"
+						dt-columns="searchCtrl.dtColumns"
+						dt-instance="searchCtrl.dtInstance" class="row-border hover"></table>
+
 				</div>
 				<div class="tab-pane fade" id="examples">
 					<h3>API Examples</h3>
 
 					<h4>Queries</h4>
 					<p>
-					<ul>
-						<li><a href='/api/query?query={"genome":"homo_sapiens"}'>All
-								human genes</a></li>
+						All human genes<ul>
+						<li><a href='/api/query?query={"genome":"homo_sapiens"}'></a></li>
 						<li><a
 							href='/api/query?query={"lineage":"561","name":"lacZ"}'>Escherichia
 								lacZ genes</a></li>
@@ -234,16 +267,15 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 								by biotype</a></li>
 					</ul>
 					</p>
-					
-					<p>
-					For basic pagination, use the limit and offset parameters:
+
+					<p>For basic pagination, use the limit and offset parameters:
 					<ul>
-					<li><a
-							href='/api/query?query={"genome":"homo_sapiens"}&limit=100'>First 100
-								entries</a></li>
-													<li><a
-							href='/api/query?query={"genome":"homo_sapiens"}&limit=100&offset=100'>Second 100
-								entries</a></li>
+						<li><a
+							href='/api/query?query={"genome":"homo_sapiens"}&limit=100'>First
+								100 entries</a></li>
+						<li><a
+							href='/api/query?query={"genome":"homo_sapiens"}&limit=100&offset=100'>Second
+								100 entries</a></li>
 					</ul>
 					</p>
 
@@ -275,9 +307,11 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 					<h3>Help</h3>
 					<p>
 					<ul>
-					<li><a href="https://github.com/danstaines/gti-genesearch">Source code</a></li>
-						<li><a href="/api/application.wadl">Web Application Description</a></li>
-						</ul>
+						<li><a href="https://github.com/danstaines/gti-genesearch">Source
+								code</a></li>
+						<li><a href="/api/application.wadl">Web Application
+								Description</a></li>
+					</ul>
 					</p>
 				</div>
 				<div class="tab-pane fade" id="aboutegs">
@@ -300,6 +334,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
     </div>
         -->
 			<!-- End optional local footer -->
+
 
 			<div id="global-footer" class="grid_24">
 
@@ -388,7 +423,10 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
   });
 </script>
 -->
+	<script type="text/javascript" charset="utf8"
+		src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
 	<script src="js/angular.min.js"></script>
+	<script src="js/angular-datatables.min.js"></script>
 	<script src="js/search.js"></script>
 
 	<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
