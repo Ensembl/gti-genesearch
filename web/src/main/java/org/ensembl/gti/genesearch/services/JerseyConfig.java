@@ -12,5 +12,6 @@ public class JerseyConfig extends ResourceConfig {
 		register(FetchService.class);
 		register(GeneService.class);
 		register(JacksonFeature.class);
+		register(InfoService.class);
 	}
 }

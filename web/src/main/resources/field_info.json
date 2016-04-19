@@ -1,0 +1,17 @@
+[
+{
+"name":"id", "displayName":"Gene ID", "search":"true", "display":"true", "facet":"false"
+},
+{
+"name":"name", "displayName":"Gene name", "search":"true", "display":"true", "facet":"false"
+},
+{
+"name":"genome", "displayName":"Genome", "search":"true", "display":"true", "facet":"true"
+},
+{
+"name":"location", "displayName":"Genomic location", "search":"true", "display":"true", "facet":"false", "type":"LOCATION"
+},
+{
+"name":"genome_display", "displayName":"Genome", "search":"false", "display":"true", "facet":"false"
+}
+]
