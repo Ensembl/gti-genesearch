@@ -101,6 +101,13 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 				response = JSON.parse(json);
 				response.recordsTotal = response.resultCount;
 				response.recordsFiltered = response.resultCount;
+				for (var i = 0; i < response.results.length; i++) {
+					for(var j = 0; j< search.fields.length; j++) {
+						if(!response.results[i].hasOwnProperty(search.fields[j]))  {
+							response.results[i][search.fields[j].name] = '';
+						}
+					}
+				}
 				return JSON.stringify(response);
 			}
 		}).withDataProp('results').withOption('serverSide', true).withOption(
