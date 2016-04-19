@@ -29,7 +29,7 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 		e_coli : '{"genome":"escherichia_coli_str_k_12_substr_mg1655"}',
 		eschericia_lacZ : '{"lineage":"561","name":"lacZ"}',
 		escherichia_signals : '{"lineage":"561","GO":"GO:0035556"}',
-		wheat_hypervirulence : '{"annotations":{"host":"4565","phenotype":"PHI:1000008"}',
+		wheat_hypervirulence : '{"annotations":{"host":"4565","phenotype":"PHI:1000008"}}',
 		ascomycota_hydrolase : '{"lineage":"4890","GO":"GO:0016787"}',
 		mammal_brca2_homologues : '{"lineage":"40674","Pfam":"PF09121","homologues":{"stable_id":"ENSG00000139618"}}',
 		human_chr1 : '{"genome":"homo_sapiens","location":{"seq_region_name":"1","start":"45000","end":"96000"}}',
