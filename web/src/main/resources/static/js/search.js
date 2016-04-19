@@ -62,7 +62,7 @@ var searchCtrl = function($http,$scope, DTOptionsBuilder, DTColumnBuilder) {
 		}
 
 		vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
-			url : 'http://localhost:8080/api/query',
+			url : '/api/query',
 			type : 'POST',
 			contentType : 'application/json',
 			data : function(data) {
