@@ -44,7 +44,6 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 	}
 
 	this.search = function(search) {
-		vm.firstRun = true;
 
 		if (!search) {
 			search = {};
@@ -68,10 +67,10 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 			vm.dtColumns.push(c);
 		});
 
-		if(vm.hasData) {
+		if (vm.hasData) {
 			vm.dtInstance.rerender();
 		}
-		vm.hasData = true;		
+		vm.hasData = true;
 
 		vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
 			url : '/api/query',
@@ -79,20 +78,15 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 			contentType : 'application/json',
 			data : function(data) {
 				var sorts = [];
-				if (!vm.firstRun) {
-					// only sort after the
-					// first query
-					for (var i = 0; i < data.order.length; i++) {
-						var field = search.fields[data.order[i].column];
-						var sort = field.name;
-						if (data.order[i].dir == 'desc') {
-							sort = '-' + sort;
-						}
-						sorts.push(sort);
-						alert(sort);
+				for (var i = 0; i < data.order.length; i++) {
+					var field = search.fields[data.order[i].column];
+					var sort = field.name;
+					if (data.order[i].dir == 'desc') {
+						sort = '-' + sort;
 					}
+					sorts.push(sort);
 				}
-				vm.firstRun = false;
+
 				return JSON.stringify({
 					"query" : JSON.parse(search.query),
 					"fields" : map(search.fields, function(f) {
@@ -110,7 +104,8 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 				return JSON.stringify(response);
 			}
 		}).withDataProp('results').withOption('serverSide', true).withOption(
-				'bFilter', false).withPaginationType('full_numbers');
+				'bFilter', false).withPaginationType('full_numbers')
+				.withOption('order', []);
 
 	};
 
