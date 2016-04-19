@@ -1,11 +1,11 @@
 var searchMod = angular.module('search', [ 'datatables' ]);
 
-var searchCtrl = function($http,$scope, DTOptionsBuilder, DTColumnBuilder) {
+var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 
 	var vm = this;
 	vm.dtInstance = {};
 	vm.hasData = false;
-	vm.firstRun = true;
+
 	vm.reloadData = function() {
 		vm.dtInstance.reloadData();
 	};
@@ -37,13 +37,14 @@ var searchCtrl = function($http,$scope, DTOptionsBuilder, DTColumnBuilder) {
 	};
 
 	this.setQueryExample = function(exampleName) {
-		if(!$scope.search) {
+		if (!$scope.search) {
 			$scope.search = {};
 		}
 		$scope.search.query = examples[exampleName];
 	}
 
 	this.search = function(search) {
+		vm.firstRun = true;
 
 		if (!search) {
 			search = {};
@@ -57,9 +58,17 @@ var searchCtrl = function($http,$scope, DTOptionsBuilder, DTColumnBuilder) {
 			search.fields = this.displayFields.slice(0, 4);
 		}
 
-		if (vm.hasData) {
-			vm.reloadData();
-		}
+		vm.dtColumns = [];
+		search.fields.forEach(function(col) {
+			var c = DTColumnBuilder.newColumn(col.name).withTitle(
+					col.displayName);
+			if (!col.search) {
+				c.notSortable();
+			}
+			vm.dtColumns.push(c);
+		});
+
+		vm.hasData = true;
 
 		vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
 			url : '/api/query',
@@ -67,9 +76,9 @@ var searchCtrl = function($http,$scope, DTOptionsBuilder, DTColumnBuilder) {
 			contentType : 'application/json',
 			data : function(data) {
 				var sorts = [];
-				// only sort after the
-				// first query
 				if (!vm.firstRun) {
+					// only sort after the
+					// first query
 					for (var i = 0; i < data.order.length; i++) {
 						var field = search.fields[data.order[i].column];
 						var sort = field.name;
@@ -99,24 +108,12 @@ var searchCtrl = function($http,$scope, DTOptionsBuilder, DTColumnBuilder) {
 		}).withDataProp('results').withOption('serverSide', true).withOption(
 				'bFilter', false).withPaginationType('full_numbers');
 
-		vm.dtColumns = [];
-		search.fields.forEach(function(col) {
-			var c = DTColumnBuilder.newColumn(col.name).withTitle(
-					col.displayName);
-			if (!col.search) {
-				c.notSortable();
-			}
-			vm.dtColumns.push(c);
-		});
-
-		vm.hasData = true;
-
 	};
 
 };
 
-searchMod.controller('searchController', [ '$http', '$scope', 'DTOptionsBuilder',
-		'DTColumnBuilder', searchCtrl ]);
+searchMod.controller('searchController', [ '$http', '$scope',
+		'DTOptionsBuilder', 'DTColumnBuilder', searchCtrl ]);
 
 function map(objs, callback) {
 	var results = [];
