@@ -45,6 +45,8 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 
 	this.search = function(search) {
 		vm.firstRun = true;
+		
+		alert("Searching");
 
 		if (!search) {
 			search = {};
@@ -68,13 +70,17 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 			vm.dtColumns.push(c);
 		});
 
-		vm.hasData = true;
+		if(vm.hasData) {
+			vm.dtInstance.rerender();
+		}
+		vm.hasData = true;		
 
 		vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
 			url : '/api/query',
 			type : 'POST',
 			contentType : 'application/json',
 			data : function(data) {
+				alert("Doing data");
 				var sorts = [];
 				if (!vm.firstRun) {
 					// only sort after the
