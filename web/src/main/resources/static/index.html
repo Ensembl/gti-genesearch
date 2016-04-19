@@ -163,21 +163,21 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 
 					<form novalidate class="form-horizontal" role="form">
 						<div class="form-group">
-							<div class="col-sm-10">
+							<div class="col-sm-20">
 								<label class="control-label col-sm-2" for="query">Query:</label>
-								<input type="text" id="query" ng-model="search.query"></input>
+								<textarea id="query" ng-model="search.query"></textarea>
 							</div>
 						</div>
 						<div class="form-group">
-							<div class="col-sm-10">
+							<div class="col-sm-20">
 								<label class="control-label col-sm-2" for="fields">Fields:</label>
-								<input type="text" id="fields" ng-model="search.fields" />
+								<select ng-model="search.fields" multiple ng-options="v.displayName for v in searchCtrl.displayFields"></select>
 							</div>
 						</div>
 						<div class="form-group">
-							<div class="col-sm-10">
+							<div class="col-sm-20">
 								<label class="control-label col-sm-2" for="facets">Facets:</label>
-								<input type="text" id="facets" ng-model="search.facets" />
+								<select ng-model="search.facets" multiple ng-options="v.displayName for v in searchCtrl.facetFields"></select>
 							</div>
 						</div>
 						<div class="form-group">

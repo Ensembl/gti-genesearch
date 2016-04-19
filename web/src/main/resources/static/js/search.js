@@ -1,30 +1,42 @@
 var searchMod = angular.module('search', [ 'datatables' ]);
 
-searchMod.controller('searchController', function(DTOptionsBuilder,
-		DTColumnBuilder) {
+var searchCtrl = function($http, DTOptionsBuilder, DTColumnBuilder) {
 
 	var vm = this;
 	vm.dtInstance = {};
 	vm.hasData = false;
+	vm.firstRun = true;
 	vm.reloadData = function() {
 		vm.dtInstance.reloadData();
 	};
 
+	this.displayFields = [];
+	$http.get('/api/fieldinfo?type=display').then(function(response) {
+		vm.displayFields = response.data;
+	}, function(response) {
+		alert(JSON.stringify(response));
+	});
+
+	this.facetFields = [];
+	$http.get('/api/fieldinfo?type=facet').then(function(response) {
+		vm.facetFields = response.data;
+	}, function(response) {
+		alert(JSON.stringify(response));
+	});
+
 	this.search = function(search) {
-		
-		if(!search) {
+
+		if (!search) {
 			search = {};
 		}
 
-		if(!search.query) {
-			search.query="{}";
-		}
-		if(!search.fields) {
-			search.fields='["id","genome","description","biotype"]';
+		if (!search.query) {
+			search.query = "{}";
 		}
 
-		
-		alert(JSON.stringify(search));
+		if (!search.fields) {
+			search.fields = this.displayFields.slice(0, 4);
+		}
 
 		if (vm.hasData) {
 			vm.reloadData();
@@ -35,30 +47,62 @@ searchMod.controller('searchController', function(DTOptionsBuilder,
 			type : 'POST',
 			contentType : 'application/json',
 			data : function(data) {
-							
+				var sorts = [];
+				// only sort after the
+				// first query
+				if (!vm.firstRun) {
+					for (var i = 0; i < data.order.length; i++) {
+						var field = search.fields[data.order[i].column];
+						var sort = field.name;
+						if (data.order[i].dir == 'desc') {
+							sort = '-' + sort;
+						}
+						sorts.push(sort);
+					}
+				}
+				vm.firstRun = false;
 				return JSON.stringify({
 					"query" : JSON.parse(search.query),
-					"fields" : JSON.parse(search.fields)
+					"fields" : map(search.fields, function(f) {
+						return f.name
+					}),
+					sort : sorts,
+					offset : data.start,
+					limit : data.length
 				});
 			},
 			dataFilter : function(json) {
-				alert(json);
 				response = JSON.parse(json);
-				response.draw = 1;
 				response.recordsTotal = response.resultCount;
 				response.recordsFiltered = response.resultCount;
 				return JSON.stringify(response);
 			}
-		}).withDataProp('results').withOption('serverSide', true)
-				.withPaginationType('full_numbers');
+		}).withDataProp('results').withOption('serverSide', true).withOption(
+				'bFilter', false).withPaginationType('full_numbers');
 
 		vm.dtColumns = [];
-		JSON.parse(search.fields).forEach(function(col) {
-			vm.dtColumns.push(DTColumnBuilder.newColumn(col).withTitle(col));
+		search.fields.forEach(function(col) {
+			var c = DTColumnBuilder.newColumn(col.name).withTitle(
+					col.displayName);
+			if (!col.search) {
+				c.notSortable();
+			}
+			vm.dtColumns.push(c);
 		});
 
 		vm.hasData = true;
 
 	};
 
-});
+};
+
+searchMod.controller('searchController', [ '$http', 'DTOptionsBuilder',
+                                   		'DTColumnBuilder', searchCtrl ]);
+
+function map(objs, callback) {
+	var results = [];
+	objs.forEach(function(obj) {
+		results.push(callback(obj));
+	});
+	return results;
+}
