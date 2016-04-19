@@ -103,7 +103,7 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 				response.recordsFiltered = response.resultCount;
 				for (var i = 0; i < response.results.length; i++) {
 					for(var j = 0; j< search.fields.length; j++) {
-						if(!response.results[i].hasOwnProperty(search.fields[j]))  {
+						if(!response.results[i].hasOwnProperty(search.fields[j].name))  {
 							response.results[i][search.fields[j].name] = '';
 						}
 					}
