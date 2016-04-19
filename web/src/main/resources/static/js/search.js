@@ -104,8 +104,8 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 				return JSON.stringify(response);
 			}
 		}).withDataProp('results').withOption('serverSide', true).withOption(
-				'bFilter', false).withPaginationType('full_numbers')
-				.withOption('order', []);
+				'processing', true).withOption('bFilter', false)
+				.withPaginationType('full_numbers').withOption('order', []);
 
 	};
 
