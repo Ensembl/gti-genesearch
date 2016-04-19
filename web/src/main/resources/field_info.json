@@ -9,6 +9,18 @@
 "name":"description", "displayName":"Description", "search":"true", "display":"true", "facet":"false"
 },
 {
+"name":"biotype", "displayName":"Biotype", "search":"true", "display":"true", "facet":"true"
+},
+{
+"name":"seq_region_name", "displayName":"Chromosome/scaffold", "search":"true", "display":"true", "facet":"true"
+},
+{
+"name":"start", "displayName":"Gene start", "search":"true", "display":"true", "facet":"false"
+},
+{
+"name":"end", "displayName":"Gene end", "search":"true", "display":"true", "facet":"false"
+},
+{
 "name":"genome", "displayName":"Genome", "search":"true", "display":"false", "facet":"true"
 },
 {
@@ -16,5 +28,8 @@
 },
 {
 "name":"location", "displayName":"Genomic location", "search":"true", "display":"false", "facet":"false", "type":"LOCATION"
+},
+{
+"name":"Uniprot_SWISSPROT", "displayName":"UniProtKB/Swiss-Prot accessions", "search":"true", "display":"true", "facet":"false"
 }
 ]

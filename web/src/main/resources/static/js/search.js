@@ -45,8 +45,6 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 
 	this.search = function(search) {
 		vm.firstRun = true;
-		
-		alert("Searching");
 
 		if (!search) {
 			search = {};
@@ -80,7 +78,6 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 			type : 'POST',
 			contentType : 'application/json',
 			data : function(data) {
-				alert("Doing data");
 				var sorts = [];
 				if (!vm.firstRun) {
 					// only sort after the
@@ -92,6 +89,7 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 							sort = '-' + sort;
 						}
 						sorts.push(sort);
+						alert(sort);
 					}
 				}
 				vm.firstRun = false;
