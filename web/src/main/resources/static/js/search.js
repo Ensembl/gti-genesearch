@@ -7,20 +7,23 @@ function ajax(search) {
 		contentType : 'application/json',
 		data : function(data) {
 			console.log("Posting data");
+			// setting sort
 			var sorts = [];
 			for (var i = 0; i < data.order.length; i++) {
 				var field = search.fields[data.order[i].column];
-				var sort = field.name;
+				var sort = field.searchField;
 				if (data.order[i].dir == 'desc') {
 					sort = '-' + sort;
 				}
+				console.log("Sorting on "+sort);
 				sorts.push(sort);
 			}
 
+			// create post
 			return JSON.stringify({
 				"query" : JSON.parse(search.query),
 				"fields" : map(search.fields, function(f) {
-					return f.name
+					return f.displayField
 				}),
 				sort : sorts,
 				offset : data.start,
@@ -30,6 +33,7 @@ function ajax(search) {
 		dataFilter : function(json) {
 			console.log("Filtering data");
 			response = JSON.parse(json);
+			// modify output
 			response.recordsTotal = response.resultCount;
 			response.recordsFiltered = response.resultCount;
 			return JSON.stringify(response);
@@ -44,9 +48,10 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder,
 	vm.dtInstance = {};
 	vm.hasData = false;
 
-	this.displayFields = [];
-	$http.get('/api/fieldinfo?type=display').then(function(response) {
-		vm.displayFields = response.data;
+	// get list of possible fields to use
+	this.allFields = [];
+	$http.get('/api/fieldinfo').then(function(response) {
+		vm.allFields = response.data;
 	}, function(response) {
 		alert(JSON.stringify(response));
 	});
@@ -91,28 +96,27 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder,
 			search.fields = this.displayFields.slice(0, 4);
 		}
 
+
+		console.log("Setting columns");
 		vm.dtColumns = [];
 		search.fields.forEach(function(col) {
-			var c = DTColumnBuilder.newColumn(col.name).withTitle(
+			var c = DTColumnBuilder.newColumn(col.displayField).withTitle(
 					col.displayName);
-			if (!col.search) {
-				c.notSortable();
-			}
 			vm.dtColumns.push(c);
 		});
-
 		if (vm.hasData) {
 			console.log("Clearing table");
-			vm.dtInstance.rerender();
 			vm.dtInstance.changeData(ajax(search));
-		}
-		vm.hasData = true;
+			//vm.dtInstance.rerender();
+		} else {
 		console.log("Loading table");
 		vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax',
 				ajax(search)).withDataProp('results').withOption('serverSide',
 				true).withOption('processing', true).withOption('bFilter',
 				false).withOption("defaultContent", "").withPaginationType(
-				'full_numbers').withOption('order', []);
+				'full_numbers').withOption('order', []).withOption("saveState",false);
+		vm.hasData = true;
+		}
 
 	};
 };

@@ -227,7 +227,7 @@ public class ESGeneSearch implements GeneSearch {
 		log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
-		return new QueryResult(response.getHits().getTotalHits(), processResults(response),
+		return new QueryResult(response.getHits().getTotalHits(), offset, limit, processResults(response),
 				processAggregations(response));
 
 	}

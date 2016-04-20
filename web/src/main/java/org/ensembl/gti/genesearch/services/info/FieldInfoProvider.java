@@ -8,10 +8,6 @@ public interface FieldInfoProvider {
 
 	public List<FieldInfo> getAll();
 
-	public List<FieldInfo> getDisplayable();
-
-	public List<FieldInfo> getSearchable();
-
 	public List<FieldInfo> getFacetable();
 
 	public FieldInfo getByName(String name);

@@ -1,5 +1,7 @@
 package org.ensembl.gti.genesearch.services.info;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Encapsulates information about a field
  * 
@@ -14,19 +16,26 @@ public class FieldInfo {
 
 	private String name;
 	private String displayName;
+	private String searchField;
+	private String displayField;
 	private FieldType type = FieldType.TEXT;
-	private boolean search = true;
-	private boolean display = true;
-	private boolean facet = true;
+	private boolean facet = false;
 
 	public FieldInfo() {
 	}
 
-	public FieldInfo(String name, String displayName, FieldType type, boolean search, boolean display, boolean facet) {
+	public FieldInfo(String name, String displayName, String displayField, String searchField, FieldType type,
+			boolean facet) {
 		this.name = name;
 		this.displayName = displayName;
-		this.search = search;
-		this.display = display;
+		if (StringUtils.isEmpty(searchField)) {
+			searchField = name;
+		}
+		this.searchField = searchField;
+		if (StringUtils.isEmpty(displayField)) {
+			displayField = searchField;
+		}
+		this.displayField = displayField;
 		this.facet = facet;
 		this.type = type;
 	}
@@ -43,20 +52,8 @@ public class FieldInfo {
 		return type;
 	}
 
-	public boolean isDisplay() {
-		return display;
-	}
-
 	public boolean isFacet() {
 		return facet;
-	}
-
-	public boolean isSearch() {
-		return search;
-	}
-
-	public void setDisplay(boolean display) {
-		this.display = display;
 	}
 
 	public void setDisplayName(String displayName) {
@@ -71,12 +68,32 @@ public class FieldInfo {
 		this.name = name;
 	}
 
-	public void setSearch(boolean search) {
-		this.search = search;
-	}
-
 	public void setType(FieldType type) {
 		this.type = type;
+	}
+
+	public String getSearchField() {
+		if (StringUtils.isEmpty(searchField)) {
+			return getName();
+		} else {
+			return searchField;
+		}
+	}
+
+	public void setSearchField(String searchField) {
+		this.searchField = searchField;
+	}
+
+	public String getDisplayField() {
+		if (StringUtils.isEmpty(displayField)) {
+			return getSearchField();
+		} else {
+			return displayField;
+		}
+	}
+
+	public void setDisplayField(String displayField) {
+		this.displayField = displayField;
 	}
 
 }

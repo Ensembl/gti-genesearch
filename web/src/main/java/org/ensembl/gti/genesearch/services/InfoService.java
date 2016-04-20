@@ -33,10 +33,6 @@ public class InfoService {
 	public Collection<FieldInfo> fields(@QueryParam("type") String type) {
 		if (StringUtils.isEmpty(type) || "all".equalsIgnoreCase(type)) {
 			return provider.getAll();
-		} else if ("search".equalsIgnoreCase(type)) {
-			return provider.getSearchable();
-		} else if ("display".equalsIgnoreCase(type)) {
-			return provider.getDisplayable();
 		} else if ("facet".equalsIgnoreCase(type)) {
 			return provider.getFacetable();
 		} else {

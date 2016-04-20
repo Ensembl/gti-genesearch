@@ -16,10 +16,8 @@ public class FieldInfoTests {
 	public void testCreation() throws IOException {
 		String json = ESTestServer.readResource("/test_field_info.json");
 		FieldInfoProvider provider = new JsonFieldInfoProvider(json);
-		assertEquals("All expected", 5, provider.getAll().size());
+		assertEquals("All expected", 4, provider.getAll().size());
 		assertEquals("Location expected", 1, provider.getByType(FieldType.LOCATION).size());
-		assertEquals("Search expected", 4, provider.getSearchable().size());
-		assertEquals("Display expected", 5, provider.getDisplayable().size());
 		assertEquals("Facet expected", 1, provider.getFacetable().size());
 		assertEquals("ID", "id", provider.getByName("id").getName());
 	}

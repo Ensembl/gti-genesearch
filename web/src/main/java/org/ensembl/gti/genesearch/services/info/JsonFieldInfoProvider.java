@@ -46,16 +46,6 @@ public class JsonFieldInfoProvider implements FieldInfoProvider {
 	}
 
 	@Override
-	public List<FieldInfo> getDisplayable() {
-		return fields.stream().filter(i -> i.isDisplay()).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<FieldInfo> getSearchable() {
-		return fields.stream().filter(i -> i.isSearch()).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<FieldInfo> getFacetable() {
 		return fields.stream().filter(i -> i.isFacet()).collect(Collectors.toList());
 	}
