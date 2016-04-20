@@ -1,14 +1,48 @@
 var searchMod = angular.module('search', [ 'datatables' ]);
 
-var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
+function ajax(search) {
+	return {
+		url : '/api/query',
+		type : 'POST',
+		contentType : 'application/json',
+		data : function(data) {
+			console.log("Posting data");
+			var sorts = [];
+			for (var i = 0; i < data.order.length; i++) {
+				var field = search.fields[data.order[i].column];
+				var sort = field.name;
+				if (data.order[i].dir == 'desc') {
+					sort = '-' + sort;
+				}
+				sorts.push(sort);
+			}
+
+			return JSON.stringify({
+				"query" : JSON.parse(search.query),
+				"fields" : map(search.fields, function(f) {
+					return f.name
+				}),
+				sort : sorts,
+				offset : data.start,
+				limit : data.length
+			});
+		},
+		dataFilter : function(json) {
+			console.log("Filtering data");
+			response = JSON.parse(json);
+			response.recordsTotal = response.resultCount;
+			response.recordsFiltered = response.resultCount;
+			return JSON.stringify(response);
+		}
+	}
+};
+
+var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder,
+		DTInstance) {
 
 	var vm = this;
 	vm.dtInstance = {};
 	vm.hasData = false;
-
-	vm.reloadData = function() {
-		vm.dtInstance.reloadData();
-	};
 
 	this.displayFields = [];
 	$http.get('/api/fieldinfo?type=display').then(function(response) {
@@ -68,54 +102,19 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder) {
 		});
 
 		if (vm.hasData) {
+			console.log("Clearing table");
 			vm.dtInstance.rerender();
+			vm.dtInstance.changeData(ajax(search));
 		}
 		vm.hasData = true;
-
-		vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
-			url : '/api/query',
-			type : 'POST',
-			contentType : 'application/json',
-			data : function(data) {
-				var sorts = [];
-				for (var i = 0; i < data.order.length; i++) {
-					var field = search.fields[data.order[i].column];
-					var sort = field.name;
-					if (data.order[i].dir == 'desc') {
-						sort = '-' + sort;
-					}
-					sorts.push(sort);
-				}
-
-				return JSON.stringify({
-					"query" : JSON.parse(search.query),
-					"fields" : map(search.fields, function(f) {
-						return f.name
-					}),
-					sort : sorts,
-					offset : data.start,
-					limit : data.length
-				});
-			},
-			dataFilter : function(json) {
-				response = JSON.parse(json);
-				response.recordsTotal = response.resultCount;
-				response.recordsFiltered = response.resultCount;
-				for (var i = 0; i < response.results.length; i++) {
-					for(var j = 0; j< search.fields.length; j++) {
-						if(!response.results[i].hasOwnProperty(search.fields[j].name))  {
-							response.results[i][search.fields[j].name] = '';
-						}
-					}
-				}
-				return JSON.stringify(response);
-			}
-		}).withDataProp('results').withOption('serverSide', true).withOption(
-				'processing', true).withOption('bFilter', false)
-				.withPaginationType('full_numbers').withOption('order', []);
+		console.log("Loading table");
+		vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax',
+				ajax(search)).withDataProp('results').withOption('serverSide',
+				true).withOption('processing', true).withOption('bFilter',
+				false).withOption("defaultContent", "").withPaginationType(
+				'full_numbers').withOption('order', []);
 
 	};
-
 };
 
 searchMod.controller('searchController', [ '$http', '$scope',
