@@ -31,7 +31,7 @@ function ajax(search) {
 				if (data.order[i].dir == 'desc') {
 					sort = '-' + sort;
 				}
-				console.log("Sorting on "+sort);
+				console.log("Sorting on " + sort);
 				sorts.push(sort);
 			}
 
@@ -112,7 +112,6 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder,
 			search.fields = this.displayFields.slice(0, 4);
 		}
 
-
 		console.log("Setting columns");
 		vm.dtColumns = [];
 		search.fields.forEach(function(col) {
@@ -123,15 +122,17 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder,
 		if (vm.hasData) {
 			console.log("Clearing table");
 			vm.dtInstance.changeData(ajax(search));
-			//vm.dtInstance.rerender();
+			// vm.dtInstance.rerender();
 		} else {
-		console.log("Loading table");
-		vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax',
-				ajax(search)).withDataProp('results').withOption('serverSide',
-				true).withOption('processing', true).withOption('bFilter',
-				false).withOption("defaultContent", "").withPaginationType(
-				'full_numbers').withOption('order', []).withOption("saveState",false);
-		vm.hasData = true;
+			console.log("Loading table");
+			vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax',
+					ajax(search)).withDataProp('results').withOption(
+					'serverSide', true).withOption('processing', true)
+					.withOption('bFilter', false).withOption("defaultContent",
+							"").withPaginationType('full_numbers').withOption(
+							'order', []).withOption("saveState", false)
+					.withOption("pagingType", "simple");
+			vm.hasData = true;
 		}
 
 	};
