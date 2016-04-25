@@ -48,7 +48,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.sort.SortParseElement;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
-import org.ensembl.genesearch.GeneSearch;
+import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author dstaines
  *
  */
-public class ESGeneSearch implements GeneSearch {
+public class ESGeneSearch implements Search {
 
 	public static final String ALL_FIELDS = "*";
 	public static final int DEFAULT_SCROLL_SIZE = 50000;

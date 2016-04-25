@@ -34,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
-import org.ensembl.genesearch.GeneSearch;
+import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class IdLookupClient {
 
 		final Writer out = getWriter(params);
 
-		GeneSearch search = new ESGeneSearch(client);
+		Search search = new ESGeneSearch(client);
 
 		List<String> ids = params.queryIds;
 		if (ids == null && !isEmpty(params.queryFile)) {

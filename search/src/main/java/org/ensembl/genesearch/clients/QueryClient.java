@@ -26,7 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.GeneSearch;
+import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
@@ -86,7 +86,7 @@ public class QueryClient {
 			System.exit(1);
 		}
 
-		GeneSearch search = new ESGeneSearch(client);
+		Search search = new ESGeneSearch(client);
 
 		List<Query> queries = new DefaultQueryHandler()
 				.parseQuery(params.query);

@@ -20,7 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public interface GeneSearch {
+/**
+ * Generic interface for searching for and retrieving objects from a backing store
+ * @author dstaines
+ *
+ */
+public interface Search {
 
 	/**
 	 * Retrieve all results matching the supplied queries

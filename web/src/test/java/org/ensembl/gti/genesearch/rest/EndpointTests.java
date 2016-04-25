@@ -31,7 +31,7 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.gti.genesearch.services.Application;
-import org.ensembl.gti.genesearch.services.GeneSearchProvider;
+import org.ensembl.gti.genesearch.services.SearchProvider;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,7 +64,7 @@ public class EndpointTests {
 	static ESGeneSearch search;
 
 	@Autowired
-	GeneSearchProvider provider;
+	SearchProvider provider;
 
 	private static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {
 	};

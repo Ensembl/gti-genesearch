@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Class encapsulating a result set. Returned by {@link GeneSearch}.
+ * Class encapsulating a result set. Returned by {@link Search}.
  * @author dstaines
  *
  */

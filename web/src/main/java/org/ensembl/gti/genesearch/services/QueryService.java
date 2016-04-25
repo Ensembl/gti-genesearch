@@ -24,7 +24,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.ensembl.genesearch.GeneSearch;
+import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +37,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class QueryService {
 
 	final Logger log = LoggerFactory.getLogger(QueryService.class);
-	protected final GeneSearchProvider provider;
+	protected final SearchProvider provider;
 
 	@Autowired
-	public QueryService(GeneSearchProvider provider) {
+	public QueryService(SearchProvider provider) {
 		this.provider = provider;
 	}
 

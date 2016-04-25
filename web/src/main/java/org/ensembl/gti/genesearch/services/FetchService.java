@@ -49,10 +49,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class FetchService {
 
 	final Logger log = LoggerFactory.getLogger(FetchService.class);
-	protected final GeneSearchProvider provider;
+	protected final SearchProvider provider;
 
 	@Autowired
-	public FetchService(GeneSearchProvider provider) {
+	public FetchService(SearchProvider provider) {
 		this.provider = provider;
 	}
 
