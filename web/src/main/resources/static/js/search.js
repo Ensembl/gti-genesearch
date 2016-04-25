@@ -121,7 +121,10 @@ var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder,
 		});
 		if (vm.hasData) {
 			console.log("Clearing table");
-			vm.dtInstance.changeData(ajax(search));
+			vm.dtInstance.DataTable.state.clear();
+			vm.dtInstance.DataTable.ajax.reload();
+			vm.dtInstance.DataTable.draw();
+			//vm.dtInstance.changeData(ajax(search));
 			// vm.dtInstance.rerender();
 		} else {
 			console.log("Loading table");
