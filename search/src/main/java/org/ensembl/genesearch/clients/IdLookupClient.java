@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.client.Client;
-import org.ensembl.genesearch.GeneQuery;
-import org.ensembl.genesearch.GeneQuery.GeneQueryType;
+import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.GeneSearch;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.slf4j.Logger;
@@ -99,8 +99,8 @@ public class IdLookupClient {
 					Collectors.toList());
 		}
 
-		List<GeneQuery> queries = Arrays
-				.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.TERM,
+		List<Query> queries = Arrays
+				.asList(new Query[] { new Query(QueryType.TERM,
 						params.queryField, ids) });
 		search.fetch(row -> {
 			try {

@@ -30,7 +30,7 @@ public interface GeneSearch {
 	 *            (if empty the whole document will be returned)
 	 * @return
 	 */
-	public List<Map<String, Object>> fetch(List<GeneQuery> queries, List<String> fieldNames);
+	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames);
 
 	/**
 	 * Retrieve all results matching the supplied queries and process with the
@@ -42,7 +42,7 @@ public interface GeneSearch {
 	 *            (if empty the whole document will be returned)
 	 * @return
 	 */
-	public void fetch(Consumer<Map<String, Object>> consumer, List<GeneQuery> queries, List<String> fieldNames);
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames);
 
 	/**
 	 * Retrieve genes with the supplied IDs
@@ -76,7 +76,7 @@ public interface GeneSearch {
 	 *            number of hits to return
 	 * @return
 	 */
-	public QueryResult query(List<GeneQuery> queries, List<String> output, List<String> facets, int offset, int limit,
+	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
 			List<String> sorts);
 
 	/**

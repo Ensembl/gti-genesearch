@@ -22,6 +22,11 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Class encapsulating a result set. Returned by {@link GeneSearch}.
+ * @author dstaines
+ *
+ */
 public class QueryResult {
 
 	private final long resultCount;

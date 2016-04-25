@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.ensembl.genesearch.GeneQuery.GeneQueryType;
+import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.impl.ESGeneSearch;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
@@ -58,7 +58,7 @@ public class ESGeneSearchTest {
 	@Test
 	public void fetchAll() {
 		log.info("Fetching all genes");
-		List<Map<String, Object>> ids = search.fetch(new ArrayList<GeneQuery>(), Arrays.asList("_id"));
+		List<Map<String, Object>> ids = search.fetch(new ArrayList<Query>(), Arrays.asList("_id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 598, ids.size());
 	}
@@ -67,10 +67,10 @@ public class ESGeneSearchTest {
 	public void fetchHomologues() {
 		String genomeName = "escherichia_coli_str_k_12_substr_mg1655";
 		log.info("Fetching homologues to " + genomeName);
-		GeneQuery genome = new GeneQuery(GeneQueryType.TERM, "genome", genomeName);
+		Query genome = new Query(QueryType.TERM, "genome", genomeName);
 
 		List<Map<String, Object>> ids = search.fetch(
-				Arrays.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.NESTED, "homologues", genome) }),
+				Arrays.asList(new Query[] { new Query(QueryType.NESTED, "homologues", genome) }),
 				Arrays.asList("_id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 79, ids.size());
@@ -81,11 +81,11 @@ public class ESGeneSearchTest {
 		String genomeName = "escherichia_coli_str_k_12_substr_mg1655";
 		String orthologyType = "ortholog_one2one";
 		log.info("Fetching " + orthologyType + " homologues to " + genomeName);
-		GeneQuery orthology = new GeneQuery(GeneQueryType.TERM, "description", orthologyType);
-		GeneQuery genome = new GeneQuery(GeneQueryType.TERM, "genome", genomeName);
+		Query orthology = new Query(QueryType.TERM, "description", orthologyType);
+		Query genome = new Query(QueryType.TERM, "genome", genomeName);
 
 		List<Map<String, Object>> ids = search.fetch(
-				Arrays.asList(new GeneQuery[] { new GeneQuery(GeneQueryType.NESTED, "homologues", genome, orthology) }),
+				Arrays.asList(new Query[] { new Query(QueryType.NESTED, "homologues", genome, orthology) }),
 				Arrays.asList("id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 63, ids.size());
@@ -96,10 +96,10 @@ public class ESGeneSearchTest {
 		String id = "AAR39271";
 		log.info("Fetching genes with translation ID=" + id);
 
-		GeneQuery tIdQuery = new GeneQuery(GeneQueryType.NESTED, "transcripts",
-				new GeneQuery(GeneQueryType.NESTED, "translations", new GeneQuery(GeneQueryType.TERM, "id", id)));
+		Query tIdQuery = new Query(QueryType.NESTED, "transcripts",
+				new Query(QueryType.NESTED, "translations", new Query(QueryType.TERM, "id", id)));
 
-		List<Map<String, Object>> ids = search.fetch(Arrays.asList(new GeneQuery[] { tIdQuery }), Arrays.asList("id"));
+		List<Map<String, Object>> ids = search.fetch(Arrays.asList(new Query[] { tIdQuery }), Arrays.asList("id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 1, ids.size());
 	}
@@ -107,10 +107,10 @@ public class ESGeneSearchTest {
 	@Test
 	public void fetchRange() {
 		log.info("Fetching for Chromosome:30000-50000");
-		GeneQuery seqRegion = new GeneQuery(GeneQueryType.TERM, "seq_region_name", "Chromosome");
-		GeneQuery start = new GeneQuery(GeneQueryType.RANGE, "start", (long) 30000, null);
-		GeneQuery end = new GeneQuery(GeneQueryType.RANGE, "end", null, (long) 50000);
-		List<Map<String, Object>> results = search.fetch(Arrays.asList(new GeneQuery[] { seqRegion, start, end }),
+		Query seqRegion = new Query(QueryType.TERM, "seq_region_name", "Chromosome");
+		Query start = new Query(QueryType.RANGE, "start", (long) 30000, null);
+		Query end = new Query(QueryType.RANGE, "end", null, (long) 50000);
+		List<Map<String, Object>> results = search.fetch(Arrays.asList(new Query[] { seqRegion, start, end }),
 				Arrays.asList("_id", "seq_region_name", "start", "end"));
 		assertEquals("Total hits", 26, results.size());
 		for (Map<String, Object> result : results) {
@@ -186,7 +186,7 @@ public class ESGeneSearchTest {
 	public void queryLargeTerms() throws IOException {
 		QueryHandler handler = new DefaultQueryHandler();
 		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
-		List<GeneQuery> qs = handler.parseQuery(json);
+		List<Query> qs = handler.parseQuery(json);
 		search.query(qs, Arrays.asList("id", "name", "homologues"), Collections.emptyList(), 0, 5,
 				Collections.emptyList());
 	}

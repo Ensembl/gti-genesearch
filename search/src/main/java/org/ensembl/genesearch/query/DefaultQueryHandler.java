@@ -25,8 +25,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ensembl.genesearch.GeneQuery;
-import org.ensembl.genesearch.GeneQuery.GeneQueryType;
+import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.Query.QueryType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +39,7 @@ public class DefaultQueryHandler implements QueryHandler {
 	private static final String END = "end";
 
 	@Override
-	public List<GeneQuery> parseQuery(String json) {
+	public List<Query> parseQuery(String json) {
 		if (StringUtils.isEmpty(json)) {
 			return Collections.emptyList();
 		}
@@ -54,8 +54,8 @@ public class DefaultQueryHandler implements QueryHandler {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<GeneQuery> parseQuery(Map<String, Object> queryObj) {
-		List<GeneQuery> queries = new ArrayList<>();
+	public List<Query> parseQuery(Map<String, Object> queryObj) {
+		List<Query> queries = new ArrayList<>();
 		for (Entry<String, Object> query : queryObj.entrySet()) {
 			String key = query.getKey();
 			// possibly try another handler if we want to do something special
@@ -65,15 +65,15 @@ public class DefaultQueryHandler implements QueryHandler {
 			if ("location".equals(key)) {
 				queries.addAll(parseLocationQuery((Map<String, Object>) value));
 			} else if (Map.class.isAssignableFrom(clazz)) {
-				List<GeneQuery> subQs = parseQuery((Map<String, Object>) value);
-				queries.add(new GeneQuery(GeneQueryType.NESTED, key, subQs.toArray(new GeneQuery[subQs.size()])));
+				List<Query> subQs = parseQuery((Map<String, Object>) value);
+				queries.add(new Query(QueryType.NESTED, key, subQs.toArray(new Query[subQs.size()])));
 			} else {
 				if (List.class.isAssignableFrom(clazz)) {
 					List<String> vals = ((List<Object>) value).stream().map(o -> String.valueOf(o))
 							.collect(Collectors.<String> toList());
-					queries.add(new GeneQuery(GeneQueryType.TERM, key, vals));
+					queries.add(new Query(QueryType.TERM, key, vals));
 				} else {
-					queries.add(new GeneQuery(GeneQueryType.TERM, key, String.valueOf(value)));
+					queries.add(new Query(QueryType.TERM, key, String.valueOf(value)));
 				}
 			}
 		}
@@ -88,23 +88,23 @@ public class DefaultQueryHandler implements QueryHandler {
 	 *            "end":"1000", "strand":"1"}
 	 * @return list of gene queries corresponding to that location
 	 */
-	protected List<GeneQuery> parseLocationQuery(Map<String, Object> value) {
+	protected List<Query> parseLocationQuery(Map<String, Object> value) {
 
-		List<GeneQuery> queries = new ArrayList<>(4);
-		queries.add(new GeneQuery(GeneQueryType.TERM, SEQ_REGION, String.valueOf(value.get(SEQ_REGION))));
+		List<Query> queries = new ArrayList<>(4);
+		queries.add(new Query(QueryType.TERM, SEQ_REGION, String.valueOf(value.get(SEQ_REGION))));
 
 		if (value.containsKey(START)) {
 			Long start = Long.parseLong(String.valueOf(value.get(START)));
-			queries.add(new GeneQuery(GeneQueryType.RANGE, START, start, null));
+			queries.add(new Query(QueryType.RANGE, START, start, null));
 		}
 
 		if (value.containsKey(END)) {
 			Long end = Long.parseLong(String.valueOf(value.get(END)));
-			queries.add(new GeneQuery(GeneQueryType.RANGE, END, null, end));
+			queries.add(new Query(QueryType.RANGE, END, null, end));
 		}
 
 		if (value.containsKey(STRAND)) {
-			queries.add(new GeneQuery(GeneQueryType.TERM, STRAND, String.valueOf(value.get(STRAND))));
+			queries.add(new Query(QueryType.TERM, STRAND, String.valueOf(value.get(STRAND))));
 		}
 
 		return queries;

@@ -46,8 +46,8 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.sort.SortParseElement;
-import org.ensembl.genesearch.GeneQuery;
-import org.ensembl.genesearch.GeneQuery.GeneQueryType;
+import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.GeneSearch;
 import org.ensembl.genesearch.QueryResult;
 import org.slf4j.Logger;
@@ -88,14 +88,14 @@ public class ESGeneSearch implements GeneSearch {
 	}
 
 	@Override
-	public List<Map<String, Object>> fetch(List<GeneQuery> queries, List<String> fieldNames) {
+	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames) {
 		final List<Map<String, Object>> results = new ArrayList<>();
 		fetch(row -> results.add(row), queries, fieldNames);
 		return results;
 	}
 
 	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<GeneQuery> queries, List<String> fieldNames) {
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames) {
 		StopWatch watch = new StopWatch();
 
 		int queryScrollSize = calculateScroll(fieldNames);
@@ -104,12 +104,12 @@ public class ESGeneSearch implements GeneSearch {
 		
 		// if we have more terms than entries in our scroll, do it piecemeal
 		if (queries.size() == 1) {
-			GeneQuery query = queries.get(0);
-			if (query.getType() == GeneQueryType.TERM && query.getValues().length > queryScrollSize) {
+			Query query = queries.get(0);
+			if (query.getType() == QueryType.TERM && query.getValues().length > queryScrollSize) {
 				for (List<String> terms : ListUtils.partition(Arrays.asList(query.getValues()), queryScrollSize)) {
 					log.info("Querying " + terms.size() + "/" + query.getValues().length);
 					watch.start();
-					fetch(consumer, Arrays.asList(new GeneQuery(query.getType(), query.getFieldName(), terms)),
+					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)),
 							fieldNames);
 					watch.stop();
 					log.info("Queried " + terms.size() + "/" + query.getValues().length + " in " + watch.getTime()
@@ -122,7 +122,7 @@ public class ESGeneSearch implements GeneSearch {
 		}
 
 		log.info("Building fetch query");
-		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new GeneQuery[queries.size()]));
+		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new Query[queries.size()]));
 
 		log.debug(query.toString());
 
@@ -217,10 +217,10 @@ public class ESGeneSearch implements GeneSearch {
 	}
 
 	@Override
-	public QueryResult query(List<GeneQuery> queries, List<String> output, List<String> facets, int offset, int limit,
+	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
 			List<String> sorts) {
 		log.debug("Building query");
-		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new GeneQuery[queries.size()]));
+		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new Query[queries.size()]));
 
 		log.info(query.toString());
 

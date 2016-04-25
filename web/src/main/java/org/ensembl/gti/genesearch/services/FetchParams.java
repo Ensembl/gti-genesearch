@@ -25,7 +25,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ensembl.genesearch.GeneQuery;
+import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.GeneSearch;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 
@@ -53,13 +53,13 @@ public class FetchParams {
 	}
 	
 	private List<String> fields = Collections.emptyList();
-	private List<GeneQuery> queries = Collections.emptyList();
+	private List<Query> queries = Collections.emptyList();
 	
 	public List<String> getFields() {
 		return fields;
 	}
 
-	public List<GeneQuery> getQueries() {
+	public List<Query> getQueries() {
 		return queries;
 	}
 
@@ -76,7 +76,7 @@ public class FetchParams {
 	}
 
 	@JsonIgnore
-	public void setQueries(List<GeneQuery> queries) {
+	public void setQueries(List<Query> queries) {
 		this.queries = queries;
 	}
 

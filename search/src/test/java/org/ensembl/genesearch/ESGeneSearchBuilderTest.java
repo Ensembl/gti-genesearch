@@ -27,7 +27,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
-import org.ensembl.genesearch.GeneQuery.GeneQueryType;
+import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.impl.ESGeneSearchBuilder;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
@@ -42,7 +42,7 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testId() {
-		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(new GeneQuery(GeneQueryType.TERM, "id", "DDB0231518"));
+		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(new Query(QueryType.TERM, "id", "DDB0231518"));
 
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -52,9 +52,9 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testNestedHomology() {
-		GeneQuery genome = new GeneQuery(GeneQueryType.TERM, "genome", "dictyostelium_fasciculatum");
-		GeneQuery orthology = new GeneQuery(GeneQueryType.TERM, "description", "ortholog_one2one");
-		GeneQuery homology = new GeneQuery(GeneQueryType.NESTED, "homologues", genome, orthology);
+		Query genome = new Query(QueryType.TERM, "genome", "dictyostelium_fasciculatum");
+		Query orthology = new Query(QueryType.TERM, "description", "ortholog_one2one");
+		Query homology = new Query(QueryType.NESTED, "homologues", genome, orthology);
 
 		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(homology);
 
@@ -76,9 +76,9 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testNestedTranslationId() {
-		GeneQuery idQuery = new GeneQuery(GeneQueryType.TERM, "id", "DDB0231518");
-		GeneQuery translationQuery = new GeneQuery(GeneQueryType.NESTED, "translations", idQuery);
-		GeneQuery geneQuery = new GeneQuery(GeneQueryType.NESTED, "transcripts", translationQuery);
+		Query idQuery = new Query(QueryType.TERM, "id", "DDB0231518");
+		Query translationQuery = new Query(QueryType.NESTED, "translations", idQuery);
+		Query geneQuery = new Query(QueryType.NESTED, "transcripts", translationQuery);
 		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(geneQuery);
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -111,9 +111,9 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testRange() {
-		GeneQuery seqRegion = new GeneQuery(GeneQueryType.TERM, "seq_region_name", "DDB0231518");
-		GeneQuery start = new GeneQuery(GeneQueryType.RANGE, "start", (long) 1, null);
-		GeneQuery end = new GeneQuery(GeneQueryType.RANGE, "end", null, (long) 100);
+		Query seqRegion = new Query(QueryType.TERM, "seq_region_name", "DDB0231518");
+		Query start = new Query(QueryType.RANGE, "start", (long) 1, null);
+		Query end = new Query(QueryType.RANGE, "end", null, (long) 100);
 		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(seqRegion, start, end);
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -131,7 +131,7 @@ public class ESGeneSearchBuilderTest {
 	public void testLargeTerms() throws IOException {
 		QueryHandler handler = new DefaultQueryHandler();
 		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
-		List<GeneQuery> qs = handler.parseQuery(json);
+		List<Query> qs = handler.parseQuery(json);
 		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(qs.get(0));
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);

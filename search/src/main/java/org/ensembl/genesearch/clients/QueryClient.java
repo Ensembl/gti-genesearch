@@ -25,7 +25,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.client.Client;
-import org.ensembl.genesearch.GeneQuery;
+import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.GeneSearch;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.impl.ESGeneSearch;
@@ -88,7 +88,7 @@ public class QueryClient {
 
 		GeneSearch search = new ESGeneSearch(client);
 
-		List<GeneQuery> queries = new DefaultQueryHandler()
+		List<Query> queries = new DefaultQueryHandler()
 				.parseQuery(params.query);
 
 		log.info("Starting query");

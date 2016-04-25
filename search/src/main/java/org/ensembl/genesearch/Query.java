@@ -21,20 +21,25 @@ import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class GeneQuery {
+/**
+ * Generic query encapsulating lists of key-value terms
+ * @author dstaines
+ *
+ */
+public class Query {
 
-	public enum GeneQueryType {
+	public enum QueryType {
 		TERM, RANGE, NESTED;
 	}
 
 	private final String fieldName;
 	private final String[] values;
-	private final GeneQuery[] subQueries;
-	private final GeneQuery.GeneQueryType type;
+	private final Query[] subQueries;
+	private final Query.QueryType type;
 	private final Long start;
 	private final Long end;
 
-	public GeneQuery(GeneQuery.GeneQueryType type, String fieldName, Long start, Long end) {
+	public Query(Query.QueryType type, String fieldName, Long start, Long end) {
 		this.type = type;
 		this.fieldName = fieldName;
 		this.values = null;
@@ -43,7 +48,7 @@ public class GeneQuery {
 		this.end = end;
 	}
 
-	public GeneQuery(GeneQuery.GeneQueryType type, String fieldName, String... values) {
+	public Query(Query.QueryType type, String fieldName, String... values) {
 		this.type = type;
 		this.fieldName = fieldName;
 		this.values = values;
@@ -52,7 +57,7 @@ public class GeneQuery {
 		this.end = null;
 	}
 
-	public GeneQuery(GeneQuery.GeneQueryType type, String fieldName, Collection<String> valuesC) {
+	public Query(Query.QueryType type, String fieldName, Collection<String> valuesC) {
 		this.type = type;
 		this.fieldName = fieldName;
 		this.values = valuesC.toArray(new String[valuesC.size()]);
@@ -61,7 +66,7 @@ public class GeneQuery {
 		this.end = null;
 	}
 
-	public GeneQuery(GeneQuery.GeneQueryType type, String fieldName, GeneQuery... subQueries) {
+	public Query(Query.QueryType type, String fieldName, Query... subQueries) {
 		this.type = type;
 		this.fieldName = fieldName;
 		this.values = null;
@@ -78,11 +83,11 @@ public class GeneQuery {
 		return values;
 	}
 
-	public GeneQuery.GeneQueryType getType() {
+	public Query.QueryType getType() {
 		return type;
 	}
 
-	public GeneQuery[] getSubQueries() {
+	public Query[] getSubQueries() {
 		return subQueries;
 	}
 
@@ -95,9 +100,9 @@ public class GeneQuery {
 	}
 
 	public String toString() {
-		if (type == GeneQueryType.NESTED) {
+		if (type == QueryType.NESTED) {
 			return StringUtils.join(Arrays.asList(this.type, this.fieldName, Arrays.asList(this.subQueries)), ":");
-		} else if (type == GeneQueryType.RANGE) {
+		} else if (type == QueryType.RANGE) {
 			if (start != null) {
 				if (end == null) {
 					return ">=" + start;

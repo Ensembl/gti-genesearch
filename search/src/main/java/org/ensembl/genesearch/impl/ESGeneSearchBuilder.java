@@ -28,8 +28,8 @@ import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
-import org.ensembl.genesearch.GeneQuery;
-import org.ensembl.genesearch.GeneQuery.GeneQueryType;
+import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.Query.QueryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,17 +42,17 @@ public class ESGeneSearchBuilder {
 	private ESGeneSearchBuilder() {
 	}
 
-	public static QueryBuilder buildQuery(GeneQuery... geneQs) {
+	public static QueryBuilder buildQuery(Query... geneQs) {
 		return buildQueryWithParents(new ArrayList<String>(), geneQs);
 	}
 
 	protected static QueryBuilder buildQueryWithParents(List<String> parents,
-			GeneQuery... geneQs) {
+			Query... geneQs) {
 		log.trace("Parents " + parents);
 		if (geneQs.length == 1) {
-			GeneQuery geneQ = geneQs[0];
+			Query geneQ = geneQs[0];
 			QueryBuilder query;
-			if (geneQ.getType().equals(GeneQueryType.NESTED)) {
+			if (geneQ.getType().equals(QueryType.NESTED)) {
 				query = processNested(parents, geneQ);
 			} else {
 				query = processSingle(parents, geneQ);
@@ -68,9 +68,9 @@ public class ESGeneSearchBuilder {
 	}
 
 	protected static BoolQueryBuilder processMultiple(List<String> parents,
-			GeneQuery... geneQs) {
+			Query... geneQs) {
 		BoolQueryBuilder query = null;
-		for (GeneQuery geneQ : geneQs) {
+		for (Query geneQ : geneQs) {
 			log.trace("Multiple " + geneQ.getFieldName());
 			QueryBuilder subQuery = buildQueryWithParents(parents, geneQ);
 			if (query == null) {
@@ -83,14 +83,14 @@ public class ESGeneSearchBuilder {
 	}
 
 	protected static QueryBuilder processSingle(List<String> parents,
-			GeneQuery geneQ) {
+			Query geneQ) {
 		QueryBuilder query;
 		log.trace("Single " + geneQ.getFieldName());
 		if (parents.size()==0 && ID_FIELD.equals(geneQ.getFieldName())) {
 			query = QueryBuilders.idsQuery("gene").addIds(geneQ.getValues());
 		} else {
 			String path = StringUtils.join(extendPath(parents, geneQ), '.');
-			if(geneQ.getType() == GeneQueryType.RANGE) {
+			if(geneQ.getType() == QueryType.RANGE) {
 				RangeQueryBuilder q = QueryBuilders.rangeQuery(path);
 				if(geneQ.getStart()!=null) {
 					q.from(geneQ.getStart());
@@ -109,7 +109,7 @@ public class ESGeneSearchBuilder {
 	}
 
 	protected static QueryBuilder processNested(List<String> parents,
-			GeneQuery geneQ) {
+			Query geneQ) {
 		QueryBuilder query;
 		log.trace("Nested " + geneQ.getFieldName());
 		QueryBuilder subQuery = buildQueryWithParents(
@@ -120,7 +120,7 @@ public class ESGeneSearchBuilder {
 	}
 
 	protected static List<String> extendPath(List<String> parents,
-			GeneQuery geneQ) {
+			Query geneQ) {
 		List<String> newParents = new ArrayList<>(parents.size() + 1);
 		newParents.addAll(parents);
 		newParents.add(geneQ.getFieldName());
