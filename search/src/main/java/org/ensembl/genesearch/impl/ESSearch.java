@@ -59,20 +59,22 @@ import org.slf4j.LoggerFactory;
  * @author dstaines
  *
  */
-public class ESGeneSearch implements Search {
+public class ESSearch implements Search {
 
 	public static final String ALL_FIELDS = "*";
 	public static final int DEFAULT_SCROLL_SIZE = 50000;
 	public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
-	public static final String DEFAULT_INDEX = "genes";
-	public static final String DEFAULT_TYPE = "gene";
+	public static final String GENES_INDEX = "genes";
+	public static final String GENE_TYPE = "gene";
+	public static final String GENOME_TYPE = "genome";
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final Client client;
 	private final String index;
+	private final String type;
 
-	public ESGeneSearch(Client client) {
-		this(client, DEFAULT_INDEX,
+	public ESSearch(Client client, String index, String type) {
+		this(client, index, type,
 				Integer.parseInt(System.getProperty("es.scroll_size", String.valueOf(DEFAULT_SCROLL_SIZE))),
 				Integer.parseInt(System.getProperty("es.scroll_timeout", String.valueOf(DEFAULT_SCROLL_TIMEOUT))));
 	}
@@ -80,9 +82,10 @@ public class ESGeneSearch implements Search {
 	private final int scrollSize;
 	private final int scrollTimeout;
 
-	public ESGeneSearch(Client client, String index, int scrollSize, int scrollTimeout) {
+	public ESSearch(Client client, String index, String type, int scrollSize, int scrollTimeout) {
 		this.client = client;
 		this.index = index;
+		this.type = type;
 		this.scrollSize = scrollSize;
 		this.scrollTimeout = scrollTimeout;
 	}
@@ -122,11 +125,11 @@ public class ESGeneSearch implements Search {
 		}
 
 		log.info("Building fetch query");
-		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new Query[queries.size()]));
+		QueryBuilder query = ESSearchBuilder.buildQuery(queries.toArray(new Query[queries.size()]));
 
 		log.debug(query.toString());
 
-		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query);
+		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query).setTypes(type);
 
 		// force _doc order for more efficiency
 		request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
@@ -220,12 +223,12 @@ public class ESGeneSearch implements Search {
 	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
 			List<String> sorts) {
 		log.debug("Building query");
-		QueryBuilder query = ESGeneSearchBuilder.buildQuery(queries.toArray(new Query[queries.size()]));
+		QueryBuilder query = ESSearchBuilder.buildQuery(queries.toArray(new Query[queries.size()]));
 
 		log.info(query.toString());
 
 		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
-				.setFetchSource(output.toArray(new String[output.size()]), null).setSize(limit).setFrom(offset);
+				.setFetchSource(output.toArray(new String[output.size()]), null).setSize(limit).setFrom(offset).setTypes(type);
 
 		setFields(output, request);
 
@@ -256,7 +259,7 @@ public class ESGeneSearch implements Search {
 	private void addFacets(List<String> facets, SearchRequestBuilder request) {
 		for (String facet : facets) {
 			log.info("Adding facet on " + facet);
-			AbstractAggregationBuilder builder = ESGeneSearchBuilder.buildAggregation(facet);
+			AbstractAggregationBuilder builder = ESSearchBuilder.buildAggregation(facet);
 			if (builder != null)
 				request.addAggregation(builder);
 		}
@@ -340,7 +343,7 @@ public class ESGeneSearch implements Search {
 	@Override
 	public List<Map<String, Object>> fetchByIds(String... ids) {
 		SearchRequestBuilder request = client.prepareSearch(index)
-				.setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids)));
+				.setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids))).setTypes(type);
 		SearchResponse response = request.execute().actionGet();
 		return processResults(response);
 	}
@@ -348,7 +351,7 @@ public class ESGeneSearch implements Search {
 	@Override
 	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids) {
 		SearchRequestBuilder request = client.prepareSearch(index)
-				.setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids)));
+				.setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids))).setTypes(type);
 		SearchResponse response = request.execute().actionGet();
 		processAllHits(consumer, response);
 		log.info("Retrieved all hits");

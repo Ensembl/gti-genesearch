@@ -33,21 +33,26 @@ import org.ensembl.genesearch.Query.QueryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ESGeneSearchBuilder {
+/**
+ * Class to translate from a simplified nested key-value structure to an
+ * Elasticsearch query
+ * 
+ * @author dstaines
+ *
+ */
+public class ESSearchBuilder {
 
 	private static final String ID_FIELD = "id";
-	private static final Logger log = LoggerFactory
-			.getLogger(ESGeneSearchBuilder.class);
-	
-	private ESGeneSearchBuilder() {
+	private static final Logger log = LoggerFactory.getLogger(ESSearchBuilder.class);
+
+	private ESSearchBuilder() {
 	}
 
 	public static QueryBuilder buildQuery(Query... geneQs) {
 		return buildQueryWithParents(new ArrayList<String>(), geneQs);
 	}
 
-	protected static QueryBuilder buildQueryWithParents(List<String> parents,
-			Query... geneQs) {
+	protected static QueryBuilder buildQueryWithParents(List<String> parents, Query... geneQs) {
 		log.trace("Parents " + parents);
 		if (geneQs.length == 1) {
 			Query geneQ = geneQs[0];
@@ -67,8 +72,7 @@ public class ESGeneSearchBuilder {
 		}
 	}
 
-	protected static BoolQueryBuilder processMultiple(List<String> parents,
-			Query... geneQs) {
+	protected static BoolQueryBuilder processMultiple(List<String> parents, Query... geneQs) {
 		BoolQueryBuilder query = null;
 		for (Query geneQ : geneQs) {
 			log.trace("Multiple " + geneQ.getFieldName());
@@ -82,20 +86,19 @@ public class ESGeneSearchBuilder {
 		return query;
 	}
 
-	protected static QueryBuilder processSingle(List<String> parents,
-			Query geneQ) {
+	protected static QueryBuilder processSingle(List<String> parents, Query geneQ) {
 		QueryBuilder query;
 		log.trace("Single " + geneQ.getFieldName());
-		if (parents.size()==0 && ID_FIELD.equals(geneQ.getFieldName())) {
+		if (parents.size() == 0 && ID_FIELD.equals(geneQ.getFieldName())) {
 			query = QueryBuilders.idsQuery("gene").addIds(geneQ.getValues());
 		} else {
 			String path = StringUtils.join(extendPath(parents, geneQ), '.');
-			if(geneQ.getType() == QueryType.RANGE) {
+			if (geneQ.getType() == QueryType.RANGE) {
 				RangeQueryBuilder q = QueryBuilders.rangeQuery(path);
-				if(geneQ.getStart()!=null) {
+				if (geneQ.getStart() != null) {
 					q.from(geneQ.getStart());
 				}
-				if(geneQ.getEnd()!=null) {
+				if (geneQ.getEnd() != null) {
 					q.to(geneQ.getEnd());
 				}
 				query = q;
@@ -108,19 +111,15 @@ public class ESGeneSearchBuilder {
 		return QueryBuilders.constantScoreQuery(query);
 	}
 
-	protected static QueryBuilder processNested(List<String> parents,
-			Query geneQ) {
+	protected static QueryBuilder processNested(List<String> parents, Query geneQ) {
 		QueryBuilder query;
 		log.trace("Nested " + geneQ.getFieldName());
-		QueryBuilder subQuery = buildQueryWithParents(
-				extendPath(parents, geneQ), geneQ.getSubQueries());
-		query = QueryBuilders.nestedQuery(
-				StringUtils.join(extendPath(parents, geneQ), '.'), subQuery);
+		QueryBuilder subQuery = buildQueryWithParents(extendPath(parents, geneQ), geneQ.getSubQueries());
+		query = QueryBuilders.nestedQuery(StringUtils.join(extendPath(parents, geneQ), '.'), subQuery);
 		return query;
 	}
 
-	protected static List<String> extendPath(List<String> parents,
-			Query geneQ) {
+	protected static List<String> extendPath(List<String> parents, Query geneQ) {
 		List<String> newParents = new ArrayList<>(parents.size() + 1);
 		newParents.addAll(parents);
 		newParents.add(geneQ.getFieldName());
@@ -139,16 +138,14 @@ public class ESGeneSearchBuilder {
 				path = path + '.' + subFacet;
 			}
 			if (i == subFacets.length - 1) {
-				TermsBuilder subBuilder = AggregationBuilders.terms(subFacet)
-						.field(path);
+				TermsBuilder subBuilder = AggregationBuilders.terms(subFacet).field(path);
 				if (builder == null) {
 					builder = subBuilder;
 				} else {
 					((NestedBuilder) builder).subAggregation(subBuilder);
 				}
 			} else {
-				NestedBuilder subBuilder = AggregationBuilders.nested(subFacet)
-						.path(path);
+				NestedBuilder subBuilder = AggregationBuilders.nested(subFacet).path(path);
 				if (builder == null) {
 					builder = subBuilder;
 				} else {

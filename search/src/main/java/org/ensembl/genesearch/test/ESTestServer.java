@@ -28,7 +28,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
-import org.ensembl.genesearch.impl.ESGeneSearch;
+import org.ensembl.genesearch.impl.ESSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,11 +75,11 @@ public class ESTestServer {
 			// create an index with mapping
 			client.admin()
 					.indices()
-					.prepareCreate(ESGeneSearch.DEFAULT_INDEX)
+					.prepareCreate(ESSearch.GENES_INDEX)
 					.setSettings(
 							Settings.builder().put("index.number_of_shards", 4)
 									.put("index.number_of_replicas", 0))
-					.addMapping(ESGeneSearch.DEFAULT_TYPE, mapping).get();
+					.addMapping(ESSearch.GENE_TYPE, mapping).get();
 
 			ObjectMapper mapper = new ObjectMapper();
 			List<Map<String, Object>> genes = mapper.readValue(geneJson,
@@ -90,14 +90,14 @@ public class ESTestServer {
 
 				gene.put("_id", gene.get("id"));
 
-				client.prepareIndex(ESGeneSearch.DEFAULT_INDEX,
-						ESGeneSearch.DEFAULT_TYPE)
+				client.prepareIndex(ESSearch.GENES_INDEX,
+						ESSearch.GENE_TYPE)
 						.setSource(mapper.writeValueAsString(gene)).execute()
 						.actionGet();
 
 			}
 			// wait for indices to be built
-			client.admin().indices().refresh(new RefreshRequest(ESGeneSearch.DEFAULT_INDEX)).actionGet();
+			client.admin().indices().refresh(new RefreshRequest(ESSearch.GENES_INDEX)).actionGet();
 			log.info("Indexed " + genes.size() + " documents");
 			return;
 		} catch (IOException e) {

@@ -19,7 +19,7 @@ package org.ensembl.gti.genesearch.services;
 import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.clients.ClientBuilder;
-import org.ensembl.genesearch.impl.ESGeneSearch;
+import org.ensembl.genesearch.impl.ESSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +31,7 @@ public class SearchProvider {
 	final Logger log = LoggerFactory.getLogger(this.getClass());
 	protected Client client;
 	protected Search geneSearch;
+	protected Search genomeSearch;
 	@Value("${es.host}")
 	private String hostName;
 	@Value("${es.cluster}")
@@ -62,10 +63,18 @@ public class SearchProvider {
 
 	public Search getGeneSearch() {
 		if (geneSearch == null) {
-			geneSearch = new ESGeneSearch(getClient());
+			geneSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
 		}
 		return geneSearch;
 	}
+	
+	public Search getGenomeSearch() {
+		if (genomeSearch == null) {
+			genomeSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_TYPE);
+		}
+		return genomeSearch;
+	}
+
 
 	public void setGeneSearch(Search search) {
 		this.geneSearch = search;

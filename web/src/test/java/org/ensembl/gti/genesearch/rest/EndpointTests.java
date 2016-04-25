@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ensembl.genesearch.QueryResult;
-import org.ensembl.genesearch.impl.ESGeneSearch;
+import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.gti.genesearch.services.Application;
 import org.ensembl.gti.genesearch.services.SearchProvider;
@@ -61,7 +61,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class EndpointTests {
 
 	static Logger log = LoggerFactory.getLogger(EndpointTests.class);
-	static ESGeneSearch search;
+	static ESSearch search;
 
 	@Autowired
 	SearchProvider provider;
@@ -83,7 +83,7 @@ public class EndpointTests {
 		String json = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
 		log.info("Creating test index");
 		testServer.createTestIndex(json);
-		search = new ESGeneSearch(testServer.getClient());
+		search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
 	}
 
 	@Before

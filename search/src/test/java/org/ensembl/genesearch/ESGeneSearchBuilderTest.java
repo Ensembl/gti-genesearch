@@ -28,7 +28,7 @@ import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.ensembl.genesearch.Query.QueryType;
-import org.ensembl.genesearch.impl.ESGeneSearchBuilder;
+import org.ensembl.genesearch.impl.ESSearchBuilder;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
 import org.ensembl.genesearch.test.ESTestServer;
@@ -42,7 +42,7 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testId() {
-		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(new Query(QueryType.TERM, "id", "DDB0231518"));
+		QueryBuilder builder = ESSearchBuilder.buildQuery(new Query(QueryType.TERM, "id", "DDB0231518"));
 
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -56,7 +56,7 @@ public class ESGeneSearchBuilderTest {
 		Query orthology = new Query(QueryType.TERM, "description", "ortholog_one2one");
 		Query homology = new Query(QueryType.NESTED, "homologues", genome, orthology);
 
-		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(homology);
+		QueryBuilder builder = ESSearchBuilder.buildQuery(homology);
 
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -79,7 +79,7 @@ public class ESGeneSearchBuilderTest {
 		Query idQuery = new Query(QueryType.TERM, "id", "DDB0231518");
 		Query translationQuery = new Query(QueryType.NESTED, "translations", idQuery);
 		Query geneQuery = new Query(QueryType.NESTED, "transcripts", translationQuery);
-		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(geneQuery);
+		QueryBuilder builder = ESSearchBuilder.buildQuery(geneQuery);
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
 		assertTrue("Nested set", obj.containsKey("nested"));
@@ -93,19 +93,19 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testSimpleFacet() {
-		AbstractAggregationBuilder buildAggregation = ESGeneSearchBuilder.buildAggregation("GO");
+		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("GO");
 		assertEquals("Class check", TermsBuilder.class, buildAggregation.getClass());
 	}
 
 	@Test
 	public void testNestedFacet() {
-		AbstractAggregationBuilder buildAggregation = ESGeneSearchBuilder.buildAggregation("homologues.genome");
+		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("homologues.genome");
 		assertEquals("Class check", NestedBuilder.class, buildAggregation.getClass());
 	}
 
 	@Test
 	public void testDoubleNestedFacet() {
-		AbstractAggregationBuilder buildAggregation = ESGeneSearchBuilder.buildAggregation("homologues.genome.banana");
+		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("homologues.genome.banana");
 		assertEquals("Class check", NestedBuilder.class, buildAggregation.getClass());
 	}
 
@@ -114,7 +114,7 @@ public class ESGeneSearchBuilderTest {
 		Query seqRegion = new Query(QueryType.TERM, "seq_region_name", "DDB0231518");
 		Query start = new Query(QueryType.RANGE, "start", (long) 1, null);
 		Query end = new Query(QueryType.RANGE, "end", null, (long) 100);
-		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(seqRegion, start, end);
+		QueryBuilder builder = ESSearchBuilder.buildQuery(seqRegion, start, end);
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
 		assertTrue("Bool set", obj.containsKey("bool"));
@@ -132,7 +132,7 @@ public class ESGeneSearchBuilderTest {
 		QueryHandler handler = new DefaultQueryHandler();
 		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
 		List<Query> qs = handler.parseQuery(json);
-		QueryBuilder builder = ESGeneSearchBuilder.buildQuery(qs.get(0));
+		QueryBuilder builder = ESSearchBuilder.buildQuery(qs.get(0));
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
 		assertTrue("Constant_score set", obj.containsKey("constant_score"));
