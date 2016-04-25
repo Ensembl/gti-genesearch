@@ -45,7 +45,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-@Path("/fetch")
+@Path("/genes/fetch")
 public class FetchService {
 
 	final Logger log = LoggerFactory.getLogger(FetchService.class);

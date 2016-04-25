@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
-@Path("/query")
+@Path("/genes/query")
 public class QueryService {
 
 	final Logger log = LoggerFactory.getLogger(QueryService.class);
