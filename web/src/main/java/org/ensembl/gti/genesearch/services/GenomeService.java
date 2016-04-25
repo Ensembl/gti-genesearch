@@ -16,24 +16,34 @@
 
 package org.ensembl.gti.genesearch.services;
 
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.springframework.context.annotation.Configuration;
+import javax.ws.rs.Path;
+
+import org.ensembl.genesearch.Search;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @author dstaines
  *
  */
-@Configuration
-public class JerseyConfig extends ResourceConfig {
-	public JerseyConfig() {
-		register(HealthService.class);
-		register(GeneQueryService.class);
-		register(GenomeQueryService.class);
-		register(GeneFetchService.class);
-		register(GeneService.class);
-		register(GenomeFetchService.class);
-		register(GenomeService.class);
-		register(JacksonFeature.class);
+@Component
+@Path("/genomes")
+public class GenomeService extends ObjectService {
+
+	/**
+	 * @param provider
+	 */
+	@Autowired
+	public GenomeService(SearchProvider provider) {
+		super(provider);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.ensembl.gti.genesearch.services.ObjectService#getSearch()
+	 */
+	@Override
+	public Search getSearch() {
+		return provider.getGenomeSearch();
+	}
+
 }

@@ -22,12 +22,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.gti.genesearch.services.Application;
@@ -58,9 +55,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringApplicationConfiguration(Application.class)
 @WebIntegrationTest
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-public class EndpointTests {
+public class GeneEndpointTests {
 
-	static Logger log = LoggerFactory.getLogger(EndpointTests.class);
+	private static final String GENES_FETCH = "http://localhost:8080/genes/fetch";
+	private static final String GENES_QUERY = "http://localhost:8080/genes/query";
+	static Logger log = LoggerFactory.getLogger(GeneEndpointTests.class);
 	static ESSearch search;
 
 	@Autowired
@@ -94,8 +93,7 @@ public class EndpointTests {
 
 	@Test
 	public void testQueryGetEndpoint() {
-		String url = "http://localhost:8080/query";
-		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, url);
+		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, GENES_QUERY);
 		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
 		assertEquals("Checking limited results retrieved", 10, ((List<?>) result.get("results")).size());
 		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
@@ -107,8 +105,7 @@ public class EndpointTests {
 
 	@Test
 	public void testQueryPostEndpoint() {
-		String url = "http://localhost:8080/query";
-		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, url, "{}");
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, GENES_QUERY, "{}");
 		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
 		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
 		assertEquals("Checking limited results retrieved", 10, results.size());
@@ -122,8 +119,8 @@ public class EndpointTests {
 
 	@Test
 	public void testFullQueryGetEndpoint() {
-		String url = "http://localhost:8080/query" + "?query={query}" + "&limit=5" + "&fields=name,description"
-				+ "&sort=+name,-start" + "&facets=biotype";
+		String url = GENES_QUERY + "?query={query}" + "&limit=5" + "&fields=name,description" + "&sort=+name,-start"
+				+ "&facets=biotype";
 		// rest template expands {} as variables so supply JSON separately
 		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, url,
 				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
@@ -139,10 +136,10 @@ public class EndpointTests {
 		assertTrue("Checking facets populated", facets.containsKey("biotype"));
 		assertEquals("Name found", "5S_rRNA", results.get(0).get("name"));
 	}
-	
+
 	public void testOffsetQueryGetEndpoint() {
-		String url1 = "http://localhost:8080/query" + "?query={query}" + "&limit=2" + "&fields=id";
-		String url2 = "http://localhost:8080/query" + "?query={query}" + "&limit=2&offset=1" + "&fields=id";
+		String url1 = GENES_QUERY + "?query={query}" + "&limit=2" + "&fields=id";
+		String url2 = GENES_QUERY + "?query={query}" + "&limit=2&offset=1" + "&fields=id";
 		// rest template expands {} as variables so supply JSON separately
 		Map<String, Object> response1 = getUrlToObject(MAP_REF, restTemplate, url1,
 				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
@@ -150,13 +147,12 @@ public class EndpointTests {
 				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
 		List<Map<String, Object>> results1 = (List<Map<String, Object>>) (response1.get("results"));
 		List<Map<String, Object>> results2 = (List<Map<String, Object>>) (response2.get("results"));
-		
+
 		assertEquals("Got 2 results", 2, results1.size());
 
 		log.info("Querying for all genes with offset");
 		assertEquals("Got 2 results", 2, results2.size());
-		assertTrue("Results 1.1 matches 2.0",
-				results1.get(1).get("id").equals(results2.get(0).get("id")));
+		assertTrue("Results 1.1 matches 2.0", results1.get(1).get("id").equals(results2.get(0).get("id")));
 	}
 
 	@Test
@@ -165,7 +161,7 @@ public class EndpointTests {
 				+ "\"limit\":5,\"fields\":[\"name\",\"genome\",\"description\"]," + "\"sort\":[\"+name\",\"-start\"],"
 				+ "\"facets\":[\"biotype\"]}";
 		// rest template expands {} as variables so supply JSON separately
-		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, "http://localhost:8080/query", paramJson);
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, GENES_QUERY, paramJson);
 		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
 		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
 		assertEquals("Checking limited results retrieved", 5, results.size());
@@ -181,8 +177,7 @@ public class EndpointTests {
 
 	@Test
 	public void testFetchGetEndpoint() {
-		String url = "http://localhost:8080/fetch";
-		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, url);
+		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, GENES_FETCH);
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
 		assertTrue("Name found", result.get(0).containsKey("name"));
@@ -193,8 +188,7 @@ public class EndpointTests {
 
 	@Test
 	public void testFetchPostEndpoint() {
-		String url = "http://localhost:8080/fetch";
-		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, url, "{}");
+		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, GENES_FETCH, "{}");
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
 		assertTrue("Name found", result.get(0).containsKey("name"));
@@ -205,7 +199,7 @@ public class EndpointTests {
 
 	@Test
 	public void testFullFetchGetEndpoint() {
-		String url = "http://localhost:8080/fetch" + "?query={query}" + "&fields=name,start";
+		String url = GENES_FETCH + "?query={query}" + "&fields=name,start";
 		// rest template expands {} as variables so supply JSON separately
 		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, url,
 				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
@@ -221,8 +215,7 @@ public class EndpointTests {
 		String paramJson = "{\"query\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"},"
 				+ "\"fields\":[\"name\",\"genome\",\"start\"]}";
 		// rest template expands {} as variables so supply JSON separately
-		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, "http://localhost:8080/fetch",
-				paramJson);
+		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, GENES_FETCH, paramJson);
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
 		assertTrue("Name found", result.get(0).containsKey("name"));

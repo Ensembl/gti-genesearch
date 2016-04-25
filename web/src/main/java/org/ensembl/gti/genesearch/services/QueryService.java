@@ -32,14 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Service
-@Path("/genes/query")
-public class QueryService {
+public abstract class QueryService {
 
 	final Logger log = LoggerFactory.getLogger(QueryService.class);
 	protected final SearchProvider provider;
-
-	@Autowired
 	public QueryService(SearchProvider provider) {
 		this.provider = provider;
 	}
@@ -61,8 +57,10 @@ public class QueryService {
 
 	public QueryResult query(QueryParams params) {
 		log.info("query:" + params);
-		return provider.getGeneSearch().query(params.getQueries(), params.getFields(),
+		return getSearch().query(params.getQueries(), params.getFields(),
 				params.getFacets(), params.getOffset(), params.getLimit(), params.getSorts());
 	}
+
+	public abstract Search getSearch();
 
 }

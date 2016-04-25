@@ -22,10 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.ws.rs.BeanParam;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -35,14 +36,9 @@ import javax.ws.rs.core.StreamingOutput;
 import org.ensembl.genesearch.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -50,54 +46,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author dstaines
  *
  */
-public abstract class FetchService {
+public abstract class ObjectService {
 
-	final Logger log = LoggerFactory.getLogger(FetchService.class);
+	final Logger log = LoggerFactory.getLogger(ObjectService.class);
 	protected final SearchProvider provider;
-	
-	public FetchService(SearchProvider provider) {
+
+	public ObjectService(SearchProvider provider) {
 		this.provider = provider;
 	}
 
+	@Path("{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response get(@BeanParam FetchParams params) {
-		return fetch(params);
+	public Map<String, Object> get(@PathParam("id") String id) {
+		return getSearch().fetchById(id);
 	}
+
+	public abstract Search getSearch();
 
 	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response post(@RequestBody FetchParams params) throws JsonParseException, JsonMappingException, IOException {
-		return fetch(params);
-	}
+	public Response post(List<String> ids) {
 
-	public static Response resultsToResponse(List<Map<String, Object>> results) {
 		StreamingOutput stream = new StreamingOutput() {
 			@Override
 			public void write(OutputStream os) throws IOException, WebApplicationException {
 				JsonGenerator jg = new ObjectMapper().getFactory().createGenerator(os, JsonEncoding.UTF8);
 				jg.writeStartArray();
-				for (Map<String, Object> result : results) {
-					jg.writeObject(result);
-				}
-				jg.writeEndArray();
+				getSearch().fetchByIds(new Consumer<Map<String, Object>>() {
 
-				jg.flush();
-				jg.close();
-			}
-		};
-		return Response.ok().entity(stream).type(MediaType.APPLICATION_JSON).build();
-	}
-
-	public Response fetch(FetchParams params) {
-		log.info("fetch:" + params.toString());		
-		StreamingOutput stream = new StreamingOutput() {
-			@Override
-			public void write(OutputStream os) throws IOException, WebApplicationException {
-				JsonGenerator jg = new ObjectMapper().getFactory().createGenerator(os, JsonEncoding.UTF8);
-				jg.writeStartArray();
-				getSearch().fetch(new Consumer<Map<String,Object>>() {
-					
 					@Override
 					public void accept(Map<String, Object> t) {
 						try {
@@ -106,7 +84,7 @@ public abstract class FetchService {
 							throw new RuntimeException("Could not write fetch results", e);
 						}
 					}
-				}, params.getQueries(), params.getFields());
+				}, ids.toArray(new String[ids.size()]));
 				jg.writeEndArray();
 
 				jg.flush();
@@ -114,7 +92,7 @@ public abstract class FetchService {
 			}
 		};
 		return Response.ok().entity(stream).type(MediaType.APPLICATION_JSON).build();
+
 	}
 
-	public abstract Search getSearch();
 }

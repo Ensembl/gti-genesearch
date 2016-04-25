@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -41,7 +42,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author dstaines
  *
  */
-
 public class FetchParams {
 
 	public static List<String> stringToList(String s) {
