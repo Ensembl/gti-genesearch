@@ -33,7 +33,7 @@ echo
 
 ## genome mapping - ignore for now
 #echo "Loading genome mapping"
-#curl -XPUT -d @${dir}/genome_mapping.json "${url}/_mapping/genome"
+curl -XPUT -d @${dir}/../resources/genome_mapping.json "${url}/_mapping/genome"
 
 # gene mapping
 echo "Loading gene mapping"
