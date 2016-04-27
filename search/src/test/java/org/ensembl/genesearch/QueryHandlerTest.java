@@ -209,5 +209,27 @@ public class QueryHandlerTest {
 		assertEquals("b found", "1", ((Map) bVal).get("c"));
 		assertEquals("c found", "2", ((Map) bVal).get("d"));
 	}
+	
+	@Test
+	public void testParseAndMerge() {
+		QueryHandler handler = new DefaultQueryHandler();
+		List<GeneQuery> qs = handler.parseQuery("{\"key.a\":\"1\",\"key.b\":\"2\"}");
+		System.out.println(qs);
+		assertEquals("Single query", 1, qs.size());
+		GeneQuery q = qs.get(0);
+		assertEquals("Query type", GeneQueryType.NESTED, q.getType());
+		assertEquals("Query field", "key", q.getFieldName());
+		assertEquals("Subqueries", 2, q.getSubQueries().length);
+		GeneQuery subQ1 = q.getSubQueries()[0];
+		assertEquals("Query type", GeneQueryType.TERM, subQ1.getType());
+		assertEquals("Query field", "a", subQ1.getFieldName());
+		assertEquals("Query value size", 1, subQ1.getValues().length);
+		assertEquals("Query value", "1", subQ1.getValues()[0]);
+		GeneQuery subQ2 = q.getSubQueries()[1];
+		assertEquals("Query type", GeneQueryType.TERM, subQ2.getType());
+		assertEquals("Query field", "b", subQ2.getFieldName());
+		assertEquals("Query value size", 1, subQ2.getValues().length);
+		assertEquals("Query value", "2", subQ2.getValues()[0]);
+	}
 
 }

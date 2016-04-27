@@ -56,6 +56,7 @@ public class DefaultQueryHandler implements QueryHandler {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<GeneQuery> parseQuery(Map<String, Object> queryObj) {
+		queryObj = mergeQueries(queryObj);
 		List<GeneQuery> queries = new ArrayList<>();
 		for (Entry<String, Object> query : queryObj.entrySet()) {
 			String key = query.getKey();
