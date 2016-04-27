@@ -17,9 +17,12 @@
 package org.ensembl.genesearch;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.ensembl.genesearch.GeneQuery.GeneQueryType;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
@@ -108,8 +111,8 @@ public class QueryHandlerTest {
 	@Test
 	public void testLocationStranded() {
 		QueryHandler handler = new DefaultQueryHandler();
-		List<GeneQuery> qs = handler
-				.parseQuery("{\"location\":{\"seq_region_name\":\"chr1\",\"start\":\"2\",\"end\":\"10\",\"strand\":\"1\"}}");
+		List<GeneQuery> qs = handler.parseQuery(
+				"{\"location\":{\"seq_region_name\":\"chr1\",\"start\":\"2\",\"end\":\"10\",\"strand\":\"1\"}}");
 		System.out.println(qs);
 		assertEquals("Multi query", 4, qs.size());
 		assertEquals("seq_region type", GeneQueryType.TERM, qs.get(0).getType());
@@ -145,11 +148,66 @@ public class QueryHandlerTest {
 		assertEquals("end name", GeneQueryType.RANGE, qs.get(1).getType());
 		assertEquals("end type", new Long(10), qs.get(1).getEnd());
 	}
-	
+
 	@Test
 	public void testLargeTerms() throws IOException {
 		QueryHandler handler = new DefaultQueryHandler();
 		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
 		List<GeneQuery> qs = handler.parseQuery(json);
 	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMergeQueriesSimple() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("a.b", "1");
+		map.put("a.c", "2");
+		Map<String, Object> mergeQueries = DefaultQueryHandler.mergeQueries(map);
+		assertEquals("Single key", 1, mergeQueries.keySet().size());
+		assertTrue("a found", mergeQueries.containsKey("a"));
+		Object aVal = mergeQueries.get("a");
+		assertTrue("a is a map", Map.class.isAssignableFrom(aVal.getClass()));
+		assertEquals("Two keys", 2, ((Map) aVal).keySet().size());
+		assertEquals("b found", "1", ((Map) aVal).get("b"));
+		assertEquals("c found", "2", ((Map) aVal).get("c"));
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMergeQueriesMixed() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("a.b", "1");
+		map.put("x", "3");
+		map.put("a.c", "2");
+		Map<String, Object> mergeQueries = DefaultQueryHandler.mergeQueries(map);
+		assertEquals("Two keys", 2, mergeQueries.keySet().size());
+		assertEquals("x found", "3", mergeQueries.get("x"));
+		assertTrue("a found", mergeQueries.containsKey("a"));
+		Object aVal = mergeQueries.get("a");
+		assertTrue("a is a map", Map.class.isAssignableFrom(aVal.getClass()));
+		assertEquals("Two keys", 2, ((Map) aVal).keySet().size());
+		assertEquals("b found", "1", ((Map) aVal).get("b"));
+		assertEquals("c found", "2", ((Map) aVal).get("c"));
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMergeQueriesNested() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("a.b.c", "1");
+		map.put("a.b.d", "2");
+		Map<String, Object> mergeQueries = DefaultQueryHandler.mergeQueries(map);
+		System.out.println(mergeQueries);
+		assertEquals("Single key", 1, mergeQueries.keySet().size());
+		assertTrue("a found", mergeQueries.containsKey("a"));
+		Object aVal = mergeQueries.get("a");
+		assertTrue("a is a map", Map.class.isAssignableFrom(aVal.getClass()));
+		assertEquals("One keys", 1, ((Map) aVal).keySet().size());
+		assertTrue("b found", ((Map) aVal).containsKey("b"));
+		Object bVal = ((Map) aVal).get("b");
+		assertEquals("Two keys", 2, ((Map) bVal).keySet().size());
+		assertEquals("b found", "1", ((Map) bVal).get("c"));
+		assertEquals("c found", "2", ((Map) bVal).get("d"));
+	}
+
 }

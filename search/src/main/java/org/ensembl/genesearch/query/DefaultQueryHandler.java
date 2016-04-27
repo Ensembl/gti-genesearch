@@ -19,6 +19,7 @@ package org.ensembl.genesearch.query;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -109,6 +110,49 @@ public class DefaultQueryHandler implements QueryHandler {
 
 		return queries;
 
+	}
+
+	/**
+	 * Merge queries of the form x.y,x.z into one of the form x:{y,z}
+	 * 
+	 * @param query
+	 *            to merge
+	 * @return merged query
+	 */
+	public static Map<String, Object> mergeQueries(Map<String, Object> input) {
+		Map<String, Object> output = new HashMap<>();
+		List<String> keys = new ArrayList<>();
+		keys.addAll(input.keySet());
+		for (int i = 0; i < keys.size(); i++) {
+			String key = keys.get(i);
+			Object val = input.get(key);
+			int n = key.indexOf('.');
+			if (n != -1) {
+				String keyStem = key.substring(0, n);
+				for (int j = i+1; j < keys.size(); j++) {
+					String key2 = keys.get(j);
+					int m = key.indexOf('.');
+					if (m != -1) {
+						String keyStem2 = key2.substring(0, m);
+						if (keyStem.equals(keyStem2)) {
+							// change value to be a map
+							Map<String, Object> newVal = new HashMap<>();
+							// put values in with remainder of stem
+							newVal.put(key.substring(n + 1), val);
+							newVal.put(key2.substring(m + 1), input.get(key2));
+							// recurse to deal with nesting
+							val = mergeQueries(newVal);
+							// change key
+							key = keyStem;
+							// remove second value
+							keys.remove(j);
+						}
+					}
+				}
+			}
+			output.put(key, val);
+		}
+		return output;
 	}
 
 }
