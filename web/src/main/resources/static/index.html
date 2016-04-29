@@ -158,7 +158,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 		<div id="content" role="main" class="grid clearfix">
 
 			<div class="tab-content">
-				<div class="tab-pane fade in active" id="search">
+				<div class="tab-pane fade in active" class="noshow" id="search">
 					<h3>Search</h3>
 
 					<div class="col-sm-8">
@@ -166,19 +166,19 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 							<div class="form-group">
 								<div class="col-sm-24">
 									<label class="control-label col-sm-2" for="query">Query:</label>
-									<textarea class="col-sm-8" id="query"></textarea>
+									<textarea class="col-sm-8" id="query">{}</textarea>
 								</div>
 							</div>
 							<div class="form-group">
 								<div class="col-sm-24">
 									<label class="control-label col-sm-2" for="fields">Fields:</label>
-									<select class="col-sm-8"></select>
+									<select class="col-sm-8" id="fields"></select>
 								</div>
 							</div>
 							<div class="form-group">
 								<div class="col-sm-24">
 									<label class="control-label col-sm-2" for="facets">Facets:</label>
-									<select class="col-sm-8"></select>
+									<select class="col-sm-8" id="facets"></select>
 								</div>
 							</div>
 							<div class="form-group">
@@ -189,17 +189,23 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 						</form>
 					</div>
 					<div class="col-sm-4">
-						<a id='human' href="#"> All human genes</a><br /> <a href="#"
-							id='e_coli'>All E. coli K12 MG1655 genes</a><br /> <a href="#"
-							id='eschericia_lacZ'>All Escherichia lacZ genes</a><br /> <a
-							href="#" id='escherichia_signals'>All Escherichia signalling
-							genes</a><br /> <a href="#" id='wheat_hypervirulence'>All genes
+						<a onClick="setQueryExample('human')" href="#"> All human
+							genes</a><br /> <a href="#" onClick="setQueryExample('e_coli')">All
+							E. coli K12 MG1655 genes</a><br /> <a href="#"
+							onClick="setQueryExample('eschericia_lacZ')">All Escherichia
+							lacZ genes</a><br /> <a href="#"
+							onClick="setQueryExample('escherichia_signals')">All
+							Escherichia signalling genes</a><br /> <a href="#"
+							onClick="setQueryExample('wheat_hypervirulence')">All genes
 							involved in hypervirulence in wheat</a> <br /> <a href="#"
-							id='ascomycota_hydrolase'>All Ascomycota hydrolases</a> <br /> <a
-							href="#" id='mammal_brca2_homologues'>All mammalian BRCA2
-							homologues with PF09121</a><br /> <a href="#" id='human_chr1'>All
-							genes from human chr1 45000-60000</a> <br /> <a href="#"
-							id='uniprots'>All genes matching specified UniProts</a><br />
+							onClick="setQueryExample('ascomycota_hydrolase')">All
+							Ascomycota hydrolases</a> <br /> <a href="#"
+							onClick="setQueryExample('mammal_brca2_homologues')">All
+							mammalian BRCA2 homologues with PF09121</a><br /> <a href="#"
+							onClick="setQueryExample('human_chr1')">All genes from human
+							chr1 45000-60000</a> <br /> <a href="#"
+							onClick="setQueryExample('uniprots')">All genes matching
+							specified UniProts</a><br />
 					</div>
 
 

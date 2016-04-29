@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-//$(document).ready(function() {
-//	
-//    var options = { columnDefs:[] };
-//    options.columnDefs.push({ 
-//        data : "nom",
-//        title : "title",        
-//        type : 'string',        
-//        visible : true,        
-//        sortable : true,        
-//        targets : 1
-//    });
-//
-//var table = $('#results').DataTable(options);
-//
-//});
+var examples = {
+	human : '{"genome":"homo_sapiens"}',
+	e_coli : '{"genome":"escherichia_coli_str_k_12_substr_mg1655"}',
+	eschericia_lacZ : '{"lineage":"561","name":"lacZ"}',
+	escherichia_signals : '{"lineage":"561","GO":"GO:0035556"}',
+	wheat_hypervirulence : '{"annotations":{"host":"4565","phenotype":"PHI:1000008"}}',
+	ascomycota_hydrolase : '{"lineage":"4890","GO":"GO:0016787"}',
+	mammal_brca2_homologues : '{"lineage":"40674","Pfam":"PF09121","homologues":{"stable_id":"ENSG00000139618"}}',
+	human_chr1 : '{"genome":"homo_sapiens","location":{"seq_region_name":"1","start":"45000","end":"96000"}}',
+	uniprots : '{"Uniprot_SWISSPROT":["P03886","P03891","P00395","P00403"]}'
+};
+
+var setQueryExample = function(exampleName) {
+	console.log("Setting example "+exampleName)
+	$('#query').val(examples[exampleName]);
+};
+
+var allFields;
 $(document).ready(function() {
+	$('#search').hide();
+	$.get("/api/fieldinfo", function(data) {
+		allFields = data;
+		console.log("Fields loaded");
+		$('#search').show();
+	});
 });
 
 var table;
@@ -57,9 +66,9 @@ $('#searchButton').click(function() {
 			"type" : "TEXT",
 			"facet" : true
 		} ],
-		query : '{}'
+		query : $('#query').val()
 	};
-
+	console.trace(search.query);
 	var n = 0;
 	var columns = [];
 	search.fields.forEach(function(column) {
@@ -77,6 +86,7 @@ $('#searchButton').click(function() {
 	var options = {
 		processing : true,
 		serverSide : true,
+		pagingType: 'simple',
 		ajax : {
 			url : '/api/query',
 			type : 'POST',
@@ -122,7 +132,7 @@ $('#searchButton').click(function() {
 		columnDefs : columns
 	};
 	console.trace(options);
-	if(table) {
+	if (table) {
 		console.log("Destroying table");
 		table.destroy();
 	}
