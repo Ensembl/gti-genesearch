@@ -14,135 +14,122 @@
  * limitations under the License.
  */
 
-var searchMod = angular.module('search', [ 'datatables' ]);
+//$(document).ready(function() {
+//	
+//    var options = { columnDefs:[] };
+//    options.columnDefs.push({ 
+//        data : "nom",
+//        title : "title",        
+//        type : 'string',        
+//        visible : true,        
+//        sortable : true,        
+//        targets : 1
+//    });
+//
+//var table = $('#results').DataTable(options);
+//
+//});
+$(document).ready(function() {
+});
 
-function ajax(search) {
-	return {
-		url : '/api/query',
-		type : 'POST',
-		contentType : 'application/json',
-		data : function(data) {
-			console.log("Posting data");
-			// setting sort
-			var sorts = [];
-			for (var i = 0; i < data.order.length; i++) {
-				var field = search.fields[data.order[i].column];
-				var sort = field.searchField;
-				if (data.order[i].dir == 'desc') {
-					sort = '-' + sort;
-				}
-				console.log("Sorting on " + sort);
-				sorts.push(sort);
-			}
-
-			// create post
-			return JSON.stringify({
-				"query" : JSON.parse(search.query),
-				"fields" : map(search.fields, function(f) {
-					return f.displayField
-				}),
-				sort : sorts,
-				offset : data.start,
-				limit : data.length
-			});
-		},
-		dataFilter : function(json) {
-			console.log("Filtering data");
-			response = JSON.parse(json);
-			// modify output
-			response.recordsTotal = response.resultCount;
-			response.recordsFiltered = response.resultCount;
-			return JSON.stringify(response);
-		}
-	}
-};
-
-var searchCtrl = function($http, $scope, DTOptionsBuilder, DTColumnBuilder,
-		DTInstance) {
-
-	var vm = this;
-	vm.dtInstance = {};
-	vm.hasData = false;
-
-	// get list of possible fields to use
-	this.allFields = [];
-	$http.get('/api/fieldinfo').then(function(response) {
-		vm.allFields = response.data;
-	}, function(response) {
-		alert(JSON.stringify(response));
-	});
-
-	this.facetFields = [];
-	$http.get('/api/fieldinfo?type=facet').then(function(response) {
-		vm.facetFields = response.data;
-	}, function(response) {
-		alert(JSON.stringify(response));
-	});
-
-	var examples = {
-		human : '{"genome":"homo_sapiens"}',
-		e_coli : '{"genome":"escherichia_coli_str_k_12_substr_mg1655"}',
-		eschericia_lacZ : '{"lineage":"561","name":"lacZ"}',
-		escherichia_signals : '{"lineage":"561","GO":"GO:0035556"}',
-		wheat_hypervirulence : '{"annotations":{"host":"4565","phenotype":"PHI:1000008"}}',
-		ascomycota_hydrolase : '{"lineage":"4890","GO":"GO:0016787"}',
-		mammal_brca2_homologues : '{"lineage":"40674","Pfam":"PF09121","homologues":{"stable_id":"ENSG00000139618"}}',
-		human_chr1 : '{"genome":"homo_sapiens","location":{"seq_region_name":"1","start":"45000","end":"96000"}}',
-		uniprots : '{"Uniprot_SWISSPROT":["P03886","P03891","P00395","P00403"]}'
+var table;
+$('#searchButton').click(function() {
+	var search = {
+		fields : [ {
+			"name" : "id",
+			"displayName" : "Gene ID",
+			"searchField" : "id",
+			"displayField" : "id",
+			"type" : "TEXT",
+			"facet" : false
+		}, {
+			"name" : "name",
+			"displayName" : "Gene name",
+			"searchField" : "name",
+			"displayField" : "name",
+			"type" : "TEXT",
+			"facet" : false
+		}, {
+			"name" : "genome",
+			"displayName" : "Genome",
+			"searchField" : "genome",
+			"displayField" : "genome_display",
+			"type" : "TEXT",
+			"facet" : true
+		} ],
+		query : '{}'
 	};
 
-	this.setQueryExample = function(exampleName) {
-		if (!$scope.search) {
-			$scope.search = {};
-		}
-		$scope.search.query = examples[exampleName];
-	}
-
-	this.search = function(search) {
-
-		if (!search) {
-			search = {};
-		}
-
-		if (!search.query) {
-			search.query = "{}";
-		}
-
-		if (!search.fields) {
-			search.fields = this.displayFields.slice(0, 4);
-		}
-
-		console.log("Setting columns");
-		vm.dtColumns = [];
-		search.fields.forEach(function(col) {
-			var c = DTColumnBuilder.newColumn(col.displayField).withTitle(
-					col.displayName);
-			vm.dtColumns.push(c);
+	var n = 0;
+	var columns = [];
+	search.fields.forEach(function(column) {
+		console.log("Creating field " + column.name);
+		columns.push({
+			data : column.displayField,
+			title : column.displayName,
+			type : 'string',
+			visible : true,
+			sortable : true,
+			targets : n++
 		});
-		if (vm.hasData) {
-			console.log("Clearing table");
-			vm.dtInstance.DataTable.state.clear();
-			vm.dtInstance.DataTable.ajax.reload();
-			vm.dtInstance.DataTable.draw();
-			//vm.dtInstance.changeData(ajax(search));
-			// vm.dtInstance.rerender();
-		} else {
-			console.log("Loading table");
-			vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax',
-					ajax(search)).withDataProp('results').withOption(
-					'serverSide', true).withOption('processing', true)
-					.withOption('bFilter', false).withOption("defaultContent",
-							"").withPaginationType('full_numbers').withOption(
-							'order', []).withOption("saveState", false)
-					.withOption("pagingType", "simple");
-			vm.hasData = true;
-		}
+	});
 
+	var options = {
+		processing : true,
+		serverSide : true,
+		ajax : {
+			url : '/api/query',
+			type : 'POST',
+			contentType : 'application/json',
+			data : function(data) {
+				console.log("Posting data");
+				// setting sort
+				var sorts = [];
+				for (var i = 0; i < data.order.length; i++) {
+					var field = search.fields[data.order[i].column];
+					var sort = field.searchField;
+					if (data.order[i].dir == 'desc') {
+						sort = '-' + sort;
+					}
+					console.log("Sorting on " + sort);
+					sorts.push(sort);
+				}
+				console.trace(JSON.stringify(data));
+				// create post
+				return JSON.stringify({
+					"query" : JSON.parse(search.query),
+					"fields" : map(search.fields, function(f) {
+						return f.displayField
+					}),
+					sort : sorts,
+					offset : data.start,
+					limit : data.length
+				});
+			},
+			dataFilter : function(json) {
+				console.log("Filtering data");
+				response = JSON.parse(json);
+				// modify output
+				response.recordsTotal = response.resultCount;
+				response.recordsFiltered = response.resultCount;
+				response.data = response.results;
+				response.results = undefined;
+				console.log("Completed filtering data");
+				console.trace(response);
+				return JSON.stringify(response);
+			}
+		},
+		columnDefs : columns
 	};
-};
+	console.trace(options);
+	if(table) {
+		console.log("Destroying table");
+		table.destroy();
+	}
+	table = $('#results').DataTable(options);
+	console.log("Created table");
 
-searchMod.controller('searchController', [ '$http', '$scope',
-		'DTOptionsBuilder', 'DTColumnBuilder', searchCtrl ]);
+});
 
 function map(objs, callback) {
 	var results = [];
