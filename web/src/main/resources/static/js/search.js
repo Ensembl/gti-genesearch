@@ -27,16 +27,32 @@ var examples = {
 };
 
 var setQueryExample = function(exampleName) {
-	console.log("Setting example "+exampleName)
+	console.log("Setting example " + exampleName)
 	$('#query').val(examples[exampleName]);
 };
 
 var allFields;
+var fields;
 $(document).ready(function() {
 	$('#search').hide();
 	$.get("/api/fieldinfo", function(data) {
-		allFields = data;
+		allFields = {};
+		fields = [];
+		data.forEach(function (field) {
+			allFields[field.name] = field;
+			fields.push({
+				id : field.name,
+				text : field.displayName
+			});
+		});
 		console.log("Fields loaded");
+		console.trace(allFields);
+		$('#fields').select2({
+			multiple : "multiple",
+			data : fields,
+			width : "auto",
+			dropdownAutoWidth: true
+		});
 		$('#search').show();
 	});
 });
@@ -44,31 +60,15 @@ $(document).ready(function() {
 var table;
 $('#searchButton').click(function() {
 	var search = {
-		fields : [ {
-			"name" : "id",
-			"displayName" : "Gene ID",
-			"searchField" : "id",
-			"displayField" : "id",
-			"type" : "TEXT",
-			"facet" : false
-		}, {
-			"name" : "name",
-			"displayName" : "Gene name",
-			"searchField" : "name",
-			"displayField" : "name",
-			"type" : "TEXT",
-			"facet" : false
-		}, {
-			"name" : "genome",
-			"displayName" : "Genome",
-			"searchField" : "genome",
-			"displayField" : "genome_display",
-			"type" : "TEXT",
-			"facet" : true
-		} ],
+		fields : [],
 		query : $('#query').val()
 	};
-	console.trace(search.query);
+	$('#fields').val().forEach(function(field) {
+		console.log(field);
+		var f = allFields[field];
+		console.trace(f);
+		search.fields.push(f);
+	});
 	var n = 0;
 	var columns = [];
 	search.fields.forEach(function(column) {
@@ -86,7 +86,7 @@ $('#searchButton').click(function() {
 	var options = {
 		processing : true,
 		serverSide : true,
-		pagingType: 'simple',
+		pagingType : 'simple',
 		ajax : {
 			url : '/api/query',
 			type : 'POST',
@@ -135,7 +135,9 @@ $('#searchButton').click(function() {
 	if (table) {
 		console.log("Destroying table");
 		table.destroy();
+		$('#results').empty();
 	}
+	console.log("Creating table");
 	table = $('#results').DataTable(options);
 	console.log("Created table");
 
