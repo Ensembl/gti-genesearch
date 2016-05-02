@@ -33,42 +33,86 @@ var setQueryExample = function(exampleName) {
 
 var allFields;
 var fields;
-$(document).ready(function() {
-	$('#search').hide();
-	$.get("/api/fieldinfo", function(data) {
-		allFields = {};
-		fields = [];
-		data.forEach(function (field) {
-			allFields[field.name] = field;
-			fields.push({
-				id : field.name,
-				text : field.displayName
+var facetFields;
+$(document).ready(
+		function() {
+			$('#search').hide();
+			$.get("/api/fieldinfo", function(data) {
+				allFields = {};
+				fields = [];
+				facetFields = [];
+				data.forEach(function(field) {
+					allFields[field.name] = field;
+					fields.push({
+						id : field.name,
+						text : field.displayName
+					});
+					if (field.facet) {
+						facetFields.push({
+							id : field.name,
+							text : field.displayName
+						});
+					}
+				});
+				console.log("Fields loaded");
+				// populate the fields selector
+				console.trace(allFields);
+				$('#fields').select2({
+					multiple : "multiple",
+					data : fields,
+					width : "auto",
+					dropdownAutoWidth : true
+				});
+				// maintain order of addition - new selections are appended
+				$("select").on("select2:select", function(evt) {
+					var element = evt.params.data.element;
+					var $element = $(element);
+
+					$element.detach();
+					$(this).append($element);
+					$(this).trigger("change");
+				});
+				// set some defaults (reverse order)
+				$("#fields").val([ "description", "name", "genome", "id" ])
+						.trigger("change");
+
+				$('#facets').select2({
+					multiple : "multiple",
+					data : facetFields,
+					width : "auto",
+					dropdownAutoWidth : true,
+					placeholder : "(Optional) add a facet"
+				});
+
+				$('#search').show();
 			});
 		});
-		console.log("Fields loaded");
-		console.trace(allFields);
-		$('#fields').select2({
-			multiple : "multiple",
-			data : fields,
-			width : "auto",
-			dropdownAutoWidth: true
-		});
-		$('#search').show();
-	});
-});
 
 var table;
 $('#searchButton').click(function() {
 	var search = {
 		fields : [],
+		facets : [],
 		query : $('#query').val()
 	};
-	$('#fields').val().forEach(function(field) {
-		console.log(field);
-		var f = allFields[field];
-		console.trace(f);
-		search.fields.push(f);
-	});
+	var fieldsV = $('#fields').val();
+	if (fieldsV) {
+		fieldsV.forEach(function(field) {
+			console.log(field);
+			var f = allFields[field];
+			console.trace(f);
+			search.fields.push(f);
+		});
+	}
+	var facetsV = $('#facets').val();
+	if (facetsV) {
+		facetsV.forEach(function(field) {
+			console.log(field);
+			var f = allFields[field];
+			console.trace(f);
+			search.facets.push(f);
+		});
+	}
 	var n = 0;
 	var columns = [];
 	search.fields.forEach(function(column) {
@@ -107,9 +151,12 @@ $('#searchButton').click(function() {
 				console.trace(JSON.stringify(data));
 				// create post
 				return JSON.stringify({
-					"query" : JSON.parse(search.query),
-					"fields" : map(search.fields, function(f) {
+					query : JSON.parse(search.query),
+					fields : map(search.fields, function(f) {
 						return f.displayField
+					}),
+					facets : map(search.facets, function(f) {
+						return f.searchField
 					}),
 					sort : sorts,
 					offset : data.start,
