@@ -17,9 +17,12 @@
 package org.ensembl.genesearch;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
@@ -145,11 +148,88 @@ public class QueryHandlerTest {
 		assertEquals("end name", QueryType.RANGE, qs.get(1).getType());
 		assertEquals("end type", new Long(10), qs.get(1).getEnd());
 	}
-	
+
 	@Test
 	public void testLargeTerms() throws IOException {
 		QueryHandler handler = new DefaultQueryHandler();
 		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
 		List<Query> qs = handler.parseQuery(json);
 	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMergeQueriesSimple() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("a.b", "1");
+		map.put("a.c", "2");
+		Map<String, Object> mergeQueries = DefaultQueryHandler.mergeQueries(map);
+		assertEquals("Single key", 1, mergeQueries.keySet().size());
+		assertTrue("a found", mergeQueries.containsKey("a"));
+		Object aVal = mergeQueries.get("a");
+		assertTrue("a is a map", Map.class.isAssignableFrom(aVal.getClass()));
+		assertEquals("Two keys", 2, ((Map) aVal).keySet().size());
+		assertEquals("b found", "1", ((Map) aVal).get("b"));
+		assertEquals("c found", "2", ((Map) aVal).get("c"));
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMergeQueriesMixed() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("a.b", "1");
+		map.put("x", "3");
+		map.put("a.c", "2");
+		Map<String, Object> mergeQueries = DefaultQueryHandler.mergeQueries(map);
+		assertEquals("Two keys", 2, mergeQueries.keySet().size());
+		assertEquals("x found", "3", mergeQueries.get("x"));
+		assertTrue("a found", mergeQueries.containsKey("a"));
+		Object aVal = mergeQueries.get("a");
+		assertTrue("a is a map", Map.class.isAssignableFrom(aVal.getClass()));
+		assertEquals("Two keys", 2, ((Map) aVal).keySet().size());
+		assertEquals("b found", "1", ((Map) aVal).get("b"));
+		assertEquals("c found", "2", ((Map) aVal).get("c"));
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMergeQueriesNested() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("a.b.c", "1");
+		map.put("a.b.d", "2");
+		Map<String, Object> mergeQueries = DefaultQueryHandler.mergeQueries(map);
+		System.out.println(mergeQueries);
+		assertEquals("Single key", 1, mergeQueries.keySet().size());
+		assertTrue("a found", mergeQueries.containsKey("a"));
+		Object aVal = mergeQueries.get("a");
+		assertTrue("a is a map", Map.class.isAssignableFrom(aVal.getClass()));
+		assertEquals("One keys", 1, ((Map) aVal).keySet().size());
+		assertTrue("b found", ((Map) aVal).containsKey("b"));
+		Object bVal = ((Map) aVal).get("b");
+		assertEquals("Two keys", 2, ((Map) bVal).keySet().size());
+		assertEquals("b found", "1", ((Map) bVal).get("c"));
+		assertEquals("c found", "2", ((Map) bVal).get("d"));
+	}
+	
+	@Test
+	public void testParseAndMerge() {
+		QueryHandler handler = new DefaultQueryHandler();
+		List<Query> qs = handler.parseQuery("{\"key.a\":\"1\",\"key.b\":\"2\"}");
+		System.out.println(qs);
+		assertEquals("Single query", 1, qs.size());
+		Query q = qs.get(0);
+		assertEquals("Query type", QueryType.NESTED, q.getType());
+		assertEquals("Query field", "key", q.getFieldName());
+		assertEquals("Subqueries", 2, q.getSubQueries().length);
+		Query subQ1 = q.getSubQueries()[0];
+		assertEquals("Query type", QueryType.TERM, subQ1.getType());
+		assertEquals("Query field", "a", subQ1.getFieldName());
+		assertEquals("Query value size", 1, subQ1.getValues().length);
+		assertEquals("Query value", "1", subQ1.getValues()[0]);
+		Query subQ2 = q.getSubQueries()[1];
+		assertEquals("Query type", QueryType.TERM, subQ2.getType());
+		assertEquals("Query field", "b", subQ2.getFieldName());
+		assertEquals("Query value size", 1, subQ2.getValues().length);
+		assertEquals("Query value", "2", subQ2.getValues()[0]);
+	}
+
 }

@@ -18,6 +18,7 @@ package org.ensembl.genesearch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,6 +60,20 @@ public class ESGeneSearchTest {
 	public void fetchAll() {
 		log.info("Fetching all genes");
 		List<Map<String, Object>> ids = search.fetch(new ArrayList<Query>(), Arrays.asList("_id"));
+		try {
+			search.fetch(Collections.emptyList(), Arrays.asList("_id"));
+			fail("Illegal operation succeeded");
+		} catch (UnsupportedOperationException e) {
+			// OK
+		}
+	}
+
+	@Test
+	public void fetchGenome() {
+		log.info("Fetching all genes from genome");
+		List<Map<String, Object>> ids = search.fetch(
+				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
+				Arrays.asList("_id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 598, ids.size());
 	}
@@ -70,8 +85,7 @@ public class ESGeneSearchTest {
 		Query genome = new Query(QueryType.TERM, "genome", genomeName);
 
 		List<Map<String, Object>> ids = search.fetch(
-				Arrays.asList(new Query[] { new Query(QueryType.NESTED, "homologues", genome) }),
-				Arrays.asList("_id"));
+				Arrays.asList(new Query[] { new Query(QueryType.NESTED, "homologues", genome) }), Arrays.asList("_id"));
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 79, ids.size());
 	}

@@ -18,25 +18,32 @@ package org.ensembl.gti.genesearch.services;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.BeanParam;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Search;
+import org.ensembl.gti.genesearch.services.converter.MapXmlWriter;
+import org.glassfish.jersey.server.JSONP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fasterxml.jackson.core.JsonEncoding;
@@ -45,76 +52,143 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
-/**
- * @author dstaines
- *
- */
 public abstract class FetchService {
-
+	
 	final Logger log = LoggerFactory.getLogger(FetchService.class);
 	protected final SearchProvider provider;
-	
+
 	public FetchService(SearchProvider provider) {
 		this.provider = provider;
 	}
 
+	public abstract Search getSearch();
+
+	protected abstract String getObjectType();
+
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@JSONP
 	public Response get(@BeanParam FetchParams params) {
-		return fetch(params);
+		return fetchAsJson(params);
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
+	public Response getAsXml(@BeanParam FetchParams params) {
+		return fetchAsXml(params);
+	}
+
+	@GET
+	@Produces({ Application.APPLICATION_EXCEL + ";qs=0.1", Application.TEXT_CSV + ";qs=0.1" })
+	public Response getAsCsv(@BeanParam FetchParams params) {
+		return fetchAsCsv(params);
 	}
 
 	@POST
-	@Produces(MediaType.APPLICATION_JSON)
+	@JSONP
 	public Response post(@RequestBody FetchParams params) throws JsonParseException, JsonMappingException, IOException {
-		return fetch(params);
+		return fetchAsJson(params);
 	}
 
-	public static Response resultsToResponse(List<Map<String, Object>> results) {
-		StreamingOutput stream = new StreamingOutput() {
-			@Override
-			public void write(OutputStream os) throws IOException, WebApplicationException {
-				JsonGenerator jg = new ObjectMapper().getFactory().createGenerator(os, JsonEncoding.UTF8);
-				jg.writeStartArray();
-				for (Map<String, Object> result : results) {
-					jg.writeObject(result);
-				}
-				jg.writeEndArray();
-
-				jg.flush();
-				jg.close();
-			}
-		};
-		return Response.ok().entity(stream).type(MediaType.APPLICATION_JSON).build();
+	@POST
+	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response postAsXml(@RequestBody FetchParams params)
+			throws JsonParseException, JsonMappingException, IOException {
+		return fetchAsXml(params);
 	}
 
-	public Response fetch(FetchParams params) {
-		log.info("fetch:" + params.toString());		
+	@POST
+	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response postAsCsv(@RequestBody FetchParams params)
+			throws JsonParseException, JsonMappingException, IOException {
+		return fetchAsCsv(params);
+	}
+
+	public Response fetchAsJson(FetchParams params) {
+		log.info("fetch to JSON:" + params.toString());
 		StreamingOutput stream = new StreamingOutput() {
+
 			@Override
-			public void write(OutputStream os) throws IOException, WebApplicationException {
-				JsonGenerator jg = new ObjectMapper().getFactory().createGenerator(os, JsonEncoding.UTF8);
+			public void write(OutputStream output) throws IOException, WebApplicationException {
+				JsonGenerator jg = new ObjectMapper().getFactory().createGenerator(output, JsonEncoding.UTF8);
 				jg.writeStartArray();
-				getSearch().fetch(new Consumer<Map<String,Object>>() {
-					
+				getSearch().fetch(new Consumer<Map<String, Object>>() {
 					@Override
 					public void accept(Map<String, Object> t) {
 						try {
 							jg.writeObject(t);
 						} catch (IOException e) {
-							throw new RuntimeException("Could not write fetch results", e);
+							throw new WebApplicationException("Could not write fetch results", e);
 						}
 					}
 				}, params.getQueries(), params.getFields());
 				jg.writeEndArray();
-
-				jg.flush();
 				jg.close();
 			}
+
 		};
-		return Response.ok().entity(stream).type(MediaType.APPLICATION_JSON).build();
+		return Response.ok().entity(stream).type(MediaType.APPLICATION_JSON)
+				.header("Content-Disposition", "attachment; filename=" + params.getFileName() + ".json").build();
 	}
 
-	public abstract Search getSearch();
+	public Response fetchAsXml(FetchParams params) {
+		log.info("fetch to XML:" + params.toString());
+		StreamingOutput stream = new StreamingOutput() {
+			@Override
+			public void write(OutputStream output) throws IOException, WebApplicationException {
+				try {
+					XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(output);
+					xsw.writeStartDocument();
+					xsw.writeStartElement(getObjectType() + "s");
+					MapXmlWriter writer = new MapXmlWriter(xsw);
+					getSearch().fetch(new Consumer<Map<String, Object>>() {
+						@Override
+						public void accept(Map<String, Object> t) {
+							try {
+								writer.writeObject(getObjectType(), t);
+							} catch (XMLStreamException e) {
+								throw new WebApplicationException(e);
+							}
+						}
+					}, params.getQueries(), params.getFields());
+					xsw.writeEndElement();
+					xsw.writeEndDocument();
+				} catch (XMLStreamException | FactoryConfigurationError e) {
+					throw new WebApplicationException(e);
+				}
+			}
+		};
+		return Response.ok().entity(stream).type(MediaType.APPLICATION_XML)
+				.header("Content-Disposition", "attachment; filename=" + params.getFileName() + ".xml").build();
+	}
+
+	public Response fetchAsCsv(FetchParams params) {
+		log.info("fetch to CSV:" + params.toString());
+		StreamingOutput stream = new StreamingOutput() {
+			@Override
+			public void write(OutputStream os) throws IOException, WebApplicationException {
+
+				Writer writer = new OutputStreamWriter(os);
+				writer.write(StringUtils.join(params.getFields(), ','));
+				writer.write('\n');
+				provider.getGeneSearch().fetch(new Consumer<Map<String, Object>>() {
+					@Override
+					public void accept(Map<String, Object> t) {
+						try {
+							writer.write(params.getFields().stream().map(e -> String.valueOf(t.get(e)))
+									.collect(Collectors.joining(",")));
+							writer.write('\n');
+						} catch (IOException e) {
+							throw new WebApplicationException(e);
+						}
+					}
+				}, params.getQueries(), params.getFields());
+				writer.close();
+			}
+		};
+		return Response.ok().entity(stream).type(Application.TEXT_CSV)
+				.header("Content-Disposition", "attachment; filename=" + params.getFileName() + ".csv").build();
+	}
+
 }

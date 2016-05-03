@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -262,6 +263,7 @@ public class GeneEndpointTests {
 			Object... params) {
 		try {
 			HttpHeaders headers = new HttpHeaders();
+			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			log.trace("Invoking " + url + " with " + json);
 			HttpEntity<String> entity = new HttpEntity<String>(json, headers);

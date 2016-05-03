@@ -92,6 +92,9 @@ public class ESSearch implements Search {
 
 	@Override
 	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames) {
+		if(queries.isEmpty()) {
+			throw new UnsupportedOperationException("Fetch requires at least one query term");
+		}
 		final List<Map<String, Object>> results = new ArrayList<>();
 		fetch(row -> results.add(row), queries, fieldNames);
 		return results;
@@ -243,7 +246,7 @@ public class ESSearch implements Search {
 		log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
-		return new QueryResult(response.getHits().getTotalHits(), processResults(response),
+		return new QueryResult(response.getHits().getTotalHits(), offset, limit, processResults(response),
 				processAggregations(response));
 
 	}
