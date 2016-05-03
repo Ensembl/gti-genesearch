@@ -163,15 +163,43 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 					<div class="col-sm-8">
 						<form novalidate class="form-horizontal" role="form">
 							<div class="form-group">
-								<div class="col-sm-24">
-									<label class="control-label col-sm-2" for="query">Query:</label>
+								<div id="simple_query">
+									<div class="col-sm-24">
+										<label class="control-label col-sm-2" for="query">Query:</label>
+										<div class="col-sm-4">
+											<select class="col-sm-4 query_fields" id="query_field" name="query_field[]"></select>
+										</div>
+										<input class="col-sm-4" name="query_value[]"></input>
+										<div class="col-xs-1">
+											<button type="button" id="add_button"
+												class="btn btn-default btn-number">
+												<span class="glyphicon glyphicon-plus"></span>
+											</button>
+										</div>
+									
+								</div>
+								<div class="col-sm-24 hide" id="query_template">
+								<label class="control-label col-sm-2" for="query"></label>
+								<div class="col-sm-4">
+									<select class="col-sm-4 query_fields" name="query_field[]"></select>
+								</div>
+								<input class="col-sm-4 query_values" name="query_value[]"></input>
+								<div class="col-xs-1">
+									<button type="button"
+										class="btn btn-default btn-number remove_button">
+										<span class="glyphicon glyphicon-minus"></span>
+									</button>
+								</div>
+							</div>	
+								</div>
+								<div class="col-sm-24" id="adv_query">
 									<textarea class="col-sm-8" id="query">{}</textarea>
 								</div>
 							</div>
 							<div class="form-group">
 								<div class="col-sm-24">
 									<label class="control-label col-sm-2" for="fields">Fields:</label>
-										<select class="form-control col-sm-8"  id="fields"></select>
+									<select class="form-control col-sm-8" id="fields"></select>
 								</div>
 							</div>
 							<div class="form-group">
@@ -185,8 +213,24 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 									<input id="searchButton" type="button" value="Search" />
 								</div>
 							</div>
+
+							
 						</form>
 					</div>
+
+					<!-- The template for adding new field 
+					<div class="form-group hide" id="queryTemplate">
+						<div class="col-sm-24">
+							<select class="form-control col-sm-8" id="query_fields[]"></select>
+							<select class="form-control col-sm-8" id="query_values[]"></select>
+						</div>
+						<div class="col-xs-1">
+							<button type="button" class="btn btn-default removeButton">
+								<i class="fa fa-minus"></i>
+							</button>
+						</div>
+					</div>
+-->
 					<div class="col-sm-4">
 						<a onClick="setQueryExample('human')" href="#"> All human
 							genes</a><br /> <a href="#" onClick="setQueryExample('e_coli')">All
@@ -359,6 +403,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
     </div>
         -->
 			<!-- End optional local footer -->
+
 
 
 			<div id="global-footer" class="grid_24">

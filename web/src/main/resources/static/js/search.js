@@ -37,6 +37,7 @@ var facetFields;
 $(document).ready(
 		function() {
 			$('#search').hide();
+			$('#adv_query').hide();
 			$.get("/api/fieldinfo", function(data) {
 				allFields = {};
 				fields = [];
@@ -84,7 +85,29 @@ $(document).ready(
 					placeholder : "(Optional) add a facet"
 				});
 
+				$('#query_field').select2({
+					data : fields,
+					width : "auto",
+					dropdownAutoWidth : true
+				});
+
 				$('#search').show();
+			});
+		});
+
+$('#add_button').click(
+		function(e) { // on add input button click
+			e.preventDefault();
+			var template = $('#query_template');
+			var clone = template.clone().removeClass('hide').removeAttr('id')
+					.insertBefore(template);
+			clone.find('.query_fields').select2({
+				data : fields,
+				width : "auto",
+				dropdownAutoWidth : true
+			});
+			clone.find(".remove_button").click(function() {
+				$(this).parent().parent().remove();
 			});
 		});
 
