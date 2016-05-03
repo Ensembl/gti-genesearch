@@ -132,6 +132,7 @@ $('#searchButton').click(function() {
 		serverSide : true,
 		pagingType : 'simple',
 		order : [],
+		searching : false,
 		ajax : {
 			url : '/api/query',
 			type : 'POST',
