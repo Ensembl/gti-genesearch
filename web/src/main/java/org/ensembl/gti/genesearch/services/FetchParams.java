@@ -28,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,8 +35,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Base class for encapsulating parameters for {@link Search} services. Can
- * be used as pure POJO or with bindings to query params as strings or ints
+ * Base class for encapsulating parameters for {@link Search} services. Can be
+ * used as pure POJO or with bindings to query params as strings or ints
  * 
  * @author dstaines
  *
@@ -51,15 +50,15 @@ public class FetchParams {
 			return Arrays.asList(s.split(","));
 		}
 	}
-	
+
 	private String fileName = "genes";
 	private List<String> fields = Collections.emptyList();
 	private List<Query> queries = Collections.emptyList();
-	
+
 	public String getFileName() {
 		return fileName;
 	}
-	
+
 	public List<String> getFields() {
 		return fields;
 	}
@@ -86,7 +85,7 @@ public class FetchParams {
 	}
 
 	@JsonProperty("query")
-	public void setQuery(Map<String,Object> query) {
+	public void setQuery(Map<String, Object> query) {
 		setQueries(new DefaultQueryHandler().parseQuery(query));
 	}
 
@@ -96,13 +95,13 @@ public class FetchParams {
 	public void setQuery(String query) {
 		setQueries(new DefaultQueryHandler().parseQuery(query));
 	}
-	
+
 	@QueryParam("filename")
 	@DefaultValue("genes")
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
-	
+
 	@Override
 	public String toString() {
 		try {

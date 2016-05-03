@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 @Path("/genes/fetch")
 public class GeneFetchService extends FetchService {
 
+	private static final String GENE = "gene";
+
 	/**
 	 * @param provider
 	 */
@@ -46,6 +48,16 @@ public class GeneFetchService extends FetchService {
 	@Override
 	public Search getSearch() {
 		return provider.getGeneSearch();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.gti.genesearch.services.FetchService#getObjectType()
+	 */
+	@Override
+	protected String getObjectType() {
+		return GENE;
 	}
 
 }

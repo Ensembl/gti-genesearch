@@ -25,8 +25,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,19 +63,16 @@ public class IdLookupClient {
 		private String outFile;
 
 		@Parameter(names = "-fields", description = "Fields to retrieve")
-		private List<String> resultField = Arrays
-				.asList(new String[] { "genome" });
+		private List<String> resultField = Arrays.asList(new String[] { "genome" });
 
 		@Parameter(names = "-source", description = "Retrieve source")
 		private boolean source = false;
 
 	}
 
-	private final static Logger log = LoggerFactory
-			.getLogger(IdLookupClient.class);
+	private final static Logger log = LoggerFactory.getLogger(IdLookupClient.class);
 
-	public static void main(String[] args) throws InterruptedException,
-			IOException {
+	public static void main(String[] args) throws InterruptedException, IOException {
 
 		Params params = new Params();
 		JCommander jc = new JCommander(params, args);
@@ -95,13 +90,10 @@ public class IdLookupClient {
 
 		List<String> ids = params.queryIds;
 		if (ids == null && !isEmpty(params.queryFile)) {
-			ids = Files.lines(new File(params.queryFile).toPath()).collect(
-					Collectors.toList());
+			ids = Files.lines(new File(params.queryFile).toPath()).collect(Collectors.toList());
 		}
 
-		List<Query> queries = Arrays
-				.asList(new Query[] { new Query(QueryType.TERM,
-						params.queryField, ids) });
+		List<Query> queries = Arrays.asList(new Query[] { new Query(QueryType.TERM, params.queryField, ids) });
 		search.fetch(row -> {
 			try {
 				out.write(StringUtils.join(row.values(), "\t"));

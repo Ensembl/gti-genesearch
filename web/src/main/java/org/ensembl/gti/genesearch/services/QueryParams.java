@@ -36,12 +36,12 @@ public class QueryParams extends FetchParams {
 	public List<String> getFacets() {
 		return facets;
 	}
-	
+
 	@JsonProperty("facets")
 	public void setFacets(List<String> facets) {
 		this.facets = facets;
 	}
-	
+
 	@QueryParam("facets")
 	@DefaultValue("")
 	@JsonIgnore
@@ -58,7 +58,7 @@ public class QueryParams extends FetchParams {
 	public void setLimit(int limit) {
 		this.limit = limit;
 	}
-	
+
 	public int getOffset() {
 		return offset;
 	}
@@ -79,7 +79,6 @@ public class QueryParams extends FetchParams {
 		this.callback = callback;
 	}
 
-	
 	@QueryParam("sorts")
 	@DefaultValue("")
 	@JsonProperty("sorts")

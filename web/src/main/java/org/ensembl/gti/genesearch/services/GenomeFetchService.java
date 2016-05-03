@@ -31,6 +31,11 @@ import org.springframework.stereotype.Service;
 public class GenomeFetchService extends FetchService {
 
 	/**
+	 * 
+	 */
+	private static final String GENOME = "genome";
+
+	/**
 	 * @param provider
 	 */
 	@Autowired
@@ -46,6 +51,14 @@ public class GenomeFetchService extends FetchService {
 	@Override
 	public Search getSearch() {
 		return provider.getGenomeSearch();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.ensembl.gti.genesearch.services.FetchService#getObjectType()
+	 */
+	@Override
+	protected String getObjectType() {
+		return GENOME;
 	}
 
 }

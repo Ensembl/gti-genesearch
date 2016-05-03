@@ -1,5 +1,7 @@
 package org.ensembl.gti.genesearch.rest;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -14,7 +16,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.ensembl.gti.genesearch.services.converter.MapXmlWriter;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
 public class MapXmlWriterTest {
 
@@ -27,8 +28,8 @@ public class MapXmlWriterTest {
 		XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
 		MapXmlWriter writer = new MapXmlWriter(xsw);
 		writer.writeObject("test", map);
-		String xml = new String(os.toByteArray(),"UTF-8");
-		assertEquals("Correct XML", "<test 1=\"one\" 2=\"two\"></test>",  xml);
+		String xml = new String(os.toByteArray(), "UTF-8");
+		assertEquals("Correct XML", "<test 1=\"one\" 2=\"two\"></test>", xml);
 	}
 
 	@Test
@@ -45,9 +46,10 @@ public class MapXmlWriterTest {
 		XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
 		MapXmlWriter writer = new MapXmlWriter(xsw);
 		writer.writeObject("test", map);
-		String xml = new String(os.toByteArray(),"UTF-8");
+		String xml = new String(os.toByteArray(), "UTF-8");
 		System.out.println(xml);
-		assertEquals("Correct XML", "<test 1=\"one\" 2=\"two\" 5=\"five\"><test2 3=\"three\" 4=\"four\"></test2></test>",  xml);
+		assertEquals("Correct XML",
+				"<test 1=\"one\" 2=\"two\" 5=\"five\"><test2 3=\"three\" 4=\"four\"></test2></test>", xml);
 	}
 
 	@Test
@@ -59,12 +61,11 @@ public class MapXmlWriterTest {
 		XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
 		MapXmlWriter writer = new MapXmlWriter(xsw);
 		writer.writeObject("tests", list);
-		String xml = new String(os.toByteArray(),"UTF-8");
+		String xml = new String(os.toByteArray(), "UTF-8");
 		System.out.println(xml);
 		assertEquals("Correct XML", "<tests><test>three</test><test>four</test></tests>", xml);
 	}
 
-	
 	@Test
 	public void testMapList() throws XMLStreamException, FactoryConfigurationError, UnsupportedEncodingException {
 		Map<String, Object> map = new HashMap<>();
@@ -78,9 +79,11 @@ public class MapXmlWriterTest {
 		XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
 		MapXmlWriter writer = new MapXmlWriter(xsw);
 		writer.writeObject("test", map);
-		String xml = new String(os.toByteArray(),"UTF-8");
+		String xml = new String(os.toByteArray(), "UTF-8");
 		System.out.println(xml);
-		assertEquals("Correct XML", "<test 1=\"one\" 2=\"two\"><test2><test2_elem>three</test2_elem><test2_elem>four</test2_elem></test2></test>",  xml);
+		assertEquals("Correct XML",
+				"<test 1=\"one\" 2=\"two\"><test2><test2_elem>three</test2_elem><test2_elem>four</test2_elem></test2></test>",
+				xml);
 	}
- 	
+
 }
