@@ -163,36 +163,43 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 					<div class="col-sm-8">
 						<form novalidate class="form-horizontal" role="form">
 							<div class="form-group">
+								<div class="btn-group btn-toggle col-sm-24">
+									<button class="btn btn-xs btn-primary active"
+										id="simple_button">Simple</button>
+									<button class="btn btn-xs btn-default" id="adv_button">Advanced</button>
+								</div>
 								<div id="simple_query">
-									<div class="col-sm-24">
+									<div class="col-sm-24 query_row">
 										<label class="control-label col-sm-2" for="query">Query:</label>
-										<div class="col-sm-4">
-											<select class="col-sm-4 query_fields" id="query_field" name="query_field[]"></select>
+										<div class="col-sm-2">
+											<select class="col-sm-2 query_field" id="query_field"
+												name="query_field[]"></select>
 										</div>
-										<input class="col-sm-4" name="query_value[]"></input>
+										<input class="col-sm-6 query_value" name="query_value[]"></input>
 										<div class="col-xs-1">
 											<button type="button" id="add_button"
 												class="btn btn-default btn-number">
 												<span class="glyphicon glyphicon-plus"></span>
 											</button>
 										</div>
-									
-								</div>
-								<div class="col-sm-24 hide" id="query_template">
-								<label class="control-label col-sm-2" for="query"></label>
-								<div class="col-sm-4">
-									<select class="col-sm-4 query_fields" name="query_field[]"></select>
-								</div>
-								<input class="col-sm-4 query_values" name="query_value[]"></input>
-								<div class="col-xs-1">
-									<button type="button"
-										class="btn btn-default btn-number remove_button">
-										<span class="glyphicon glyphicon-minus"></span>
-									</button>
-								</div>
-							</div>	
+
+									</div>
+									<div class="col-sm-24 hide query_row" id="query_template">
+										<label class="control-label col-sm-2" for="query"></label>
+										<div class="col-sm-2">
+											<select class="col-sm-2 query_field" name="query_field[]"></select>
+										</div>
+										<input class="col-sm-6 query_value" name="query_value[]"></input>
+										<div class="col-xs-1">
+											<button type="button"
+												class="btn btn-default btn-number remove_button">
+												<span class="glyphicon glyphicon-minus"></span>
+											</button>
+										</div>
+									</div>
 								</div>
 								<div class="col-sm-24" id="adv_query">
+									<label class="control-label col-sm-2" for="query">Query:</label>
 									<textarea class="col-sm-8" id="query">{}</textarea>
 								</div>
 							</div>
@@ -214,7 +221,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 								</div>
 							</div>
 
-							
+
 						</form>
 					</div>
 
