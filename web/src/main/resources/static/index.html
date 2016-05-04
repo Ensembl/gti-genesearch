@@ -45,6 +45,8 @@
 	type="text/css" media="screen">
 <link rel="stylesheet" type="text/css"
 	href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css">
+<link rel="stylesheet"
+	href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" type="text/css"
 	href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css">
 <link rel="stylesheet" type="text/css" href="css/select2-bootstrap.css">
@@ -159,6 +161,15 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 			<div class="tab-content">
 				<div class="tab-pane fade in active" class="noshow" id="search">
 					<h3>Search</h3>
+
+					<div class="ui-widget">
+						<label for="go">GO:</label> <input id="go" class="go">
+					</div>
+					
+					<div class="ui-widget">
+						<label for="lineage">Lineage:</label> <input id="lineage" class="lineage">
+					</div>
+
 					<div class="col-sm-8">
 						<form novalidate class="form-horizontal" role="form">
 							<div class="form-group">
@@ -217,12 +228,17 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 							</div>
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-2">
-									<input id="searchButton" class="btn btn-default" type="button" value="Search" />
+									<input id="searchButton" class="btn btn-default" type="button"
+										value="Search" />
 								</div>
 								<div class="col-sm-4">
-									<input id="xmlButton" class="btn btn-default btn-xs pull-right center-block" type="button" value="XML" />
-									<input id="jsonButton" class="btn btn-default btn-xs pull-right center-block" type="button" value="JSON" />
-									<input id="csvButton" class="btn btn-default btn-xs pull-right center-block" type="button" value="CSV" />
+									<input id="xmlButton"
+										class="btn btn-default btn-xs pull-right center-block"
+										type="button" value="XML" /> <input id="jsonButton"
+										class="btn btn-default btn-xs pull-right center-block"
+										type="button" value="JSON" /> <input id="csvButton"
+										class="btn btn-default btn-xs pull-right center-block"
+										type="button" value="CSV" />
 								</div>
 							</div>
 
@@ -265,8 +281,10 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 					<h3>API Examples</h3>
 
 					<h4>Queries</h4>
-					<p>All human genes
-					<ul>
+					<p>
+						All human genes
+
+						<ul>
 						<li><a href='/api/query?query={"genome":"homo_sapiens"}'></a>
 						</li>
 						<li><a
@@ -298,6 +316,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 					</p>
 					<p>To control which fields are retrieved use the fields
 						parameter:
+					
 					<ul>
 						<li><a
 							href='/api/query?query={"genome":"homo_sapiens"}&fields=id,genome,biotype'>id,genome,biotype</a></li>
@@ -314,6 +333,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 					</p>
 
 					<p>To control sort order, use the sort parameter:
+					
 					<ul>
 						<li><a
 							href='/api/query?query={"genome":"homo_sapiens"}&sort=+name'>Name,
@@ -329,6 +349,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 
 					<p>To get a faceted breakdown of the results, use the facet
 						parameter:
+					
 					<ul>
 						<li><a
 							href='/api/query?query={"genome":"homo_sapiens"}&facet=biotype'>Facet
@@ -337,6 +358,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 					</p>
 
 					<p>For basic pagination, use the limit and offset parameters:
+					
 					<ul>
 						<li><a
 							href='/api/query?query={"genome":"homo_sapiens"}&limit=100'>First
@@ -351,6 +373,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 					<p>To download entire datasets, use the /api/fetch endpoint.
 						The Accept header can be set to application/json, text/xml or
 						text/csv to control formatting.
+					
 					<ul>
 						<li><a
 							href='/api/fetch?query={"genome":"escherichia_coli_str_k_12_substr_mg1655"}'>Download
@@ -366,6 +389,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 						/api/genes endpoint. The Accept header can be set to
 						application/json or text/xml. A POST request can be used to
 						retrieve a list of genes.
+					
 					<ul>
 						<li><a href="/api/genes/ENSG00000139618">Fetch BRCA2</a></li>
 					</ul>
@@ -374,6 +398,7 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 				<div class="tab-pane fade" id="help">
 					<h3>Help</h3>
 					<p>
+					
 					<ul>
 						<li><a href="https://github.com/danstaines/gti-genesearch">Source
 								code</a></li>
@@ -401,11 +426,12 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
       <p>How to reference this page: ...</p>
     </div>
         -->
-			<!-- End optional local footer -->
+						<!-- End optional local footer -->
 
 
 
-			<div id="global-footer" class="grid_24">
+			
+					<div id="global-footer" class="grid_24">
 
 				<nav id="global-nav-expanded">
 
@@ -492,6 +518,9 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
   });
 </script>
 -->
+
+<script
+		src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 	<script type="text/javascript" charset="utf8"
 		src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
 	<script type="text/javascript" charset="utf8"
