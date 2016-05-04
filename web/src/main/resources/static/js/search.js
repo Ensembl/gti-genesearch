@@ -49,9 +49,11 @@ $('.btn-toggle').click(function() {
     advancedSearch = !advancedSearch;
     if(advancedSearch) {
     	$('#adv_query').show();
+    	$('#set_examples').show();
     	$('#simple_query').hide();    	
     } else {
     	$('#adv_query').hide();
+    	$('#set_examples').hide();
     	$('#simple_query').show();
     }
 });
@@ -61,6 +63,7 @@ $(document).ready(
 		function() {
 			$('#search').hide();
 			$('#adv_query').hide();
+	    	$('#set_examples').hide();
 			$.get("/api/fieldinfo", function(data) {
 				allFields = {};
 				fields = [];
