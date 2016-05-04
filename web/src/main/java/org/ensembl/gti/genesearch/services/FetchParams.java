@@ -36,7 +36,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Base class for encapsulating parameters for {@link Search} services. Can be
- * used as pure POJO or with bindings to query params as strings or ints
+ * used as pure POJO or with bindings to query params as strings or ints.
+ * Note: Cannot be used with form params
  * 
  * @author dstaines
  *

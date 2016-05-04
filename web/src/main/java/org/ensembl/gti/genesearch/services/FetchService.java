@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -99,6 +100,9 @@ public abstract class FetchService {
 
 	@POST
 	@JSONP
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON + ";qs=1", Application.APPLICATION_X_JAVASCRIPT,
+			MediaType.TEXT_PLAIN + ";qs=0.1", MediaType.TEXT_HTML + ";qs=0.1" })
 	public Response post(@RequestBody FetchParams params) throws JsonParseException, JsonMappingException, IOException {
 		if (StringUtils.isEmpty(params.getAccept())) {
 			params.setAccept(MediaType.APPLICATION_JSON);
@@ -107,9 +111,20 @@ public abstract class FetchService {
 	}
 
 	@POST
+	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED })
+	public Response postAsForm(@FormParam("accept") String accept, @FormParam("query") String query,
+			@FormParam("fields") String fields) {
+		FetchParams params = new FetchParams();
+		params.setAccept(accept);
+		params.setQuery(query);
+		params.setFields(fields);
+		return fetchByAccept(params);
+	}
+
+	@POST
 	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response postAsXml(@RequestBody FetchParams params)
+	public Response postAsXml(@BeanParam @RequestBody FetchParams params)
 			throws JsonParseException, JsonMappingException, IOException {
 		if (StringUtils.isEmpty(params.getAccept())) {
 			params.setAccept(MediaType.APPLICATION_XML);
@@ -118,9 +133,9 @@ public abstract class FetchService {
 	}
 
 	@POST
-	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
+	@Produces(Application.APPLICATION_EXCEL + ";qs=0.1")
 	@Consumes({ MediaType.APPLICATION_JSON })
-	public Response postAsCsv(@RequestBody FetchParams params)
+	public Response postAsCsv(@BeanParam @RequestBody FetchParams params)
 			throws JsonParseException, JsonMappingException, IOException {
 		if (StringUtils.isEmpty(params.getAccept())) {
 			params.setAccept(MediaType.APPLICATION_XML);
