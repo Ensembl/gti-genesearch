@@ -35,6 +35,7 @@ var allFields;
 var fields;
 var facetFields;
 var advancedSearch = false;
+
 $('.btn-toggle').click(function() {
 	
     $(this).find('.btn').toggleClass('active');  
@@ -205,7 +206,7 @@ $('#searchButton').click(
 				order : [],
 				searching : false,
 				ajax : {
-					url : '/api/query',
+					url : '/api/genes/query',
 					type : 'POST',
 					contentType : 'application/json',
 					data : function(data) {
