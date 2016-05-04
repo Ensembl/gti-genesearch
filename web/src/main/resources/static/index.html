@@ -159,14 +159,14 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 			<div class="tab-content">
 				<div class="tab-pane fade in active" class="noshow" id="search">
 					<h3>Search</h3>
-
 					<div class="col-sm-8">
 						<form novalidate class="form-horizontal" role="form">
 							<div class="form-group">
 								<div class="btn-group btn-toggle col-sm-24">
 									<button type="button" class="btn btn-xs btn-primary active"
 										id="simple_button">Simple</button>
-									<button type="button" class="btn btn-xs btn-default" id="adv_button">Advanced</button>
+									<button type="button" class="btn btn-xs btn-default"
+										id="adv_button">Advanced</button>
 								</div>
 								<div id="simple_query">
 									<div class="col-sm-24 query_row">
@@ -217,7 +217,12 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 							</div>
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-2">
-									<input id="searchButton" type="button" value="Search" />
+									<input id="searchButton" class="btn btn-default" type="button" value="Search" />
+								</div>
+								<div class="col-sm-4">
+									<input id="xmlButton" class="btn btn-default btn-xs pull-right center-block" type="button" value="XML" />
+									<input id="jsonButton" class="btn btn-default btn-xs pull-right center-block" type="button" value="JSON" />
+									<input id="csvButton" class="btn btn-default btn-xs pull-right center-block" type="button" value="CSV" />
 								</div>
 							</div>
 
