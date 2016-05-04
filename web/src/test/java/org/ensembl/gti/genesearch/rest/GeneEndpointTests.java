@@ -58,8 +58,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 public class GeneEndpointTests {
 
-	private static final String GENES_FETCH = "http://localhost:8080/genes/fetch";
-	private static final String GENES_QUERY = "http://localhost:8080/genes/query";
+	private static final String GENES_FETCH = "http://localhost:8080/api/genes/fetch";
+	private static final String GENES_QUERY = "http://localhost:8080/api/genes/query";
 	static Logger log = LoggerFactory.getLogger(GeneEndpointTests.class);
 	static ESSearch search;
 
