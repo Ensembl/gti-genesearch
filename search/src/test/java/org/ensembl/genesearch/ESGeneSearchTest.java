@@ -59,7 +59,6 @@ public class ESGeneSearchTest {
 	@Test
 	public void fetchAll() {
 		log.info("Fetching all genes");
-		List<Map<String, Object>> ids = search.fetch(new ArrayList<Query>(), Arrays.asList("_id"));
 		try {
 			search.fetch(Collections.emptyList(), Arrays.asList("_id"));
 			fail("Illegal operation succeeded");
