@@ -51,20 +51,40 @@ public class FetchParams {
 		}
 	}
 
-	private String fileName = "genes";
+	private String accept;
+	private String contentType;
 	private List<String> fields = Collections.emptyList();
+	private String fileName = "genes";
 	private List<Query> queries = Collections.emptyList();
 
-	public String getFileName() {
-		return fileName;
+	public String getAccept() {
+		return accept;
+	}
+
+	public String getContentType() {
+		return contentType;
 	}
 
 	public List<String> getFields() {
 		return fields;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
 	public List<Query> getQueries() {
 		return queries;
+	}
+
+	@QueryParam("accept")
+	public void setAccept(String accept) {
+		this.accept = accept;
+	}
+
+	@QueryParam("content-type")
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 
 	@JsonProperty("fields")
@@ -77,6 +97,12 @@ public class FetchParams {
 	@JsonIgnore
 	public void setFields(String fields) {
 		this.fields = stringToList(fields);
+	}
+
+	@QueryParam("filename")
+	@DefaultValue("genes")
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	@JsonIgnore
@@ -94,12 +120,6 @@ public class FetchParams {
 	@JsonIgnore
 	public void setQuery(String query) {
 		setQueries(new DefaultQueryHandler().parseQuery(query));
-	}
-
-	@QueryParam("filename")
-	@DefaultValue("genes")
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
 	}
 
 	@Override

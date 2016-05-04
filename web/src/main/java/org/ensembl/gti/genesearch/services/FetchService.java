@@ -73,25 +73,37 @@ public abstract class FetchService {
 	@GET
 	@JSONP
 	public Response get(@BeanParam FetchParams params) {
-		return fetchAsJson(params);
+		if (StringUtils.isEmpty(params.getAccept())) {
+			params.setAccept(MediaType.APPLICATION_JSON);
+		}
+		return fetchByAccept(params);
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
 	public Response getAsXml(@BeanParam FetchParams params) {
-		return fetchAsXml(params);
+		if (StringUtils.isEmpty(params.getAccept())) {
+			params.setAccept(MediaType.APPLICATION_XML);
+		}
+		return fetchByAccept(params);
 	}
 
 	@GET
 	@Produces({ Application.APPLICATION_EXCEL + ";qs=0.1", Application.TEXT_CSV + ";qs=0.1" })
 	public Response getAsCsv(@BeanParam FetchParams params) {
-		return fetchAsCsv(params);
+		if (StringUtils.isEmpty(params.getAccept())) {
+			params.setAccept(Application.APPLICATION_EXCEL);
+		}
+		return fetchByAccept(params);
 	}
 
 	@POST
 	@JSONP
 	public Response post(@RequestBody FetchParams params) throws JsonParseException, JsonMappingException, IOException {
-		return fetchAsJson(params);
+		if (StringUtils.isEmpty(params.getAccept())) {
+			params.setAccept(MediaType.APPLICATION_JSON);
+		}
+		return fetchByAccept(params);
 	}
 
 	@POST
@@ -99,7 +111,10 @@ public abstract class FetchService {
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response postAsXml(@RequestBody FetchParams params)
 			throws JsonParseException, JsonMappingException, IOException {
-		return fetchAsXml(params);
+		if (StringUtils.isEmpty(params.getAccept())) {
+			params.setAccept(MediaType.APPLICATION_XML);
+		}
+		return fetchByAccept(params);
 	}
 
 	@POST
@@ -107,7 +122,35 @@ public abstract class FetchService {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public Response postAsCsv(@RequestBody FetchParams params)
 			throws JsonParseException, JsonMappingException, IOException {
-		return fetchAsCsv(params);
+		if (StringUtils.isEmpty(params.getAccept())) {
+			params.setAccept(MediaType.APPLICATION_XML);
+		}
+		return fetchByAccept(params);
+	}
+
+	public Response fetchByAccept(FetchParams params) {
+		Response response;
+		switch (params.getAccept()) {
+		case MediaType.APPLICATION_JSON:
+		case Application.APPLICATION_X_JAVASCRIPT: {
+			response = fetchAsJson(params);
+			break;
+		}
+		case MediaType.APPLICATION_XML: {
+			response = fetchAsXml(params);
+			break;
+		}
+		case Application.APPLICATION_EXCEL:
+		case Application.TEXT_CSV: {
+			response = fetchAsCsv(params);
+			break;
+		}
+		default: {
+			throw new WebApplicationException("Cannot provide content of type " + params.getAccept(),
+					Response.Status.BAD_REQUEST);
+		}
+		}
+		return response;
 	}
 
 	public Response fetchAsJson(FetchParams params) {
