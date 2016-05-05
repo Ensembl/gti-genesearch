@@ -36,7 +36,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.lucene.search.function.FieldValueFactorFunction.Modifier;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
-import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
@@ -349,7 +348,7 @@ public class ESSearch implements Search {
 	@Override
 	public List<Map<String, Object>> fetchByIds(String... ids) {
 		SearchRequestBuilder request = client.prepareSearch(index)
-				.setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids))).setTypes(type);
+				.setQuery(new ConstantScoreQueryBuilder(QueryBuilders.idsQuery(type).addIds(ids)));
 		SearchResponse response = request.execute().actionGet();
 		return processResults(response);
 	}
@@ -357,7 +356,7 @@ public class ESSearch implements Search {
 	@Override
 	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids) {
 		SearchRequestBuilder request = client.prepareSearch(index)
-				.setQuery(new ConstantScoreQueryBuilder(new IdsQueryBuilder().addIds(ids))).setTypes(type);
+				.setQuery(new ConstantScoreQueryBuilder(QueryBuilders.idsQuery(type).addIds(ids)));
 		SearchResponse response = request.execute().actionGet();
 		processAllHits(consumer, response);
 		log.info("Retrieved all hits");
@@ -386,11 +385,17 @@ public class ESSearch implements Search {
 
 		if (ESSearch.GENOME_TYPE.equals(type)) {
 			query = QueryBuilders.functionScoreQuery(
-					QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("organism.display_name", name).boost(4))
-							.should(QueryBuilders.matchQuery("organism.scientific_name", name).boost(2))
-							.should(QueryBuilders.matchQuery("organism.aliases", name))
-							.should(QueryBuilders.matchQuery("organism.strain", name))
-							.should(QueryBuilders.matchQuery("organism.serotype", name)),
+					QueryBuilders.boolQuery()
+							.should(QueryBuilders.matchPhrasePrefixQuery("organism.display_name", name).slop(10)
+									.maxExpansions(limit).boost(4))
+							.should(QueryBuilders.matchPhrasePrefixQuery("organism.scientific_name", name).slop(10)
+									.maxExpansions(limit).boost(2))
+							.should(QueryBuilders.matchPhrasePrefixQuery("organism.aliases", name).maxExpansions(limit)
+									.slop(10))
+							.should(QueryBuilders.matchPhrasePrefixQuery("organism.strain", name).maxExpansions(limit)
+									.slop(10))
+							.should(QueryBuilders.matchPhrasePrefixQuery("organism.serotype", name).maxExpansions(limit)
+									.slop(10)),
 					ScoreFunctionBuilders.fieldValueFactorFunction("is_reference").factor(2).modifier(Modifier.LOG1P));
 
 			fields = new String[] { "id", "organism.display_name", "organism.scientific_name" };
