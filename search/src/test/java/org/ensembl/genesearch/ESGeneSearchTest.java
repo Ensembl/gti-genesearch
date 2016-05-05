@@ -52,7 +52,7 @@ public class ESGeneSearchTest {
 		log.info("Reading documents");
 		String json = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
 		log.info("Creating test index");
-		testServer.createTestIndex(json, ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
+		testServer.indexTestDocs(json, ESSearch.GENE_TYPE);
 	}
 
 	@Test

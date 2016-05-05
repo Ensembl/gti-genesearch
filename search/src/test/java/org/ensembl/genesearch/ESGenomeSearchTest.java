@@ -50,7 +50,7 @@ public class ESGenomeSearchTest {
 		log.info("Reading documents");
 		String json = ESTestServer.readGzipResource("/genomes.json.gz");
 		log.info("Creating test index");
-		testServer.createTestIndex(json, ESSearch.GENES_INDEX, ESSearch.GENOME_TYPE);
+		testServer.indexTestDocs(json, ESSearch.GENOME_TYPE);
 	}
 
 	@Test
