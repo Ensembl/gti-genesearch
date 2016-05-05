@@ -53,7 +53,7 @@ public class ESTestServer {
 		dataDir = Files.createTempDir();
 		dataDir.deleteOnExit();
 		node = new NodeBuilder()
-				.settings(Settings.settingsBuilder().put("http.enabled", true).put("path.home", dataDir.getPath()))
+				.settings(Settings.settingsBuilder().put("http.enabled", false).put("path.home", dataDir.getPath()))
 				.local(true).node();
 		client = node.client();
 	}
