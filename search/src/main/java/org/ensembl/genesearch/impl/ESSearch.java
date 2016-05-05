@@ -33,10 +33,13 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.lucene.search.function.FieldValueFactorFunction.Modifier;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -48,8 +51,8 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.sort.SortParseElement;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
-import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.QueryResult;
+import org.ensembl.genesearch.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +95,7 @@ public class ESSearch implements Search {
 
 	@Override
 	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames) {
-		if(queries.isEmpty()) {
+		if (queries.isEmpty()) {
 			throw new UnsupportedOperationException("Fetch requires at least one query term");
 		}
 		final List<Map<String, Object>> results = new ArrayList<>();
@@ -106,8 +109,8 @@ public class ESSearch implements Search {
 
 		int queryScrollSize = calculateScroll(fieldNames);
 
-		log.debug("Using scroll size "+queryScrollSize);
-		
+		log.debug("Using scroll size " + queryScrollSize);
+
 		// if we have more terms than entries in our scroll, do it piecemeal
 		if (queries.size() == 1) {
 			Query query = queries.get(0);
@@ -115,8 +118,7 @@ public class ESSearch implements Search {
 				for (List<String> terms : ListUtils.partition(Arrays.asList(query.getValues()), queryScrollSize)) {
 					log.info("Querying " + terms.size() + "/" + query.getValues().length);
 					watch.start();
-					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)),
-							fieldNames);
+					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)), fieldNames);
 					watch.stop();
 					log.info("Queried " + terms.size() + "/" + query.getValues().length + " in " + watch.getTime()
 							+ " ms");
@@ -128,7 +130,7 @@ public class ESSearch implements Search {
 		}
 
 		log.info("Building fetch query");
-		QueryBuilder query = ESSearchBuilder.buildQuery(queries.toArray(new Query[queries.size()]));
+		QueryBuilder query = ESSearchBuilder.buildQuery(type, queries.toArray(new Query[queries.size()]));
 
 		log.debug(query.toString());
 
@@ -167,9 +169,9 @@ public class ESSearch implements Search {
 				scrollFactor += 0.1;
 			}
 		}
-		if(scrollFactor<0.1) {
+		if (scrollFactor < 0.1) {
 			scrollFactor = 0.1;
-		} else if(scrollFactor>50) {
+		} else if (scrollFactor > 50) {
 			scrollFactor = 50;
 		}
 		return (int) (scrollSize / scrollFactor);
@@ -226,12 +228,13 @@ public class ESSearch implements Search {
 	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
 			List<String> sorts) {
 		log.debug("Building query");
-		QueryBuilder query = ESSearchBuilder.buildQuery(queries.toArray(new Query[queries.size()]));
+		QueryBuilder query = ESSearchBuilder.buildQuery(type, queries.toArray(new Query[queries.size()]));
 
 		log.info(query.toString());
 
 		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
-				.setFetchSource(output.toArray(new String[output.size()]), null).setSize(limit).setFrom(offset).setTypes(type);
+				.setFetchSource(output.toArray(new String[output.size()]), null).setSize(limit).setFrom(offset)
+				.setTypes(type);
 
 		setFields(output, request);
 
@@ -368,6 +371,50 @@ public class ESSearch implements Search {
 		} else {
 			return genes.get(0);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.Search#select(java.lang.String, int, int)
+	 */
+	@Override
+	public QueryResult select(String name, int offset, int limit) {
+
+		QueryBuilder query;
+		String[] fields;
+
+		if (ESSearch.GENOME_TYPE.equals(type)) {
+			query = QueryBuilders.functionScoreQuery(
+					QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("organism.display_name", name).boost(4))
+							.should(QueryBuilders.matchQuery("organism.scientific_name", name).boost(2))
+							.should(QueryBuilders.matchQuery("organism.aliases", name))
+							.should(QueryBuilders.matchQuery("organism.strain", name))
+							.should(QueryBuilders.matchQuery("organism.serotype", name)),
+					ScoreFunctionBuilders.fieldValueFactorFunction("is_reference").factor(2).modifier(Modifier.LOG1P));
+
+			fields = new String[] { "id", "organism.display_name", "organism.scientific_name" };
+		} else {
+			throw new UnsupportedOperationException("select not implemented for " + type);
+		}
+
+		log.debug("Building query");
+
+		log.info(query.toString());
+
+		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
+				.setFetchSource(fields, new String[] {}).setSize(limit).setFrom(offset).setTypes(ESSearch.GENOME_TYPE);
+
+		log.info("Starting query");
+		log.debug("Query " + request.toString());
+
+		SearchResponse response = request.execute().actionGet();
+		log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
+				+ response.getTookInMillis() + " ms");
+
+		return new QueryResult(response.getHits().getTotalHits(), offset, limit, processResults(response),
+				processAggregations(response));
+
 	}
 
 }

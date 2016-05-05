@@ -91,5 +91,12 @@ public interface Search {
 	 * @param ids
 	 */
 	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids);
+	
+	/**
+	 * Find a document matching the supplied string
+	 * @param name
+	 * @return
+	 */
+	public QueryResult select(String name, int offset, int limit);
 
 }

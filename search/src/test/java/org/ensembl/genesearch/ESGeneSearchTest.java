@@ -1,5 +1,5 @@
 /*
- * Copyright [1999-2016] EMBL-European Bioinformatics Institute
+http://gti-es-0.ebi.ac.uk:9200/genes/genome/_search?pretty&q=K12 * Copyright [1999-2016] EMBL-European Bioinformatics Institute
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +52,7 @@ public class ESGeneSearchTest {
 		log.info("Reading documents");
 		String json = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
 		log.info("Creating test index");
-		testServer.createTestIndex(json);
+		testServer.createTestIndex(json, ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
 	}
 
 	@Test

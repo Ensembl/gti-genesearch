@@ -48,19 +48,19 @@ public class ESSearchBuilder {
 	private ESSearchBuilder() {
 	}
 
-	public static QueryBuilder buildQuery(Query... geneQs) {
-		return buildQueryWithParents(new ArrayList<String>(), geneQs);
+	public static QueryBuilder buildQuery(String type, Query... geneQs) {
+		return buildQueryWithParents(type, new ArrayList<String>(), geneQs);
 	}
 
-	protected static QueryBuilder buildQueryWithParents(List<String> parents, Query... geneQs) {
+	protected static QueryBuilder buildQueryWithParents(String type, List<String> parents, Query... geneQs) {
 		log.trace("Parents " + parents);
 		if (geneQs.length == 1) {
 			Query geneQ = geneQs[0];
 			QueryBuilder query;
 			if (geneQ.getType().equals(QueryType.NESTED)) {
-				query = processNested(parents, geneQ);
+				query = processNested(type, parents, geneQ);
 			} else {
-				query = processSingle(parents, geneQ);
+				query = processSingle(type, parents, geneQ);
 			}
 			return query;
 		} else if (geneQs.length == 0) {
@@ -68,15 +68,15 @@ public class ESSearchBuilder {
 			return QueryBuilders.matchAllQuery();
 		} else {
 			log.trace("Multiples");
-			return processMultiple(parents, geneQs);
+			return processMultiple(type, parents, geneQs);
 		}
 	}
 
-	protected static BoolQueryBuilder processMultiple(List<String> parents, Query... geneQs) {
+	protected static BoolQueryBuilder processMultiple(String type, List<String> parents, Query... geneQs) {
 		BoolQueryBuilder query = null;
 		for (Query geneQ : geneQs) {
 			log.trace("Multiple " + geneQ.getFieldName());
-			QueryBuilder subQuery = buildQueryWithParents(parents, geneQ);
+			QueryBuilder subQuery = buildQueryWithParents(type, parents, geneQ);
 			if (query == null) {
 				query = QueryBuilders.boolQuery().must(subQuery);
 			} else {
@@ -86,11 +86,11 @@ public class ESSearchBuilder {
 		return query;
 	}
 
-	protected static QueryBuilder processSingle(List<String> parents, Query geneQ) {
+	protected static QueryBuilder processSingle(String type, List<String> parents, Query geneQ) {
 		QueryBuilder query;
 		log.trace("Single " + geneQ.getFieldName());
 		if (parents.size() == 0 && ID_FIELD.equals(geneQ.getFieldName())) {
-			query = QueryBuilders.idsQuery("gene").addIds(geneQ.getValues());
+			query = QueryBuilders.idsQuery(type).addIds(geneQ.getValues());
 		} else {
 			String path = StringUtils.join(extendPath(parents, geneQ), '.');
 			if (geneQ.getType() == QueryType.RANGE) {
@@ -111,10 +111,10 @@ public class ESSearchBuilder {
 		return QueryBuilders.constantScoreQuery(query);
 	}
 
-	protected static QueryBuilder processNested(List<String> parents, Query geneQ) {
+	protected static QueryBuilder processNested(String type, List<String> parents, Query geneQ) {
 		QueryBuilder query;
 		log.trace("Nested " + geneQ.getFieldName());
-		QueryBuilder subQuery = buildQueryWithParents(extendPath(parents, geneQ), geneQ.getSubQueries());
+		QueryBuilder subQuery = buildQueryWithParents(type, extendPath(parents, geneQ), geneQ.getSubQueries());
 		query = QueryBuilders.nestedQuery(StringUtils.join(extendPath(parents, geneQ), '.'), subQuery);
 		return query;
 	}

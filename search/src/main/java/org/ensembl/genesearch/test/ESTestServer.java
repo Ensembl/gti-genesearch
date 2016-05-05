@@ -28,7 +28,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
-import org.ensembl.genesearch.impl.ESSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +36,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 
 /**
- * Utility to create and load a test server. Found in main to allow reuse in downstream projects
+ * Utility to create and load a test server. Found in main to allow reuse in
+ * downstream projects
+ * 
  * @author dstaines
  *
  */
@@ -52,9 +53,7 @@ public class ESTestServer {
 		dataDir = Files.createTempDir();
 		dataDir.deleteOnExit();
 		node = new NodeBuilder()
-				.settings(
-						Settings.settingsBuilder().put("http.enabled", false)
-								.put("path.home", dataDir.getPath()))
+				.settings(Settings.settingsBuilder().put("http.enabled", true).put("path.home", dataDir.getPath()))
 				.local(true).node();
 		client = node.client();
 	}
@@ -63,42 +62,36 @@ public class ESTestServer {
 		return client;
 	}
 
-	public void createTestIndex(String geneJson) {
+	public void createTestIndex(String json, String index, String type) {
 		try {
 			log.info("Starting test server");
 
 			log.info("Reading mapping");
 			// slurp the mapping file into memory
-			String mapping = readResource("/gene_mapping.json");
+			String mapping = readResource("/" + type + "_mapping.json");
 
 			log.info("Creating index");
 			// create an index with mapping
-			client.admin()
-					.indices()
-					.prepareCreate(ESSearch.GENES_INDEX)
-					.setSettings(
-							Settings.builder().put("index.number_of_shards", 4)
-									.put("index.number_of_replicas", 0))
-					.addMapping(ESSearch.GENE_TYPE, mapping).get();
+			client.admin().indices().prepareCreate(index)
+					.setSettings(Settings.builder().put("index.number_of_shards", 4).put("index.number_of_replicas", 0))
+					.addMapping(type, mapping).get();
 
 			ObjectMapper mapper = new ObjectMapper();
-			List<Map<String, Object>> genes = mapper.readValue(geneJson,
+			List<Map<String, Object>> docs = mapper.readValue(json,
 					new TypeReference<List<Map<String, Object>>>() {
 					});
-			log.info("Read " + genes.size() + " documents");
-			for (Map<String, Object> gene : genes) {
+			log.info("Read " + docs.size() + " documents");
+			for (Map<String, Object> doc : docs) {
 
-				gene.put("_id", gene.get("id"));
+				String id = String.valueOf(doc.get("id"));
+				doc.put("_id", id);
 
-				client.prepareIndex(ESSearch.GENES_INDEX,
-						ESSearch.GENE_TYPE)
-						.setSource(mapper.writeValueAsString(gene)).execute()
-						.actionGet();
+				client.prepareIndex(index, type).setId(id).setSource(mapper.writeValueAsString(doc)).execute().actionGet();
 
 			}
 			// wait for indices to be built
-			client.admin().indices().refresh(new RefreshRequest(ESSearch.GENES_INDEX)).actionGet();
-			log.info("Indexed " + genes.size() + " documents");
+			client.admin().indices().refresh(new RefreshRequest(index)).actionGet();
+			log.info("Indexed " + docs.size() + " documents");
 			return;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -112,13 +105,11 @@ public class ESTestServer {
 	}
 
 	public static String readGzipResource(String name) throws IOException {
-		return IOUtils.toString(new GZIPInputStream(ESTestServer.class
-				.getResourceAsStream(name)));
+		return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)));
 	}
 
 	public static String readResource(String name) throws IOException {
-		return IOUtils.toString(ESTestServer.class
-				.getResourceAsStream(name));
+		return IOUtils.toString(ESTestServer.class.getResourceAsStream(name));
 	}
 
 }

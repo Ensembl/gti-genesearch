@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 public class Query {
 
 	public enum QueryType {
-		TERM, RANGE, NESTED;
+		TEXT, TERM, RANGE, NESTED;
 	}
 
 	private final String fieldName;
