@@ -52,16 +52,42 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * @author dstaines
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
 @WebIntegrationTest
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-public class GeneEndpointTests {
+public class EndpointTests {
 
-	private static final String GENES_FETCH = "http://localhost:8080/api/genes/fetch";
-	private static final String GENES_QUERY = "http://localhost:8080/api/genes/query";
-	static Logger log = LoggerFactory.getLogger(GeneEndpointTests.class);
-	static ESSearch search;
+	private static final String API_BASE = "http://localhost:8080/api";
+	private static final String GENES_FETCH = API_BASE + "/genes/fetch";
+	private static final String GENES_QUERY = API_BASE + "/genes/query";
+	private static final String GENOMES_FETCH = API_BASE + "/genomes/fetch";
+	private static final String GENOMES_QUERY = API_BASE + "/genomes/query";
+	private static final String GENOMES_SELECT = API_BASE + "/genomes/select";
+
+	static Logger log = LoggerFactory.getLogger(EndpointTests.class);
+	static ESSearch geneSearch;
+	static ESSearch genomeSearch;
+
+	@BeforeClass
+	public static void setUp() throws IOException {
+		// create our ES test server once only
+		log.info("Setting up");
+		ESTestServer testServer = new ESTestServer();
+		// index a sample of JSON
+		log.info("Reading documents");
+		String geneJson = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
+		String genomeJson = ESTestServer.readGzipResource("/genomes.json.gz");
+		log.info("Creating test index");
+		testServer.indexTestDocs(geneJson, ESSearch.GENE_TYPE);
+		testServer.indexTestDocs(genomeJson, ESSearch.GENOME_TYPE);
+		geneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
+		genomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_TYPE);
+	}
 
 	@Autowired
 	SearchProvider provider;
@@ -73,23 +99,11 @@ public class GeneEndpointTests {
 
 	RestTemplate restTemplate = new TestRestTemplate();
 
-	@BeforeClass
-	public static void setUp() throws IOException {
-		// create our ES test server once only
-		log.info("Setting up");
-		ESTestServer testServer = new ESTestServer();
-		// index a sample of JSON
-		log.info("Reading documents");
-		String json = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
-		log.info("Creating test index");
-		testServer.createTestIndex(json, ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
-		search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
-	}
-
 	@Before
 	public void injectSearch() {
 		// ensure we always use our test instance
-		provider.setGeneSearch(search);
+		provider.setGeneSearch(geneSearch);
+		provider.setGenomeSearch(genomeSearch);
 	}
 
 	@Test
@@ -222,6 +236,47 @@ public class GeneEndpointTests {
 		assertTrue("Name found", result.get(0).containsKey("name"));
 		assertTrue("Start found", result.get(0).containsKey("start"));
 		assertFalse("homologues not found", result.get(0).containsKey("homologues"));
+	}
+
+	@Test
+	public void testGenomeQueryGetEndpoint() {
+		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, GENOMES_QUERY);
+		assertEquals("Checking all results found", 4, Long.parseLong(result.get("resultCount").toString()));
+		assertEquals("Checking limited results retrieved", 4, ((List<?>) result.get("results")).size());
+		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
+		assertTrue("ID found", results.get(0).containsKey("id"));
+	}
+
+	@Test
+	public void testGenomeQueryPostEndpoint() {
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, GENOMES_QUERY, "{}");
+		assertEquals("Checking all results found", 4, Long.parseLong(result.get("resultCount").toString()));
+		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
+		assertEquals("Checking limited results retrieved", 4, results.size());
+		assertTrue("ID found", results.get(0).containsKey("id"));
+	}
+
+	@Test
+	public void testGenomeFetchGetEndpoint() {
+		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, GENOMES_FETCH);
+		assertEquals("Checking all results found", 4, result.size());
+		assertTrue("ID found", result.get(0).containsKey("id"));
+	}
+
+	@Test
+	public void testGenomeFetchPostEndpoint() {
+		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, GENOMES_FETCH, "{}");
+		assertEquals("Checking all results found", 4, result.size());
+		assertTrue("ID found", result.get(0).containsKey("id"));
+	}
+
+	@Test
+	public void testSelect() {
+		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, GENOMES_SELECT + "?query=human");
+		assertEquals("Checking all results found", 2, Long.parseLong(result.get("resultCount").toString()));
+		assertEquals("Checking limited results retrieved", 2, ((List<?>) result.get("results")).size());
+		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
+		assertTrue("ID found", results.get(0).containsKey("id"));
 	}
 
 	/**
