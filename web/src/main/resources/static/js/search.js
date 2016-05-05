@@ -139,7 +139,7 @@ $('.go').autocomplete(
 				return;
 			},
 			select : function(event, ui) {
-				$('#'+event.target.id).val(ui.item.label);
+				$('#' + event.target.id).val(ui.item.label);
 				return false;
 			}
 		});
@@ -148,22 +148,53 @@ $('.lineage').autocomplete(
 		{
 			minLength : 3,
 			source : function(request, response) {
-				$.get("http://www.ebi.ac.uk/ols/api/select?ontology=ncbitaxon&q="
-						+ request.term, function(data) {
-					var array = data.error ? [] : $.map(data.response.docs,
-							function(m) {
-								var label = m.label + " [" + m.obo_id + "]";
-								return {
-									label : m.label + " [" + m.obo_id + "]",
-									value : m.obo_id
-								};
-							});
-					response(array);
-				});
+				$.get(
+						"http://www.ebi.ac.uk/ols/api/select?ontology=ncbitaxon&q="
+								+ request.term, function(data) {
+							var array = data.error ? [] : $.map(
+									data.response.docs, function(m) {
+										var label = m.label + " [" + m.obo_id
+												+ "]";
+										return {
+											label : m.label + " [" + m.obo_id
+													+ "]",
+											value : m.obo_id
+										};
+									});
+							response(array);
+						});
 				return;
 			},
 			select : function(event, ui) {
-				$('#'+event.target.id).val(ui.item.label);
+				$('#' + event.target.id).val(ui.item.label);
+				return false;
+			}
+		});
+
+$('.genome').autocomplete(
+		{
+			minLength : 3,
+			source : function(request, response) {
+				$.get(
+						"/api/genomes/select?query="
+								+ request.term, function(data) {
+							var array = data.error ? [] : $.map(
+									data.results, function(m) {
+										var labelStr = m.organism.display_name;
+										if(m.organism.display_name != m.organism.scientific_name) {
+											labelStr = labelStr + " (<em>"+m.organism.scientific_name+"</em>)";
+										}
+										return {
+											label : labelStr,
+											value : m.id
+										};
+									});
+							response(array);
+						});
+				return;
+			},
+			select : function(event, ui) {
+				$('#' + event.target.id).val(ui.item.label);
 				return false;
 			}
 		});
@@ -183,6 +214,10 @@ $('#add_button').click(
 				$(this).parent().parent().remove();
 			});
 		});
+
+$('#doit').click(function(e) {
+	console.trace($('#myfile').get(0).files)
+});
 
 var table;
 $('#searchButton').click(function() {
