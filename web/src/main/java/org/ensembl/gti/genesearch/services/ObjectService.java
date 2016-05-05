@@ -23,16 +23,19 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 /**
  * @author dstaines
@@ -93,6 +95,14 @@ public abstract class ObjectService {
 		};
 		return Response.ok().entity(stream).type(MediaType.APPLICATION_JSON).build();
 
+	}
+
+	@Path("/select")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public QueryResult get(@QueryParam("query") String query, @DefaultValue("0") @QueryParam("offset") int offset,
+			@DefaultValue("10") @QueryParam("limit") int limit) {
+		return getSearch().select(query, offset, limit);
 	}
 
 }
