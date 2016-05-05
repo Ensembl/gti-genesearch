@@ -79,5 +79,9 @@ public class SearchProvider {
 	public void setGeneSearch(Search search) {
 		this.geneSearch = search;
 	}
+	public void setGenomeSearch(Search search) {
+		this.genomeSearch = search;
+	}
+
 
 }
