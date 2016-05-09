@@ -338,6 +338,13 @@ function submitSearch(search) {
 				response.recordsTotal = response.resultCount;
 				response.recordsFiltered = response.resultCount;
 				response.data = response.results;
+				response.data.forEach(function(row) {
+					search.fields.forEach(function (field) {
+						if(!row[field.displayField]) {
+							row[field.displayField] = "";
+						}
+					});
+				});
 				response.results = undefined;
 				console.log("Completed filtering data");
 				console.trace(response);
