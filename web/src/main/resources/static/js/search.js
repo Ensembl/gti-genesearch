@@ -174,8 +174,8 @@ function setGenomeComplete(element) {
 				var array = data.error ? [] : $.map(data.results, function(m) {
 					var labelStr = m.organism.display_name;
 					if (m.organism.display_name != m.organism.scientific_name) {
-						labelStr = labelStr + " (<em>"
-								+ m.organism.scientific_name + "</em>)";
+						labelStr = labelStr + " ("
+								+ m.organism.scientific_name + ")";
 					}
 					return {
 						label : labelStr,
