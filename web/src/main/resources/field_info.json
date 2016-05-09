@@ -1,7 +1,16 @@
 [
 	{
+		"name": "genome",
+		"displayName": "Genome",
+		"searchField": "genome",
+		"displayField": "genome_display",
+		"facet": "true",
+		"type": "GENOME"
+	},
+	{
 		"name": "id",
-		"displayName": "Gene ID"
+		"displayName": "Gene ID",
+		"type": "ID"
 	},
 	{
 		"name": "name",
@@ -14,13 +23,6 @@
 	{
 		"name": "biotype",
 		"displayName": "Biotype",
-		"facet": "true"
-	},
-	{
-		"name": "genome",
-		"displayName": "Genome",
-		"searchField": "genome",
-		"displayField": "genome_display",
 		"facet": "true"
 	},
 	{
@@ -43,6 +45,15 @@
 	},
 	{
 		"name": "Uniprot_SWISSPROT",
-		"displayName": "UniProtKB/Swiss-Prot"
+		"displayName": "UniProtKB/Swiss-Prot",
+		"type": "ID"
+	},
+	{
+		"name": "GO",
+		"displayName": "GO",
+		"displayField": "GO",
+		"sortField": "GO",
+		"searchField": "GO_expanded",
+		"facet": "true"
 	}
 ]
