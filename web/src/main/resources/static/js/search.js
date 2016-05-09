@@ -115,89 +115,102 @@ $(document).ready(
 					width : "auto",
 					dropdownAutoWidth : true
 				});
-
+				$('#query_field').trigger('change');
 				$('#search').show();
 			});
 		});
 
-$('.go').autocomplete(
-		{
-			minLength : 3,
-			source : function(request, response) {
-				$.get("http://www.ebi.ac.uk/ols/api/select?ontology=go&q="
-						+ request.term, function(data) {
-					var array = data.error ? [] : $.map(data.response.docs,
-							function(m) {
-								var label = m.label + " [" + m.obo_id + "]";
-								return {
-									label : m.label + " [" + m.obo_id + "]",
-									value : m.obo_id
-								};
-							});
-					response(array);
+function setOntologyComplete(element, ontology) {
+	element.autocomplete({
+		minLength : 3,
+		source : function(request, response) {
+			$.get("http://www.ebi.ac.uk/ols/api/select?ontology=" + ontology
+					+ "&q=" + request.term, function(data) {
+				var array = data.error ? [] : $.map(data.response.docs,
+						function(m) {
+							var label = m.label + " [" + m.obo_id + "]";
+							return {
+								label : m.label + " [" + m.obo_id + "]",
+								value : m.obo_id
+							};
+						});
+				response(array);
+			});
+			return;
+		},
+		select : function(event, ui) {
+			var auto = $(event.target);
+			console.info("selected ontology " + ui.item.label);
+			auto.val(ui.item.label);
+			auto.siblings('.values').first().val(ui.item.value);
+			return false;
+		}
+	});
+}
+
+function setGenomeComplete(element) {
+	element.autocomplete({
+		minLength : 3,
+		source : function(request, response) {
+			$.get("/api/genomes/select?query=" + request.term, function(data) {
+				var array = data.error ? [] : $.map(data.results, function(m) {
+					var labelStr = m.organism.display_name;
+					if (m.organism.display_name != m.organism.scientific_name) {
+						labelStr = labelStr + " (<em>"
+								+ m.organism.scientific_name + "</em>)";
+					}
+					return {
+						label : labelStr,
+						value : m.id
+					};
 				});
-				return;
-			},
-			select : function(event, ui) {
-				$('#' + event.target.id).val(ui.item.label);
-				return false;
-			}
-		});
+				response(array);
+			});
+			return;
+		},
+		select : function(event, ui) {
+			var auto = $(event.target);
+			console.info("selected genome " + ui.item.label);
+			auto.val(ui.item.label);
+			auto.siblings('.values').first().val(ui.item.value);
+			return false;
+		}
+	});
+}
 
-$('.lineage').autocomplete(
-		{
-			minLength : 3,
-			source : function(request, response) {
-				$.get(
-						"http://www.ebi.ac.uk/ols/api/select?ontology=ncbitaxon&q="
-								+ request.term, function(data) {
-							var array = data.error ? [] : $.map(
-									data.response.docs, function(m) {
-										var label = m.label + " [" + m.obo_id
-												+ "]";
-										return {
-											label : m.label + " [" + m.obo_id
-													+ "]",
-											value : m.obo_id
-										};
-									});
-							response(array);
-						});
-				return;
-			},
-			select : function(event, ui) {
-				$('#' + event.target.id).val(ui.item.label);
-				return false;
-			}
-		});
+function setQueryInput(element) {
+	console.info("Setting field input");
+	var sib = element.parent().siblings('.query_value').first();
+	var select;
+	switch (element.val()) {
+	case "genome":
+		select = $('#genomeTemplate').clone().removeClass('hide').removeAttr(
+				'id');
+		setGenomeComplete(select.children('.genome').first());
+		break;
+	case "lineage":
+		select = $('#lineageTemplate').clone().removeClass('hide').removeAttr(
+				'id');
+		setOntologyComplete(select.children('.lineage').first(), "ncbitaxon");
+		break;
+	case "GO":
+		select = $('#goTemplate').clone().removeClass('hide').removeAttr('id');
+		setOntologyComplete(select.children('.go').first(), "go");
+		break;
+	case "id":
+		select = $('#idTemplate').clone().removeClass('hide').removeAttr('id');
+		break;
+	default:
+		select = $('#textTemplate').clone().removeClass('hide')
+				.removeAttr('id');
+		break;
+	}
+	sib.replaceWith(select);
+}
 
-$('.genome').autocomplete(
-		{
-			minLength : 3,
-			source : function(request, response) {
-				$.get(
-						"/api/genomes/select?query="
-								+ request.term, function(data) {
-							var array = data.error ? [] : $.map(
-									data.results, function(m) {
-										var labelStr = m.organism.display_name;
-										if(m.organism.display_name != m.organism.scientific_name) {
-											labelStr = labelStr + " (<em>"+m.organism.scientific_name+"</em>)";
-										}
-										return {
-											label : labelStr,
-											value : m.id
-										};
-									});
-							response(array);
-						});
-				return;
-			},
-			select : function(event, ui) {
-				$('#' + event.target.id).val(ui.item.label);
-				return false;
-			}
-		});
+$('.query_field').change(function(e) {
+	setQueryInput($(this));
+});
 
 $('#add_button').click(
 		function(e) { // on add input button click
@@ -205,24 +218,34 @@ $('#add_button').click(
 			var template = $('#query_template');
 			var clone = template.clone().removeClass('hide').removeAttr('id')
 					.insertBefore(template);
-			clone.find('.query_field').select2({
+			var querySelector = clone.find('.query_field');
+			querySelector.select2({
 				data : fields,
 				width : "auto",
 				dropdownAutoWidth : true
 			});
+			querySelector.change(function(e) {
+				setQueryInput($(this));
+			});
+			querySelector.trigger('change');
 			clone.find(".remove_button").click(function() {
 				$(this).parent().parent().remove();
 			});
 		});
 
-$('#doit').click(function(e) {
-	console.trace($('#myfile').get(0).files)
-});
-
 var table;
-$('#searchButton').click(function() {
 
-	var search = processQueryForm();
+function submitSearch(search) {
+
+	// only invoke if rows==0
+	if (rows > 0) {
+		console.info("Not submitting search - " + rows + " rows remain");
+		return;
+	}
+
+	console.info("Submitting search");
+	console.trace(search);
+
 	var n = 0;
 	var columns = [];
 	search.fields.forEach(function(column) {
@@ -236,8 +259,6 @@ $('#searchButton').click(function() {
 			targets : n++
 		});
 	});
-
-	console.info(JSON.stringify(search));
 
 	var options = {
 		processing : true,
@@ -301,7 +322,11 @@ $('#searchButton').click(function() {
 	console.log("Creating table");
 	table = $('#results').DataTable(options);
 	console.log("Created table");
+	return;
+}
 
+$('#searchButton').click(function() {
+	processQueryForm(submitSearch);
 });
 
 $('#xmlButton').click(function() {
@@ -354,32 +379,12 @@ function downloadData(format) {
 
 }
 
-function processQueryForm() {
-	var query;
-	if (advancedSearch) {
-		query = JSON.parse($('#query').val());
-	} else {
-		var query = {};
-		// find all simple query fields and collapse together
-		$('#simple_query').find('.query_row').not('.hide').each(
-				function(i, row) {
-					var field = $(this).find('.query_field').val();
-					var val = $(this).find('.query_value').val();
-					if (query[field]) {
-						if (query[field] instanceof Array) {
-							query[field].push(val);
-						} else {
-							query[field] = [ query[field], val ];
-						}
-					} else {
-						query[field] = val;
-					}
-				});
-	}
+var rows = 0;
+function processQueryForm(callback) {
+
 	var search = {
 		fields : [],
-		facets : [],
-		query : query
+		facets : []
 	};
 
 	var fieldsV = $('#fields').val();
@@ -400,8 +405,100 @@ function processQueryForm() {
 			search.facets.push(f);
 		});
 	}
-	return search;
+
+	if (advancedSearch) {
+		search.query = JSON.parse($('#query').val());
+		callback(search);
+	} else {
+		search.query = {};
+		rows = 0;
+		// find all simple query fields and collapse together
+		$('#simple_query').find('.query_row').not('.hide').each(
+				function(i, row) {
+					processRow($(this), search, callback);
+				});
+	}
+
+	return;
+
 };
+
+function processRow(row, search, callback) {
+	console.info("Parsing query row");
+	console.trace(row);
+	var field = row.find('.query_field').val();
+	var inputs = row.find('.values');
+	console.info("Adding " + inputs.length + " rows");
+	rows += inputs.length;
+	inputs.each(function() {
+		console.info("Processing" + $(this));
+		if ($(this).is("textarea")) {
+			setQueryVal(search, field, $(this).val().split("\n"));
+			callback(search);
+		} else {
+			if ($(this).attr('type') == 'file') {
+				var files = $(this).get(0).files;
+				if (files && files.length > 0) {
+					var file = files[0];
+					var reader = new FileReader();
+					reader.onloadend = function(evt) {
+						// file is loaded
+						console.info("Read completed");
+						result = evt.target.result;
+						val = result.split("\n");
+						console.info("Setting value");
+						setQueryVal(search, field, val);
+						callback(search);
+					};
+					console.info("Starting read");
+					reader.readAsText(file);
+				} else {
+					console.info("No files to read");
+					rows--;
+					callback(search);
+				}
+			} else {
+				setQueryVal(search, field, $(this).val());
+				callback(search);
+			}
+		}
+	})
+}
+
+function setQueryVal(search, field, val) {
+	console.info("Setting search for " + field + "/" + val);
+	if (val) {
+
+		// filter out empty strings
+		if (val instanceof Array) {
+			val = val.filter(function(e) {
+				return e && e.length > 0;
+			});
+		}
+
+		if (search.query[field]) {
+			if (search.query[field] instanceof Array) {
+				if (val instanceof Array) {
+					search.query[field] = search.query[field].concat(val);
+				} else {
+					search.query[field].push(val);
+				}
+			} else if (val.length > 0) {
+				if (val instanceof Array) {
+					search.query.concat(val);
+				} else {
+					search.query[field] = [ search.query[field], val ];
+				}
+			}
+		} else {
+			search.query[field] = val;
+		}
+	}
+	console.trace();
+	console.info("Finished " + field + " - row " + rows);
+	rows--;
+	return;
+}
 
 /**
  * Function to process one array and return another using a callback
