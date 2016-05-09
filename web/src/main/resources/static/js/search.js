@@ -36,6 +36,9 @@ var fields;
 var facetFields;
 var advancedSearch = false;
 
+/**
+ * Button to switch between advanced and simple search
+ */
 $('.btn-toggle').click(function() {
 
 	$(this).find('.btn').toggleClass('active');
@@ -58,6 +61,9 @@ $('.btn-toggle').click(function() {
 	}
 });
 
+/**
+ * Populate the base form
+ */
 $(document).ready(
 		function() {
 			$('#search').hide();
@@ -120,6 +126,13 @@ $(document).ready(
 			});
 		});
 
+/**
+ * For an ontology input, set up to use OLS autocomplete
+ * 
+ * @param element
+ * @param ontology
+ *            name of ontology in OLS
+ */
 function setOntologyComplete(element, ontology) {
 	element.autocomplete({
 		minLength : 3,
@@ -148,6 +161,11 @@ function setOntologyComplete(element, ontology) {
 	});
 }
 
+/**
+ * For a genome element, set up autocomplete
+ * 
+ * @param element
+ */
 function setGenomeComplete(element) {
 	element.autocomplete({
 		minLength : 3,
@@ -178,6 +196,10 @@ function setGenomeComplete(element) {
 	});
 }
 
+/**
+ * Dynamically set correct type for a new field
+ * @param element
+ */
 function setQueryInput(element) {
 	console.info("Setting field input");
 	var sib = element.parent().siblings('.query_value').first();
@@ -208,10 +230,16 @@ function setQueryInput(element) {
 	sib.replaceWith(select);
 }
 
+/*
+ * When selecting a new query field, trigger the input type
+ */
 $('.query_field').change(function(e) {
 	setQueryInput($(this));
 });
 
+/*
+ * Add functionality to field add button
+ */
 $('#add_button').click(
 		function(e) { // on add input button click
 			e.preventDefault();
@@ -234,10 +262,15 @@ $('#add_button').click(
 		});
 
 var table;
-
+/**
+ * Submit the search with supplied values
+ * 
+ * @param search
+ *            hash of queries, facets and fields
+ */
 function submitSearch(search) {
 
-	// only invoke if rows==0
+	// only invoke if rows==0 ie. all query rows processed
 	if (rows > 0) {
 		console.info("Not submitting search - " + rows + " rows remain");
 		return;
@@ -326,28 +359,39 @@ function submitSearch(search) {
 }
 
 $('#searchButton').click(function() {
-	processQueryForm(submitSearch);
+	processQueryForm(submitSearch, {});
 });
 
 $('#xmlButton').click(function() {
-	downloadData('application/xml')
+	processQueryForm(downloadData, {
+		format : 'application/xml'
+	});
 });
 $('#jsonButton').click(function() {
-	downloadData('application/json')
+	processQueryForm(downloadData, {
+		format : 'application/json'
+	});
 });
 $('#csvButton').click(function() {
-	downloadData('text/csv')
+	processQueryForm(downloadData, {
+		format : 'text/csv'
+	});
 });
 
-function downloadData(format) {
-	var search = processQueryForm();
+/**
+ * Method to invoke the endpoint to download data to a file
+ * 
+ * @param format
+ *            desired format eg csv, json, xml
+ */
+function downloadData(search) {
 	// console.trace(search);
 	var postData = {
 		query : search.query,
 		fields : map(search.fields, function(f) {
 			return f.displayField
 		}),
-		accept : format
+		accept : search.format
 	};
 
 	// Build a temporary hidden form
@@ -363,7 +407,7 @@ function downloadData(format) {
 	$('<input>').attr({
 		type : 'hidden',
 		name : 'accept',
-		value : format
+		value : search.format
 	}).appendTo(form);
 
 	$('<input>').attr({
@@ -380,12 +424,23 @@ function downloadData(format) {
 }
 
 var rows = 0;
-function processQueryForm(callback) {
 
-	var search = {
-		fields : [],
-		facets : []
-	};
+/**
+ * Process the form, and call the supplied callback after each query row is
+ * processed Uses rows to make sure each row has been processed, to allow for
+ * async method calls
+ * 
+ * @param callback
+ *            function to invoke after each row. e.g. will submit the query if
+ *            no outstanding rows
+ */
+function processQueryForm(callback, search) {
+
+	if (!search) {
+		search = {};
+	}
+	search.fields = [];
+	search.facets = [];
 
 	var fieldsV = $('#fields').val();
 	if (fieldsV) {
@@ -423,6 +478,10 @@ function processQueryForm(callback) {
 
 };
 
+/*
+ * Function to process a row in the query form callback is a function to call
+ * after each row has been processed
+ */
 function processRow(row, search, callback) {
 	console.info("Parsing query row");
 	console.trace(row);
@@ -465,6 +524,9 @@ function processRow(row, search, callback) {
 	})
 }
 
+/*
+ * Set supplied key/value in a query
+ */
 function setQueryVal(search, field, val) {
 	console.info("Setting search for " + field + "/" + val);
 	if (val) {
