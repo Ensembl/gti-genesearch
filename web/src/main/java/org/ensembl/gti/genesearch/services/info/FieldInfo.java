@@ -11,13 +11,14 @@ import org.apache.commons.lang3.StringUtils;
 public class FieldInfo {
 
 	public static enum FieldType {
-		TEXT, NUMBER, LOCATION, ONTOLOGY;
+		TEXT, NUMBER, LOCATION, ONTOLOGY, GENOME, ID;
 	}
 
 	private String name;
 	private String displayName;
 	private String searchField;
 	private String displayField;
+	private String sortField;
 	private FieldType type = FieldType.TEXT;
 	private boolean facet = false;
 
@@ -96,4 +97,16 @@ public class FieldInfo {
 		this.displayField = displayField;
 	}
 
+	public String getSortField() {
+		if (StringUtils.isEmpty(sortField)) {
+			return getSearchField();
+		} else {
+			return sortField;
+		}
+	}
+
+	public void setSortField(String sortField) {
+		this.sortField = sortField;
+	}
+	
 }
