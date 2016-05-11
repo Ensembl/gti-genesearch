@@ -44,6 +44,11 @@
 		"displayName": "Gene end"
 	},
 	{
+		"name": "lineage",
+		"displayName": "Taxonomic lineage",
+		"facet": "true"
+	},
+	{
 		"name": "Uniprot_SWISSPROT",
 		"displayName": "UniProtKB/Swiss-Prot",
 		"type": "ID"
