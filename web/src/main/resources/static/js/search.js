@@ -142,9 +142,10 @@ function setOntologyComplete(element, ontology) {
 				var array = data.error ? [] : $.map(data.response.docs,
 						function(m) {
 							var label = m.label + " [" + m.obo_id + "]";
+							var value = m.obo_id.replace("NCBITaxon:");
 							return {
-								label : m.label + " [" + m.obo_id + "]",
-								value : m.obo_id
+								label : label,
+								value : value
 							};
 						});
 				response(array);
