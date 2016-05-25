@@ -88,16 +88,16 @@ public class ResultsRemodellerTest {
 		assertEquals("2 flattened rows", 2, flatten.size());
 		assertEquals("1",flatten.get(0).get("a"));
 		assertEquals("1",flatten.get(0).get("b.c"));
-		assertEquals(2,((List)flatten.get(0).get("b.d")).size());
+		assertEquals(2,((List<?>)flatten.get(0).get("b.d")).size());
 		assertEquals("1",flatten.get(1).get("a"));
 		assertEquals("2",flatten.get(1).get("b.c"));
-		assertEquals(2,((List)flatten.get(1).get("b.d")).size());
+		assertEquals(2,((List<?>)flatten.get(1).get("b.d")).size());
 	}
 	
 	@Test
 	public void testDeep2() {
 		String input = "{\"a\":\"1\",\"b\":[{\"c\":\"1\",\"d\":[{\"e\":\"1\"},{\"e\":\"2\"}]},{\"c\":\"2\",\"d\":[{\"e\":\"3\"},{\"e\":\"4\"}]}]}";
-		List<Map<String, Object>> flatten = ResultsRemodeller.flatten(parseInput(input), "b", "d");
+		List<Map<String, Object>> flatten = ResultsRemodeller.flatten(parseInput(input), "b.d");
 		assertEquals("2 flattened rows", 4, flatten.size());
 		assertEquals("1",flatten.get(0).get("a"));
 		assertEquals("1",flatten.get(0).get("b.c"));

@@ -17,6 +17,7 @@
 package org.ensembl.gti.genesearch.services;
 
 import org.ensembl.gti.genesearch.services.filters.CORSFilter;
+import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.context.annotation.Configuration;
@@ -38,5 +39,6 @@ public class JerseyConfig extends ResourceConfig {
 		register(JacksonFeature.class);
 		register(InfoService.class);
 		register(CORSFilter.class);
+		register(LoggingFilter.class);  
 	}
 }

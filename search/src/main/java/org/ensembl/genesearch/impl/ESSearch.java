@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -52,6 +53,7 @@ import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.output.ResultsRemodeller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,16 +96,27 @@ public class ESSearch implements Search {
 
 	@Override
 	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames) {
+		return fetch(queries, fieldNames, null);
+	}
+
+	@Override
+	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames, String target) {
 		if (queries.isEmpty()) {
 			throw new UnsupportedOperationException("Fetch requires at least one query term");
 		}
 		final List<Map<String, Object>> results = new ArrayList<>();
-		fetch(row -> results.add(row), queries, fieldNames);
+		fetch(row -> results.add(row), queries, fieldNames, target);
 		return results;
 	}
 
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames) {
+		fetch(consumer, queries, fieldNames, null);
+	}
+
+	@Override
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
+			String target) {
 		StopWatch watch = new StopWatch();
 
 		int queryScrollSize = calculateScroll(fieldNames);
@@ -117,7 +130,8 @@ public class ESSearch implements Search {
 				for (List<String> terms : ListUtils.partition(Arrays.asList(query.getValues()), queryScrollSize)) {
 					log.info("Querying " + terms.size() + "/" + query.getValues().length);
 					watch.start();
-					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)), fieldNames);
+					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)), fieldNames,
+							target);
 					watch.stop();
 					log.info("Queried " + terms.size() + "/" + query.getValues().length + " in " + watch.getTime()
 							+ " ms");
@@ -151,7 +165,7 @@ public class ESSearch implements Search {
 		SearchResponse response = request.execute().actionGet();
 		log.info("Retrieved " + response.getHits().totalHits() + " in " + response.getTookInMillis() + " ms");
 		watch.start();
-		processAllHits(consumer, response);
+		processAllHits(consumer, response, target);
 		watch.stop();
 		log.info("Retrieved all hits in " + watch.getTime() + " ms");
 
@@ -183,13 +197,14 @@ public class ESSearch implements Search {
 	 * @param response
 	 * @return
 	 */
-	protected SearchResponse processAllHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
+	protected SearchResponse processAllHits(Consumer<Map<String, Object>> consumer, SearchResponse response,
+			String target) {
 		// scroll until no hits are returned
 		int n = 0;
 		StopWatch watch = new StopWatch();
 		while (true) {
 			log.debug("Processing scroll #" + (++n));
-			processHits(consumer, response);
+			processHits(consumer, response, target);
 			log.debug("Preparing new scroll");
 			watch.reset();
 			watch.start();
@@ -210,14 +225,22 @@ public class ESSearch implements Search {
 	 * 
 	 * @param consumer
 	 * @param response
+	 * @param target
 	 */
-	protected void processHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
+	protected void processHits(Consumer<Map<String, Object>> consumer, SearchResponse response, String target) {
 		SearchHit[] hits = response.getHits().getHits();
 		StopWatch watch = new StopWatch();
 		log.debug("Processing " + hits.length + " hits");
 		watch.start();
+		boolean flatten = !StringUtils.isEmpty(target);
 		for (SearchHit hit : hits) {
-			consumer.accept(processHit(hit));
+			if (flatten) {
+				for (Map<String, Object> o : ResultsRemodeller.flatten(processHit(hit), target)) {
+					consumer.accept(o);
+				}
+			} else {
+				consumer.accept(processHit(hit));
+			}
 		}
 		watch.stop();
 		log.debug("Completed processing " + hits.length + " hits in " + watch.getTime() + " ms");
@@ -225,7 +248,7 @@ public class ESSearch implements Search {
 
 	@Override
 	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
-			List<String> sorts) {
+			List<String> sorts, String target) {
 		log.debug("Building query");
 		QueryBuilder query = ESSearchBuilder.buildQuery(type, queries.toArray(new Query[queries.size()]));
 
@@ -248,7 +271,7 @@ public class ESSearch implements Search {
 		log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
-		return new QueryResult(response.getHits().getTotalHits(), offset, limit, processResults(response),
+		return new QueryResult(response.getHits().getTotalHits(), offset, limit, processResults(response, target),
 				processAggregations(response));
 
 	}
@@ -278,8 +301,14 @@ public class ESSearch implements Search {
 		}
 	}
 
-	protected List<Map<String, Object>> processResults(SearchResponse response) {
-		return Arrays.stream(response.getHits().getHits()).map(hit -> processHit(hit)).collect(Collectors.toList());
+	protected List<Map<String, Object>> processResults(SearchResponse response, String target) {
+		if (!StringUtils.isEmpty(target)) {
+			return Arrays.stream(response.getHits().getHits())
+					.map(hit -> ResultsRemodeller.flatten(processHit(hit), target)).flatMap(l -> l.stream())
+					.collect(Collectors.toList());
+		} else {
+			return Arrays.stream(response.getHits().getHits()).map(hit -> processHit(hit)).collect(Collectors.toList());
+		}
 	}
 
 	protected Map<String, Object> processHit(SearchHit hit) {
@@ -350,7 +379,7 @@ public class ESSearch implements Search {
 		SearchRequestBuilder request = client.prepareSearch(index)
 				.setQuery(new ConstantScoreQueryBuilder(QueryBuilders.idsQuery(type).addIds(ids)));
 		SearchResponse response = request.execute().actionGet();
-		return processResults(response);
+		return processResults(response, null);
 	}
 
 	@Override
@@ -358,7 +387,7 @@ public class ESSearch implements Search {
 		SearchRequestBuilder request = client.prepareSearch(index)
 				.setQuery(new ConstantScoreQueryBuilder(QueryBuilders.idsQuery(type).addIds(ids)));
 		SearchResponse response = request.execute().actionGet();
-		processAllHits(consumer, response);
+		processAllHits(consumer, response, null);
 		log.info("Retrieved all hits");
 	}
 
@@ -417,7 +446,7 @@ public class ESSearch implements Search {
 		log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
-		return new QueryResult(response.getHits().getTotalHits(), offset, limit, processResults(response),
+		return new QueryResult(response.getHits().getTotalHits(), offset, limit, processResults(response, null),
 				processAggregations(response));
 
 	}

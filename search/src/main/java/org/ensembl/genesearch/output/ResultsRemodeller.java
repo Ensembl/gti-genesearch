@@ -36,11 +36,11 @@ public class ResultsRemodeller {
 	/**
 	 * Flatten the supplied object to the desired level
 	 * @param input
-	 * @param targetPath e.g. a,b will flatten to b children of a children of the supplied object
+	 * @param targetPath e.g. a.b will flatten to b children of a children of the supplied object
 	 * @return 
 	 */
-	public static List<Map<String, Object>> flatten(Map<String, Object> input, String... targetPath) {
-		return flatten(Arrays.asList(input), StringUtils.EMPTY, targetPath);
+	public static List<Map<String, Object>> flatten(Map<String, Object> input, String targetPath) {
+		return flatten(Arrays.asList(input), StringUtils.EMPTY, StringUtils.split(targetPath,"."));
 	}
 
 	/**

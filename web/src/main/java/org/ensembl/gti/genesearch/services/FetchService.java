@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -185,7 +186,7 @@ public abstract class FetchService {
 							throw new WebApplicationException("Could not write fetch results", e);
 						}
 					}
-				}, params.getQueries(), params.getFields());
+				}, params.getQueries(), params.getFields(), params.getTarget());
 				jg.writeEndArray();
 				jg.close();
 			}
@@ -214,7 +215,7 @@ public abstract class FetchService {
 								throw new WebApplicationException(e);
 							}
 						}
-					}, params.getQueries(), params.getFields());
+					}, params.getQueries(), params.getFields(), params.getTarget());
 					xsw.writeEndElement();
 					xsw.writeEndDocument();
 				} catch (XMLStreamException | FactoryConfigurationError e) {
@@ -246,7 +247,7 @@ public abstract class FetchService {
 							throw new WebApplicationException(e);
 						}
 					}
-				}, params.getQueries(), params.getFields());
+				}, params.getQueries(), params.getFields(), params.getTarget());
 				writer.close();
 			}
 		};

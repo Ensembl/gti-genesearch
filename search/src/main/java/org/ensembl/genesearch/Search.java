@@ -36,6 +36,17 @@ public interface Search {
 	 * @return
 	 */
 	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames);
+	
+	/**
+	 * Retrieve all results matching the supplied queries, flattening to the specified target level
+	 * 
+	 * @param queries
+	 * @param fieldNames
+	 *            (if empty the whole document will be returned)
+	 * @param target level to flatten to e.g. transcripts, transcripts.translations etc.
+	 * @return
+	 */
+	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames, String target);
 
 	/**
 	 * Retrieve all results matching the supplied queries and process with the
@@ -49,6 +60,20 @@ public interface Search {
 	 */
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames);
 
+	/**
+	 * Retrieve all results matching the supplied queries and process with the
+	 * supplied consumer
+	 * 
+	 * @param consumer
+	 * @param queries
+	 * @param fieldNames
+	 *            (if empty the whole document will be returned)
+	 * @param target level to flatten to e.g. transcripts, transcripts.translations etc.
+	 * @return
+	 */
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames, String target);
+
+	
 	/**
 	 * Retrieve genes with the supplied IDs
 	 * 
@@ -79,10 +104,12 @@ public interface Search {
 	 *            place to start in query
 	 * @param limit
 	 *            number of hits to return
+	 * @param target
+	 *            object to flatten results onto
 	 * @return
 	 */
 	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
-			List<String> sorts);
+			List<String> sorts, String target);
 
 	/**
 	 * Retrieve genes with the supplied ID and write to the consumer

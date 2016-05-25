@@ -63,6 +63,9 @@ public class QueryClient {
 		
 		@Parameter(names = "-offset", description = "Place to start from")
 		private int offset = 0;
+		
+		@Parameter(names = "-target", description = "Object target to flatten to")
+		private String target = null;
 
 		@Parameter(names = "-outfile", description = "File to write results to")
 		private String outFile = null;
@@ -94,7 +97,7 @@ public class QueryClient {
 		log.info("Starting query");
 
 		QueryResult res = search.query(queries, params.resultFields,
-				params.facets, params.offset, params.limit, params.sorts);
+				params.facets, params.offset, params.limit, params.sorts, params.target);
 
 		if (!StringUtils.isEmpty(params.outFile)) {
 			log.info("Writing results to " + params.outFile);

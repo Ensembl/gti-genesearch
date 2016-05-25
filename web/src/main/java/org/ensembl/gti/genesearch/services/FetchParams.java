@@ -57,6 +57,7 @@ public class FetchParams {
 	private List<String> fields = Collections.emptyList();
 	private String fileName = "genes";
 	private List<Query> queries = Collections.emptyList();
+	private String target;
 
 	public String getAccept() {
 		return accept;
@@ -121,6 +122,17 @@ public class FetchParams {
 	@JsonIgnore
 	public void setQuery(String query) {
 		setQueries(new DefaultQueryHandler().parseQuery(query));
+	}
+	
+	@JsonProperty("target")
+	public String getTarget() {
+		return target;
+	}
+
+	@QueryParam("target")
+	@DefaultValue("")
+	public void setTarget(String target) {
+		this.target = target;
 	}
 
 	@Override
