@@ -18,6 +18,7 @@ package org.ensembl.gti.genesearch.services;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -35,6 +36,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.slf4j.Logger;
@@ -60,8 +62,12 @@ public abstract class ObjectService {
 	@Path("{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Map<String, Object> get(@PathParam("id") String id) {
-		return getSearch().fetchById(id);
+	public Map<String, Object> get(@PathParam("id") String id, @QueryParam("fields") String fields) {
+		if(StringUtils.isEmpty(fields)) {
+			return getSearch().fetchById(id);			
+		} else {
+			return getSearch().fetchById(Arrays.asList(StringUtils.split(fields,",")),id);
+		}
 	}
 
 	public abstract Search getSearch();

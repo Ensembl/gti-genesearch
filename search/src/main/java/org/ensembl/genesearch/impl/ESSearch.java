@@ -376,8 +376,19 @@ public class ESSearch implements Search {
 
 	@Override
 	public List<Map<String, Object>> fetchByIds(String... ids) {
+		return fetchByIds(Collections.emptyList(), ids);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#fetchByIds(java.util.List, java.lang.String[])
+	 */
+	@Override
+	public List<Map<String, Object>> fetchByIds(List<String> fields, String... ids) {
 		SearchRequestBuilder request = client.prepareSearch(index)
 				.setQuery(new ConstantScoreQueryBuilder(QueryBuilders.idsQuery(type).addIds(ids)));
+		if(!fields.isEmpty()){
+			request.setFetchSource(fields.toArray(new String[]{}), new String[]{});
+		}
 		SearchResponse response = request.execute().actionGet();
 		return processResults(response, null);
 	}
@@ -390,15 +401,23 @@ public class ESSearch implements Search {
 		processAllHits(consumer, response, null);
 		log.info("Retrieved all hits");
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#fetchById(java.util.List, java.lang.String)
+	 */
 	@Override
-	public Map<String, Object> fetchById(String id) {
-		List<Map<String, Object>> genes = this.fetchByIds(id);
+	public Map<String, Object> fetchById(List<String> fields, String id) {
+		List<Map<String, Object>> genes = this.fetchByIds(fields, id);
 		if (genes.isEmpty()) {
 			return Collections.emptyMap();
 		} else {
 			return genes.get(0);
 		}
+	}
+
+	@Override
+	public Map<String, Object> fetchById(String id) {
+		return fetchById(Collections.emptyList(), id);
 	}
 
 	/*

@@ -81,6 +81,7 @@ public interface Search {
 	 * @return
 	 */
 	public List<Map<String, Object>> fetchByIds(String... ids);
+	public List<Map<String, Object>> fetchByIds(List<String> fields, String... ids);
 
 	/**
 	 * Retrieve genes with the supplied ID
@@ -89,6 +90,14 @@ public interface Search {
 	 * @return
 	 */
 	public Map<String, Object> fetchById(String id);
+
+	/**
+	 * Retrieve genes with the supplied ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Map<String, Object> fetchById(List<String> fields, String id);
 
 	/**
 	 * Search with the supplied queries and return a summary object containing
