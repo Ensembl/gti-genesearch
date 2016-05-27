@@ -1,790 +1,790 @@
 {
-	"gene": {
-		"_all": {
-			"enabled": false
-		},
-		"dynamic": "false",
-		"properties": {
-			"id": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"name": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"genome": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"taxon_id": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"lineage": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"description": {
-				"type": "string"
-			},
-			"biotype": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"seq_region_name": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"start": {
-				"type": "integer"
-			},
-			"end": {
-				"type": "integer"
-			},
-			"strand": {
-				"type": "short"
-			},
-			"consequence_types": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"clinical_significance": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"phenotypes": {
-				"type": "nested",
-				"properties": {
-					"name": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"description": {
-						"type": "string"
-					},
-					"source": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					}
-				}
-			},
-			"Uniprot_SWISSPROT": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"Uniprot_SPTREMBL": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"protein_id": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"KEGG": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"EMBL": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"PDB": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"RFAM": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"UniParc": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"Interpro": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"PRINTS": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"Gene3D": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"HAMAP": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"PANTHER": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"Pfam": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"PIRSF": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"ProDom": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"Prosite_patterns": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"Superfamily": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"TIGRfam": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"ncoils": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"Prosite_profiles": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"Tmhmm": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"Smart": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"SignalP": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"chainp": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"Seg": {
-				"type": "string",
-				"index": "not_analyzed",
-				"norms": {
-					"enabled": false
-				}
-			},
-			"PHI": {
-				"type": "nested",
-				"properties": {
-					"term": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"phenotype": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"host": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"condition": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					}
-				}
-			},
-			"GO": {
-				"type": "nested",
-				"properties": {
-					"term": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"evidence": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"parents": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					}
-				}
-			},
-			"homologues": {
-				"type": "nested",
-				"properties": {
-					"description": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"genome": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"stable_id": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					}
-				}
-			},
-			"xrefs": {
-				"type": "nested",
-				"properties": {
-					"dbname": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"primary_id": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"display_name": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"parents": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"linkage_types": {
-						"type": "nested",
-						"properties": {
-							"evidence": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"source": {
-								"type": "nested",
-								"properties": {
-									"dbname": {
-										"type": "string",
-										"index": "no"
-									},
-									"primary_id": {
-										"type": "string",
-										"index": "no"
-									},
-									"display_id": {
-										"type": "string",
-										"index": "no"
-									}
-								}
-							}
-						}
-					}
-				}
-			},
-			"transcripts": {
-				"type": "nested",
-				"properties": {
-					"id": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"name": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"description": {
-						"type": "string"
-					},
-					"biotype": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"seq_region_name": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"start": {
-						"type": "integer"
-					},
-					"end": {
-						"type": "integer"
-					},
-					"strand": {
-						"type": "short"
-					},
-					"xrefs": {
-						"type": "nested",
-						"properties": {
-							"dbname": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"primary_id": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"display_name": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"parents": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"linkage_types": {
-								"type": "nested",
-								"properties": {
-									"evidence": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"source": {
-										"type": "nested",
-										"properties": {
-											"dbname": {
-												"type": "string",
-												"index": "no"
-											},
-											"primary_id": {
-												"type": "string",
-												"index": "no"
-											},
-											"display_id": {
-												"type": "string",
-												"index": "no"
-											}
-										}
-									}
-								}
-							}
-						}
-					},
-					"PHI": {
-						"type": "nested",
-						"properties": {
-							"term": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"phenotype": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"host": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"condition": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							}
-						}
-					},
-					"GO": {
-						"type": "nested",
-						"properties": {
-							"term": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"evidence": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"parents": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							}
-						}
-					},
-					"consequence_types": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"clinical_significance": {
-						"type": "string",
-						"index": "not_analyzed",
-						"norms": {
-							"enabled": false
-						}
-					},
-					"translations": {
-						"type": "nested",
-						"properties": {
-							"id": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"coding_start": {
-								"type": "integer"
-							},
-							"coding_end": {
-								"type": "integer"
-							},
-							"protein_features": {
-								"type": "nested",
-								"properties": {
-									"start": {
-										"type": "integer"
-									},
-									"end": {
-										"type": "integer"
-									},
-									"dbname": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"name": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"description": {
-										"type": "string"
-									},
-									"interpro_ac": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									}
-								}
-							},
-							"PHI": {
-								"type": "nested",
-								"properties": {
-									"term": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"phenotype": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"host": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"condition": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									}
-								}
-							},
-							"GO": {
-								"type": "nested",
-								"properties": {
-									"term": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"evidence": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"parents": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									}
-								}
-							},
-							"xrefs": {
-								"type": "nested",
-								"properties": {
-									"dbname": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"primary_id": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"display_name": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"parents": {
-										"type": "string",
-										"index": "not_analyzed",
-										"norms": {
-											"enabled": false
-										}
-									},
-									"linkage_types": {
-										"type": "nested",
-										"properties": {
-											"evidence": {
-												"type": "string",
-												"index": "not_analyzed",
-												"norms": {
-													"enabled": false
-												}
-											},
-											"source": {
-												"type": "nested",
-												"properties": {
-													"dbname": {
-														"type": "string",
-														"index": "no"
-													},
-													"primary_id": {
-														"type": "string",
-														"index": "no"
-													},
-													"display_id": {
-														"type": "string",
-														"index": "no"
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+   "gene" : {
+      "properties" : {
+         "phenotypes" : {
+            "type" : "nested",
+            "properties" : {
+               "source" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               },
+               "name" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               },
+               "description" : {
+                  "type" : "string"
+               }
+            }
+         },
+         "Uniprot_SPTREMBL" : {
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            },
+            "type" : "string"
+         },
+         "EMBL" : {
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed",
+            "type" : "string"
+         },
+         "description" : {
+            "type" : "string"
+         },
+         "Gene3D" : {
+            "type" : "string",
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            }
+         },
+         "Uniprot_SWISSPROT" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "PHI" : {
+            "properties" : {
+               "condition" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               },
+               "term" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               },
+               "phenotype" : {
+                  "index" : "not_analyzed",
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "type" : "string"
+               },
+               "host" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               }
+            },
+            "type" : "nested"
+         },
+         "HAMAP" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "PRINTS" : {
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            },
+            "type" : "string"
+         },
+         "Tmhmm" : {
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            },
+            "type" : "string"
+         },
+         "biotype" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "transcripts" : {
+            "type" : "nested",
+            "properties" : {
+               "id" : {
+                  "index" : "not_analyzed",
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "type" : "string"
+               },
+               "biotype" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               },
+               "xrefs" : {
+                  "properties" : {
+                     "display_name" : {
+                        "index" : "not_analyzed",
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "type" : "string"
+                     },
+                     "linkage_types" : {
+                        "type" : "nested",
+                        "properties" : {
+                           "evidence" : {
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed",
+                              "type" : "string"
+                           },
+                           "source" : {
+                              "type" : "nested",
+                              "properties" : {
+                                 "display_id" : {
+                                    "type" : "string",
+                                    "index" : "no"
+                                 },
+                                 "primary_id" : {
+                                    "index" : "no",
+                                    "type" : "string"
+                                 },
+                                 "dbname" : {
+                                    "type" : "string",
+                                    "index" : "no"
+                                 }
+                              }
+                           }
+                        }
+                     },
+                     "dbname" : {
+                        "index" : "not_analyzed",
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "type" : "string"
+                     },
+                     "primary_id" : {
+                        "type" : "string",
+                        "index" : "not_analyzed",
+                        "norms" : {
+                           "enabled" : false
+                        }
+                     },
+                     "parents" : {
+                        "type" : "string",
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "index" : "not_analyzed"
+                     }
+                  },
+                  "type" : "nested"
+               },
+               "end" : {
+                  "type" : "integer"
+               },
+               "PHI" : {
+                  "properties" : {
+                     "condition" : {
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "index" : "not_analyzed",
+                        "type" : "string"
+                     },
+                     "term" : {
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "index" : "not_analyzed",
+                        "type" : "string"
+                     },
+                     "phenotype" : {
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "index" : "not_analyzed",
+                        "type" : "string"
+                     },
+                     "host" : {
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "index" : "not_analyzed",
+                        "type" : "string"
+                     }
+                  },
+                  "type" : "nested"
+               },
+               "name" : {
+                  "type" : "string",
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed"
+               },
+               "GO" : {
+                  "properties" : {
+                     "evidence" : {
+                        "index" : "not_analyzed",
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "type" : "string"
+                     },
+                     "term" : {
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "index" : "not_analyzed",
+                        "type" : "string"
+                     },
+                     "parents" : {
+                        "type" : "string",
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "index" : "not_analyzed"
+                     }
+                  },
+                  "type" : "nested"
+               },
+               "start" : {
+                  "type" : "integer"
+               },
+               "clinical_significance" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               },
+               "description" : {
+                  "type" : "string"
+               },
+               "consequence_types" : {
+                  "type" : "string",
+                  "index" : "not_analyzed",
+                  "norms" : {
+                     "enabled" : false
+                  }
+               },
+               "strand" : {
+                  "type" : "short"
+               },
+               "translations" : {
+                  "properties" : {
+                     "coding_end" : {
+                        "type" : "integer"
+                     },
+                     "PHI" : {
+                        "properties" : {
+                           "condition" : {
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed",
+                              "type" : "string"
+                           },
+                           "host" : {
+                              "type" : "string",
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed"
+                           },
+                           "phenotype" : {
+                              "type" : "string",
+                              "index" : "not_analyzed",
+                              "norms" : {
+                                 "enabled" : false
+                              }
+                           },
+                           "term" : {
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed",
+                              "type" : "string"
+                           }
+                        },
+                        "type" : "nested"
+                     },
+                     "protein_features" : {
+                        "type" : "nested",
+                        "properties" : {
+                           "description" : {
+                              "type" : "string"
+                           },
+                           "start" : {
+                              "type" : "integer"
+                           },
+                           "end" : {
+                              "type" : "integer"
+                           },
+                           "dbname" : {
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed",
+                              "type" : "string"
+                           },
+                           "interpro_ac" : {
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed",
+                              "type" : "string"
+                           },
+                           "name" : {
+                              "type" : "string",
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed"
+                           }
+                        }
+                     },
+                     "GO" : {
+                        "properties" : {
+                           "parents" : {
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed",
+                              "type" : "string"
+                           },
+                           "evidence" : {
+                              "index" : "not_analyzed",
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "type" : "string"
+                           },
+                           "term" : {
+                              "index" : "not_analyzed",
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "type" : "string"
+                           }
+                        },
+                        "type" : "nested"
+                     },
+                     "coding_start" : {
+                        "type" : "integer"
+                     },
+                     "id" : {
+                        "type" : "string",
+                        "norms" : {
+                           "enabled" : false
+                        },
+                        "index" : "not_analyzed"
+                     },
+                     "xrefs" : {
+                        "properties" : {
+                           "linkage_types" : {
+                              "properties" : {
+                                 "source" : {
+                                    "type" : "nested",
+                                    "properties" : {
+                                       "primary_id" : {
+                                          "index" : "no",
+                                          "type" : "string"
+                                       },
+                                       "dbname" : {
+                                          "index" : "no",
+                                          "type" : "string"
+                                       },
+                                       "display_id" : {
+                                          "type" : "string",
+                                          "index" : "no"
+                                       }
+                                    }
+                                 },
+                                 "evidence" : {
+                                    "type" : "string",
+                                    "norms" : {
+                                       "enabled" : false
+                                    },
+                                    "index" : "not_analyzed"
+                                 }
+                              },
+                              "type" : "nested"
+                           },
+                           "display_name" : {
+                              "type" : "string",
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed"
+                           },
+                           "dbname" : {
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed",
+                              "type" : "string"
+                           },
+                           "parents" : {
+                              "type" : "string",
+                              "index" : "not_analyzed",
+                              "norms" : {
+                                 "enabled" : false
+                              }
+                           },
+                           "primary_id" : {
+                              "norms" : {
+                                 "enabled" : false
+                              },
+                              "index" : "not_analyzed",
+                              "type" : "string"
+                           }
+                        },
+                        "type" : "nested"
+                     }
+                  },
+                  "type" : "nested"
+               },
+               "seq_region_name" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               }
+            }
+         },
+         "id" : {
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed",
+            "type" : "string"
+         },
+         "seq_region_name" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "consequence_types" : {
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            },
+            "type" : "string"
+         },
+         "genome" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "GO" : {
+            "properties" : {
+               "term" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               },
+               "evidence" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               },
+               "parents" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               }
+            },
+            "type" : "nested"
+         },
+         "PDB" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "chainp" : {
+            "type" : "string",
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            }
+         },
+         "Pfam" : {
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            },
+            "type" : "string"
+         },
+         "end" : {
+            "type" : "integer"
+         },
+         "Smart" : {
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            },
+            "type" : "string"
+         },
+         "lineage" : {
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            },
+            "type" : "string"
+         },
+         "PANTHER" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "Superfamily" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "strand" : {
+            "type" : "short"
+         },
+         "clinical_significance" : {
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed",
+            "type" : "string"
+         },
+         "KEGG" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "Prosite_profiles" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "PIRSF" : {
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            },
+            "type" : "string"
+         },
+         "xrefs" : {
+            "properties" : {
+               "parents" : {
+                  "type" : "string",
+                  "index" : "not_analyzed",
+                  "norms" : {
+                     "enabled" : false
+                  }
+               },
+               "primary_id" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               },
+               "dbname" : {
+                  "type" : "string",
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed"
+               },
+               "display_name" : {
+                  "type" : "string",
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed"
+               },
+               "linkage_types" : {
+                  "type" : "nested",
+                  "properties" : {
+                     "evidence" : {
+                        "type" : "string",
+                        "index" : "not_analyzed",
+                        "norms" : {
+                           "enabled" : false
+                        }
+                     },
+                     "source" : {
+                        "type" : "nested",
+                        "properties" : {
+                           "display_id" : {
+                              "index" : "no",
+                              "type" : "string"
+                           },
+                           "dbname" : {
+                              "index" : "no",
+                              "type" : "string"
+                           },
+                           "primary_id" : {
+                              "index" : "no",
+                              "type" : "string"
+                           }
+                        }
+                     }
+                  }
+               }
+            },
+            "type" : "nested"
+         },
+         "UniParc" : {
+            "type" : "string",
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            }
+         },
+         "Seg" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "protein_id" : {
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            },
+            "type" : "string"
+         },
+         "ncoils" : {
+            "type" : "string",
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            }
+         },
+         "start" : {
+            "type" : "integer"
+         },
+         "taxon_id" : {
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed",
+            "type" : "string"
+         },
+         "SignalP" : {
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed",
+            "type" : "string"
+         },
+         "homologues" : {
+            "properties" : {
+               "description" : {
+                  "type" : "string",
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed"
+               },
+               "stable_id" : {
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "index" : "not_analyzed",
+                  "type" : "string"
+               },
+               "genome" : {
+                  "index" : "not_analyzed",
+                  "norms" : {
+                     "enabled" : false
+                  },
+                  "type" : "string"
+               }
+            },
+            "type" : "nested"
+         },
+         "TIGRfam" : {
+            "type" : "string",
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            }
+         },
+         "name" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "Prosite_patterns" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "Interpro" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         },
+         "RFAM" : {
+            "index" : "not_analyzed",
+            "norms" : {
+               "enabled" : false
+            },
+            "type" : "string"
+         },
+         "ProDom" : {
+            "type" : "string",
+            "norms" : {
+               "enabled" : false
+            },
+            "index" : "not_analyzed"
+         }
+      },
+      "_all" : {
+         "enabled" : false
+      },
+      "dynamic" : "false"
+   }
 }
