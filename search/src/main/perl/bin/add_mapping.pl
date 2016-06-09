@@ -35,6 +35,10 @@ my $logger = get_logger();
 $logger->info("Reading from $opts->{mapping_file}");
 my $mapping = from_json(read_file($opts->{mapping_file}));
 
+if($opts->{xref} =~ m/[^A-z0-9_]+/) {
+  die "Xref name cannot contain non-alphanumeric/underscores";
+}
+
 if($opts->{target} eq 'gene' || $opts->{target} eq 'transcript' ||
    $opts->{target} eq 'translation') {
     $logger->info("Adding $opts->{xref} to gene");

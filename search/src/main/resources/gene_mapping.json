@@ -214,7 +214,7 @@
             "index" : "not_analyzed",
             "type" : "string"
          },
-         "triad_jgi_v1.0" : {
+         "triad_jgi_v1_0" : {
             "norms" : {
                "enabled" : "false"
             },
@@ -461,13 +461,6 @@
             "index" : "not_analyzed"
          },
          "LNCC" : {
-            "norms" : {
-               "enabled" : "false"
-            },
-            "type" : "string",
-            "index" : "not_analyzed"
-         },
-         "GOA" : {
             "norms" : {
                "enabled" : "false"
             },
@@ -1127,7 +1120,7 @@
                "enabled" : false
             }
          },
-         "phyra_jgi_v1.1" : {
+         "phyra_jgi_v1_1" : {
             "norms" : {
                "enabled" : "false"
             },
@@ -1333,7 +1326,7 @@
          "start" : {
             "type" : "integer"
          },
-         "Mycgr3_jgi_v2.0_gene" : {
+         "Mycgr3_jgi_v2_0_gene" : {
             "norms" : {
                "enabled" : "false"
             },
@@ -1375,7 +1368,7 @@
             "type" : "string",
             "index" : "not_analyzed"
          },
-         "necha_jgi_v2.0" : {
+         "necha_jgi_v2_0" : {
             "index" : "not_analyzed",
             "type" : "string",
             "norms" : {
@@ -1529,7 +1522,7 @@
                "enabled" : "false"
             }
          },
-         "physo1_jgi_v1.1" : {
+         "physo1_jgi_v1_1" : {
             "type" : "string",
             "index" : "not_analyzed",
             "norms" : {
@@ -3140,13 +3133,6 @@
                   },
                   "index" : "not_analyzed",
                   "type" : "string"
-               },
-               "GO_to_gene" : {
-                  "index" : "not_analyzed",
-                  "type" : "string",
-                  "norms" : {
-                     "enabled" : "false"
-                  }
                },
                "start" : {
                   "type" : "integer"
