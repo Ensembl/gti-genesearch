@@ -158,13 +158,6 @@
                     "enabled": false
                 }
             },
-            "ENA_FEATURE_GENE": {
-                "index": "not_analyzed",
-                "type": "string",
-                "norms": {
-                    "enabled": "false"
-                }
-            },
             "RefSeq_ncRNA": {
                 "index": "not_analyzed",
                 "type": "string",
@@ -336,32 +329,6 @@
                 "type": "string",
                 "norms": {
                     "enabled": "false"
-                }
-            },
-            "BRENDA": {
-                "type": "nested",
-                "properties": {
-                    "term": {
-                        "index": "not_analyzed",
-                        "type": "string",
-                        "norms": {
-                            "enabled": false
-                        }
-                    },
-                    "evidence": {
-                        "norms": {
-                            "enabled": false
-                        },
-                        "type": "string",
-                        "index": "not_analyzed"
-                    },
-                    "parents": {
-                        "norms": {
-                            "enabled": false
-                        },
-                        "index": "not_analyzed",
-                        "type": "string"
-                    }
                 }
             },
             "PO": {
@@ -555,13 +522,6 @@
                     "enabled": "false"
                 }
             },
-            "MOD": {
-                "index": "not_analyzed",
-                "type": "string",
-                "norms": {
-                    "enabled": "false"
-                }
-            },
             "GenBank": {
                 "index": "not_analyzed",
                 "type": "string",
@@ -645,13 +605,6 @@
                 "norms": {
                     "enabled": "false"
                 }
-            },
-            "SO": {
-                "norms": {
-                    "enabled": "false"
-                },
-                "type": "string",
-                "index": "not_analyzed"
             },
             "EntrezGene": {
                 "norms": {
@@ -789,13 +742,6 @@
                     "enabled": "false"
                 }
             },
-            "ENA_FEATURE_TRANSCRIPT": {
-                "index": "not_analyzed",
-                "type": "string",
-                "norms": {
-                    "enabled": "false"
-                }
-            },
             "EC_NUMBER": {
                 "norms": {
                     "enabled": "false"
@@ -844,13 +790,6 @@
                 },
                 "type": "string",
                 "index": "not_analyzed"
-            },
-            "PBO": {
-                "index": "not_analyzed",
-                "type": "string",
-                "norms": {
-                    "enabled": "false"
-                }
             },
             "LegioList": {
                 "index": "not_analyzed",
@@ -1101,13 +1040,6 @@
                 }
             },
             "FlyBaseName_transcript": {
-                "type": "string",
-                "index": "not_analyzed",
-                "norms": {
-                    "enabled": "false"
-                }
-            },
-            "FYPO": {
                 "type": "string",
                 "index": "not_analyzed",
                 "norms": {
@@ -1803,13 +1735,6 @@
                         "index": "not_analyzed",
                         "type": "string"
                     },
-                    "ENA_FEATURE_TRANSCRIPT": {
-                        "norms": {
-                            "enabled": "false"
-                        },
-                        "index": "not_analyzed",
-                        "type": "string"
-                    },
                     "RGD_trans_name": {
                         "norms": {
                             "enabled": "false"
@@ -2122,13 +2047,6 @@
                         },
                         "type": "string",
                         "index": "not_analyzed"
-                    },
-                    "FYPO": {
-                        "norms": {
-                            "enabled": "false"
-                        },
-                        "index": "not_analyzed",
-                        "type": "string"
                     },
                     "TIGR_GeneIndex": {
                         "norms": {
@@ -2806,13 +2724,6 @@
                                     "enabled": "false"
                                 }
                             },
-                            "ENA_FEATURE_PROTEIN": {
-                                "norms": {
-                                    "enabled": "false"
-                                },
-                                "type": "string",
-                                "index": "not_analyzed"
-                            },
                             "FlyBaseCGID_translation": {
                                 "type": "string",
                                 "index": "not_analyzed",
@@ -2878,13 +2789,6 @@
                             },
                             "coding_start": {
                                 "type": "integer"
-                            },
-                            "PO": {
-                                "norms": {
-                                    "enabled": "false"
-                                },
-                                "index": "not_analyzed",
-                                "type": "string"
                             },
                             "wormpep_id": {
                                 "norms": {
@@ -3001,13 +2905,6 @@
                         "type": "string",
                         "index": "not_analyzed"
                     },
-                    "PO": {
-                        "index": "not_analyzed",
-                        "type": "string",
-                        "norms": {
-                            "enabled": "false"
-                        }
-                    },
                     "wormpep_id": {
                         "norms": {
                             "enabled": "false"
@@ -3054,13 +2951,6 @@
                         "index": "not_analyzed"
                     },
                     "ASPGD_TRANSCRIPT": {
-                        "norms": {
-                            "enabled": "false"
-                        },
-                        "index": "not_analyzed",
-                        "type": "string"
-                    },
-                    "ENA_FEATURE_PROTEIN": {
                         "norms": {
                             "enabled": "false"
                         },
@@ -3491,13 +3381,7 @@
                             "enabled": "false"
                         }
                     },
-                    "SO": {
-                        "norms": {
-                            "enabled": "false"
-                        },
-                        "index": "not_analyzed",
-                        "type": "string"
-                    },
+
                     "FlyBaseCGID_transcript": {
                         "type": "string",
                         "index": "not_analyzed",
@@ -3873,13 +3757,6 @@
             "ASPGD_TRANSCRIPT": {
                 "type": "string",
                 "index": "not_analyzed",
-                "norms": {
-                    "enabled": "false"
-                }
-            },
-            "ENA_FEATURE_PROTEIN": {
-                "index": "not_analyzed",
-                "type": "string",
                 "norms": {
                     "enabled": "false"
                 }
