@@ -338,32 +338,6 @@
                     "enabled": "false"
                 }
             },
-            "GO": {
-                "type": "nested",
-                "properties": {
-                    "term": {
-                        "index": "not_analyzed",
-                        "type": "string",
-                        "norms": {
-                            "enabled": false
-                        }
-                    },
-                    "evidence": {
-                        "norms": {
-                            "enabled": false
-                        },
-                        "type": "string",
-                        "index": "not_analyzed"
-                    },
-                    "parents": {
-                        "norms": {
-                            "enabled": false
-                        },
-                        "index": "not_analyzed",
-                        "type": "string"
-                    }
-                }
-            },
             "BRENDA": {
                 "type": "nested",
                 "properties": {
