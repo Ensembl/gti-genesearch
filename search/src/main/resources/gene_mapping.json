@@ -1336,13 +1336,6 @@
                     "enabled": "false"
                 }
             },
-            "GO_to_gene": {
-                "type": "string",
-                "index": "not_analyzed",
-                "norms": {
-                    "enabled": "false"
-                }
-            },
             "ENS_LRG_gene": {
                 "norms": {
                     "enabled": "false"
