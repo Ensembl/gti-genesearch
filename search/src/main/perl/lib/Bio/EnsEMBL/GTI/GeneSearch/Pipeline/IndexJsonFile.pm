@@ -1,3 +1,4 @@
+
 =head1 LICENSE
 
 Copyright [1999-2016] EMBL-European Bioinformatics Institute
@@ -27,18 +28,20 @@ use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init($INFO);
 
 sub fetch_input {
-	my ($self) = @_;
-	$self->{indexer} =
-	  Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer->new(
-									   url => $self->param_required("es_url") );
-	return;
+  my ($self) = @_;
+  $self->{indexer} =
+    Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer->new(
+                                index => $self->param_required("index"),
+                                url   => $self->param_required("es_url")
+    );
+  return;
 }
 
 sub run {
-	my $self = shift @_;
-	my $file = $self->param_required('file');
-	$self->{indexer}->index_file($file);
-	return;
+  my $self = shift @_;
+  my $file = $self->param_required('file');
+  $self->{indexer}->index_file($file);
+  return;
 }
 
 1;
