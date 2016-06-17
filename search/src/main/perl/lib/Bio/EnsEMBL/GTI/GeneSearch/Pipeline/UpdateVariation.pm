@@ -1,3 +1,4 @@
+
 =head1 LICENSE
 
 Copyright [1999-2016] EMBL-European Bioinformatics Institute
@@ -21,7 +22,8 @@ use warnings;
 use strict;
 
 use base ('Bio::EnsEMBL::Hive::Process');
-use EGExt::FTP::JSON::JsonRemodeller;
+
+use Bio::EnsEMBL::Production::Pipeline::JSON::JsonRemodeller;
 use Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer;
 use Bio::EnsEMBL::Registry;
 use Data::Dumper;
@@ -33,11 +35,13 @@ sub fetch_input {
   my ($self) = @_;
   $self->{indexer} =
     Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer->new(
-                                       url => $self->param_required("es_url") );
+                                 url => $self->param_required("es_url"),
+                                 index => $self->param('index') );
   # species
   $self->{variation_dba} =
-    Bio::EnsEMBL::Registry->get_DBAdaptor( $self->param_required("species"),
-                                           "variation" );
+    Bio::EnsEMBL::Registry->get_DBAdaptor(
+                                       $self->param_required("species"),
+                                       "variation" );
   # use streaming to make retrieving the result faster
   $self->{variation_dba}->dbc()->db_handle()->{mysql_use_result} = 1;
 
@@ -59,16 +63,21 @@ sub run {
 
   # retrieve gene documents matching the provided genes
   my $result =
-    $self->{indexer}->search()->mget( index => 'genes',
-                                      type  => 'gene',
-                                      body  => { ids => $self->{gene_ids} , _source=>"true" });
-                               
-  # create an ID to transcript hash
-  my @gene_docs = map { $_->{_source} } grep {$_->{found}} @{ $result->{docs} };
-  $self->log()->info( "Retrieved " . scalar @gene_docs . " genes for update" );
+    $self->{indexer}->search()->mget(
+                 index => 'genes',
+                 type  => 'gene',
+                 body => { ids => $self->{gene_ids}, _source => "true" }
+    );
 
-  my $remodeller = EGExt::FTP::JSON::JsonRemodeller->new(
-                                     -variation_dba => $self->{variation_dba} );
+  # create an ID to transcript hash
+  my @gene_docs =
+    map { $_->{_source} } grep { $_->{found} } @{ $result->{docs} };
+  $self->log()
+    ->info( "Retrieved " . scalar @gene_docs . " genes for update" );
+
+  my $remodeller =
+    Bio::EnsEMBL::Production::Pipeline::JSON::JsonRemodeller->new(
+                             -variation_dba => $self->{variation_dba} );
 
   my $updated_genes = $remodeller->add_variation( \@gene_docs );
   $self->log()->info( "Updated " . scalar @$updated_genes . " genes" );
