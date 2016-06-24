@@ -1,3 +1,4 @@
+
 =head1 LICENSE
 
 Copyright [1999-2016] EMBL-European Bioinformatics Institute
@@ -37,7 +38,8 @@ sub default_options {
   return { %{ $self->SUPER::default_options() },
            dumps_dir => '.',
            blacklist => undef,
-           es_url    => 'http://127.0.0.1:9200/' };
+           es_url    => 'http://127.0.0.1:9200/',
+           es_index  => 'genes' };
 }
 
 sub pipeline_analyses {
@@ -57,13 +59,17 @@ sub pipeline_analyses {
            -hive_capacity => 10,
            -rc_name       => 'default',
            -flow_into     => { -1 => 'IndexJsonFileHiMem', },
-           -parameters    => { 'es_url' => $self->o('es_url') } }, {
+           -parameters    => {
+                            'es_url' => $self->o('es_url'),
+                            'index'  => $self->o('index') } }, {
            -logic_name => 'IndexJsonFileHiMem',
            -module =>
              'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
            -hive_capacity => 10,
            -rc_name       => 'himem',
-           -parameters    => { 'es_url' => $self->o('es_url') } } ];
+           -parameters    => {
+                            'es_url' => $self->o('es_url'),
+                            'index'  => $self->o('index') } } ];
 } ## end sub pipeline_analyses
 
 1;

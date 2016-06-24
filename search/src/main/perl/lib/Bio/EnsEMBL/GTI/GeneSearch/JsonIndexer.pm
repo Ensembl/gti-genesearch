@@ -1,4 +1,5 @@
 #!/bin/env perl
+
 =head1 LICENSE
 
 Copyright [1999-2016] EMBL-European Bioinformatics Institute
@@ -29,10 +30,10 @@ use File::Slurp;
 use JSON;
 use Carp;
 
-has 'url'   => ( is => 'ro', isa => 'Str', required => 1 );
-has 'index' => ( is => 'ro', isa => 'Str', default  => 'genes' );
-has 'gene_type'  => ( is => 'ro', isa => 'Str', default  => 'gene' );
-has 'genome_type'  => ( is => 'ro', isa => 'Str', default  => 'genome' );
+has 'url'         => ( is => 'ro', isa => 'Str', required => 1 );
+has 'index'       => ( is => 'ro', isa => 'Str', default  => 'genes' );
+has 'gene_type'   => ( is => 'ro', isa => 'Str', default  => 'gene' );
+has 'genome_type' => ( is => 'ro', isa => 'Str', default  => 'genome' );
 has 'bulk' => ( is => 'rw', isa => 'Search::Elasticsearch::Bulk' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 300 );
 
@@ -43,8 +44,7 @@ sub BUILD {
   $self->{es} =
     Search::Elasticsearch->new( nodes           => [ $self->url() ],
                                 request_timeout => $self->timeout() );
-  my $bulk =
-    $self->{es}->bulk_helper( index => $self->index() );
+  my $bulk = $self->{es}->bulk_helper( index => $self->index() );
   $self->bulk($bulk);
   $self->log()->info( "Connected to " . $self->url() );
   return;
@@ -58,14 +58,18 @@ sub search {
 sub index_file {
   my ( $self, $file ) = @_;
   $self->log()->info("Loading from $file");
-  my $n     = 0;
+  my $n      = 0;
   my $genome = from_json( read_file($file) );
+  $genome->{name} = $genome->{id};
   eval {
-    for my $gene (@{$genome->{genes}})
+    for my $gene ( @{ $genome->{genes} } )
     {
       $n++;
+      $gene->{genome} = $genome->{id};
       $self->log()->debug("Loading $gene->{id}");
-      $self->bulk()->index( { id => $gene->{id}, source => $gene, , type => $self->gene_type() } );
+      $self->bulk()->index( { id     => $gene->{id},
+                              source => $gene,
+                              , type => $self->gene_type() } );
     }
     $self->bulk()->flush();
   };
@@ -82,7 +86,9 @@ sub index_file {
   $self->log()->info("Completed loading $n entries from $file");
   $self->log()->info("Indexing genome");
   delete $genome->{genes};
-  $self->bulk()->index( { id => $genome->{id}, source => $genome, type => $self->genome_type() } );
+  $self->bulk()->index( { id     => $genome->{id},
+                          source => $genome,
+                          type   => $self->genome_type() } );
   $self->bulk()->flush();
   $self->log()->info("Completed indexing genome");
   return;
@@ -94,9 +100,9 @@ sub fetch_genes {
   # retrieve gene documents matching the provided genes
   my $transcript_docs = {};
   my $gene_docs       = [];
-  my $result =
-    $self->{es}
-    ->mget( index => $self->index(), type => $self->gene_type(), body => { ids => $gene_ids } );
+  my $result = $self->{es}->mget( index => $self->index(),
+                                  type  => $self->gene_type(),
+                                  body  => { ids => $gene_ids } );
 
   # create an ID to transcript hash
   for my $gene_doc ( @{ $result->{docs} } ) {
@@ -110,10 +116,10 @@ sub index_genes {
   my ( $self, $gene_docs ) = @_;
   # reindex
   for my $gene ( @{$gene_docs} ) {
-    $self->bulk()
-      ->index(
-        { index => $self->index(), type => $self->gene_type(), id => $gene->{id}, source => $gene } )
-      ;
+    $self->bulk()->index( { index  => $self->index(),
+                            type   => $self->gene_type(),
+                            id     => $gene->{id},
+                            source => $gene } );
   }
   $self->bulk()->flush();
   return;
