@@ -34,7 +34,10 @@ sub fetch_input {
   my ($self) = @_;
   $self->{indexer} =
     Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer->new(
-                               url => $self->param_required("es_url") );
+                                 url => $self->param_required("es_url"),
+                                 index => $self->param_required('index')
+    );
+
   # species
   $self->{variation_dba} =
     Bio::EnsEMBL::Registry->get_DBAdaptor(
@@ -45,7 +48,7 @@ sub fetch_input {
 
   # gene IDs
   $self->{gene_ids} = $self->param_required("gene_ids");
-
+  print Dumper( $self->{gene_ids} );
   $self->{logger} = get_logger();
 
   return;
@@ -62,7 +65,7 @@ sub run {
   # retrieve gene documents matching the provided genes
   my $result =
     $self->{indexer}->search()->mget(
-                 index => 'genes',
+                 index => $self->param_required('index'),
                  type  => 'gene',
                  body => { ids => $self->{gene_ids}, _source => "true" }
     );
