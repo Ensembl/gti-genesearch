@@ -70,6 +70,10 @@ for my $query ( @{ $opts->{query} } ) {
       $logger->debug("Iteration $i/$opts->{iterations}");
       clear_cache( $opts->{es_uri} ) unless ( $opts->{nocache} );
       warm($query) if ( $opts->{warm} );
+      my $res_file;
+      if ( defined $opts->{write_results} ) {
+        ( $res_file = $query_file ) =~ s/.json/.results/;
+      }
       if ( $opts->{action} eq 'query' ) {
         push @times,
           execute_post( "$opts->{uri}/query", {
@@ -77,14 +81,11 @@ for my $query ( @{ $opts->{query} } ) {
                           limit  => $opts->{limit},
                           fields => $opts->{fields},
                           sort   => $opts->{sort},
-                          facets => $opts->{facets} } );
+                          facets => $opts->{facets} },
+                        $res_file );
 
       }
       elsif ( $opts->{action} eq 'fetch' ) {
-        my $res_file;
-        if ( defined $opts->{write_results} ) {
-          ( $res_file = $query_file ) =~ s/.json/.results/;
-        }
         push @times,
           execute_post( "$opts->{uri}/fetch",
                         { query => $query, fields => $opts->{fields} },
