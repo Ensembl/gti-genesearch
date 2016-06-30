@@ -29,6 +29,7 @@ use Search::Elasticsearch;
 use File::Slurp;
 use JSON;
 use Carp;
+use Data::Dumper;
 
 has 'url'         => ( is => 'ro', isa => 'Str', required => 1 );
 has 'index'       => ( is => 'ro', isa => 'Str', default  => 'genes' );
@@ -44,7 +45,13 @@ sub BUILD {
   $self->{es} =
     Search::Elasticsearch->new( nodes           => [ $self->url() ],
                                 request_timeout => $self->timeout() );
-  my $bulk = $self->{es}->bulk_helper( index => $self->index() );
+  my $bulk = $self->{es}->bulk_helper(
+    index    => $self->index(),
+    on_error => sub {
+      my ( $action, $response, $i ) = @_;
+      $self->handle_error( $action, $response, $i );
+    } );
+
   $self->bulk($bulk);
   $self->log()->info( "Connected to " . $self->url() );
   return;
@@ -55,12 +62,21 @@ sub search {
   return $self->{es};
 }
 
+sub handle_error {
+  my ( $self, $action, $response, $i ) = @_;
+  croak "Failed to execute $action $i due to " .
+    $response->{error}->{type} . " error: " .
+    $response->{error}->{reason};
+  return;
+}
+
 sub index_file {
   my ( $self, $file ) = @_;
   $self->log()->info("Loading from $file");
   my $n      = 0;
   my $genome = from_json( read_file($file) );
   $genome->{name} = $genome->{id};
+
   eval {
     for my $gene ( @{ $genome->{genes} } )
     {
@@ -74,14 +90,16 @@ sub index_file {
     $self->bulk()->flush();
   };
   if ($@) {
+    my $msg;
     # parse out error from rest of body
     if ( $@->isa('Search::Elasticsearch::Error') ) {
-      $self->log()->error( $@->{type} . " error: " . $@->{text} );
+      $msg = $@->{type} . " error: " . $@->{text};
     }
     else {
-      $self->log()->error( "Indexing failed: " . $@ );
+      $msg = "Indexing failed: " . $@;
     }
-    croak "Indexing $file failed";
+    $self->log()->error($msg);
+    croak "Indexing $file failed: $msg";
   }
   $self->log()->info("Completed loading $n entries from $file");
   $self->log()->info("Indexing genome");
