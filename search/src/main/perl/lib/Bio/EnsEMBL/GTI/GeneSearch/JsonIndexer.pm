@@ -51,10 +51,6 @@ sub BUILD {
       my ( $action, $response, $i ) = @_;
       $self->handle_error( $action, $response, $i );
     } );
-<<<<<<< HEAD
-
-=======
->>>>>>> acc01b3... catch any indexing errors
   $self->bulk($bulk);
   $self->log()->info( "Connected to " . $self->url() );
   return;
@@ -78,10 +74,7 @@ sub index_file {
   $self->log()->info("Loading from $file");
   my $n      = 0;
   my $genome = from_json( read_file($file) );
-<<<<<<< HEAD
   $genome->{name} = $genome->{id};
-=======
->>>>>>> acc01b3... catch any indexing errors
 
   eval {
     for my $gene ( @{ $genome->{genes} } )
