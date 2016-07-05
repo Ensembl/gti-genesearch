@@ -25,7 +25,8 @@ use Carp;
 use Time::HiRes qw(gettimeofday);
 use Log::Log4perl qw(:easy);
 use JSON;
-use List::Util qw(sum);
+use List::Util qw(min max);
+use Statistics::Basic qw(:all);
 
 my $lwp = LWP::UserAgent->new();
 $lwp->timeout(600);
@@ -60,7 +61,8 @@ $opts->{outfile}    ||= 'query.md';
 
 open my $outfile, ">", $opts->{outfile} or
   croak "Could not open $opts->{outfile}";
-print $outfile "|Query|Time (s)|\n|:---|---:|\n";
+print $outfile
+  "|Query|Time (s)|Min|Max|Std dev|\n|:---|---:|---:|---:|---:|\n";
 for my $query ( @{ $opts->{query} } ) {
   for my $query_file ( glob($query) ) {
     $logger->info("Processing $query_file");
@@ -96,9 +98,14 @@ for my $query ( @{ $opts->{query} } ) {
         croak "Action " . $opts->{action} . " not supported";
       }
     } ## end for ( my $i = 1; $i <= ...)
-    my $avg_time = sum(@times)/( 1*$opts->{iterations} );
-    $logger->info( $query_file . " took " . $avg_time . " s" );
-    printf $outfile "|%s|%.2f|\n", $query_file, $avg_time;
+    my $mean_time = mean(@times);
+    my $min       = min(@times);
+    my $max       = max(@times);
+    my $stddev    = stddev(@times);
+    $logger->info(
+       $query_file . " took " . $mean_time . " s ($min $max $stddev)" );
+    printf $outfile "|%s|%.2f|%.2f|%.2f|%.2f|\n", $query_file,
+      $mean_time, $min, $max, $stddev;
   } ## end for my $query_file ( glob...)
 } ## end for my $query ( @{ $opts...})
 close $outfile;
@@ -121,7 +128,7 @@ sub warm {
     $warm_query->{lineage} = $query->{lineage};
   }
   if ( defined $warm_query ) {
-    $logger->debug("Warming query");
+    $logger->debug( "Warming query: " . Dumper($warm_query) );
     execute_post( "$opts->{uri}/query",
                   { query => $warm_query, limit => 0, fields => [] } );
   }
