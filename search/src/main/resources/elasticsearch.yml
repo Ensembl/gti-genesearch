@@ -104,3 +104,7 @@ http.cors.allow-origin: "*"
 
 # increased queue size (requires more memory but makes indexing more reliable)
 threadpool.bulk.queue_size: 128
+
+## uncomment for head client node
+#node.data: false
+#node.master: false
