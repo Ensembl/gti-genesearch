@@ -331,6 +331,13 @@
 					"enabled": "false"
 				}
 			},
+			"GO_expanded": {
+				"index": "not_analyzed",
+				"type": "string",
+				"norms": {
+					"enabled": "false"
+				}
+			},
 			"GO": {
 				"type": "nested",
 				"properties": {
