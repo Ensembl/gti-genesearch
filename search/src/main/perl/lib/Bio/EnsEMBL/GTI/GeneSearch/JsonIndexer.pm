@@ -74,11 +74,13 @@ sub index_file {
   $self->log()->info("Loading from $file");
   my $n      = 0;
   my $genome = from_json( read_file($file) );
+  $genome->{name} = $genome->{id};
 
   eval {
     for my $gene ( @{ $genome->{genes} } )
     {
       $n++;
+      $gene->{genome} = $genome->{id};
       $self->log()->debug("Loading $gene->{id}");
       $self->bulk()->index( { id     => $gene->{id},
                               source => $gene,

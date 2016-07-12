@@ -59,7 +59,7 @@ public abstract class QueryService {
 		log.info("query:" + params);
 
 		return getSearch().query(params.getQueries(), params.getFields(), params.getFacets(), params.getOffset(),
-				params.getLimit(), params.getSorts());
+				params.getLimit(), params.getSorts(), params.getTarget());
 	}
 
 	public abstract Search getSearch();
