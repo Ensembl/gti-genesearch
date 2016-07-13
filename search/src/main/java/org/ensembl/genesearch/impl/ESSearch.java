@@ -173,6 +173,7 @@ public class ESSearch implements Search {
 
 	private int calculateScroll(List<String> fieldNames) {
 		// calculate a factor to adjust scroll by based on what we're retrieving
+		// this is to try and balance speed and memory usage
 		double scrollFactor = 0;
 		for (String field : fieldNames) {
 			if (ALL_FIELDS.equals(field)) {
