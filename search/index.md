@@ -2,7 +2,7 @@
 
 The current implementation uses the search engine [Elasticsearch](https://www.elastic.co/products/elasticsearch) which supports indexing and querying of nested documents. Elasticsearch scales horizontally, so multiple nodes can be added to support increasing volumes of data.
 
-This project provides pipelines for indexing JSON-formatted documents representing genes and genomes, and a simplified API to allow querying of indexed genes. Note that this does not support variation or sequence which are inappropriate for the implementation described.
+This project provides pipelines for indexing JSON-formatted documents representing genes and genomes, and a simplified API to allow querying of indexed genes and genomes. Note that this does not support variation or sequence which are inappropriate for the implementation described.
 
 # Installation
 
