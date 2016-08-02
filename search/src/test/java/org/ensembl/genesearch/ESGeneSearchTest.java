@@ -96,7 +96,7 @@ public class ESGeneSearchTest {
 		List<Map<String, Object>> ids = search.fetch(
 				Arrays.asList(new Query[] { new Query(QueryType.NESTED, "homologues", genome) }), Arrays.asList("_id"));
 		log.info("Fetched " + ids.size() + " genes");
-		assertEquals("Number of genes", 79, ids.size());
+		assertEquals("Number of genes", 74, ids.size());
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class ESGeneSearchTest {
 				Arrays.asList(new Query[] { new Query(QueryType.NESTED, "homologues", genome, orthology) }),
 				Arrays.asList("id"));
 		log.info("Fetched " + ids.size() + " genes");
-		assertEquals("Number of genes", 63, ids.size());
+		assertEquals("Number of genes", 53, ids.size());
 	}
 
 	@Test
@@ -207,14 +207,14 @@ public class ESGeneSearchTest {
 
 	@Test
 	public void querySource() {
-		log.info("Querying for all genes sorted by name");
-		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id", "name", "homologues"),
+		log.info("Querying for all genes with limit on fields");
+		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id", "seq_region_name", "homologues"),
 				Collections.emptyList(), 0, 5, Collections.emptyList(), null);
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
 		assertTrue("Name found", result.getResults().get(0).containsKey("id"));
-		assertTrue("Name found", result.getResults().get(0).containsKey("name"));
+		assertTrue("Name found", result.getResults().get(0).containsKey("seq_region_name"));
 		assertTrue("Name found", result.getResults().get(0).containsKey("homologues"));
 	}
 
