@@ -29,7 +29,7 @@ import java.util.Map;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.gti.genesearch.services.Application;
-import org.ensembl.gti.genesearch.services.SearchProvider;
+import org.ensembl.gti.genesearch.services.EndpointSearchProvider;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -72,12 +72,13 @@ public class EndpointTests {
 	static Logger log = LoggerFactory.getLogger(EndpointTests.class);
 	static ESSearch geneSearch;
 	static ESSearch genomeSearch;
+	static ESTestServer testServer;
 
 	@BeforeClass
 	public static void setUp() throws IOException {
 		// create our ES test server once only
 		log.info("Setting up");
-		ESTestServer testServer = new ESTestServer();
+		testServer = new ESTestServer();
 		// index a sample of JSON
 		log.info("Reading documents");
 		String geneJson = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
@@ -85,12 +86,10 @@ public class EndpointTests {
 		log.info("Creating test index");
 		testServer.indexTestDocs(geneJson, ESSearch.GENE_TYPE);
 		testServer.indexTestDocs(genomeJson, ESSearch.GENOME_TYPE);
-		geneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
-		genomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_TYPE);
 	}
 
 	@Autowired
-	SearchProvider provider;
+	EndpointSearchProvider provider;
 
 	private static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {
 	};
@@ -102,8 +101,7 @@ public class EndpointTests {
 	@Before
 	public void injectSearch() {
 		// ensure we always use our test instance
-		provider.setGeneSearch(geneSearch);
-		provider.setGenomeSearch(genomeSearch);
+		provider.setClient(testServer.getClient());
 	}
 
 	@Test

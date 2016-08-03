@@ -41,9 +41,9 @@ import org.slf4j.LoggerFactory;
 public abstract class JoinAwareSearch implements Search {
 
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private final SearchProvider provider;
+	private final SearchRegistry provider;
 
-	public JoinAwareSearch(SearchProvider provider) {
+	public JoinAwareSearch(SearchRegistry provider) {
 		this.provider = provider;
 	}
 

@@ -34,9 +34,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 public abstract class QueryService {
 
 	final Logger log = LoggerFactory.getLogger(QueryService.class);
-	protected final SearchProvider provider;
+	protected final EndpointSearchProvider provider;
 
-	public QueryService(SearchProvider provider) {
+	public QueryService(EndpointSearchProvider provider) {
 		this.provider = provider;
 	}
 

@@ -34,7 +34,7 @@ public class GeneSearch extends JoinAwareSearch {
 	/**
 	 * @param provider
 	 */
-	public GeneSearch(SearchProvider provider) {
+	public GeneSearch(SearchRegistry provider) {
 		super(provider);
 	}
 
@@ -62,6 +62,9 @@ public class GeneSearch extends JoinAwareSearch {
 		switch (type) {
 		case HOMOLOGUES:
 			fields.add("homologues.stable_id");
+			break;
+		case GENOMES:
+			fields.add("genome");
 			break;
 		default:
 			fields.add("id");

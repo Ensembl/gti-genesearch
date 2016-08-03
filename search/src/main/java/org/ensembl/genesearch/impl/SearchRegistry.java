@@ -26,9 +26,12 @@ import org.ensembl.genesearch.Search;
  * @author dstaines
  *
  */
-public class SearchProvider {
+public class SearchRegistry {
 
 	private final Map<SearchType, Search> searches = new HashMap<>();
+	protected Map<SearchType, Search> getSearches() {
+		return searches;
+	}
 
 	/**
 	 * Register a given search object against a type
@@ -36,8 +39,8 @@ public class SearchProvider {
 	 * @param search
 	 * @return Provider (allows fluent-style calls)
 	 */
-	public SearchProvider registerSearch(SearchType type, Search search) {
-		searches.put(type,search);
+	public SearchRegistry registerSearch(SearchType type, Search search) {
+		getSearches().put(type,search);
 		return this;
 	}
 	
@@ -47,7 +50,7 @@ public class SearchProvider {
 	 * @return
 	 */
 	public Search getSearch(SearchType type) {
-		return searches.get(type);
+		return getSearches().get(type);
 	}
 
 }

@@ -36,7 +36,7 @@ public class GeneFetchService extends FetchService {
 	 * @param provider
 	 */
 	@Autowired
-	public GeneFetchService(SearchProvider provider) {
+	public GeneFetchService(EndpointSearchProvider provider) {
 		super(provider);
 	}
 

@@ -23,7 +23,7 @@ package org.ensembl.genesearch.impl;
  *
  */
 public enum SearchType {
-	GENES, TRANSCRIPTS, TRANSLATIONS, HOMOLOGUES, VARIANTS, SEQUENCES;
+	GENOMES, GENES, TRANSCRIPTS, TRANSLATIONS, HOMOLOGUES, VARIANTS, SEQUENCES;
 
 	static SearchType findByName(String name) {
 		SearchType type = null;

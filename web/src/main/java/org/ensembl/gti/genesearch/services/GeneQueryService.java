@@ -34,7 +34,7 @@ public class GeneQueryService extends QueryService {
 	 * @param provider
 	 */
 	@Autowired
-	public GeneQueryService(SearchProvider provider) {
+	public GeneQueryService(EndpointSearchProvider provider) {
 		super(provider);
 	}
 

@@ -62,9 +62,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class FetchService {
 
 	final Logger log = LoggerFactory.getLogger(FetchService.class);
-	protected final SearchProvider provider;
+	protected final EndpointSearchProvider provider;
 
-	public FetchService(SearchProvider provider) {
+	public FetchService(EndpointSearchProvider provider) {
 		this.provider = provider;
 	}
 

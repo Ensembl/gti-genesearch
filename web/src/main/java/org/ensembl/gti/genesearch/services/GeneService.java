@@ -56,7 +56,7 @@ public class GeneService extends ObjectService {
 	 * @param provider
 	 */
 	@Autowired
-	public GeneService(SearchProvider provider) {
+	public GeneService(EndpointSearchProvider provider) {
 		super(provider);
 	}
 

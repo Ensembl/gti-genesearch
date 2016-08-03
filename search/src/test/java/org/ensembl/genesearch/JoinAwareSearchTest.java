@@ -27,7 +27,7 @@ import java.util.Map;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.GeneSearch;
-import org.ensembl.genesearch.impl.SearchProvider;
+import org.ensembl.genesearch.impl.SearchRegistry;
 import org.ensembl.genesearch.impl.SearchType;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.AfterClass;
@@ -49,7 +49,7 @@ public class JoinAwareSearchTest {
 	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
 	
 	// set up a provider
-	static SearchProvider provider = new SearchProvider().registerSearch(SearchType.GENES, search)
+	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.GENES, search)
 			.registerSearch(SearchType.HOMOLOGUES, search);
 
 	// instantiate a join aware search

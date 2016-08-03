@@ -20,18 +20,27 @@ import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.clients.ClientBuilder;
 import org.ensembl.genesearch.impl.ESSearch;
+import org.ensembl.genesearch.impl.GeneSearch;
+import org.ensembl.genesearch.impl.SearchRegistry;
+import org.ensembl.genesearch.impl.SearchType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Utility class to allow construction and injection of searches for REST endpoints
+ * @author dstaines
+ *
+ */
 @Component
-public class SearchProvider {
+public class EndpointSearchProvider {
 
 	final Logger log = LoggerFactory.getLogger(this.getClass());
-	protected Client client;
-	protected Search geneSearch;
-	protected Search genomeSearch;
+	protected Search geneSearch = null;
+	protected Search genomeSearch = null;
+	protected Client client = null;
+	private SearchRegistry registry = null;
 	@Value("${es.host}")
 	private String hostName;
 	@Value("${es.cluster}")
@@ -41,11 +50,7 @@ public class SearchProvider {
 	@Value("${es.node}")
 	private boolean node;
 
-	public SearchProvider() {
-	}
-
-	public SearchProvider(Search search) {
-		this.geneSearch = search;
+	public EndpointSearchProvider() {
 	}
 
 	public Client getClient() {
@@ -60,28 +65,43 @@ public class SearchProvider {
 		}
 		return client;
 	}
+	
+	public void setClient(Client client) {
+		this.client = client;
+	}
+
+
+	protected SearchRegistry getRegistry() {
+		if (registry == null) {
+			Search esGenomeSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_TYPE);
+			Search esGeneSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
+			registry = new SearchRegistry().registerSearch(SearchType.GENES, esGeneSearch)
+					.registerSearch(SearchType.HOMOLOGUES, esGeneSearch)
+					.registerSearch(SearchType.GENOMES, esGenomeSearch);
+		}
+		return registry;
+	}
 
 	public Search getGeneSearch() {
 		if (geneSearch == null) {
-			geneSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
+			geneSearch = new GeneSearch(getRegistry());
 		}
 		return geneSearch;
 	}
-	
+
 	public Search getGenomeSearch() {
 		if (genomeSearch == null) {
-			genomeSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_TYPE);
+			genomeSearch = getRegistry().getSearch(SearchType.GENOMES);
 		}
 		return genomeSearch;
 	}
 
-
 	public void setGeneSearch(Search search) {
 		this.geneSearch = search;
 	}
+
 	public void setGenomeSearch(Search search) {
 		this.genomeSearch = search;
 	}
-
 
 }
