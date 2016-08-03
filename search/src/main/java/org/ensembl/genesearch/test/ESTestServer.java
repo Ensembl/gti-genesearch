@@ -32,6 +32,7 @@ import org.ensembl.genesearch.impl.ESSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
@@ -80,31 +81,47 @@ public class ESTestServer {
 		return client;
 	}
 
+	private final ObjectMapper mapper = new ObjectMapper();
+
 	public void indexTestDocs(String json, String type) {
 		try {
-			
+
 			log.info("Indexing ");
-			ObjectMapper mapper = new ObjectMapper();
-			List<Map<String, Object>> docs = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {
-			});
-			log.info("Read " + docs.size() + " documents");
-			for (Map<String, Object> doc : docs) {
 
-				String id = String.valueOf(doc.get("id"));
-				doc.put("_id", id);
-
-				client.prepareIndex(ESSearch.GENES_INDEX, type).setId(id).setSource(mapper.writeValueAsString(doc)).execute()
-						.actionGet();
-
+			int n = 0;
+			if (type.equals("gene")) {
+				Map<String, Object> genome = mapper.readValue(json, new TypeReference<Map<String, Object>>() {
+				});
+				for (Map<String, Object> doc : (List<Map<String, Object>>) genome.get("genes")) {
+					indexTestDoc(doc, type);
+					n++;
+				}
+			} else if (type.equals("genome")) {
+				List<Map<String, Object>> genomes = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {
+				});
+				for (Map<String, Object> genome : genomes) {
+					indexTestDoc(genome, type);
+					n++;
+				}
+			} else {
+				throw new RuntimeException("Don't know how to index " + type);
 			}
 			// wait for indices to be built
 			client.admin().indices().refresh(new RefreshRequest(ESSearch.GENES_INDEX)).actionGet();
-			log.info("Indexed " + docs.size() + " documents");
+			log.info("Indexed " + n + " documents");
 			return;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
 		}
+	}
+
+	protected void indexTestDoc(Map<String, Object> doc, String type) throws JsonProcessingException {
+		String id = String.valueOf(doc.get("id"));
+		doc.put("_id", id);
+
+		client.prepareIndex(ESSearch.GENES_INDEX, type).setId(id).setSource(mapper.writeValueAsString(doc)).execute()
+				.actionGet();
 	}
 
 	public void disconnect() {

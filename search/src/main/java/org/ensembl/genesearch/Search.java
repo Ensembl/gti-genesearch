@@ -16,6 +16,8 @@
 
 package org.ensembl.genesearch;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -34,8 +36,10 @@ public interface Search {
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
 	 * @return
-	 */
-	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames);
+	 */	
+	public default List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames) {
+		return fetch(queries, fieldNames, null);
+	}
 	
 	/**
 	 * Retrieve all results matching the supplied queries, flattening to the specified target level
@@ -46,7 +50,14 @@ public interface Search {
 	 * @param target level to flatten to e.g. transcripts, transcripts.translations etc.
 	 * @return
 	 */
-	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames, String target);
+	public default List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames, String target) {
+		if (queries.isEmpty()) {
+			throw new UnsupportedOperationException("Fetch requires at least one query term");
+		}
+		final List<Map<String, Object>> results = new ArrayList<>();
+		fetch(row -> results.add(row), queries, fieldNames, target);
+		return results;
+	}
 
 	/**
 	 * Retrieve all results matching the supplied queries and process with the
@@ -58,8 +69,10 @@ public interface Search {
 	 *            (if empty the whole document will be returned)
 	 * @return
 	 */
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames);
-
+	public default void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames) {
+		fetch(consumer, queries, fieldNames, null);
+	}
+	
 	/**
 	 * Retrieve all results matching the supplied queries and process with the
 	 * supplied consumer
@@ -80,7 +93,9 @@ public interface Search {
 	 * @param ids
 	 * @return
 	 */
-	public List<Map<String, Object>> fetchByIds(String... ids);
+	public default List<Map<String, Object>> fetchByIds(String... ids) {
+		return fetchByIds(Collections.emptyList(), ids);
+	}
 	public List<Map<String, Object>> fetchByIds(List<String> fields, String... ids);
 
 	/**
@@ -89,7 +104,9 @@ public interface Search {
 	 * @param id
 	 * @return
 	 */
-	public Map<String, Object> fetchById(String id);
+	public default Map<String, Object> fetchById(String id) {
+		return fetchById(Collections.emptyList(), id);
+	}
 
 	/**
 	 * Retrieve genes with the supplied ID
@@ -97,7 +114,16 @@ public interface Search {
 	 * @param id
 	 * @return
 	 */
-	public Map<String, Object> fetchById(List<String> fields, String id);
+	public default Map<String, Object> fetchById(List<String> fields, String id) {
+		List<Map<String, Object>> genes = this.fetchByIds(fields, id);
+		if (genes.isEmpty()) {
+			return Collections.emptyMap();
+		} else {
+			return genes.get(0);
+		}
+	}
+
+
 
 	/**
 	 * Search with the supplied queries and return a summary object containing
@@ -134,5 +160,5 @@ public interface Search {
 	 * @return
 	 */
 	public QueryResult select(String name, int offset, int limit);
-
+	
 }

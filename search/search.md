@@ -27,7 +27,7 @@ The interface to the search API is as follows:
 * `org.ensembl.genesearch.QueryResult`
 
 ## Search
-The `Search` interface provides two main sets of search methods - fetch and query.
+The `Search` interface provides two main sets of search methods - fetch and query. `Search` also includes default methods which are independent of implementation to reduce the numbers of methods required for an implementation.
 
 Fetch methods are intended to produce entire result sets matching a specified query, either by returning a List of nested Map objects representing matched documents, or by writing Map objects to a supplied Consumer, which allows streaming of very large sets. There are a group of fetch methods for fetching by query, lists of IDs, single IDs etc. Query documents may either be genes or genomes, something which can be specified when constructing an instance of `Search`.
 
@@ -71,7 +71,7 @@ Queries can be specified as JSON or generic Map structures, and transformed into
 
 # ElasticSearch implementation
 
-The only extant implementation of `Search` is `org.ensembl.genesearch.impl.ESGeneSearch` which uses Elasticsearch (ES) via a Java API.
+The main implementation of `Search` is `org.ensembl.genesearch.impl.ESGeneSearch` which uses Elasticsearch (ES) via a Java API.
 
 The main steps used in executing a query include:
 1. Create an ES `QueryBuilder` instance from the supplied `Query` object
@@ -97,6 +97,27 @@ Some key methods to be aware of are:
 Key classes of used by this implementation include:
 * `org.ensembl.genesearch.impl.ESSearchBuilder` - code to transform a `Query` object into a `SearchBuilder`. This includes support for ranges, nested queries etc.
 * `org.ensembl.genesearch.output.ResultRemodeller` - flatten a Map to the desired level using a specified path e.g. transcripts, transcripts.translations etc.
+
+# Join-aware implementation
+
+Although the majority of queries will be against the gene store, there are scenarios where the user wants objects from another search implementation to be returned. For example, one might want to search for kinase genes on chromosome 1 and then find variants associated with those genes. To support this, a join mechanism is implemented by `org.ensembl.genesearch.impl.JoinAwareSearch`. This is an abstract class which supports using the results from 1 query to build a second query as follows:
+1. Client code invokes `query` or `fetch` and supplies a main "from" query, target fields and a target type (specified as an instance of `org.ensembl.genesearch.impl.SearchType`)
+2. A search is executed using the first query against the main search (specified in `getDefaultType`), with fields specific to the target type (e.g. homologues.stable_id) specified in `getFromJoinFields`)
+3. The output of the first search is used to generate a second query (e.g. homologues.stable_id is used to generate an id search) - specified in `getToJoinField`
+4. The target type is used to determine which secondary search to use, using `org.ensembl.genesearch.impl.SearchProvider` (a class allowing search instances to be registered aginst given types)
+5. The second search is then executed against the secondary search (e.g. IDs vs gene search) using any provided fields, facets, sort, limit etc.
+
+Optionally, a target query can be provided which allows the target query to be further refined e.g. consequence type. This is added to the second search.
+
+For targets which do not require a join (specified in `isPassThrough`) or methods which do not accept a target, a straight pass through is used.
+
+A concrete implementation is `org.ensembl.genesearch.impl.GeneSearch` which supports homologue querying using `ESSearch`. This implements:
+* `getDefaultType` - specifies `genes`
+* `getFromJoinFields` - species `homologue.stable_id`
+* `getToJoinField` - specifies `id`
+* `isPassThrough` - returns true for `genes`, `transcripts` or `translations`
+
+Subsequent development will implement this approach for variants and sequences.
 
 # Copyright and Licensing
 Copyright 1999-2016 EMBL-European Bioinformatics Institute

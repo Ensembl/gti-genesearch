@@ -113,7 +113,6 @@ public class EndpointTests {
 		assertEquals("Checking limited results retrieved", 10, ((List<?>) result.get("results")).size());
 		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
 		assertTrue("ID found", results.get(0).containsKey("id"));
-		assertTrue("Name found", results.get(0).containsKey("name"));
 		assertTrue("Name found", results.get(0).containsKey("genome"));
 		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
 	}
@@ -134,7 +133,7 @@ public class EndpointTests {
 
 	@Test
 	public void testFullQueryGetEndpoint() {
-		String url = GENES_QUERY + "?query={query}" + "&limit=5" + "&fields=name,description" + "&sort=+name,-start"
+		String url = GENES_QUERY + "?query={query}" + "&limit=5" + "&fields=name,seq_region_name" + "&sort=+name,-start"
 				+ "&facets=biotype";
 		// rest template expands {} as variables so supply JSON separately
 		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, url,
@@ -144,7 +143,7 @@ public class EndpointTests {
 		assertEquals("Checking limited results retrieved", 5, results.size());
 		assertTrue("ID found", results.get(0).containsKey("id"));
 		assertTrue("Name found", results.get(0).containsKey("name"));
-		assertTrue("Description found", results.get(0).containsKey("description"));
+		assertTrue("seq_region_name found", results.get(0).containsKey("seq_region_name"));
 		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
 		Map<String, Object> facets = (Map<String, Object>) (result.get("facets"));
 		assertEquals("Checking 1 facet retrieved", 1, facets.size());
@@ -182,7 +181,6 @@ public class EndpointTests {
 		assertEquals("Checking limited results retrieved", 5, results.size());
 		assertTrue("ID found", results.get(0).containsKey("id"));
 		assertTrue("Name found", results.get(0).containsKey("name"));
-		assertTrue("Description found", results.get(0).containsKey("description"));
 		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
 		Map<String, Object> facets = (Map<String, Object>) (result.get("facets"));
 		assertEquals("Checking 1 facet retrieved", 1, facets.size());
@@ -195,8 +193,6 @@ public class EndpointTests {
 		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, GENES_FETCH);
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
-		assertTrue("Name found", result.get(0).containsKey("name"));
-		assertTrue("Description found", result.get(0).containsKey("description"));
 		assertFalse("Homologues found", result.get(0).containsKey("homologues"));
 		assertFalse("Transcripts found", result.get(0).containsKey("transcripts"));
 	}
@@ -206,8 +202,6 @@ public class EndpointTests {
 		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, GENES_FETCH, "{}");
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
-		assertTrue("Name found", result.get(0).containsKey("name"));
-		assertTrue("Description found", result.get(0).containsKey("description"));
 		// assertFalse("homologues not found",
 		// result.get(0).containsKey("homologues"));
 	}
@@ -220,7 +214,6 @@ public class EndpointTests {
 				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
-		assertTrue("Name found", result.get(0).containsKey("name"));
 		assertTrue("Start found", result.get(0).containsKey("start"));
 		assertFalse("homologues not found", result.get(0).containsKey("homologues"));
 	}
@@ -233,7 +226,6 @@ public class EndpointTests {
 		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, GENES_FETCH, paramJson);
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
-		assertTrue("Name found", result.get(0).containsKey("name"));
 		assertTrue("Start found", result.get(0).containsKey("start"));
 		assertFalse("homologues not found", result.get(0).containsKey("homologues"));
 	}

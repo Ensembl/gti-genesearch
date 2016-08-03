@@ -77,6 +77,11 @@ public class IdLookupClient {
 		Params params = new Params();
 		JCommander jc = new JCommander(params, args);
 		jc.setProgramName(IdLookupClient.class.getSimpleName());
+		if(params.help) {
+			jc.usage();
+			System.exit(1);
+		}
+		
 		Client client = ClientBuilder.buildClient(params);
 
 		if (client == null) {

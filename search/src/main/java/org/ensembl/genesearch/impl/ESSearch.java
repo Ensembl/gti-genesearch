@@ -16,9 +16,7 @@
 
 package org.ensembl.genesearch.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +62,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ESSearch implements Search {
-
+	
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	public static final String ALL_FIELDS = "*";
 	public static final int DEFAULT_SCROLL_SIZE = 50000;
 	public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
@@ -72,7 +72,6 @@ public class ESSearch implements Search {
 	public static final String GENE_TYPE = "gene";
 	public static final String GENOME_TYPE = "genome";
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final Client client;
 	private final String index;
 	private final String type;
@@ -92,26 +91,6 @@ public class ESSearch implements Search {
 		this.type = type;
 		this.scrollSize = scrollSize;
 		this.scrollTimeout = scrollTimeout;
-	}
-
-	@Override
-	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames) {
-		return fetch(queries, fieldNames, null);
-	}
-
-	@Override
-	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames, String target) {
-		if (queries.isEmpty()) {
-			throw new UnsupportedOperationException("Fetch requires at least one query term");
-		}
-		final List<Map<String, Object>> results = new ArrayList<>();
-		fetch(row -> results.add(row), queries, fieldNames, target);
-		return results;
-	}
-
-	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames) {
-		fetch(consumer, queries, fieldNames, null);
 	}
 
 	@Override
@@ -165,7 +144,7 @@ public class ESSearch implements Search {
 		SearchResponse response = request.execute().actionGet();
 		log.info("Retrieved " + response.getHits().totalHits() + " in " + response.getTookInMillis() + " ms");
 		watch.start();
-		processAllHits(consumer, response, target);
+		consumeAllHits(consumer, response, target);
 		watch.stop();
 		log.info("Retrieved all hits in " + watch.getTime() + " ms");
 
@@ -198,14 +177,14 @@ public class ESSearch implements Search {
 	 * @param response
 	 * @return
 	 */
-	protected SearchResponse processAllHits(Consumer<Map<String, Object>> consumer, SearchResponse response,
+	protected SearchResponse consumeAllHits(Consumer<Map<String, Object>> consumer, SearchResponse response,
 			String target) {
 		// scroll until no hits are returned
 		int n = 0;
 		StopWatch watch = new StopWatch();
 		while (true) {
 			log.debug("Processing scroll #" + (++n));
-			processHits(consumer, response, target);
+			consumeHits(consumer, response, target);
 			log.debug("Preparing new scroll");
 			watch.reset();
 			watch.start();
@@ -228,7 +207,7 @@ public class ESSearch implements Search {
 	 * @param response
 	 * @param target
 	 */
-	protected void processHits(Consumer<Map<String, Object>> consumer, SearchResponse response, String target) {
+	protected void consumeHits(Consumer<Map<String, Object>> consumer, SearchResponse response, String target) {
 		SearchHit[] hits = response.getHits().getHits();
 		StopWatch watch = new StopWatch();
 		log.debug("Processing " + hits.length + " hits");
@@ -236,11 +215,11 @@ public class ESSearch implements Search {
 		boolean flatten = !StringUtils.isEmpty(target);
 		for (SearchHit hit : hits) {
 			if (flatten) {
-				for (Map<String, Object> o : ResultsRemodeller.flatten(processHit(hit), target)) {
+				for (Map<String, Object> o : ResultsRemodeller.flatten(hitToMap(hit), target)) {
 					consumer.accept(o);
 				}
 			} else {
-				consumer.accept(processHit(hit));
+				consumer.accept(hitToMap(hit));
 			}
 		}
 		watch.stop();
@@ -251,10 +230,12 @@ public class ESSearch implements Search {
 	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
 			List<String> sorts, String target) {
 		log.debug("Building query");
+		// create an elastic querybuilder object from our queries
 		QueryBuilder query = ESSearchBuilder.buildQuery(type, queries.toArray(new Query[queries.size()]));
 
 		log.info(query.toString());
 
+		// prepare a search request object using the query, fields, limits etc.
 		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
 				.setFetchSource(output.toArray(new String[output.size()]), null).setSize(limit).setFrom(offset)
 				.setTypes(type);
@@ -277,6 +258,13 @@ public class ESSearch implements Search {
 
 	}
 
+	/**
+	 * Set fields to retrieve. Note that if no fields are added, only the ID
+	 * will be retrieved. '*' can be used to specify all fields.
+	 * 
+	 * @param output
+	 * @param request
+	 */
 	private void setFields(List<String> output, SearchRequestBuilder request) {
 		if (output.isEmpty()) {
 			request.setFetchSource(false);
@@ -285,6 +273,12 @@ public class ESSearch implements Search {
 		}
 	}
 
+	/**
+	 * Set aggregations on a {@link SearchRequestBuilder}
+	 * 
+	 * @param facets
+	 * @param request
+	 */
 	private void addFacets(List<String> facets, SearchRequestBuilder request) {
 		for (String facet : facets) {
 			log.info("Adding facet on " + facet);
@@ -294,6 +288,16 @@ public class ESSearch implements Search {
 		}
 	}
 
+	/**
+	 * Adds sort directives to a {@link SearchRequestBuilder} given a list of
+	 * field names
+	 * 
+	 * @param sorts
+	 *            list of fields to sort on (optionally prefix with +/- to
+	 *            indicate sort direction)
+	 * @param request
+	 *            request to add sorts to
+	 */
 	private void addSorts(List<String> sorts, SearchRequestBuilder request) {
 		for (String sortStr : sorts) {
 			Sort sort = new Sort(sortStr);
@@ -302,17 +306,33 @@ public class ESSearch implements Search {
 		}
 	}
 
+	/**
+	 * Transform all {@link SearchHit} in a {@link SearchResponse} into a
+	 * {@link List} of {@link Map}s
+	 * 
+	 * @param response
+	 * @param target
+	 *            optional target for flattening e.g. transcripts
+	 * @return collection representation of hit
+	 */
 	protected List<Map<String, Object>> processResults(SearchResponse response, String target) {
 		if (!StringUtils.isEmpty(target)) {
 			return Arrays.stream(response.getHits().getHits())
-					.map(hit -> ResultsRemodeller.flatten(processHit(hit), target)).flatMap(l -> l.stream())
+					.map(hit -> ResultsRemodeller.flatten(hitToMap(hit), target)).flatMap(l -> l.stream())
 					.collect(Collectors.toList());
 		} else {
-			return Arrays.stream(response.getHits().getHits()).map(hit -> processHit(hit)).collect(Collectors.toList());
+			return Arrays.stream(response.getHits().getHits()).map(hit -> hitToMap(hit)).collect(Collectors.toList());
 		}
 	}
 
-	protected Map<String, Object> processHit(SearchHit hit) {
+	/**
+	 * Transform an instance of {@link SearchHit} into a generic {@link Map}
+	 * 
+	 * @param hit
+	 *            ES hit to process
+	 * @return map representation of hit
+	 */
+	protected Map<String, Object> hitToMap(SearchHit hit) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", hit.getId());
 		if (hit.getSource() != null)
@@ -320,6 +340,14 @@ public class ESSearch implements Search {
 		return map;
 	}
 
+	/**
+	 * Transform aggregation results from a {@link SearchResponse} into a
+	 * generic collection
+	 * 
+	 * @param response
+	 *            ES response from a search
+	 * @return generic collection of objects.
+	 */
 	protected Map<String, Map<String, Long>> processAggregations(SearchResponse response) {
 		Map<String, Map<String, Long>> facetResults = new HashMap<>();
 		if (response.getAggregations() != null) {
@@ -333,6 +361,13 @@ public class ESSearch implements Search {
 		return facetResults;
 	}
 
+	/**
+	 * Process a single {@link Aggregation} object into a Map of counts keyed by
+	 * value
+	 * 
+	 * @param facetResults
+	 * @param aggregation
+	 */
 	protected void processAggregation(Map<String, Long> facetResults, Aggregation aggregation) {
 		if (Terms.class.isAssignableFrom(aggregation.getClass())) {
 			log.info("Processing terms aggregation " + aggregation.getName());
@@ -375,20 +410,18 @@ public class ESSearch implements Search {
 		}
 	}
 
-	@Override
-	public List<Map<String, Object>> fetchByIds(String... ids) {
-		return fetchByIds(Collections.emptyList(), ids);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.ensembl.genesearch.Search#fetchByIds(java.util.List, java.lang.String[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.Search#fetchByIds(java.util.List,
+	 * java.lang.String[])
 	 */
 	@Override
 	public List<Map<String, Object>> fetchByIds(List<String> fields, String... ids) {
 		SearchRequestBuilder request = client.prepareSearch(index)
 				.setQuery(new ConstantScoreQueryBuilder(QueryBuilders.idsQuery(type).addIds(ids)));
-		if(!fields.isEmpty()){
-			request.setFetchSource(fields.toArray(new String[]{}), new String[]{});
+		if (!fields.isEmpty()) {
+			request.setFetchSource(fields.toArray(new String[] {}), new String[] {});
 		}
 		SearchResponse response = request.execute().actionGet();
 		return processResults(response, null);
@@ -399,26 +432,8 @@ public class ESSearch implements Search {
 		SearchRequestBuilder request = client.prepareSearch(index)
 				.setQuery(new ConstantScoreQueryBuilder(QueryBuilders.idsQuery(type).addIds(ids)));
 		SearchResponse response = request.execute().actionGet();
-		processAllHits(consumer, response, null);
+		consumeAllHits(consumer, response, null);
 		log.info("Retrieved all hits");
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.ensembl.genesearch.Search#fetchById(java.util.List, java.lang.String)
-	 */
-	@Override
-	public Map<String, Object> fetchById(List<String> fields, String id) {
-		List<Map<String, Object>> genes = this.fetchByIds(fields, id);
-		if (genes.isEmpty()) {
-			return Collections.emptyMap();
-		} else {
-			return genes.get(0);
-		}
-	}
-
-	@Override
-	public Map<String, Object> fetchById(String id) {
-		return fetchById(Collections.emptyList(), id);
 	}
 
 	/*
