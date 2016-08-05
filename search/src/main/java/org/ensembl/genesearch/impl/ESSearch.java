@@ -95,7 +95,7 @@ public class ESSearch implements Search {
 
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
-			String target) {
+			String target, List<Query> targetQueries) {
 		StopWatch watch = new StopWatch();
 
 		int queryScrollSize = calculateScroll(fieldNames);
@@ -110,7 +110,7 @@ public class ESSearch implements Search {
 					log.info("Querying " + terms.size() + "/" + query.getValues().length);
 					watch.start();
 					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)), fieldNames,
-							target);
+							target, targetQueries);
 					watch.stop();
 					log.info("Queried " + terms.size() + "/" + query.getValues().length + " in " + watch.getTime()
 							+ " ms");
@@ -228,7 +228,7 @@ public class ESSearch implements Search {
 
 	@Override
 	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
-			List<String> sorts, String target) {
+			List<String> sorts, String target, List<Query> targetQueries) {
 		log.debug("Building query");
 		// create an elastic querybuilder object from our queries
 		QueryBuilder query = ESSearchBuilder.buildQuery(type, queries.toArray(new Query[queries.size()]));

@@ -66,6 +66,9 @@ public class QueryClient {
 		
 		@Parameter(names = "-target", description = "Object target to flatten to")
 		private String target = null;
+		
+		@Parameter(names = "-targetQuery", description = "Object target query to flatten to")
+		private String targetQuery = null;
 
 		@Parameter(names = "-outfile", description = "File to write results to")
 		private String outFile = null;
@@ -93,11 +96,17 @@ public class QueryClient {
 
 		List<Query> queries = new DefaultQueryHandler()
 				.parseQuery(params.query);
-
+		
+		List<Query> targetQueries = null;
+		if(!StringUtils.isEmpty(params.targetQuery)) {
+			targetQueries = new DefaultQueryHandler()
+					.parseQuery(params.targetQuery);
+		}
+		
 		log.info("Starting query");
 
 		QueryResult res = search.query(queries, params.resultFields,
-				params.facets, params.offset, params.limit, params.sorts, params.target);
+				params.facets, params.offset, params.limit, params.sorts, params.target, targetQueries);
 
 		if (!StringUtils.isEmpty(params.outFile)) {
 			log.info("Writing results to " + params.outFile);

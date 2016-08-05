@@ -69,7 +69,7 @@ public class JoinAwareSearchTest {
 		QueryResult results = geneSearch.query(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
 				Arrays.asList("id", "genome", "description"), Collections.emptyList(), 0, 5, Collections.emptyList(),
-				"homologues");
+				"homologues", Collections.emptyList());
 		assertEquals("Checking total count", 47, results.getResultCount());
 		assertEquals("Checking returned hits",5, results.getResults().size());
 		Map<String,Object> result = results.getResults().get(0);
@@ -83,7 +83,7 @@ public class JoinAwareSearchTest {
 		List<Map<String,Object>> results = geneSearch.fetch(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
 				Arrays.asList("id", "genome", "description"),
-				"homologues");
+				"homologues", Collections.emptyList());
 		assertEquals("Checking total count", 47, results.size());
 		Map<String,Object> result = results.get(0);
 		assertNotNull("Checking id is returned", result.get("id"));
@@ -123,7 +123,7 @@ public class JoinAwareSearchTest {
 		QueryResult results = geneSearch.query(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
 				Arrays.asList("id", "genome", "description"), Collections.emptyList(), 0, 5, Collections.emptyList(),
-				"transcripts");
+				"transcripts", Collections.emptyList());
 		assertEquals("Checking total count", 598, results.getResultCount());
 		assertEquals("Checking returned hits",5, results.getResults().size());
 		Map<String,Object> result = results.getResults().get(0);
@@ -149,7 +149,7 @@ public class JoinAwareSearchTest {
 	public void querySimple() {
 		log.info("Querying for all genes");
 		QueryResult result = geneSearch.query(Collections.emptyList(), Arrays.asList("id"), Collections.emptyList(), 0, 5,
-				Collections.emptyList(), null);
+				Collections.emptyList(), null, Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());

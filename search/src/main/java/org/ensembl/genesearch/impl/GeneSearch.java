@@ -94,4 +94,12 @@ public class GeneSearch extends JoinAwareSearch {
 		return SearchType.GENES;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.impl.JoinAwareSearch#maxJoinSize(org.ensembl.genesearch.impl.SearchType)
+	 */
+	@Override
+	protected int maxJoinSize(SearchType type) {
+		return 100000;
+	}
+
 }

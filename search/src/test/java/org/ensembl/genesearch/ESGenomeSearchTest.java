@@ -77,7 +77,7 @@ public class ESGenomeSearchTest {
 	public void querySimple() {
 		log.info("Querying for all genomes");
 		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id"), Collections.emptyList(), 0, 5,
-				Collections.emptyList(), null);
+				Collections.emptyList(), null, Collections.emptyList());
 		assertEquals("Total hits", 4, result.getResultCount());
 		assertEquals("Fetched hits", 4, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());

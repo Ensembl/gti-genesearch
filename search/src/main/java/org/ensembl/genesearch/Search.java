@@ -23,7 +23,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Generic interface for searching for and retrieving objects from a backing store
+ * Generic interface for searching for and retrieving objects from a backing
+ * store
+ * 
  * @author dstaines
  *
  */
@@ -36,18 +38,21 @@ public interface Search {
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
 	 * @return
-	 */	
+	 */
 	public default List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames) {
 		return fetch(queries, fieldNames, null);
 	}
-	
+
 	/**
-	 * Retrieve all results matching the supplied queries, flattening to the specified target level
+	 * Retrieve all results matching the supplied queries, flattening to the
+	 * specified target level
 	 * 
 	 * @param queries
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
-	 * @param target level to flatten to e.g. transcripts, transcripts.translations etc.
+	 * @param target
+	 *            level to flatten to e.g. transcripts, transcripts.translations
+	 *            etc.
 	 * @return
 	 */
 	public default List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames, String target) {
@@ -55,7 +60,7 @@ public interface Search {
 			throw new UnsupportedOperationException("Fetch requires at least one query term");
 		}
 		final List<Map<String, Object>> results = new ArrayList<>();
-		fetch(row -> results.add(row), queries, fieldNames, target);
+		fetch(row -> results.add(row), queries, fieldNames, target, Collections.emptyList());
 		return results;
 	}
 
@@ -70,9 +75,9 @@ public interface Search {
 	 * @return
 	 */
 	public default void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames) {
-		fetch(consumer, queries, fieldNames, null);
+		fetch(consumer, queries, fieldNames, null, Collections.emptyList());
 	}
-	
+
 	/**
 	 * Retrieve all results matching the supplied queries and process with the
 	 * supplied consumer
@@ -81,12 +86,16 @@ public interface Search {
 	 * @param queries
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
-	 * @param target level to flatten to e.g. transcripts, transcripts.translations etc.
+	 * @param target
+	 *            level to flatten to e.g. transcripts, transcripts.translations
+	 *            etc.
+	 * @param targetQueries
+	 *            optional queries for join query
 	 * @return
 	 */
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames, String target);
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
+			String target, List<Query> targetQueries);
 
-	
 	/**
 	 * Retrieve genes with the supplied IDs
 	 * 
@@ -96,6 +105,7 @@ public interface Search {
 	public default List<Map<String, Object>> fetchByIds(String... ids) {
 		return fetchByIds(Collections.emptyList(), ids);
 	}
+
 	public List<Map<String, Object>> fetchByIds(List<String> fields, String... ids);
 
 	/**
@@ -123,8 +133,6 @@ public interface Search {
 		}
 	}
 
-
-
 	/**
 	 * Search with the supplied queries and return a summary object containing
 	 * results and facets
@@ -141,10 +149,12 @@ public interface Search {
 	 *            number of hits to return
 	 * @param target
 	 *            object to flatten results onto
+	 * @param targetQueries
+	 *            optional queries for join query
 	 * @return
 	 */
 	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
-			List<String> sorts, String target);
+			List<String> sorts, String target, List<Query> targetQueries);
 
 	/**
 	 * Retrieve genes with the supplied ID and write to the consumer
@@ -153,12 +163,13 @@ public interface Search {
 	 * @param ids
 	 */
 	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids);
-	
+
 	/**
 	 * Find a document matching the supplied string
+	 * 
 	 * @param name
 	 * @return
 	 */
 	public QueryResult select(String name, int offset, int limit);
-	
+
 }

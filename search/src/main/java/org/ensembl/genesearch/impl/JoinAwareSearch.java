@@ -51,17 +51,11 @@ public abstract class JoinAwareSearch implements Search {
 
 	protected abstract boolean isPassThrough(SearchType type);
 
-	/**
-	 * @param type
-	 * @return
-	 */
 	protected abstract List<String> getFromJoinFields(SearchType type);
 
-	/**
-	 * @param type
-	 * @return
-	 */
 	protected abstract String getToJoinField(SearchType type);
+	
+	protected abstract int maxJoinSize(SearchType type);
 
 	/**
 	 * Generate a query for a second search (e.g. variants) using a first search
@@ -84,6 +78,7 @@ public abstract class JoinAwareSearch implements Search {
 		// create a list to hold the values
 		List<String> vals = new ArrayList<>();
 
+		int maxSize = maxJoinSize(joinType);		
 		provider.getSearch(getDefaultType()).fetch(doc -> {
 			Object val = doc.get(fieldName);
 			if (val != null) {
@@ -92,23 +87,14 @@ public abstract class JoinAwareSearch implements Search {
 				} else {
 					vals.add(val.toString());
 				}
+				if(vals.size()>maxSize) {
+					throw new RuntimeException("Can only join a maximum of "+maxSize+" "+joinType.name());
+				}
 			}
-		}, queries, fields, target);
+		}, queries, fields, target, Collections.emptyList());
 		List<Query> qs = new ArrayList<>(1);
 		qs.add(new Query(QueryType.TERM, getToJoinField(joinType), vals));
 		return qs;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
-	 * java.util.List, java.util.List, java.lang.String)
-	 */
-	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
-			String target) {
-		fetch(consumer,queries,fieldNames,target,Collections.emptyList());
 	}
 	
 	/**
@@ -130,15 +116,10 @@ public abstract class JoinAwareSearch implements Search {
 		return results;
 	}
 	
-	/**
-	 * Fetch with optional join target and query @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
-	 * java.util.List, java.util.List, java.lang.String) 
-	 * @param consumer
-	 * @param queries
-	 * @param fieldNames
-	 * @param target
-	 * @param targetQueries optional queries for join query
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer, java.util.List, java.util.List, java.lang.String, java.util.List)
 	 */
+	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
 			String target, List<Query> targetQueries) {
 
@@ -147,7 +128,7 @@ public abstract class JoinAwareSearch implements Search {
 		if (isPassThrough(joinType)) {
 
 			// passthrough
-			provider.getSearch(getDefaultType()).fetch(consumer, queries, fieldNames, target);
+			provider.getSearch(getDefaultType()).fetch(consumer, queries, fieldNames, target, targetQueries);
 
 		} else {
 
@@ -160,19 +141,6 @@ public abstract class JoinAwareSearch implements Search {
 
 		}
 
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ensembl.genesearch.Search#query(java.util.List, java.util.List,
-	 * java.util.List, int, int, java.util.List, java.lang.String)
-	 */
-	@Override
-	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
-			List<String> sorts, String target) {
-		return query(queries, output, facets, offset, limit,
-				sorts, target, Collections.emptyList());
 	}
 	
 	/**
@@ -190,13 +158,13 @@ public abstract class JoinAwareSearch implements Search {
 		SearchType joinType = SearchType.findByName(target);
 		if (isPassThrough(joinType)) {
 			// passthrough
-			return provider.getSearch(getDefaultType()).query(queries, output, facets, offset, limit, sorts, target);
+			return provider.getSearch(getDefaultType()).query(queries, output, facets, offset, limit, sorts, target, targetQueries);
 		} else {
 			// 1. generate a "to" query using the "from" query
 			List<Query> joinQueries = generateJoinQuery(joinType, queries);
 			joinQueries.addAll(targetQueries);
 			// 2. pass the new query to the "to" search
-			return provider.getSearch(joinType).query(joinQueries, output, facets, offset, limit, sorts, null);
+			return provider.getSearch(joinType).query(joinQueries, output, facets, offset, limit, sorts, null, Collections.emptyList());
 		}
 	}
 

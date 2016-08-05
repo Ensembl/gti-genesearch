@@ -186,7 +186,7 @@ public abstract class FetchService {
 							throw new WebApplicationException("Could not write fetch results", e);
 						}
 					}
-				}, params.getQueries(), params.getFields(), params.getTarget());
+				}, params.getQueries(), params.getFields(), params.getTarget(), params.getTargetQueries());
 				jg.writeEndArray();
 				jg.close();
 			}
@@ -215,7 +215,7 @@ public abstract class FetchService {
 								throw new WebApplicationException(e);
 							}
 						}
-					}, params.getQueries(), params.getFields(), params.getTarget());
+					}, params.getQueries(), params.getFields(), params.getTarget(), params.getTargetQueries());
 					xsw.writeEndElement();
 					xsw.writeEndDocument();
 				} catch (XMLStreamException | FactoryConfigurationError e) {
@@ -247,7 +247,7 @@ public abstract class FetchService {
 							throw new WebApplicationException(e);
 						}
 					}
-				}, params.getQueries(), params.getFields(), params.getTarget());
+				}, params.getQueries(), params.getFields(), params.getTarget(), params.getTargetQueries());
 				writer.close();
 			}
 		};
