@@ -14,7 +14,7 @@ http://gti-es-0.ebi.ac.uk:9200/genes/genome/_search?pretty&q=K12 * Copyright [19
  * limitations under the License.
  */
 
-package org.ensembl.genesearch;
+package org.ensembl.genesearch.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.query.DefaultQueryHandler;

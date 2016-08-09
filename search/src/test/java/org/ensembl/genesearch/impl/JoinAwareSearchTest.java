@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ensembl.genesearch;
+package org.ensembl.genesearch.impl;
 
 import static org.junit.Assert.*;
 
@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.GeneSearch;

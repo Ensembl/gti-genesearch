@@ -22,6 +22,7 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.2'
     compile 'commons-io:commons-io:2.4'
     compile 'org.apache.commons:commons-collections4:4.1'
+	compile 'org.springframework:spring-web:4.3.2.RELEASE'
     testCompile 'junit:junit:4.12'
 }
 	

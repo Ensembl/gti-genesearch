@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ensembl.genesearch;
+package org.ensembl.genesearch.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -27,6 +27,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
+import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.ESSearchBuilder;
