@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public abstract class JoinAwareSearch implements Search {
 
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private final SearchRegistry provider;
+	protected final SearchRegistry provider;
 
 	public JoinAwareSearch(SearchRegistry provider) {
 		this.provider = provider;
@@ -65,9 +65,10 @@ public abstract class JoinAwareSearch implements Search {
 	 *            target to join against
 	 * @param queries
 	 *            queries to use to build first set
+	 * @param targetQueries 
 	 * @return query to run against target
 	 */
-	protected List<Query> generateJoinQuery(SearchType joinType, List<Query> queries) {
+	protected List<Query> generateJoinQuery(SearchType joinType, List<Query> queries, List<Query> targetQueries) {
 		List<String> fields = getFromJoinFields(joinType);
 		// by default take the first field
 		String fieldName = fields.get(0);
@@ -94,6 +95,8 @@ public abstract class JoinAwareSearch implements Search {
 		}, queries, fields, target, Collections.emptyList());
 		List<Query> qs = new ArrayList<>(1);
 		qs.add(new Query(QueryType.TERM, getToJoinField(joinType), vals));
+		// add target queries
+		qs.addAll(targetQueries);
 		return qs;
 	}
 	
@@ -133,8 +136,8 @@ public abstract class JoinAwareSearch implements Search {
 		} else {
 
 			// 1. generate a "to" query using the "from" query
-			List<Query> joinQueries = generateJoinQuery(joinType, queries);
-			joinQueries.addAll(targetQueries);
+			List<Query> joinQueries = generateJoinQuery(joinType, queries, targetQueries);
+
 			// 2. pass the new query to the "to" search
 			log.debug("Querying for " + joinType);
 			provider.getSearch(joinType).fetch(consumer, joinQueries, fieldNames);
@@ -161,8 +164,7 @@ public abstract class JoinAwareSearch implements Search {
 			return provider.getSearch(getDefaultType()).query(queries, output, facets, offset, limit, sorts, target, targetQueries);
 		} else {
 			// 1. generate a "to" query using the "from" query
-			List<Query> joinQueries = generateJoinQuery(joinType, queries);
-			joinQueries.addAll(targetQueries);
+			List<Query> joinQueries = generateJoinQuery(joinType, queries, targetQueries);
 			// 2. pass the new query to the "to" search
 			return provider.getSearch(joinType).query(joinQueries, output, facets, offset, limit, sorts, null, Collections.emptyList());
 		}

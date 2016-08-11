@@ -18,15 +18,65 @@ package org.ensembl.genesearch.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.Query.QueryType;
 
 /**
  * @author dstaines
  *
  */
 public class GeneSearch extends JoinAwareSearch {
+
+	@Override
+	protected List<Query> generateJoinQuery(SearchType joinType, List<Query> queries, List<Query> targetQueries) {
+
+		if (joinType.equals(SearchType.SEQUENCES)) {
+			Map<String, List<String>> divQs = new HashMap<>();
+			List<String> fields = getFromJoinFields(joinType);
+			int maxSize = maxJoinSize(joinType);
+			// collate IDs by division
+			provider.getSearch(getDefaultType()).fetch(doc -> {
+				String division = (String) doc.get("division");
+				List<String> vals = divQs.get(division);
+				if (vals == null) {
+					vals = new ArrayList<>();
+					divQs.put(division, vals);
+				}
+				Object val = doc.get("id");
+				if (val != null) {
+					if (Collection.class.isAssignableFrom(val.getClass())) {
+						vals.addAll((Collection) val);
+					} else {
+						vals.add(val.toString());
+					}
+					if (vals.size() > maxSize) {
+						throw new RuntimeException("Can only join a maximum of " + maxSize + " " + joinType.name());
+					}
+				}
+			}, queries, fields, null, Collections.emptyList());
+			List<Query> qs = new ArrayList<>();
+			for (Entry<String, List<String>> e : divQs.entrySet()) {
+				// for each division, create a separate nested query
+				List<Query> sqs = new ArrayList<>(2 + targetQueries.size());
+				sqs.add(new Query(QueryType.TERM, DivisionAwareSequenceSearch.ID, e.getValue()));
+				sqs.addAll(targetQueries);
+				qs.add(new Query(QueryType.NESTED, e.getKey(),
+						sqs.toArray(new Query[sqs.size()])));
+			}
+			return qs;
+		} else {
+			return super.generateJoinQuery(joinType, queries, targetQueries);
+		}
+	}
 
 	private static final Set<SearchType> PASSTHROUGH = new HashSet<>(
 			Arrays.asList(SearchType.GENES, SearchType.TRANSCRIPTS, SearchType.TRANSLATIONS));
@@ -60,6 +110,10 @@ public class GeneSearch extends JoinAwareSearch {
 	protected List<String> getFromJoinFields(SearchType type) {
 		List<String> fields = new ArrayList<>();
 		switch (type) {
+		case SEQUENCES:
+			fields.add("stable_id");
+			fields.add("division");
+			break;
 		case HOMOLOGUES:
 			fields.add("homologues.stable_id");
 			break;
@@ -94,8 +148,11 @@ public class GeneSearch extends JoinAwareSearch {
 		return SearchType.GENES;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.ensembl.genesearch.impl.JoinAwareSearch#maxJoinSize(org.ensembl.genesearch.impl.SearchType)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.impl.JoinAwareSearch#maxJoinSize(org.ensembl.
+	 * genesearch.impl.SearchType)
 	 */
 	@Override
 	protected int maxJoinSize(SearchType type) {
