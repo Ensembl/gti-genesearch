@@ -17,7 +17,6 @@
 package org.ensembl.genesearch.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +53,7 @@ public abstract class JoinAwareSearch implements Search {
 	protected abstract List<String> getFromJoinFields(SearchType type);
 
 	protected abstract String getToJoinField(SearchType type);
-	
+
 	protected abstract int maxJoinSize(SearchType type);
 
 	/**
@@ -65,7 +64,7 @@ public abstract class JoinAwareSearch implements Search {
 	 *            target to join against
 	 * @param queries
 	 *            queries to use to build first set
-	 * @param targetQueries 
+	 * @param targetQueries
 	 * @return query to run against target
 	 */
 	protected List<Query> generateJoinQuery(SearchType joinType, List<Query> queries, List<Query> targetQueries) {
@@ -79,7 +78,7 @@ public abstract class JoinAwareSearch implements Search {
 		// create a list to hold the values
 		List<String> vals = new ArrayList<>();
 
-		int maxSize = maxJoinSize(joinType);		
+		int maxSize = maxJoinSize(joinType);
 		provider.getSearch(getDefaultType()).fetch(doc -> {
 			Object val = doc.get(fieldName);
 			if (val != null) {
@@ -88,8 +87,8 @@ public abstract class JoinAwareSearch implements Search {
 				} else {
 					vals.add(val.toString());
 				}
-				if(vals.size()>maxSize) {
-					throw new RuntimeException("Can only join a maximum of "+maxSize+" "+joinType.name());
+				if (vals.size() > maxSize) {
+					throw new RuntimeException("Can only join a maximum of " + maxSize + " " + joinType.name());
 				}
 			}
 		}, queries, fields, target, Collections.emptyList());
@@ -99,18 +98,23 @@ public abstract class JoinAwareSearch implements Search {
 		qs.addAll(targetQueries);
 		return qs;
 	}
-	
+
 	/**
-	 * Retrieve all results matching the supplied queries, flattening to the specified target level
+	 * Retrieve all results matching the supplied queries, flattening to the
+	 * specified target level
 	 * 
 	 * @param queries
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
-	 * @param target level to flatten to e.g. transcripts, transcripts.translations etc.
-	 * @param targetQueries optional queries for join q
+	 * @param target
+	 *            level to flatten to e.g. transcripts, transcripts.translations
+	 *            etc.
+	 * @param targetQueries
+	 *            optional queries for join q
 	 * @return
 	 */
-	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames, String target, List<Query> targetQueries) {
+	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames, String target,
+			List<Query> targetQueries) {
 		if (queries.isEmpty()) {
 			throw new UnsupportedOperationException("Fetch requires at least one query term");
 		}
@@ -118,9 +122,12 @@ public abstract class JoinAwareSearch implements Search {
 		fetch(row -> results.add(row), queries, fieldNames, target, targetQueries);
 		return results;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer, java.util.List, java.util.List, java.lang.String, java.util.List)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
+	 * java.util.List, java.util.List, java.lang.String, java.util.List)
 	 */
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
@@ -145,15 +152,18 @@ public abstract class JoinAwareSearch implements Search {
 		}
 
 	}
-	
+
 	/**
-	 * Query with optional join target and query @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
-	 * java.util.List, java.util.List, java.lang.String) 
+	 * Query with optional join target and query @see
+	 * org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
+	 * java.util.List, java.util.List, java.lang.String)
+	 * 
 	 * @param consumer
 	 * @param queries
 	 * @param fieldNames
 	 * @param target
-	 * @param targetQueries optional queries for join query
+	 * @param targetQueries
+	 *            optional queries for join query
 	 */
 	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
 			List<String> sorts, String target, List<Query> targetQueries) {
@@ -161,12 +171,14 @@ public abstract class JoinAwareSearch implements Search {
 		SearchType joinType = SearchType.findByName(target);
 		if (isPassThrough(joinType)) {
 			// passthrough
-			return provider.getSearch(getDefaultType()).query(queries, output, facets, offset, limit, sorts, target, targetQueries);
+			return provider.getSearch(getDefaultType()).query(queries, output, facets, offset, limit, sorts, target,
+					targetQueries);
 		} else {
 			// 1. generate a "to" query using the "from" query
 			List<Query> joinQueries = generateJoinQuery(joinType, queries, targetQueries);
 			// 2. pass the new query to the "to" search
-			return provider.getSearch(joinType).query(joinQueries, output, facets, offset, limit, sorts, null, Collections.emptyList());
+			return provider.getSearch(joinType).query(joinQueries, output, facets, offset, limit, sorts, null,
+					Collections.emptyList());
 		}
 	}
 

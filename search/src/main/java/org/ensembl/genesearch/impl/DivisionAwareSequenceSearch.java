@@ -23,8 +23,13 @@ import java.util.function.Consumer;
 
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
+
+import sun.util.logging.resources.logging;
+
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Delegating search which uses EG or e! REST depending on division for the
@@ -34,6 +39,8 @@ import org.ensembl.genesearch.Search;
  *
  */
 public class DivisionAwareSequenceSearch implements Search {
+	
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public static final String SEQUENCE = "sequence";
 	public static final String ENSEMBL = "Ensembl";
@@ -67,8 +74,10 @@ public class DivisionAwareSequenceSearch implements Search {
 			}
 			String division = q.getFieldName();
 			if(ENSEMBL.equals(division)) {
+				log.info("Dispatching division "+division+" to E");
 				eSearch.fetch(consumer, Arrays.asList(q.getSubQueries()), fieldNames);
 			} else {
+				log.info("Dispatching division "+division+" to EG");
 				egSearch.fetch(consumer, Arrays.asList(q.getSubQueries()), fieldNames);				
 			}
 		}

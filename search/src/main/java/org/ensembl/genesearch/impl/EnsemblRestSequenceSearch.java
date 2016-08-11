@@ -28,6 +28,8 @@ import org.elasticsearch.common.util.CollectionUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -43,6 +45,8 @@ public class EnsemblRestSequenceSearch implements Search {
 
 	public final static int DEFAULT_BATCH_SIZE = 50;
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	private final String baseUrl;
 	private final int batchSize;
 	private final RestTemplate template = new RestTemplate();
@@ -68,16 +72,21 @@ public class EnsemblRestSequenceSearch implements Search {
 
 		// transform the query string into a URI
 		String url = getPostUrl(queries);
-		
+		log.info("Using base URL "+url);
+		List<String> ids = getIds(queries);
+		log.info("Searching for "+ids.size()+" ids");
 		// work through IDs in batches (REST server currently only allows 50 IDs
 		// at a time)
-		Map<String,Object> ids = new HashMap<>();
-		for (List<String> idList : CollectionUtils.eagerPartition(getIds(queries), batchSize)) {
-			ids.put("ids", idList);
+		Map<String,Object> idParams = new HashMap<>();
+		int n = 0;
+		for (List<String> idList : CollectionUtils.eagerPartition(ids, batchSize)) {
+			idParams.put("ids", idList);
+			n += idList.size();
 			// pass sequences to consumer
-			template.postForObject(url, ids, List.class).stream().forEach(consumer);
+			log.debug("Posting "+idList.size()+" IDs to "+url);
+			template.postForObject(url, idParams, List.class).stream().forEach(consumer);
 		}
-
+		log.info("Completed querying "+n+" IDs");
 	}
 
 	/**
