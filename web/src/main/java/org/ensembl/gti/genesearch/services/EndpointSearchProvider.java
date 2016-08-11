@@ -19,6 +19,7 @@ package org.ensembl.gti.genesearch.services;
 import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.clients.ClientBuilder;
+import org.ensembl.genesearch.impl.DivisionAwareSequenceSearch;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.GeneSearch;
 import org.ensembl.genesearch.impl.SearchRegistry;
@@ -29,7 +30,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Utility class to allow construction and injection of searches for REST endpoints
+ * Utility class to allow construction and injection of searches for REST
+ * endpoints
+ * 
  * @author dstaines
  *
  */
@@ -49,6 +52,10 @@ public class EndpointSearchProvider {
 	private int port;
 	@Value("${es.node}")
 	private boolean node;
+	@Value("${rest.url.ens}")
+	private String ensRestUrl;
+	@Value("${rest.url.eg}")
+	private String egRestUrl;
 
 	public EndpointSearchProvider() {
 	}
@@ -65,19 +72,19 @@ public class EndpointSearchProvider {
 		}
 		return client;
 	}
-	
+
 	public void setClient(Client client) {
 		this.client = client;
 	}
-
 
 	protected SearchRegistry getRegistry() {
 		if (registry == null) {
 			Search esGenomeSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_TYPE);
 			Search esGeneSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
+			Search seqSearch = new DivisionAwareSequenceSearch(ensRestUrl, egRestUrl);
 			registry = new SearchRegistry().registerSearch(SearchType.GENES, esGeneSearch)
 					.registerSearch(SearchType.HOMOLOGUES, esGeneSearch)
-					.registerSearch(SearchType.GENOMES, esGenomeSearch);
+					.registerSearch(SearchType.GENOMES, esGenomeSearch).registerSearch(SearchType.SEQUENCES, seqSearch);
 		}
 		return registry;
 	}
