@@ -81,7 +81,7 @@ public class EndpointSearchProvider {
 		if (registry == null) {
 			Search esGenomeSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_TYPE);
 			Search esGeneSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
-			Search seqSearch = new DivisionAwareSequenceSearch(ensRestUrl, egRestUrl);
+			Search seqSearch = new DivisionAwareSequenceSearch(genomeSearch, ensRestUrl, egRestUrl);
 			registry = new SearchRegistry().registerSearch(SearchType.GENES, esGeneSearch)
 					.registerSearch(SearchType.HOMOLOGUES, esGeneSearch)
 					.registerSearch(SearchType.GENOMES, esGenomeSearch).registerSearch(SearchType.SEQUENCES, seqSearch);

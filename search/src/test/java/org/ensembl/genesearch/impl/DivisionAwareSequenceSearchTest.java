@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -43,15 +44,18 @@ import org.junit.Test;
  */
 public class DivisionAwareSequenceSearchTest {
 
-	private final static Search search = new DivisionAwareSequenceSearch(
+	private final static DivisionAwareSequenceSearch search = new DivisionAwareSequenceSearch(
+			null,
 			new EnsemblRestSequenceSearch("http://rest.ensembl.org/sequence/id"),
 			new EnsemblRestSequenceSearch("http://rest.ensemblgenomes.org/sequence/id"));
 
 	public List<Query> buildQuery(List<String> ids, Query... qs) {
+		search.isEnsembl = new HashSet<>();
+		search.isEnsembl.add("homo_sapiens");
 		List<Query> subQ = new ArrayList<>();
 		subQ.add(new Query(QueryType.TERM, "id", ids));
 		subQ.addAll(Arrays.asList(qs));
-		return Arrays.asList(new Query(QueryType.NESTED, "Ensembl", subQ.toArray(new Query[]{})));
+		return Arrays.asList(new Query(QueryType.NESTED, "homo_sapiens", subQ.toArray(new Query[]{})));
 	}
 	
 	@Test
@@ -156,3 +160,19 @@ public class DivisionAwareSequenceSearchTest {
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

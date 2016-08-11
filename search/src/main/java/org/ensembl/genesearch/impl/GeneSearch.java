@@ -40,16 +40,16 @@ public class GeneSearch extends JoinAwareSearch {
 	protected List<Query> generateJoinQuery(SearchType joinType, List<Query> queries, List<Query> targetQueries) {
 
 		if (joinType.equals(SearchType.SEQUENCES)) {
-			Map<String, List<String>> divQs = new HashMap<>();
+			Map<String, List<String>> genomeQs = new HashMap<>();
 			List<String> fields = getFromJoinFields(joinType);
 			int maxSize = maxJoinSize(joinType);
 			// collate IDs by division
 			provider.getSearch(getDefaultType()).fetch(doc -> {
-				String division = (String) doc.get("division");
-				List<String> vals = divQs.get(division);
+				String genome = (String) doc.get("genome");
+				List<String> vals = genomeQs.get(genome);
 				if (vals == null) {
 					vals = new ArrayList<>();
-					divQs.put(division, vals);
+					genomeQs.put(genome, vals);
 				}
 				Object val = doc.get("id");
 				if (val != null) {
@@ -64,7 +64,7 @@ public class GeneSearch extends JoinAwareSearch {
 				}
 			}, queries, fields, null, Collections.emptyList());
 			List<Query> qs = new ArrayList<>();
-			for (Entry<String, List<String>> e : divQs.entrySet()) {
+			for (Entry<String, List<String>> e : genomeQs.entrySet()) {
 				// for each division, create a separate nested query
 				List<Query> sqs = new ArrayList<>(2 + targetQueries.size());
 				sqs.add(new Query(QueryType.TERM, DivisionAwareSequenceSearch.ID, e.getValue()));
