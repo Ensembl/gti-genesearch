@@ -93,7 +93,7 @@ public class DivisionAwareSequenceSearch implements Search {
 			isEnsembl = new HashSet<>();
 			genomeSearch.fetch(g -> {
 				if (ENSEMBL.equals(g.get(DIVISION))) {
-					isEnsembl.add((String) g.get(GENOME));
+					isEnsembl.add((String) g.get(ID));
 				}
 			}, Collections.emptyList(), Arrays.asList(ID, DIVISION));
 		}
