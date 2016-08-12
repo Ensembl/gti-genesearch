@@ -68,6 +68,7 @@ public class GeneSearch extends JoinAwareSearch {
 				// for each division, create a separate nested query
 				List<Query> sqs = new ArrayList<>(2 + targetQueries.size());
 				sqs.add(new Query(QueryType.TERM, DivisionAwareSequenceSearch.ID, e.getValue()));
+				sqs.add(new Query(QueryType.TERM, DivisionAwareSequenceSearch.SPECIES, e.getKey()));
 				sqs.addAll(targetQueries);
 				qs.add(new Query(QueryType.NESTED, e.getKey(),
 						sqs.toArray(new Query[sqs.size()])));

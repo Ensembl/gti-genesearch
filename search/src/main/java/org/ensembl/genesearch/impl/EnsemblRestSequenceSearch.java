@@ -41,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
 public class EnsemblRestSequenceSearch implements Search {
 
 	public final static List<String> VALID_ARGS = Arrays.asList("type", "expand_5prime", "expand_3prime", "type",
-			"format");
+			"format","species");
 
 	public final static int DEFAULT_BATCH_SIZE = 50;
 

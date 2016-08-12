@@ -33,7 +33,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
-import org.ensembl.genesearch.Search;
 import org.junit.Test;
 
 /**
@@ -44,8 +43,7 @@ import org.junit.Test;
  */
 public class DivisionAwareSequenceSearchTest {
 
-	private final static DivisionAwareSequenceSearch search = new DivisionAwareSequenceSearch(
-			null,
+	private final static DivisionAwareSequenceSearch search = new DivisionAwareSequenceSearch(null,
 			new EnsemblRestSequenceSearch("http://rest.ensembl.org/sequence/id"),
 			new EnsemblRestSequenceSearch("http://rest.ensemblgenomes.org/sequence/id"));
 
@@ -54,10 +52,11 @@ public class DivisionAwareSequenceSearchTest {
 		search.isEnsembl.add("homo_sapiens");
 		List<Query> subQ = new ArrayList<>();
 		subQ.add(new Query(QueryType.TERM, "id", ids));
+		subQ.add(new Query(QueryType.TERM, "species", "homo_sapiens"));
 		subQ.addAll(Arrays.asList(qs));
-		return Arrays.asList(new Query(QueryType.NESTED, "homo_sapiens", subQ.toArray(new Query[]{})));
+		return Arrays.asList(new Query(QueryType.NESTED, "homo_sapiens", subQ.toArray(new Query[] {})));
 	}
-	
+
 	@Test
 	public void testSingleGene() throws IOException {
 		String id = getIds("/gene_ids.txt").get(0);
@@ -79,7 +78,6 @@ public class DivisionAwareSequenceSearchTest {
 		assertTrue("Checking description present", !StringUtils.isEmpty(String.valueOf(seqs.get(0).get("desc"))));
 		assertTrue("Checking sequence present", !StringUtils.isEmpty(String.valueOf(seqs.get(0).get("seq"))));
 	}
-
 
 	@Test
 	public void testSingleTranscript() throws IOException {
@@ -132,7 +130,7 @@ public class DivisionAwareSequenceSearchTest {
 	@Test
 	public void testChangeType() throws IOException {
 		String id = "ENSG00000139618";
-		List<Query> queries = buildQuery(Arrays.asList(id),new Query(QueryType.TERM, "type", "protein"));
+		List<Query> queries = buildQuery(Arrays.asList(id), new Query(QueryType.TERM, "type", "protein"));
 		List<Map<String, Object>> seqs = search.fetch(queries, Collections.emptyList());
 		assertTrue("Checking more than one sequence", seqs.size() > 1);
 		assertTrue("Checking ID is protein", String.valueOf(seqs.get(0).get("id")).startsWith("ENSP"));
@@ -147,11 +145,11 @@ public class DivisionAwareSequenceSearchTest {
 		List<Map<String, Object>> seqs = search.fetch(queries, Collections.emptyList());
 		String origSeq = seqs.get(0).get("seq").toString();
 		assertFalse("Original sequence found", StringUtils.isEmpty(origSeq));
-		
-		queries = buildQuery(Arrays.asList(id), new Query(QueryType.TERM,"expand_5prime", "100"),new Query(QueryType.TERM,"expand_3prime", "100"));
-		
-		seqs = search.fetch(queries,
-				Collections.emptyList());
+
+		queries = buildQuery(Arrays.asList(id), new Query(QueryType.TERM, "expand_5prime", "100"),
+				new Query(QueryType.TERM, "expand_3prime", "100"));
+
+		seqs = search.fetch(queries, Collections.emptyList());
 		String newSeq = seqs.get(0).get("seq").toString();
 		assertFalse("New sequence found", StringUtils.isEmpty(newSeq));
 		assertTrue("Old in new", newSeq.contains(origSeq));
@@ -160,19 +158,3 @@ public class DivisionAwareSequenceSearchTest {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

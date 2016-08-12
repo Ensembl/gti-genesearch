@@ -43,6 +43,7 @@ public class DivisionAwareSequenceSearch implements Search {
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public static final String SEQUENCE = "sequence";
+	public static final String SPECIES = "species";
 	public static final String ENSEMBL = "Ensembl";
 	public static final String GENOME = "genome";
 	public static final String ID = "id";
