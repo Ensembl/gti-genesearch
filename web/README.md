@@ -36,6 +36,8 @@ The `/api/genes/query` endpoint accepts the following arguments:
 - `sort` - a comma-separated list of fields to sort by, which can be preceded by `+` or `-` to indicate ascending or descending e.g. `+name,-start`
 - `limit` - number of hits to return e.g. 100
 - `facets` - a comma-separated list of fields to facet over e.g. `facets=genome,biotype`
+- `target` - optional name of target if genes are not required (e.g. `transcripts`, `translations`, `homologues`, `sequences`)
+- `targetQuery` - optional additional queries passed to the secondary target
 
 http://localhost:8080/api/genes/query?query={"genome":"nanoarchaeum_equitans_kin4_m"}&limit=5&fields=name,genome&sort=+name,-start&facets=biotype
 
@@ -73,7 +75,7 @@ curl -H "Content-Type: application/json" -X POST --data '{"query":{"genome":"nan
 ```
 
 ## `/api/{object}/fetch` 
-The `/api/genes/fetch` and `/api/genomes/fetch`  endpoints are intended for bulk retrieval and accepts the `query`, `fields` and `sort` parameters from `/query`. It can be invoked via GET and POST and returns the results as a JSON array, with no summary or facets available.
+The `/api/genes/fetch` and `/api/genomes/fetch`  endpoints are intended for bulk retrieval and accepts the `query`, `fields`, `sort`, `target` and `targetQuery` parameters from `/query`. It can be invoked via GET and POST and returns the results as a JSON array, with no summary or facets available.
 
 ### GET
 http://localhost:8080/api/genes/fetch?query={"genome":"nanoarchaeum_equitans_kin4_m"}&fields=name,genome&sort=+name,-start

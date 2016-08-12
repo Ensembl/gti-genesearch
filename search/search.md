@@ -98,26 +98,29 @@ Key classes of used by this implementation include:
 * `org.ensembl.genesearch.impl.ESSearchBuilder` - code to transform a `Query` object into a `SearchBuilder`. This includes support for ranges, nested queries etc.
 * `org.ensembl.genesearch.output.ResultRemodeller` - flatten a Map to the desired level using a specified path e.g. transcripts, transcripts.translations etc.
 
+# Sequence retrieval
+## `EnsemblRestSequenceSearch`
+Support for sequence retrieval is provided by the Ensembl `/sequence/id` endpoint, access to which is provided via `org.ensembl.genesearch.impl.EnsemblRestSequenceSearch`. This implementation supports `fetch` only and expects a list of `Query` objects including one against `id` which are collated and POSTed against the REST endpoint in batches (default size 50). Any other `Query` objects are used to add extra URL parameters understood by the REST endpoint including `type`, `species`, `expand_5prime` and `expand_3prime`.  
+
+## `DivisonAwareSequenceSearch` 
+The REST sequence endpoints are currently limited in that EG and e! genomes are provided by two different URLs, and performance in EG is very poor unless a `genome` parameter is passed. To deal with these two limitations, `org.ensembl.genesearch.impl.DivisionAwareSequenceSearch` accepts nested queries where the top level field name is the name of the genome, with the nested sub-queries being those normally passed to `EnsemblRestSequenceSearch`. Each query is checked against a list of genomes from Ensembl (lazily loaded from an instance of `ESSearch` for genomes) and dispatched to one of two `EnsemblRestSequenceSearch` instances (EG or e!).
+
 # Join-aware implementation
 
 Although the majority of queries will be against the gene store, there are scenarios where the user wants objects from another search implementation to be returned. For example, one might want to search for kinase genes on chromosome 1 and then find variants associated with those genes. To support this, a join mechanism is implemented by `org.ensembl.genesearch.impl.JoinAwareSearch`. This is an abstract class which supports using the results from 1 query to build a second query as follows:
 1. Client code invokes `query` or `fetch` and supplies a main "from" query, target fields and a target type (specified as an instance of `org.ensembl.genesearch.impl.SearchType`)
 2. A search is executed using the first query against the main search (specified in `getDefaultType`), with fields specific to the target type (e.g. homologues.stable_id) specified in `getFromJoinFields`)
 3. The output of the first search is used to generate a second query (e.g. homologues.stable_id is used to generate an id search) - specified in `getToJoinField`
-4. The target type is used to determine which secondary search to use, using `org.ensembl.genesearch.impl.SearchProvider` (a class allowing search instances to be registered aginst given types)
+4. The target type is used to determine which secondary search to use, using `org.ensembl.genesearch.impl.SearchRegistry` (a class allowing search instances to be registered aginst given types)
 5. The second search is then executed against the secondary search (e.g. IDs vs gene search) using any provided fields, facets, sort, limit etc.
 
 Optionally, a target query can be provided which allows the target query to be further refined e.g. consequence type. This is added to the second search.
 
 For targets which do not require a join (specified in `isPassThrough`) or methods which do not accept a target, a straight pass through is used.
 
-A concrete implementation is `org.ensembl.genesearch.impl.GeneSearch` which supports homologue querying using `ESSearch`. This implements:
-* `getDefaultType` - specifies `genes`
-* `getFromJoinFields` - species `homologue.stable_id`
-* `getToJoinField` - specifies `id`
-* `isPassThrough` - returns true for `genes`, `transcripts` or `translations`
+A concrete implementation is `org.ensembl.genesearch.impl.GeneSearch` which supports homologue and sequence querying using `ESSearch` and `DivisionAwareSequenceSearch`. Note that the implementation of `generateJoinQuery` uses custom code for `sequences` which aggregates IDs by genome to provide a query suitable for use by `DivisionAwareSequenceSearch`.
 
-Subsequent development will implement this approach for variants and sequences.
+Subsequent development will implement this approach for variants.
 
 # Copyright and Licensing
 Copyright 1999-2016 EMBL-European Bioinformatics Institute
