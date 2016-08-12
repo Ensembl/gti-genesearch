@@ -112,7 +112,7 @@ public class GeneSearch extends JoinAwareSearch {
 		switch (type) {
 		case SEQUENCES:
 			fields.add("stable_id");
-			fields.add("division");
+			fields.add("genome");
 			break;
 		case HOMOLOGUES:
 			fields.add("homologues.stable_id");
