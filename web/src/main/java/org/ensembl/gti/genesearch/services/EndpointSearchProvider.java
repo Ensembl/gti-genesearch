@@ -81,7 +81,7 @@ public class EndpointSearchProvider {
 		if (registry == null) {
 			Search esGenomeSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_TYPE);
 			Search esGeneSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
-			Search seqSearch = new DivisionAwareSequenceSearch(esGenomeSearch, ensRestUrl, egRestUrl);
+			Search seqSearch = new DivisionAwareSequenceSearch(esGenomeSearch, getEnsRestUrl(), getEgRestUrl());
 			registry = new SearchRegistry().registerSearch(SearchType.GENES, esGeneSearch)
 					.registerSearch(SearchType.HOMOLOGUES, esGeneSearch)
 					.registerSearch(SearchType.GENOMES, esGenomeSearch).registerSearch(SearchType.SEQUENCES, seqSearch);
@@ -109,6 +109,22 @@ public class EndpointSearchProvider {
 
 	public void setGenomeSearch(Search search) {
 		this.genomeSearch = search;
+	}
+
+	public String getEnsRestUrl() {
+		return ensRestUrl;
+	}
+
+	public void setEnsRestUrl(String ensRestUrl) {
+		this.ensRestUrl = ensRestUrl;
+	}
+
+	public String getEgRestUrl() {
+		return egRestUrl;
+	}
+
+	public void setEgRestUrl(String egRestUrl) {
+		this.egRestUrl = egRestUrl;
 	}
 
 }
