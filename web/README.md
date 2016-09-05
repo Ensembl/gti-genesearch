@@ -4,10 +4,9 @@ Web and REST interfaces for gti-genesearch
 # Installation and running
 To build and run:
 ```
-./gradlew compile
-java -jar build/libs/gti-genesearch-web-0.1.jar
+./gradlew clean :web:bootRepackage
+java -Xmx2g -jar web/build/libs/web-0.1.jar --es.node=false --es.host=gti-es-0 --rest.url.eg=http://rest.ensemblgenomes.org/sequence/id --rest.url.ens=http://rest.ensembl.org/sequence/id
 ```
-Note that this requires you to have previously checked out and installed `gti-genesearch`
 
 This will automatically connect to an elasticsearch cluster named genesearch on localhost:9300 as a transport client
 To override, use the following command line options:
