@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author dstaines
  *
  */
-@Component
 public class JsonFieldInfoProvider implements FieldInfoProvider {
 
 	private final List<FieldInfo> fields;

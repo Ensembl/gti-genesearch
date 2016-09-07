@@ -1,7 +1,5 @@
 package org.ensembl.gti.genesearch.services.info;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Encapsulates information about a field
  * 
@@ -11,34 +9,24 @@ import org.apache.commons.lang3.StringUtils;
 public class FieldInfo {
 
 	public static enum FieldType {
-		TEXT, NUMBER, LOCATION, ONTOLOGY, GENOME, ID;
+		GENOME, ID, LOCATION, NUMBER, OBJECT, ONTOLOGY, TEXT, STRAND;
 	}
+
+	private boolean display;
+
+	private String displayName;
+
+	private boolean facet;
 
 	private String name;
-	private String displayName;
-	private String searchField;
-	private String displayField;
-	private String sortField;
+
+	private boolean search;
+
+	private boolean sort;
+
 	private FieldType type = FieldType.TEXT;
-	private boolean facet = false;
 
 	public FieldInfo() {
-	}
-
-	public FieldInfo(String name, String displayName, String displayField, String searchField, FieldType type,
-			boolean facet) {
-		this.name = name;
-		this.displayName = displayName;
-		if (StringUtils.isEmpty(searchField)) {
-			searchField = name;
-		}
-		this.searchField = searchField;
-		if (StringUtils.isEmpty(displayField)) {
-			displayField = searchField;
-		}
-		this.displayField = displayField;
-		this.facet = facet;
-		this.type = type;
 	}
 
 	public String getDisplayName() {
@@ -53,60 +41,45 @@ public class FieldInfo {
 		return type;
 	}
 
+	public boolean isDisplay() {
+		return display;
+	}
+
 	public boolean isFacet() {
 		return facet;
 	}
 
+	public boolean isSearch() {
+		return search;
+	}
+
+	public boolean isSort() {
+		return sort;
+	}
+
+	public void setDisplay(boolean display) {
+		this.display = display;
+	}
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-
 	public void setFacet(boolean facet) {
 		this.facet = facet;
 	}
-
 	public void setName(String name) {
 		this.name = name;
+	}
+	public void setSearch(boolean search) {
+		this.search = search;
+	}
+	public void setSort(boolean sort) {
+		this.sort = sort;
 	}
 
 	public void setType(FieldType type) {
 		this.type = type;
 	}
 
-	public String getSearchField() {
-		if (StringUtils.isEmpty(searchField)) {
-			return getName();
-		} else {
-			return searchField;
-		}
-	}
 
-	public void setSearchField(String searchField) {
-		this.searchField = searchField;
-	}
-
-	public String getDisplayField() {
-		if (StringUtils.isEmpty(displayField)) {
-			return getSearchField();
-		} else {
-			return displayField;
-		}
-	}
-
-	public void setDisplayField(String displayField) {
-		this.displayField = displayField;
-	}
-
-	public String getSortField() {
-		if (StringUtils.isEmpty(sortField)) {
-			return getSearchField();
-		} else {
-			return sortField;
-		}
-	}
-
-	public void setSortField(String sortField) {
-		this.sortField = sortField;
-	}
 	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.ensembl.gti.genesearch.services.info.FieldInfo.FieldType;
 
+@Deprecated
 public interface FieldInfoProvider {
 
 	public List<FieldInfo> getAll();

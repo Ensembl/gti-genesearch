@@ -68,6 +68,7 @@ public class EndpointTests {
 	private static final String GENOMES_FETCH = API_BASE + "/genomes/fetch";
 	private static final String GENOMES_QUERY = API_BASE + "/genomes/query";
 	private static final String GENOMES_SELECT = API_BASE + "/genomes/select";
+	private static final String INFO = API_BASE + "/fieldinfo";
 
 	static Logger log = LoggerFactory.getLogger(EndpointTests.class);
 	static ESSearch geneSearch;
@@ -94,6 +95,8 @@ public class EndpointTests {
 	private static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {
 	};
 	private static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {
+	};
+	private static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {
 	};
 
 	RestTemplate restTemplate = new TestRestTemplate();
@@ -267,6 +270,31 @@ public class EndpointTests {
 		assertEquals("Checking limited results retrieved", 2, ((List<?>) result.get("results")).size());
 		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
 		assertTrue("ID found", results.get(0).containsKey("id"));
+	}
+	
+	@Test
+	public void testInfo() {
+		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, INFO);
+		assertTrue("Data types found",result.size()>0);
+		Map<String,Object> type = result.get(0);		
+		assertTrue("Name found", type.containsKey("name"));
+		assertTrue("Targets found", type.containsKey("targets"));
+		assertTrue("Fields found", type.containsKey("fieldInfo"));
+		
+		List<String> names = getUrlToObject(STRING_LIST_REF, restTemplate, INFO+"/names");
+		assertEquals("Correct number of names found",result.size(),names.size());
+		
+		Map<String, Object> typeObj = getUrlToObject(MAP_REF, restTemplate, INFO+"/"+type.get("name"));
+		assertEquals("Checking correct name",type.get("name"),typeObj.get("name"));
+		
+		List<Map<String, Object>> fields = getUrlToObject(LIST_REF, restTemplate, INFO+"/"+type.get("name")+"/fields");
+		assertEquals("Checking number of fields",((List)type.get("fieldInfo")).size(),fields.size());
+		
+		
+		List<Map<String, Object>> facetFields = getUrlToObject(LIST_REF, restTemplate, INFO+"/"+type.get("name")+"/fields?type=facet");
+		facetFields.stream().anyMatch(f->f.get("facet").equals("true"));
+		List<Map<String, Object>> strandFields = getUrlToObject(LIST_REF, restTemplate, INFO+"/"+type.get("name")+"/fields?type=strand");
+		strandFields.stream().anyMatch(f->f.get("type").equals("STRAND"));
 	}
 
 	/**
