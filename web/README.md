@@ -88,6 +88,8 @@ This endpoint returns a JSON-formatted response containing the number of hits, t
 }
 ```
 
+For more detailed examples, please see [examples.md](./examples.md)
+
 ### POST
 This is as above, but the parameters are supplied as pure JSON:
 ```
@@ -95,7 +97,12 @@ curl -H "Content-Type: application/json" -X POST --data '{"query":{"genome":"nan
 ```
 
 ## `/api/{object}/fetch` 
-The `/api/genes/fetch` and `/api/genomes/fetch`  endpoints are intended for bulk retrieval and accepts the `query`, `fields`, `sort`, `target` and `targetQuery` parameters from `/query`. It can be invoked via GET and POST and returns the results as a JSON array, with no summary or facets available.
+The `/api/genes/fetch` and `/api/genomes/fetch`  endpoints are intended for bulk retrieval and accepts the `query`, `fields`, `target` and `targetQuery` parameters from `/query`. It can be invoked via GET and POST and returns the results as a JSON array, with no summary or facets available.
+
+The output format is JSON by default, but can be changed by setting either the `Accept` request header or `accept` parameter to:
+* JSON - `application/x-javascript`
+* XML - `application/xml`
+* CSV - `text/csv` or `application/vnd.ms-excel`
 
 ### GET
 http://localhost:8080/api/genes/fetch?query={"genome":"nanoarchaeum_equitans_kin4_m"}&fields=name,genome&sort=+name,-start
@@ -110,7 +117,15 @@ The `/api/genes` and `/api/genomes` endpoint are simple endpoints for retrieving
 
 ### GET (single gene or genome)
 The gene stable ID or genome production name is supplied as a URL parameter:
+```
 http://localhost:8080/api/genes/NEQ392
+http://localhost:8080/api/genomes/homo_sapiens
+```
+
+In addition, `/api/genomes/select` is provided to allow genomes to be found by name (this is for use in a lookup). For instance, to find genomes with any names matching `thermo` (note that this uses aliases as well as assigned names):
+```
+http://localhost:8080/api/genomes/select?query=thermo
+```
 
 ### POST (multiple genes or genomes)
 A JSON document containing a list of gene stable IDs or genome production names can be passed via POST:
