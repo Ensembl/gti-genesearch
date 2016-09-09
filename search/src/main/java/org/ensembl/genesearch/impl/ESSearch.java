@@ -18,9 +18,12 @@ package org.ensembl.genesearch.impl;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -352,11 +355,11 @@ public class ESSearch implements Search {
 	protected Map<String, Map<String, Long>> processAggregations(SearchResponse response) {
 		Map<String, Map<String, Long>> facetResults = new HashMap<>();
 		if (response.getAggregations() != null) {
-			for (Entry<String, Aggregation> facet : response.getAggregations().getAsMap().entrySet()) {
-				log.debug("Getting facet on " + facet.getKey());
-				Map<String, Long> facetResult = new HashMap<>();
-				processAggregation(facetResult, facet.getValue());
-				facetResults.put(facet.getKey(), facetResult);
+			for(Aggregation facet: response.getAggregations().asList()) {
+				log.debug("Getting facet on " + facet.getName());
+				Map<String, Long> facetResult = new LinkedHashMap<>();
+				processAggregation(facetResult, facet);
+				facetResults.put(facet.getName(), facetResult);
 			}
 		}
 		return facetResults;
