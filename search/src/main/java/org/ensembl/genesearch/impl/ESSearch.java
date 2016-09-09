@@ -68,6 +68,7 @@ public class ESSearch implements Search {
 	public static final String ALL_FIELDS = "*";
 	public static final int DEFAULT_SCROLL_SIZE = 50000;
 	public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
+	private static final int DEFAULT_AGGREGATION_SIZE = 10;
 	public static final String GENES_INDEX = "genes";
 	public static final String GENE_TYPE = "gene";
 	public static final String GENOME_TYPE = "genome";
@@ -244,7 +245,7 @@ public class ESSearch implements Search {
 
 		addSorts(sorts, request);
 
-		addFacets(facets, request);
+		addFacets(facets, request, DEFAULT_AGGREGATION_SIZE);
 
 		log.info("Starting query (limit " + limit + ")");
 		log.debug("Query " + request.toString());
@@ -279,10 +280,10 @@ public class ESSearch implements Search {
 	 * @param facets
 	 * @param request
 	 */
-	private void addFacets(List<String> facets, SearchRequestBuilder request) {
+	private void addFacets(List<String> facets, SearchRequestBuilder request, int aggregationSize) {
 		for (String facet : facets) {
 			log.info("Adding facet on " + facet);
-			AbstractAggregationBuilder builder = ESSearchBuilder.buildAggregation(facet);
+			AbstractAggregationBuilder builder = ESSearchBuilder.buildAggregation(facet, aggregationSize);
 			if (builder != null)
 				request.addAggregation(builder);
 		}

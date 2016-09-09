@@ -95,19 +95,19 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testSimpleFacet() {
-		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("GO");
+		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("GO",10);
 		assertEquals("Class check", TermsBuilder.class, buildAggregation.getClass());
 	}
 
 	@Test
 	public void testNestedFacet() {
-		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("homologues.genome");
+		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("homologues.genome",10);
 		assertEquals("Class check", NestedBuilder.class, buildAggregation.getClass());
 	}
 
 	@Test
 	public void testDoubleNestedFacet() {
-		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("homologues.genome.banana");
+		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("homologues.genome.banana",10);
 		assertEquals("Class check", NestedBuilder.class, buildAggregation.getClass());
 	}
 

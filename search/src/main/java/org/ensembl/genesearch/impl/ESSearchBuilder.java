@@ -27,6 +27,7 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
@@ -126,7 +127,7 @@ public class ESSearchBuilder {
 		return newParents;
 	}
 
-	public static AbstractAggregationBuilder buildAggregation(String facet) {
+	public static AbstractAggregationBuilder buildAggregation(String facet, int aggregationSize) {
 		String[] subFacets = facet.split("\\.");
 		AbstractAggregationBuilder builder = null;
 		String path = StringUtils.EMPTY;
@@ -138,7 +139,8 @@ public class ESSearchBuilder {
 				path = path + '.' + subFacet;
 			}
 			if (i == subFacets.length - 1) {
-				TermsBuilder subBuilder = AggregationBuilders.terms(subFacet).field(path);
+				TermsBuilder subBuilder = AggregationBuilders.terms(subFacet).field(path).size(aggregationSize)
+						.order(Terms.Order.compound(Terms.Order.count(false), Terms.Order.term(true)));
 				if (builder == null) {
 					builder = subBuilder;
 				} else {
