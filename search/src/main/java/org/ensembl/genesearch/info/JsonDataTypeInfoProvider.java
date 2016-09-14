@@ -1,4 +1,4 @@
-package org.ensembl.gti.genesearch.services.info;
+package org.ensembl.genesearch.info;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -22,9 +22,9 @@ public class JsonDataTypeInfoProvider implements DataTypeInfoProvider {
 
 	private final List<DataTypeInfo> dataTypes;
 	private List<String> dataNames;
-
-	public JsonDataTypeInfoProvider() throws IOException {
-		this(IOUtils.toString(JsonDataTypeInfoProvider.class.getResource("/datatype_info.json"),
+	
+	public static JsonDataTypeInfoProvider load(String resourceName) throws IOException {
+		return new JsonDataTypeInfoProvider(IOUtils.toString(JsonDataTypeInfoProvider.class.getResource(resourceName),
 				StandardCharsets.UTF_8));
 	}
 

@@ -1,4 +1,4 @@
-package org.ensembl.gti.genesearch.services.info;
+package org.ensembl.genesearch.info;
 
 import java.util.List;
 

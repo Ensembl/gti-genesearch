@@ -55,20 +55,21 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Base service for /fetch
+ * 
+ * @author dstaines
+ *
+ */
 @Path("/fetch")
 @Produces({ MediaType.APPLICATION_JSON + ";qs=1", Application.APPLICATION_X_JAVASCRIPT,
 		MediaType.TEXT_PLAIN + ";qs=0.1", MediaType.TEXT_HTML + ";qs=0.1" })
 @Consumes(MediaType.APPLICATION_JSON)
-public abstract class FetchService {
-
-	final Logger log = LoggerFactory.getLogger(FetchService.class);
-	protected final EndpointSearchProvider provider;
+public abstract class FetchService extends SearchBasedService {
 
 	public FetchService(EndpointSearchProvider provider) {
-		this.provider = provider;
+		super(provider);
 	}
-
-	public abstract Search getSearch();
 
 	protected abstract String getObjectType();
 

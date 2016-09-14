@@ -39,6 +39,8 @@ public class JerseyConfig extends ResourceConfig {
 		register(GeneService.class);
 		register(GenomeFetchService.class);
 		register(GenomeService.class);
+		register(GeneInfoService.class);
+		register(GenomeInfoService.class);
 		register(JacksonFeature.class);
 		register(InfoService.class);
 		register(CORSFilter.class);

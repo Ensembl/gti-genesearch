@@ -28,6 +28,7 @@ import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.info.DataTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +53,7 @@ public class DivisionAwareSequenceSearch implements Search {
 	private final EnsemblRestSequenceSearch eSearch;
 	private final EnsemblRestSequenceSearch egSearch;
 	protected Set<String> isEnsembl;
+	private final List<DataTypeInfo> dataTypes;
 
 	public DivisionAwareSequenceSearch(Search genomeSearch, String eSearchUri, String egSearchUri) {
 		this(genomeSearch, new EnsemblRestSequenceSearch(eSearchUri), new EnsemblRestSequenceSearch(egSearchUri));
@@ -62,6 +64,7 @@ public class DivisionAwareSequenceSearch implements Search {
 		this.genomeSearch = genomeSearch;
 		this.eSearch = eSearch;
 		this.egSearch = egSearch;
+		dataTypes = eSearch.getDataTypes();
 	}
 
 	/*
@@ -145,6 +148,14 @@ public class DivisionAwareSequenceSearch implements Search {
 	@Override
 	public QueryResult select(String name, int offset, int limit) {
 		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#getDataTypes()
+	 */
+	@Override
+	public List<DataTypeInfo> getDataTypes() {
+		return dataTypes;
 	}
 
 }

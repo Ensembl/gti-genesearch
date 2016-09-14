@@ -39,38 +39,36 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
+ * Base service for returning whole objects by ID
+ * 
  * @author dstaines
  *
  */
-public abstract class ObjectService {
+public abstract class ObjectService extends SearchBasedService {
 
-	final Logger log = LoggerFactory.getLogger(ObjectService.class);
-	protected final EndpointSearchProvider provider;
-
+	/**
+	 * @param provider
+	 */
 	public ObjectService(EndpointSearchProvider provider) {
-		this.provider = provider;
+		super(provider);
 	}
 
 	@Path("{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Map<String, Object> get(@PathParam("id") String id, @QueryParam("fields") String fields) {
-		if(StringUtils.isEmpty(fields)) {
-			return getSearch().fetchById(id);			
+		if (StringUtils.isEmpty(fields)) {
+			return getSearch().fetchById(id);
 		} else {
-			return getSearch().fetchById(Arrays.asList(StringUtils.split(fields,",")),id);
+			return getSearch().fetchById(Arrays.asList(StringUtils.split(fields, ",")), id);
 		}
 	}
-
-	public abstract Search getSearch();
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

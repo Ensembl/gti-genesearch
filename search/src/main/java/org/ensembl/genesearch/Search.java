@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.ensembl.genesearch.info.DataTypeInfo;
+
 /**
  * Generic interface for searching for and retrieving objects from a backing
  * store
@@ -171,5 +173,12 @@ public interface Search {
 	 * @return
 	 */
 	public QueryResult select(String name, int offset, int limit);
+	
+	/**
+	 * Get a list of the different datatypes that this search can return
+	 * 
+	 * @return
+	 */
+	public List<DataTypeInfo> getDataTypes();
 
 }

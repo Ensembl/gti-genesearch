@@ -1,79 +1,76 @@
 package org.ensembl.gti.genesearch.services;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ensembl.gti.genesearch.services.info.DataTypeInfo;
-import org.ensembl.gti.genesearch.services.info.DataTypeInfoProvider;
-import org.ensembl.gti.genesearch.services.info.FieldInfo;
-import org.ensembl.gti.genesearch.services.info.FieldInfo.FieldType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldInfo;
+import org.ensembl.genesearch.info.FieldInfo.FieldType;
+import org.glassfish.jersey.server.JSONP;
 
-@Service
-@Path("/fieldinfo")
-public class InfoService {
+@Produces({ MediaType.APPLICATION_JSON, Application.APPLICATION_X_JAVASCRIPT })
+public abstract class InfoService extends SearchBasedService {
 
-	final Logger log = LoggerFactory.getLogger(InfoService.class);
-	protected final DataTypeInfoProvider provider;
-
-	@Autowired
-	public InfoService(DataTypeInfoProvider provider) {
-		this.provider = provider;
+	public InfoService(EndpointSearchProvider provider) {
+		super(provider);
 	}
 
+	@Path("fieldinfo")
 	@GET
-	@Produces("application/json")
+	@JSONP
 	public Collection<DataTypeInfo> getDataTypes() {
-		return provider.getAll();
+		return getSearch().getDataTypes();
 	}
 
-	@Path("names")
+	@Path("fieldinfo/names")
 	@GET
-	@Produces("application/json")
+	@JSONP
 	public Collection<String> getDataTypeNames() {
-		return provider.getAllNames();
+		return getSearch().getDataTypes().stream().map(t -> t.getName()).collect(Collectors.toList());
 	}
 
-	@Path("{datatype}")
+	@Path("fieldinfo/{datatype}")
 	@GET
-	@Produces("application/json")
+	@JSONP
 	public DataTypeInfo getDataType(@PathParam("datatype") String dataType) {
-		return provider.getByName(dataType);
+		return getSearch().getDataTypes().stream().filter(t -> t.getName().equalsIgnoreCase(dataType)).findFirst()
+				.orElse(null);
 	}
 
-	@Path("{datatype}/fields")
+	@Path("fieldinfo/{datatype}/fields")
 	@GET
-	@Produces("application/json")
-	public Collection<FieldInfo> getFields(@PathParam("datatype") String dataType, @QueryParam("type") String type) {
+	@JSONP
+	public Collection<FieldInfo> getFields(@PathParam("datatype") String dataTypeName,
+			@QueryParam("type") String type) {
+		DataTypeInfo dataType = getDataType(dataTypeName);
 		if (!StringUtils.isEmpty(type)) {
 			switch (type.toLowerCase()) {
 			case "facet":
-				return provider.getByName(dataType).getFacetableFields();
+				return dataType.getFacetableFields();
 
 			case "sort":
-				return provider.getByName(dataType).getSortFields();
+				return dataType.getSortFields();
 
 			case "display":
-				return provider.getByName(dataType).getDisplayFields();
+				return dataType.getDisplayFields();
 
 			case "search":
-				return provider.getByName(dataType).getSearchFields();
+				return dataType.getSearchFields();
 
 			default:
-				return provider.getByName(dataType).getFieldByType(FieldType.valueOf(type.toUpperCase()));
+				return dataType.getFieldByType(FieldType.valueOf(type.toUpperCase()));
 
 			}
 		} else {
-			return provider.getByName(dataType).getFieldInfo();
+			return dataType.getFieldInfo();
 		}
 	}
 

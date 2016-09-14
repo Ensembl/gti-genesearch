@@ -68,7 +68,7 @@ public class EndpointTests {
 	private static final String GENOMES_FETCH = API_BASE + "/genomes/fetch";
 	private static final String GENOMES_QUERY = API_BASE + "/genomes/query";
 	private static final String GENOMES_SELECT = API_BASE + "/genomes/select";
-	private static final String INFO = API_BASE + "/fieldinfo";
+	private static final String INFO = API_BASE + "/genes/fieldinfo";
 
 	static Logger log = LoggerFactory.getLogger(EndpointTests.class);
 	static ESSearch geneSearch;
@@ -274,6 +274,7 @@ public class EndpointTests {
 	
 	@Test
 	public void testInfo() {
+		
 		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, INFO);
 		assertTrue("Data types found",result.size()>0);
 		Map<String,Object> type = result.get(0);		
@@ -290,11 +291,11 @@ public class EndpointTests {
 		List<Map<String, Object>> fields = getUrlToObject(LIST_REF, restTemplate, INFO+"/"+type.get("name")+"/fields");
 		assertEquals("Checking number of fields",((List)type.get("fieldInfo")).size(),fields.size());
 		
-		
 		List<Map<String, Object>> facetFields = getUrlToObject(LIST_REF, restTemplate, INFO+"/"+type.get("name")+"/fields?type=facet");
 		facetFields.stream().anyMatch(f->f.get("facet").equals("true"));
 		List<Map<String, Object>> strandFields = getUrlToObject(LIST_REF, restTemplate, INFO+"/"+type.get("name")+"/fields?type=strand");
 		strandFields.stream().anyMatch(f->f.get("type").equals("STRAND"));
+
 	}
 
 	/**

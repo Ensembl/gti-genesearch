@@ -1,8 +1,8 @@
-package org.ensembl.gti.genesearch.services.info;
+package org.ensembl.genesearch.info;
 
 import java.util.List;
 
-import org.ensembl.gti.genesearch.services.info.FieldInfo.FieldType;
+import org.ensembl.genesearch.info.FieldInfo.FieldType;
 
 @Deprecated
 public interface FieldInfoProvider {

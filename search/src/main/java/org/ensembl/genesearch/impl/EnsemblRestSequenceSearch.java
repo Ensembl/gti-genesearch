@@ -16,6 +16,7 @@
 
 package org.ensembl.genesearch.impl;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,8 @@ import org.elasticsearch.common.util.CollectionUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.JsonDataTypeInfoProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
@@ -50,10 +53,17 @@ public class EnsemblRestSequenceSearch implements Search {
 	private final String baseUrl;
 	private final int batchSize;
 	private final RestTemplate template = new RestTemplate();
+	private final List<DataTypeInfo> dataTypes;
 
 	public EnsemblRestSequenceSearch(String baseUrl, int batchSize) {
 		this.baseUrl = baseUrl;
 		this.batchSize = batchSize;
+		try {
+			this.dataTypes = JsonDataTypeInfoProvider.load("/sequence_datatype_info.json").getAll();
+		} catch (IOException e) {
+			// cannot recover from this
+			throw new RuntimeException("Cannot load JSON from sequence_datatype_info.json");
+		}
 	}
 
 	public EnsemblRestSequenceSearch(String baseUrl) {
@@ -160,6 +170,14 @@ public class EnsemblRestSequenceSearch implements Search {
 	@Override
 	public QueryResult select(String name, int offset, int limit) {
 		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#getDataTypes()
+	 */
+	@Override
+	public List<DataTypeInfo> getDataTypes() {
+		return dataTypes;
 	}
 
 }

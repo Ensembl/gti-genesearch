@@ -1,16 +1,16 @@
-package org.ensembl.gti.genesearch.rest;
+package org.ensembl.genesearch.info;
 
 import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
 
+import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.DataTypeInfoProvider;
+import org.ensembl.genesearch.info.FieldInfo;
+import org.ensembl.genesearch.info.JsonDataTypeInfoProvider;
+import org.ensembl.genesearch.info.FieldInfo.FieldType;
 import org.ensembl.genesearch.test.ESTestServer;
-import org.ensembl.gti.genesearch.services.info.DataTypeInfo;
-import org.ensembl.gti.genesearch.services.info.DataTypeInfoProvider;
-import org.ensembl.gti.genesearch.services.info.FieldInfo;
-import org.ensembl.gti.genesearch.services.info.JsonDataTypeInfoProvider;
-import org.ensembl.gti.genesearch.services.info.FieldInfo.FieldType;
 import org.junit.Test;
 
 public class DataTypeInfoTests {

@@ -116,7 +116,7 @@ To show the next 10 entries:
 http://localhost:8080/api/genes/query?query={"name":"BRCA2","lineage":"40674"}&limit=10&offset=10
 ```
 
-NB: Performance is poor for very deep pagination - please use /fetch instead!
+NB: Performance is poor for very deep pagination - please use `/fetch` instead!
 
 # `/fetch`
 
@@ -125,12 +125,22 @@ Retrieving all results as JSON:
 http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}
 ```
 
-Retrieving all results as XML:
+Changing fields:
+```
+http://localhost:8080/api/genes/query?query={"name":"BRCA2"}&fields=genome,name,description,start,end
+```
+
+Retrieving all fields:
+```
+http://localhost:8080/api/genes/query?query={"name":"BRCA2"}&fields=*
+```
+
+Retrieving all results as XML (or pass the `Accept` properly as a request header):
 ```
 http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&accept=application/xml
 ```
 
-Retrieving all results as CSV:
+Retrieving all results as CSV (or pass the `Accept` properly as a request header):
 ```
 http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&accept=text/csv
 ```
@@ -147,7 +157,7 @@ http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&target=sequences&ta
 
 Retrieving CDS sequences for all results:
 ```
-http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&target=sequences&targetQuery={"type":"protein"}
+http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&target=sequences&targetQuery={"type":"cds"}
 ```
 
 Retrieving protein sequences for all results:

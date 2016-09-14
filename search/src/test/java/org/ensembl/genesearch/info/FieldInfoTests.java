@@ -1,13 +1,11 @@
-package org.ensembl.gti.genesearch.rest;
+package org.ensembl.genesearch.info;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.ensembl.genesearch.info.FieldInfo.FieldType;
 import org.ensembl.genesearch.test.ESTestServer;
-import org.ensembl.gti.genesearch.services.info.FieldInfo.FieldType;
-import org.ensembl.gti.genesearch.services.info.FieldInfoProvider;
-import org.ensembl.gti.genesearch.services.info.JsonFieldInfoProvider;
 import org.junit.Test;
 
 public class FieldInfoTests {

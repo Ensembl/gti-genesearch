@@ -26,18 +26,18 @@ import javax.ws.rs.core.MediaType;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.glassfish.jersey.server.JSONP;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/**
+ * Base class for a /query endpoint
+ * @author dstaines
+ *
+ */
 @Produces({ MediaType.APPLICATION_JSON, Application.APPLICATION_X_JAVASCRIPT })
-public abstract class QueryService {
-
-	final Logger log = LoggerFactory.getLogger(QueryService.class);
-	protected final EndpointSearchProvider provider;
+public abstract class QueryService extends SearchBasedService {
 
 	public QueryService(EndpointSearchProvider provider) {
-		this.provider = provider;
+		super(provider);
 	}
 
 	@GET
@@ -61,7 +61,5 @@ public abstract class QueryService {
 		return getSearch().query(params.getQueries(), params.getFields(), params.getFacets(), params.getOffset(),
 				params.getLimit(), params.getSorts(), params.getTarget(), params.getTargetQueries());
 	}
-
-	public abstract Search getSearch();
 
 }

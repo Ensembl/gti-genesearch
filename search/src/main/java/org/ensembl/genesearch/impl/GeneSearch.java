@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.info.DataTypeInfo;
 
 /**
  * @author dstaines
@@ -81,12 +82,17 @@ public class GeneSearch extends JoinAwareSearch {
 
 	private static final Set<SearchType> PASSTHROUGH = new HashSet<>(
 			Arrays.asList(SearchType.GENES, SearchType.TRANSCRIPTS, SearchType.TRANSLATIONS));
+	private final List<DataTypeInfo> dataTypes;
 
 	/**
 	 * @param provider
 	 */
 	public GeneSearch(SearchRegistry provider) {
 		super(provider);
+		dataTypes = new ArrayList<>();
+		dataTypes.addAll(provider.getSearch(SearchType.GENES).getDataTypes());
+		dataTypes.addAll(provider.getSearch(SearchType.SEQUENCES).getDataTypes());
+		dataTypes.addAll(provider.getSearch(SearchType.GENOMES).getDataTypes());
 	}
 
 	/*
@@ -158,6 +164,14 @@ public class GeneSearch extends JoinAwareSearch {
 	@Override
 	protected int maxJoinSize(SearchType type) {
 		return 100000;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#getDataTypes()
+	 */
+	@Override
+	public List<DataTypeInfo> getDataTypes() {
+		return dataTypes;
 	}
 
 }

@@ -27,6 +27,7 @@ import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.info.DataTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -217,5 +218,5 @@ public abstract class JoinAwareSearch implements Search {
 		// pass through
 		return provider.getSearch(getDefaultType()).select(name, offset, limit);
 	}
-
+	
 }

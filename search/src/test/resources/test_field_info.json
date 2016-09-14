@@ -1,0 +1,14 @@
+[
+{
+"name":"id", "displayName":"Gene ID"
+},
+{
+"name":"name", "displayName":"Gene name"
+},
+{
+"name":"genome", "displayName":"Genome", "facet":"true"
+},
+{
+"name":"location", "displayName":"Genomic location", "type":"LOCATION"
+}
+]

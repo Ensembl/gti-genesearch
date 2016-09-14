@@ -16,14 +16,12 @@
 
 package org.ensembl.genesearch.impl;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,6 +52,8 @@ import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.JsonDataTypeInfoProvider;
 import org.ensembl.genesearch.output.ResultsRemodeller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +65,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ESSearch implements Search {
-	
+
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	
+
 	public static final String ALL_FIELDS = "*";
 	public static final int DEFAULT_SCROLL_SIZE = 50000;
 	public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
@@ -79,6 +79,7 @@ public class ESSearch implements Search {
 	private final Client client;
 	private final String index;
 	private final String type;
+	private final List<DataTypeInfo> dataTypes;
 
 	public ESSearch(Client client, String index, String type) {
 		this(client, index, type,
@@ -95,6 +96,18 @@ public class ESSearch implements Search {
 		this.type = type;
 		this.scrollSize = scrollSize;
 		this.scrollTimeout = scrollTimeout;
+		try {
+			if (type.equals(GENE_TYPE)) {
+				dataTypes = JsonDataTypeInfoProvider.load("/gene_datatype_info.json").getAll();
+			} else if (type.equals(GENOME_TYPE)) {
+				dataTypes = JsonDataTypeInfoProvider.load("/genome_datatype_info.json").getAll();
+			} else {
+				throw new IllegalArgumentException("Type " + type + " is not supported by ESSearch");
+			}
+		} catch (IOException e) {
+			// cannot do anything about this but need to handle the exception
+			throw new RuntimeException("Could not load the specified JSON resource");
+		}
 	}
 
 	@Override
@@ -355,7 +368,7 @@ public class ESSearch implements Search {
 	protected Map<String, Map<String, Long>> processAggregations(SearchResponse response) {
 		Map<String, Map<String, Long>> facetResults = new HashMap<>();
 		if (response.getAggregations() != null) {
-			for(Aggregation facet: response.getAggregations().asList()) {
+			for (Aggregation facet : response.getAggregations().asList()) {
 				log.debug("Getting facet on " + facet.getName());
 				Map<String, Long> facetResult = new LinkedHashMap<>();
 				processAggregation(facetResult, facet);
@@ -488,6 +501,16 @@ public class ESSearch implements Search {
 		return new QueryResult(response.getHits().getTotalHits(), offset, limit, processResults(response, null),
 				processAggregations(response));
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.Search#getDataTypes()
+	 */
+	@Override
+	public List<DataTypeInfo> getDataTypes() {
+		return dataTypes;
 	}
 
 }

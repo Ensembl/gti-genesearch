@@ -1,4 +1,4 @@
-package org.ensembl.gti.genesearch.services.info;
+package org.ensembl.genesearch.info;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.ensembl.gti.genesearch.services.info.FieldInfo.FieldType;
+import org.ensembl.genesearch.info.FieldInfo.FieldType;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;

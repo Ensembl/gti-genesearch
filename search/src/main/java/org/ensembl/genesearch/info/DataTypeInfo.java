@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.ensembl.gti.genesearch.services.info;
+package org.ensembl.genesearch.info;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ensembl.gti.genesearch.services.info.FieldInfo.FieldType;
+import org.ensembl.genesearch.info.FieldInfo.FieldType;
 
 /**
  * Object encapsulating information about a data source and its fields
