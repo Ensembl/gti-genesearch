@@ -27,9 +27,10 @@ curl -XDELETE "${url}/"
 echo
 # create a new index
 echo "Creating index"
-# disable replicas
-curl -XPUT -d "{\"number_of_shards\": $n, \"number_of_replicas\" : 0}" "${url}/"
+sed -e "s/SHARDN/$n/" ${dir}/../resources/settings.json | curl -XPUT -d @- "${url}/"
+#curl -XPUT -d "{\"number_of_shards\": $n, \"number_of_replicas\" : 0}" "${url}/"
 echo
+
 
 ## genome mapping - ignore for now
 #echo "Loading genome mapping"
@@ -39,3 +40,4 @@ curl -XPUT -d @${dir}/../resources/genome_mapping.json "${url}/_mapping/genome"
 echo "Loading gene mapping"
 curl -XPUT -d @${dir}/../resources/gene_mapping.json "${url}/_mapping/gene" 
 echo
+
