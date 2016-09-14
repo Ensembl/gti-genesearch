@@ -22,7 +22,9 @@ import org.ensembl.gti.genesearch.services.errors.QueryHandlerExceptionMapper;
 import org.ensembl.gti.genesearch.services.filters.CORSFilter;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.message.GZipEncoder;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.EncodingFilter;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -48,5 +50,6 @@ public class JerseyConfig extends ResourceConfig {
 		register(QueryHandlerExceptionMapper.class);
 		register(NotFoundExceptionMapper.class);
 		register(DefaultExceptionMapper.class);
+		EncodingFilter.enableFor(this, GZipEncoder.class);
 	}
 }

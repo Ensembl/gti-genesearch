@@ -19,6 +19,8 @@ To override, use the following command line options:
 
 The service is now available on http://localhost:8080/api with service descriptors from http://localhost:8080/api/application.wadl
 
+The application supports GZIP compression of responses where the client header has `Accept-Encoding:gzip` set.
+
 ## `/api/health`
 This can be used to check if the server is running
 
