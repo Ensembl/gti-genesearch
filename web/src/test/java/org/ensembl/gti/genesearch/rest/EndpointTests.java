@@ -116,6 +116,8 @@ public class EndpointTests {
 		assertTrue("ID found", results.get(0).containsKey("id"));
 		assertTrue("Name found", results.get(0).containsKey("genome"));
 		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
+		List<Map<String, Object>> fields = (List<Map<String, Object>>) (result.get("fields"));
+		assertEquals("ID found", "id",fields.get(0).get("name"));
 	}
 
 	@Test
@@ -130,6 +132,8 @@ public class EndpointTests {
 		assertFalse("Homologues not found", results.get(0).containsKey("homologues"));
 		Map<String, Object> facets = (Map<String, Object>) (result.get("facets"));
 		assertTrue("Checking no facets retrieved", facets.isEmpty());
+		List<Map<String, Object>> fields = (List<Map<String, Object>>) (result.get("fields"));
+		assertEquals("ID found", "id",fields.get(0).get("name"));
 	}
 
 	@Test
@@ -150,6 +154,10 @@ public class EndpointTests {
 		assertEquals("Checking 1 facet retrieved", 1, facets.size());
 		assertTrue("Checking facets populated", facets.containsKey("biotype"));
 		assertEquals("Name found", "5S_rRNA", results.get(0).get("name"));
+		List<Map<String, Object>> fields = (List<Map<String, Object>>) (result.get("fields"));
+		assertEquals("ID found", "id",fields.get(0).get("name"));
+		assertEquals("name found", "name",fields.get(1).get("name"));
+		assertEquals("seq_region_name found", "seq_region_name",fields.get(2).get("name"));
 	}
 
 	public void testOffsetQueryGetEndpoint() {

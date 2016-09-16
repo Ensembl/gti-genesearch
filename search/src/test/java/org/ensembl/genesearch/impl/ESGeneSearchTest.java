@@ -155,7 +155,26 @@ public class ESGeneSearchTest {
 		assertEquals("Total facets", 0, result.getFacets().size());
 		assertTrue("id found", result.getResults().get(0).containsKey("id"));
 		assertEquals("1 field only", 1, result.getResults().get(0).keySet().size());
+		assertEquals("1 field info only", 1,result.getFields().size());
+		assertEquals("ID field only", "id", result.getFields().get(0).getName());
 	}
+	
+	@Test
+	public void querySimpleFields() {
+		log.info("Querying for all genes");
+		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("genome"), Collections.emptyList(), 0, 5,
+				Collections.emptyList(), null, Collections.emptyList());
+		assertEquals("Total hits", 598, result.getResultCount());
+		assertEquals("Fetched hits", 5, result.getResults().size());
+		assertEquals("Total facets", 0, result.getFacets().size());
+		assertTrue("id found", result.getResults().get(0).containsKey("id"));
+		assertTrue("id found", result.getResults().get(0).containsKey("genome"));
+		assertEquals("2 field only", 2, result.getResults().get(0).keySet().size());
+		assertEquals("2 field info only", 2,result.getFields().size());
+		assertEquals("ID field first", "id", result.getFields().get(0).getName());
+		assertEquals("Genome field second", "genome", result.getFields().get(1).getName());
+	}
+
 	
 	@Test
 	public void querySimpleFlatten() {

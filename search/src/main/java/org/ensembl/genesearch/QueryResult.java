@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
+import org.ensembl.genesearch.info.FieldInfo;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,13 +38,15 @@ public class QueryResult {
 	private final List<Map<String, Object>> results;
 	private final Map<String, Map<String, Long>> facets;
 	private final transient ObjectMapper mapper = new ObjectMapper();
+	private final List<FieldInfo> fields;
 
-	public QueryResult(long resultCount, long offset, long limit, List<Map<String, Object>> results,
+	public QueryResult(long resultCount, long offset, long limit, List<FieldInfo> fields, List<Map<String, Object>> results,
 			Map<String, Map<String, Long>> facets) {
 		super();
 		this.resultCount = resultCount;
 		this.offset = offset;
 		this.limit = limit;
+		this.fields = fields;
 		this.results = results;
 		this.facets = facets;
 	}
@@ -73,6 +77,10 @@ public class QueryResult {
 
 	public long getLimit() {
 		return limit;
+	}
+
+	public List<FieldInfo> getFields() {
+		return fields;
 	}
 
 }
