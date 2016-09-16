@@ -36,5 +36,23 @@ public class DataTypeInfoTests {
 		assertEquals("ID is called id", "id", genes.getFieldByName("id").getName());
 		assertTrue("Strands found", genes.getFieldByType(FieldType.STRAND).size()>0);
 	}
+	
+	@Test
+	public void testSearch() throws IOException {
+		String json = ESTestServer.readResource("/test_datatype_info.json");
+		DataTypeInfoProvider provider = new JsonDataTypeInfoProvider(json);
+		assertEquals("All expected", 5, provider.getAll().size());
+		DataTypeInfo genes = provider.getByName("genes");
+		assertNotNull("genes found",genes);
+		List<FieldInfo> infoForFieldName = genes.getInfoForFieldName("id");
+		assertTrue("Single ID found", infoForFieldName.size()==1);
+		infoForFieldName = genes.getInfoForFieldName("*");
+		assertTrue("All fields found", infoForFieldName.size()==genes.getFieldInfo().size());
+		infoForFieldName = genes.getInfoForFieldName("id*");
+		assertTrue("Single ID found", infoForFieldName.size()==1);
+		infoForFieldName = genes.getInfoForFieldName("transcripts.id");
+		assertTrue("Single ID found", infoForFieldName.size()==1);
+	}
+	
 
 }
