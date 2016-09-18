@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldInfo;
 
 /**
  * Generic interface for searching for and retrieving objects from a backing
@@ -39,9 +40,9 @@ public interface Search {
 	 * @param queries
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
-	 * @return
+	 * @return set of results
 	 */
-	public default List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames) {
+	public default SearchResult fetch(List<Query> queries, List<String> fieldNames) {
 		return fetch(queries, fieldNames, null);
 	}
 
@@ -57,13 +58,14 @@ public interface Search {
 	 *            etc.
 	 * @return
 	 */
-	public default List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames, String target) {
+	public default SearchResult fetch(List<Query> queries, List<String> fieldNames, String target) {
 		if (queries.isEmpty()) {
 			throw new UnsupportedOperationException("Fetch requires at least one query term");
 		}
 		final List<Map<String, Object>> results = new ArrayList<>();
 		fetch(row -> results.add(row), queries, fieldNames, target, Collections.emptyList());
-		return results;
+		List<FieldInfo> fields = getFieldInfo(fieldNames);
+		return new SearchResult(fields, results);
 	}
 
 	/**
@@ -74,7 +76,6 @@ public interface Search {
 	 * @param queries
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
-	 * @return
 	 */
 	public default void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames) {
 		fetch(consumer, queries, fieldNames, null, Collections.emptyList());
@@ -93,7 +94,6 @@ public interface Search {
 	 *            etc.
 	 * @param targetQueries
 	 *            optional queries for join query
-	 * @return
 	 */
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
 			String target, List<Query> targetQueries);
@@ -180,5 +180,24 @@ public interface Search {
 	 * @return
 	 */
 	public List<DataTypeInfo> getDataTypes();
+	
+	/**
+	 * Find the list of names for the given fields
+	 * @param fieldNames
+	 * @return
+	 */
+	public default List<FieldInfo> getFieldInfo(List<String> fieldNames) {
+		List<FieldInfo> fields = new ArrayList<>();
+		for (DataTypeInfo type : getDataTypes()) {
+			for (String field : fieldNames) {
+				for (FieldInfo f : type.getInfoForFieldName(field)) {
+					if (!fields.contains(f)) {
+						fields.add(f);
+					}
+				}
+			}
+		}
+		return fields;
+	}
 
 }

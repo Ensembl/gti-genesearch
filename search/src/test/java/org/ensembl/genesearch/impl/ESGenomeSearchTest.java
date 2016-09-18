@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryResult;
+import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.test.ESTestServer;
@@ -69,8 +70,9 @@ public class ESGenomeSearchTest {
 	@Test
 	public void fetchGenomeById() {
 		log.info("Fetching  genomes from genome");
-		List<Map<String, Object>> ids = search.fetch(Arrays.asList(new Query(QueryType.TERM, "id", "homo_sapiens")),
+		SearchResult result = search.fetch(Arrays.asList(new Query(QueryType.TERM, "id", "homo_sapiens")),
 				Arrays.asList("_id"));
+		List<Map<String, Object>> ids = result.getResults();
 		log.info("Fetched " + ids.size() + " genomes");
 		assertEquals("Number of genomes", 1, ids.size());
 	}
@@ -111,9 +113,9 @@ public class ESGenomeSearchTest {
 	
 	@Test
 	public void testSelectHuman() {
-		QueryResult results = search.select("human", 0, 10);
+		SearchResult results = search.select("human", 0, 10);
 		assertTrue("Results found",results!=null);
-		assertEquals("2 results",2,results.getResultCount());
+		assertEquals("2 results",2,results.getResults().size());
 		assertEquals("Human first","homo_sapiens",results.getResults().get(0).get("id"));
 	}
 	

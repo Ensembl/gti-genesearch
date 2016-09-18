@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryResult;
+import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.GeneSearch;
@@ -136,15 +137,16 @@ public class JoinAwareSearchTest {
 
 	@Test
 	public void fetchJoinTranscripts() {
-		List<Map<String,Object>> results = geneSearch.fetch(
+		SearchResult result = geneSearch.fetch(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
 				Arrays.asList("id", "genome", "description"),
 				"transcripts");
+		List<Map<String,Object>> results = result.getResults();
 		assertEquals("Checking total count", 598, results.size());
-		Map<String,Object> result = results.get(0);
-		assertNotNull("Checking id is returned", result.get("id"));
-		assertNotNull("Checking genome is returned", result.get("genome"));
-		assertNotNull("Checking description is returned", result.get("description"));
+		Map<String,Object> r = results.get(0);
+		assertNotNull("Checking id is returned", r.get("id"));
+		assertNotNull("Checking genome is returned", r.get("genome"));
+		assertNotNull("Checking description is returned", r.get("description"));
 	}
 	
 	@Test
@@ -162,9 +164,10 @@ public class JoinAwareSearchTest {
 	@Test
 	public void fetchGenome() {
 		log.info("Fetching all genes from genome");
-		List<Map<String, Object>> ids = geneSearch.fetch(
+		SearchResult result = geneSearch.fetch(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
 				Arrays.asList("_id"));
+		List<Map<String,Object>> ids = result.getResults();
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 598, ids.size());
 	}

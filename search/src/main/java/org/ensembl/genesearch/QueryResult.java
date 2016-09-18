@@ -18,57 +18,34 @@ package org.ensembl.genesearch;
 
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import org.ensembl.genesearch.info.FieldInfo;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
- * Class encapsulating a result set. Returned by {@link Search}.
+ * Class encapsulating a limited query result set. Returned by
+ * {@link Search#query(List, List, List, int, int, List, String, List)}.
+ * 
  * @author dstaines
  *
  */
-public class QueryResult {
+public class QueryResult extends SearchResult {
 
 	private final long resultCount;
 	private final long offset;
 	private final long limit;
-	private final List<Map<String, Object>> results;
 	private final Map<String, Map<String, Long>> facets;
-	private final transient ObjectMapper mapper = new ObjectMapper();
-	private final List<FieldInfo> fields;
 
-	public QueryResult(long resultCount, long offset, long limit, List<FieldInfo> fields, List<Map<String, Object>> results,
-			Map<String, Map<String, Long>> facets) {
-		super();
+	public QueryResult(long resultCount, long offset, long limit, List<FieldInfo> fields,
+			List<Map<String, Object>> results, Map<String, Map<String, Long>> facets) {
+		super(fields, results);
 		this.resultCount = resultCount;
 		this.offset = offset;
 		this.limit = limit;
-		this.fields = fields;
-		this.results = results;
 		this.facets = facets;
-	}
-
-	public long getResultCount() {
-		return resultCount;
-	}
-
-	public List<Map<String, Object>> getResults() {
-		return results;
 	}
 
 	public Map<String, Map<String, Long>> getFacets() {
 		return facets;
-	}
-
-	public String toString() {
-		try {
-			return mapper.writeValueAsString(this);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public long getOffset() {
@@ -78,9 +55,9 @@ public class QueryResult {
 	public long getLimit() {
 		return limit;
 	}
-
-	public List<FieldInfo> getFields() {
-		return fields;
+	
+	public long getResultCount() {
+		return resultCount;
 	}
 
 }
