@@ -17,14 +17,11 @@
 package org.ensembl.genesearch.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,7 +53,6 @@ import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.info.FieldInfo;
 import org.ensembl.genesearch.info.JsonDataTypeInfoProvider;
 import org.ensembl.genesearch.output.ResultsRemodeller;
 import org.slf4j.Logger;
@@ -120,6 +116,7 @@ public class ESSearch implements Search {
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
 			String target, List<Query> targetQueries) {
+
 		StopWatch watch = new StopWatch();
 
 		int queryScrollSize = calculateScroll(fieldNames);
@@ -253,12 +250,12 @@ public class ESSearch implements Search {
 	@Override
 	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
 			List<String> sorts, String target, List<Query> targetQueries) {
-		
-		if(!output.contains(ID)) {
+
+		if (!output.contains(ID)) {
 			output = Lists.newLinkedList(output);
 			output.add(0, ID);
 		}
-		
+
 		log.debug("Building query");
 		// create an elastic querybuilder object from our queries
 		QueryBuilder query = ESSearchBuilder.buildQuery(type, queries.toArray(new Query[queries.size()]));
@@ -282,28 +279,10 @@ public class ESSearch implements Search {
 		SearchResponse response = request.execute().actionGet();
 		log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
-		
+
 		return new QueryResult(response.getHits().getTotalHits(), offset, limit, getFieldInfo(output),
 				processResults(response, target), processAggregations(response));
 
-	}
-
-	/**
-	 * @param output
-	 * @return
-	 */
-	private List<FieldInfo> getFieldInfo(List<String> output) {
-		List<FieldInfo> fields = new ArrayList<>();
-		for (DataTypeInfo type : dataTypes) {
-			for (String field : output) {
-				for(FieldInfo f: type.getInfoForFieldName(field)) {
-					if(!fields.contains(f)) {
-						fields.add(f);
-					}
-				}
-			}
-		}
-		return fields;
 	}
 
 	/**
@@ -529,8 +508,8 @@ public class ESSearch implements Search {
 		log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
-		return new QueryResult(response.getHits().getTotalHits(), offset, limit, getFieldInfo(Arrays.asList(fields)), processResults(response, null),
-				processAggregations(response));
+		return new QueryResult(response.getHits().getTotalHits(), offset, limit, getFieldInfo(Arrays.asList(fields)),
+				processResults(response, null), processAggregations(response));
 
 	}
 

@@ -76,6 +76,7 @@ public class DivisionAwareSequenceSearch implements Search {
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
 			String target, List<Query> targetQueries) {
+
 		// expected a list of nested queries
 		for (Query q : queries) {
 			if (q.getType() != QueryType.NESTED || !ID.equals(q.getSubQueries()[0].getFieldName())) {
@@ -150,7 +151,9 @@ public class DivisionAwareSequenceSearch implements Search {
 		throw new UnsupportedOperationException();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.ensembl.genesearch.Search#getDataTypes()
 	 */
 	@Override

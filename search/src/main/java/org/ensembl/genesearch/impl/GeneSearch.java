@@ -29,9 +29,13 @@ import java.util.Set;
 
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
 
 /**
+ * Implementation of a {@link JoinAwareSearch} which uses {@link ESSearch} and
+ * {@link DivisionAwareSequenceSearch} to provide genes and sequences
+ * 
  * @author dstaines
  *
  */
@@ -71,8 +75,7 @@ public class GeneSearch extends JoinAwareSearch {
 				sqs.add(new Query(QueryType.TERM, DivisionAwareSequenceSearch.ID, e.getValue()));
 				sqs.add(new Query(QueryType.TERM, DivisionAwareSequenceSearch.SPECIES, e.getKey()));
 				sqs.addAll(targetQueries);
-				qs.add(new Query(QueryType.NESTED, e.getKey(),
-						sqs.toArray(new Query[sqs.size()])));
+				qs.add(new Query(QueryType.NESTED, e.getKey(), sqs.toArray(new Query[sqs.size()])));
 			}
 			return qs;
 		} else {
@@ -91,8 +94,14 @@ public class GeneSearch extends JoinAwareSearch {
 		super(provider);
 		dataTypes = new ArrayList<>();
 		dataTypes.addAll(provider.getSearch(SearchType.GENES).getDataTypes());
-		dataTypes.addAll(provider.getSearch(SearchType.SEQUENCES).getDataTypes());
-		dataTypes.addAll(provider.getSearch(SearchType.GENOMES).getDataTypes());
+		Search seqSearch = provider.getSearch(SearchType.SEQUENCES);
+		if (seqSearch != null) {
+			dataTypes.addAll(seqSearch.getDataTypes());
+		}
+		Search genomeSearch = provider.getSearch(SearchType.GENOMES);
+		if (genomeSearch != null) {
+			dataTypes.addAll(genomeSearch.getDataTypes());
+		}
 	}
 
 	/*
@@ -166,7 +175,9 @@ public class GeneSearch extends JoinAwareSearch {
 		return 100000;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.ensembl.genesearch.Search#getDataTypes()
 	 */
 	@Override

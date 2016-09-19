@@ -38,7 +38,6 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.QueryResult;
-import org.ensembl.genesearch.Search;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;

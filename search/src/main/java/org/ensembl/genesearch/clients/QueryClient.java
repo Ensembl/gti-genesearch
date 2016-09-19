@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Search;
-import org.ensembl.genesearch.QueryResult;
+import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.slf4j.Logger;
@@ -105,7 +105,7 @@ public class QueryClient {
 		
 		log.info("Starting query");
 
-		QueryResult res = search.query(queries, params.resultFields,
+		SearchResult res = search.query(queries, params.resultFields,
 				params.facets, params.offset, params.limit, params.sorts, params.target, targetQueries);
 
 		if (!StringUtils.isEmpty(params.outFile)) {

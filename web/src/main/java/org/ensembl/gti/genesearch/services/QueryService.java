@@ -24,12 +24,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.ensembl.genesearch.QueryResult;
-import org.ensembl.genesearch.Search;
 import org.glassfish.jersey.server.JSONP;
 import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * Base class for a /query endpoint
+ * 
  * @author dstaines
  *
  */
@@ -57,7 +57,6 @@ public abstract class QueryService extends SearchBasedService {
 
 	public QueryResult query(QueryParams params) {
 		log.info("query:" + params);
-
 		return getSearch().query(params.getQueries(), params.getFields(), params.getFacets(), params.getOffset(),
 				params.getLimit(), params.getSorts(), params.getTarget(), params.getTargetQueries());
 	}

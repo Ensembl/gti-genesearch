@@ -27,7 +27,9 @@ import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,11 +126,8 @@ public abstract class JoinAwareSearch implements Search {
 		return results;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
-	 * java.util.List, java.util.List, java.lang.String, java.util.List)
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer, java.util.List, java.util.List, java.lang.String, java.util.List)
 	 */
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,

@@ -30,6 +30,7 @@ import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldInfo;
 import org.ensembl.genesearch.info.JsonDataTypeInfoProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +45,12 @@ import org.springframework.web.client.RestTemplate;
 public class EnsemblRestSequenceSearch implements Search {
 
 	public final static List<String> VALID_ARGS = Arrays.asList("type", "expand_5prime", "expand_3prime", "type",
-			"format","species");
+			"format", "species");
 
 	public final static int DEFAULT_BATCH_SIZE = 50;
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	
+
 	private final String baseUrl;
 	private final int batchSize;
 	private final RestTemplate template = new RestTemplate();
@@ -82,21 +83,27 @@ public class EnsemblRestSequenceSearch implements Search {
 
 		// transform the query string into a URI
 		String url = getPostUrl(queries);
-		log.info("Using base URL "+url);
+		log.info("Using base URL " + url);
 		List<String> ids = getIds(queries);
-		log.info("Searching for "+ids.size()+" ids");
+		log.info("Searching for " + ids.size() + " ids");
 		// work through IDs in batches (REST server currently only allows 50 IDs
 		// at a time)
-		Map<String,Object> idParams = new HashMap<>();
+		Map<String, Object> idParams = new HashMap<>();
 		int n = 0;
 		for (List<String> idList : CollectionUtils.eagerPartition(ids, batchSize)) {
 			idParams.put("ids", idList);
 			n += idList.size();
 			// pass sequences to consumer
-			log.debug("Posting "+idList.size()+" IDs to "+url);
+			log.debug("Posting " + idList.size() + " IDs to " + url);
 			template.postForObject(url, idParams, List.class).stream().forEach(consumer);
 		}
-		log.info("Completed querying "+n+" IDs");
+		log.info("Completed querying " + n + " IDs");
+
+	}
+
+	@Override
+	public List<FieldInfo> getFieldInfo(List<String> fields) {
+		return getDataTypes().get(0).getFieldInfo();
 	}
 
 	/**
@@ -107,7 +114,8 @@ public class EnsemblRestSequenceSearch implements Search {
 	 * @return
 	 */
 	protected String getPostUrl(List<Query> queries) {
-		List<String> params = queries.stream().filter(q -> VALID_ARGS.contains(q.getFieldName()) && q.getValues().length==1)
+		List<String> params = queries.stream()
+				.filter(q -> VALID_ARGS.contains(q.getFieldName()) && q.getValues().length == 1)
 				.map(q -> q.getFieldName() + "=" + q.getValues()[0]).collect(Collectors.toList());
 		if (!params.isEmpty()) {
 			return baseUrl + "?" + StringUtils.join(params, '&');
@@ -118,6 +126,7 @@ public class EnsemblRestSequenceSearch implements Search {
 
 	/**
 	 * extract IDs from the queries
+	 * 
 	 * @param queries
 	 * @return
 	 */
@@ -172,7 +181,9 @@ public class EnsemblRestSequenceSearch implements Search {
 		throw new UnsupportedOperationException();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.ensembl.genesearch.Search#getDataTypes()
 	 */
 	@Override
