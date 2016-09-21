@@ -53,6 +53,7 @@ import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldInfo;
 import org.ensembl.genesearch.info.JsonDataTypeInfoProvider;
 import org.ensembl.genesearch.output.ResultsRemodeller;
 import org.slf4j.Logger;
@@ -250,11 +251,6 @@ public class ESSearch implements Search {
 	@Override
 	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
 			List<String> sorts, String target, List<Query> targetQueries) {
-
-		if (!output.contains(ID)) {
-			output = Lists.newLinkedList(output);
-			output.add(0, ID);
-		}
 
 		log.debug("Building query");
 		// create an elastic querybuilder object from our queries
@@ -522,5 +518,18 @@ public class ESSearch implements Search {
 	public List<DataTypeInfo> getDataTypes() {
 		return dataTypes;
 	}
+
+	@Override
+	public List<FieldInfo> getFieldInfo(List<String> fieldNames) {
+		// ES _always_ has ID
+		if(!fieldNames.contains(ID)) {
+			fieldNames = Lists.newLinkedList(fieldNames);
+			fieldNames.add(0, ID);
+		}
+		List<FieldInfo> fields = Search.super.getFieldInfo(fieldNames);
+		return fields;
+	}
+	
+	
 
 }
