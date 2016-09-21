@@ -53,6 +53,11 @@ Adding different fields:
 http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=genome,name,description,start,end
 ```
 
+Returning results as a 2D array:
+```
+http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&array=true&fields=genome,name,description,start,end
+```
+
 Adding fields from a sub-object:
 ```
 http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=genome,name,description,start,end,transcripts.name,transcripts.biotype
@@ -127,7 +132,12 @@ http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}
 
 Changing fields:
 ```
-http://localhost:8080/api/genes/query?query={"name":"BRCA2"}&fields=genome,name,description,start,end
+http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&fields=genome,name,description,start,end
+```
+
+Returning results as a 2D array:
+```
+http://localhost:8080/api/genes/fetch?query={"name":"BRCA2","genome":"homo_sapiens"}&array=true&fields=genome,name,description,start,end
 ```
 
 Retrieving all fields:

@@ -16,6 +16,8 @@
 
 package org.ensembl.gti.genesearch.services;
 
+import java.util.Map;
+
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -42,7 +44,7 @@ public abstract class QueryService extends SearchBasedService {
 
 	@GET
 	@JSONP
-	public QueryResult get(@BeanParam QueryParams params) {
+	public Map<String, Object> get(@BeanParam QueryParams params) {
 		log.info("Get from query");
 		return query(params);
 	}
@@ -50,15 +52,17 @@ public abstract class QueryService extends SearchBasedService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@JSONP
-	public QueryResult post(@RequestBody QueryParams params) {
+	public Map<String, Object> post(@RequestBody QueryParams params) {
 		log.info("Post to query");
 		return query(params);
 	}
 
-	public QueryResult query(QueryParams params) {
+	public Map<String, Object> query(QueryParams params) {
 		log.info("query:" + params);
-		return getSearch().query(params.getQueries(), params.getFields(), params.getFacets(), params.getOffset(),
-				params.getLimit(), params.getSorts(), params.getTarget(), params.getTargetQueries());
+		QueryResult results = getSearch().query(params.getQueries(), params.getFields(), params.getFacets(),
+				params.getOffset(), params.getLimit(), params.getSorts(), params.getTarget(),
+				params.getTargetQueries());
+		return results.toMap(params.isArray());
 	}
 
 }

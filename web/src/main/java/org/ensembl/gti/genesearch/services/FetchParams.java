@@ -59,6 +59,7 @@ public class FetchParams {
 	private List<Query> queries = Collections.emptyList();
 	private List<Query> targetQueries = Collections.emptyList();
 	private String target;
+	private boolean array = false;
 
 	public String getAccept() {
 		return accept;
@@ -156,7 +157,7 @@ public class FetchParams {
 	public void setTarget(String target) {
 		this.target = target;
 	}
-
+	
 	@Override
 	public String toString() {
 		try {
@@ -164,6 +165,21 @@ public class FetchParams {
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
+	}
+
+	public boolean isArray() {
+		return array;
+	}
+
+	@QueryParam("array")
+	@DefaultValue("false")
+	public void setArray(String array) {
+		this.array = Boolean.valueOf(array);
+	}
+
+	@JsonProperty("array")
+	public void setArray(boolean array) {
+		this.array = array;
 	}
 
 }

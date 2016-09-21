@@ -16,8 +16,10 @@
 
 package org.ensembl.genesearch;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.ensembl.genesearch.info.FieldInfo;
 
@@ -55,9 +57,29 @@ public class QueryResult extends SearchResult {
 	public long getLimit() {
 		return limit;
 	}
-	
+
 	public long getResultCount() {
 		return resultCount;
+	}
+
+	public List<Object> getResultsAsList() {
+		return results.stream().map(r -> getFields().stream().map(f -> r.get(f.getName())).collect(Collectors.toList()))
+				.collect(Collectors.toList());
+	}
+
+	public Map<String, Object> toMap(boolean resultsAsArray) {
+		Map<String, Object> map = new LinkedHashMap<>(6);
+		map.put("resultCount", resultCount);
+		map.put("offset", offset);
+		map.put("limit", limit);
+		map.put("fields", getFields());
+		if (resultsAsArray) {
+			map.put("results", getResultsAsList());
+		} else {
+			map.put("results", results);
+		}
+		map.put("facets", facets);
+		return map;
 	}
 
 }
