@@ -199,7 +199,8 @@ public class EndpointTests {
 
 	@Test
 	public void testFetchGetEndpoint() {
-		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, GENES_FETCH);
+		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, GENES_FETCH);
+		List<Map<String,Object>> result = (List<Map<String, Object>>) results.get("results");
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
 		assertFalse("Homologues found", result.get(0).containsKey("homologues"));
@@ -208,9 +209,10 @@ public class EndpointTests {
 
 	@Test
 	public void testFetchPostEndpoint() {
-		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, GENES_FETCH, "{}");
-		assertEquals("Checking all results found", 598, result.size());
-		assertTrue("ID found", result.get(0).containsKey("id"));
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, GENES_FETCH, "{}");
+		List<Map<String,Object>> results = (List<Map<String, Object>>) result.get("results");
+		assertEquals("Checking all results found", 598, results.size());
+		assertTrue("ID found", results.get(0).containsKey("id"));
 		// assertFalse("homologues not found",
 		// result.get(0).containsKey("homologues"));
 	}
@@ -219,8 +221,9 @@ public class EndpointTests {
 	public void testFullFetchGetEndpoint() {
 		String url = GENES_FETCH + "?query={query}" + "&fields=name,start";
 		// rest template expands {} as variables so supply JSON separately
-		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, url,
+		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, url,
 				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
+		List<Map<String,Object>> result = (List<Map<String, Object>>) results.get("results");
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
 		assertTrue("Start found", result.get(0).containsKey("start"));
@@ -232,11 +235,12 @@ public class EndpointTests {
 		String paramJson = "{\"query\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"},"
 				+ "\"fields\":[\"name\",\"genome\",\"start\"]}";
 		// rest template expands {} as variables so supply JSON separately
-		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, GENES_FETCH, paramJson);
-		assertEquals("Checking all results found", 598, result.size());
-		assertTrue("ID found", result.get(0).containsKey("id"));
-		assertTrue("Start found", result.get(0).containsKey("start"));
-		assertFalse("homologues not found", result.get(0).containsKey("homologues"));
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, GENES_FETCH, paramJson);
+		List<Map<String,Object>> results = (List<Map<String, Object>>) result.get("results");
+		assertEquals("Checking all results found", 598, results.size());
+		assertTrue("ID found", results.get(0).containsKey("id"));
+		assertTrue("Start found", results.get(0).containsKey("start"));
+		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
 	}
 
 	@Test
@@ -259,14 +263,16 @@ public class EndpointTests {
 
 	@Test
 	public void testGenomeFetchGetEndpoint() {
-		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, GENOMES_FETCH);
+		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, GENOMES_FETCH);
+		List<Map<String,Object>> result = (List<Map<String, Object>>) results.get("results");
 		assertEquals("Checking all results found", 4, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
 	}
 
 	@Test
 	public void testGenomeFetchPostEndpoint() {
-		List<Map<String, Object>> result = postUrlToObject(LIST_REF, restTemplate, GENOMES_FETCH, "{}");
+		Map<String, Object> results = postUrlToObject(MAP_REF, restTemplate, GENOMES_FETCH, "{}");
+		List<Map<String,Object>> result = (List<Map<String, Object>>) results.get("results");
 		assertEquals("Checking all results found", 4, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
 	}
