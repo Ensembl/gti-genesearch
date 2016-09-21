@@ -100,7 +100,7 @@ curl -H "Content-Type: application/json" -X POST --data '{"query":{"genome":"nan
 ```
 
 ## `/api/{object}/fetch` 
-The `/api/genes/fetch` and `/api/genomes/fetch`  endpoints are intended for bulk retrieval and accepts the `query`, `fields`, `target` and `targetQuery` parameters from `/query`. It can be invoked via GET and POST and returns the results as a JSON array, with no summary or facets available.
+The `/api/genes/fetch` and `/api/genomes/fetch`  endpoints are intended for bulk retrieval and accepts the `query`, `fields`, `target` and `targetQuery` parameters from `/query`. It can be invoked via GET and POST and returns the results as a JSON object, with the fields `fields` (array of objects representing retrieved fields) and `results` (array of all matched documents), with no summary or facets available.
 
 The output format is JSON by default, but can be changed by setting either the `Accept` request header or `accept` parameter to:
 * JSON - `application/x-javascript`

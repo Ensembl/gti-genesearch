@@ -21,9 +21,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
@@ -43,6 +45,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.info.FieldInfo;
 import org.ensembl.gti.genesearch.services.converter.MapXmlWriter;
 import org.glassfish.jersey.server.JSONP;
 import org.slf4j.Logger;
@@ -177,6 +180,9 @@ public abstract class FetchService extends SearchBasedService {
 			@Override
 			public void write(OutputStream output) throws IOException, WebApplicationException {
 				JsonGenerator jg = new ObjectMapper().getFactory().createGenerator(output, JsonEncoding.UTF8);
+				jg.writeStartObject();
+				jg.writeObjectField("fields", getSearch().getFieldInfo(params.getFields()));
+				jg.writeFieldName("results");
 				jg.writeStartArray();
 				getSearch().fetch(new Consumer<Map<String, Object>>() {
 					@Override
@@ -189,6 +195,7 @@ public abstract class FetchService extends SearchBasedService {
 					}
 				}, params.getQueries(), params.getFields(), params.getTarget(), params.getTargetQueries());
 				jg.writeEndArray();
+				jg.writeEndObject();
 				jg.close();
 			}
 
@@ -206,6 +213,20 @@ public abstract class FetchService extends SearchBasedService {
 					XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(output);
 					xsw.writeStartDocument();
 					xsw.writeStartElement(getObjectType() + "s");
+					xsw.writeStartElement("fields");
+					for(FieldInfo info: getSearch().getFieldInfo(params.getFields())) {
+						xsw.writeStartElement("field");
+						xsw.writeAttribute("name", info.getName());
+						xsw.writeAttribute("displayName", info.getDisplayName());
+						xsw.writeAttribute("type", info.getType().toString());
+						xsw.writeAttribute("display", Boolean.toString(info.isDisplay()));
+						xsw.writeAttribute("facet", Boolean.toString(info.isFacet()));
+						xsw.writeAttribute("sort", Boolean.toString(info.isSort()));
+						xsw.writeAttribute("search", Boolean.toString(info.isSearch()));
+						xsw.writeEndElement();
+					}
+					xsw.writeEndElement();
+					xsw.writeStartElement("results");
 					MapXmlWriter writer = new MapXmlWriter(xsw);
 					getSearch().fetch(new Consumer<Map<String, Object>>() {
 						@Override
@@ -217,6 +238,7 @@ public abstract class FetchService extends SearchBasedService {
 							}
 						}
 					}, params.getQueries(), params.getFields(), params.getTarget(), params.getTargetQueries());
+					xsw.writeEndElement();
 					xsw.writeEndElement();
 					xsw.writeEndDocument();
 				} catch (XMLStreamException | FactoryConfigurationError e) {
@@ -235,13 +257,14 @@ public abstract class FetchService extends SearchBasedService {
 			public void write(OutputStream os) throws IOException, WebApplicationException {
 
 				Writer writer = new OutputStreamWriter(os);
-				writer.write(StringUtils.join(params.getFields(), ','));
+				List<String> fieldNames = getSearch().getFieldInfo(params.getFields()).stream().map(i->i.getName()).collect(Collectors.toList());
+				writer.write(StringUtils.join(fieldNames,','));
 				writer.write('\n');
-				provider.getGeneSearch().fetch(new Consumer<Map<String, Object>>() {
+				getSearch().fetch(new Consumer<Map<String, Object>>() {
 					@Override
 					public void accept(Map<String, Object> t) {
 						try {
-							writer.write(params.getFields().stream().map(e -> String.valueOf(t.get(e)))
+							writer.write(fieldNames.stream().map(e -> String.valueOf(t.get(e)))
 									.collect(Collectors.joining(",")));
 							writer.write('\n');
 						} catch (IOException e) {
