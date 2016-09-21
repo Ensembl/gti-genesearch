@@ -219,7 +219,7 @@ public class EndpointTests {
 
 	@Test
 	public void testFullFetchGetEndpoint() {
-		String url = GENES_FETCH + "?query={query}" + "&fields=name,start";
+		String url = GENES_FETCH + "?query={query}" + "&fields=id,name,start";
 		// rest template expands {} as variables so supply JSON separately
 		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, url,
 				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
@@ -228,6 +228,8 @@ public class EndpointTests {
 		assertTrue("ID found", result.get(0).containsKey("id"));
 		assertTrue("Start found", result.get(0).containsKey("start"));
 		assertFalse("homologues not found", result.get(0).containsKey("homologues"));
+		List<Map<String, Object>> fields = (List<Map<String, Object>>) (results.get("fields"));
+		assertEquals("ID found", "id",fields.get(0).get("name"));
 	}
 
 	@Test
