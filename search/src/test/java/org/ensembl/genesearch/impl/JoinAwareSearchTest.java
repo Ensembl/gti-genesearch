@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.Query.QueryType;
@@ -71,7 +72,7 @@ public class JoinAwareSearchTest {
 	public void queryJoinParalogues() {
 		QueryResult results = geneSearch.query(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
-				Arrays.asList("id", "genome", "description"), Collections.emptyList(), 0, 5, Collections.emptyList(),
+				QueryOutput.build("id", "genome", "description"), Collections.emptyList(), 0, 5, Collections.emptyList(),
 				"homologues", Collections.emptyList());
 		assertEquals("Checking total count", 47, results.getResultCount());
 		assertEquals("Checking returned hits",5, results.getResults().size());
@@ -85,7 +86,7 @@ public class JoinAwareSearchTest {
 	public void fetchJoinParalogues() {
 		List<Map<String,Object>> results = geneSearch.fetch(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
-				Arrays.asList("id", "genome", "description"),
+				QueryOutput.build("id", "genome", "description"),
 				"homologues", Collections.emptyList());
 		assertEquals("Checking total count", 47, results.size());
 		Map<String,Object> result = results.get(0);
@@ -98,7 +99,7 @@ public class JoinAwareSearchTest {
 	public void queryJoinParaloguesFilter() {
 		QueryResult results = geneSearch.query(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
-				Arrays.asList("id", "genome", "description","name"), Collections.emptyList(), 0, 5, Collections.emptyList(),
+				QueryOutput.build("id", "genome", "description","name"), Collections.emptyList(), 0, 5, Collections.emptyList(),
 				"homologues", Arrays.asList(new Query(QueryType.TERM,"GO_expanded","GO:1901576")));
 		assertEquals("Checking total count", 12, results.getResultCount());
 		assertEquals("Checking returned hits",5, results.getResults().size());
@@ -112,7 +113,7 @@ public class JoinAwareSearchTest {
 	public void fetchJoinParaloguesFilter() {
 		List<Map<String,Object>> results = geneSearch.fetch(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
-				Arrays.asList("id", "genome", "description"),
+				QueryOutput.build("id", "genome", "description"),
 				"homologues", Arrays.asList(new Query(QueryType.TERM,"GO_expanded","GO:1901576")));
 		assertEquals("Checking total count", 12, results.size());
 		Map<String,Object> result = results.get(0);
@@ -125,7 +126,7 @@ public class JoinAwareSearchTest {
 	public void queryJoinTranscripts() {
 		QueryResult results = geneSearch.query(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
-				Arrays.asList("id", "genome", "description"), Collections.emptyList(), 0, 5, Collections.emptyList(),
+				QueryOutput.build("id", "genome", "description"), Collections.emptyList(), 0, 5, Collections.emptyList(),
 				"transcripts", Collections.emptyList());
 		assertEquals("Checking total count", 598, results.getResultCount());
 		assertEquals("Checking returned hits",5, results.getResults().size());
@@ -139,7 +140,7 @@ public class JoinAwareSearchTest {
 	public void fetchJoinTranscripts() {
 		SearchResult result = geneSearch.fetch(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
-				Arrays.asList("id", "genome", "description"),
+				QueryOutput.build("id", "genome", "description"),
 				"transcripts");
 		List<Map<String,Object>> results = result.getResults();
 		assertEquals("Checking total count", 598, results.size());
@@ -152,7 +153,7 @@ public class JoinAwareSearchTest {
 	@Test
 	public void querySimple() {
 		log.info("Querying for all genes");
-		QueryResult result = geneSearch.query(Collections.emptyList(), Arrays.asList("id"), Collections.emptyList(), 0, 5,
+		QueryResult result = geneSearch.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")), Collections.emptyList(), 0, 5,
 				Collections.emptyList(), null, Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
@@ -166,7 +167,7 @@ public class JoinAwareSearchTest {
 		log.info("Fetching all genes from genome");
 		SearchResult result = geneSearch.fetch(
 				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
-				Arrays.asList("_id"));
+				QueryOutput.build(Arrays.asList("_id")));
 		List<Map<String,Object>> ids = result.getResults();
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 598, ids.size());

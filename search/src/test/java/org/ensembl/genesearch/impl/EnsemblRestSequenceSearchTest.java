@@ -31,6 +31,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.SearchResult;
 import org.junit.Test;
@@ -50,7 +51,7 @@ public class EnsemblRestSequenceSearchTest {
 	public void testSingleGene() throws IOException {
 		String id = getIds("/gene_ids.txt").get(0);
 		List<Query> queries = Arrays.asList(new Query(QueryType.TERM, "id", Arrays.asList(id)));
-		SearchResult result = search.fetch(queries, Collections.emptyList());
+		SearchResult result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		assertEquals("Checking single sequence", 1, seqs.size());
 		assertEquals("Checking description present", String.valueOf(seqs.get(0).get("id")), id);
@@ -62,7 +63,7 @@ public class EnsemblRestSequenceSearchTest {
 	public void testMultipleGenes() throws IOException {
 		List<String> ids = getIds("/gene_ids.txt");
 		List<Query> queries = Arrays.asList(new Query(QueryType.TERM, "id", ids));
-		SearchResult result = search.fetch(queries, Collections.emptyList());
+		SearchResult result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		assertEquals("Checking correct number of sequences", ids.size(), seqs.size());
 		assertTrue("Checking ID present", !StringUtils.isEmpty(String.valueOf(seqs.get(0).get("id"))));
@@ -74,7 +75,7 @@ public class EnsemblRestSequenceSearchTest {
 	public void testSingleTranscript() throws IOException {
 		String id = getIds("/transcript_ids.txt").get(0);
 		List<Query> queries = Arrays.asList(new Query(QueryType.TERM, "id", Arrays.asList(id)));
-		SearchResult result = search.fetch(queries, Collections.emptyList());
+		SearchResult result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		assertEquals("Checking single sequence", 1, seqs.size());
 		assertEquals("Checking description present", String.valueOf(seqs.get(0).get("id")), id);
@@ -86,7 +87,7 @@ public class EnsemblRestSequenceSearchTest {
 	public void testMultipleTranscripts() throws IOException {
 		List<String> ids = getIds("/transcript_ids.txt");
 		List<Query> queries = Arrays.asList(new Query(QueryType.TERM, "id", ids));
-		SearchResult result = search.fetch(queries, Collections.emptyList());
+		SearchResult result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		assertEquals("Checking correct number of sequences", ids.size(), seqs.size());
 		assertTrue("Checking ID present", !StringUtils.isEmpty(String.valueOf(seqs.get(0).get("id"))));
@@ -98,7 +99,7 @@ public class EnsemblRestSequenceSearchTest {
 	public void testSingleProtein() throws IOException {
 		String id = getIds("/protein_ids.txt").get(0);
 		List<Query> queries = Arrays.asList(new Query(QueryType.TERM, "id", Arrays.asList(id)));
-		SearchResult result = search.fetch(queries, Collections.emptyList());
+		SearchResult result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		assertEquals("Checking single sequence", 1, seqs.size());
 		assertEquals("Checking description present", String.valueOf(seqs.get(0).get("id")), id);
@@ -110,7 +111,7 @@ public class EnsemblRestSequenceSearchTest {
 	public void testMultipleProteins() throws IOException {
 		List<String> ids = getIds("/protein_ids.txt");
 		List<Query> queries = Arrays.asList(new Query(QueryType.TERM, "id", ids));
-		SearchResult result = search.fetch(queries, Collections.emptyList());
+		SearchResult result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		assertEquals("Checking correct number of sequences", ids.size(), seqs.size());
 		assertTrue("Checking ID present", !StringUtils.isEmpty((String)seqs.get(0).get("id")));
@@ -137,7 +138,7 @@ public class EnsemblRestSequenceSearchTest {
 		String id = "ENSG00000139618";
 		List<Query> queries = Arrays.asList(new Query(QueryType.TERM, "id", Arrays.asList(id)),
 				new Query(QueryType.TERM, "type", "protein"));
-		SearchResult result = search.fetch(queries, Collections.emptyList());
+		SearchResult result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		assertTrue("Checking more than one sequence", seqs.size() > 1);
 		assertTrue("Checking ID is protein", String.valueOf(seqs.get(0).get("id")).startsWith("ENSP"));
@@ -149,13 +150,13 @@ public class EnsemblRestSequenceSearchTest {
 	public void testExpands() throws IOException {
 		String id = "ENSG00000139618";
 		List<Query> queries = Arrays.asList(new Query(QueryType.TERM, "id", Arrays.asList(id)));
-		SearchResult result = search.fetch(queries, Collections.emptyList());
+		SearchResult result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		String origSeq = seqs.get(0).get("seq").toString();
 		assertFalse("Original sequence found", StringUtils.isEmpty(origSeq));
 		result = search.fetch(Arrays.asList(new Query(QueryType.TERM, "id", Arrays.asList(id)),
 				new Query(QueryType.TERM, "expand_5prime", "100"), new Query(QueryType.TERM, "expand_3prime", "100")),
-				Collections.emptyList());
+				QueryOutput.build(Collections.emptyList()));
 		seqs = result.getResults();
 		String newSeq = seqs.get(0).get("seq").toString();
 		assertFalse("New sequence found", StringUtils.isEmpty(newSeq));

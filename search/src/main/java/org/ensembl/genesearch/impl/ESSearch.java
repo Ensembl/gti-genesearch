@@ -50,6 +50,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.sort.SortParseElement;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
@@ -115,9 +116,11 @@ public class ESSearch implements Search {
 	}
 
 	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput output,
 			String target, List<Query> targetQueries) {
 
+		List<String> fieldNames = output.getFields();
+		
 		StopWatch watch = new StopWatch();
 
 		int queryScrollSize = calculateScroll(fieldNames);
@@ -131,7 +134,7 @@ public class ESSearch implements Search {
 				for (List<String> terms : ListUtils.partition(Arrays.asList(query.getValues()), queryScrollSize)) {
 					log.info("Querying " + terms.size() + "/" + query.getValues().length);
 					watch.start();
-					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)), fieldNames,
+					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)), output,
 							target, targetQueries);
 					watch.stop();
 					log.info("Queried " + terms.size() + "/" + query.getValues().length + " in " + watch.getTime()
@@ -249,8 +252,10 @@ public class ESSearch implements Search {
 	}
 
 	@Override
-	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
+	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
 			List<String> sorts, String target, List<Query> targetQueries) {
+		
+		List<String> fieldNames = output.getFields();
 
 		log.debug("Building query");
 		// create an elastic querybuilder object from our queries
@@ -260,10 +265,10 @@ public class ESSearch implements Search {
 
 		// prepare a search request object using the query, fields, limits etc.
 		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
-				.setFetchSource(output.toArray(new String[output.size()]), null).setSize(limit).setFrom(offset)
+				.setFetchSource(fieldNames.toArray(new String[fieldNames.size()]), null).setSize(limit).setFrom(offset)
 				.setTypes(type);
 
-		setFields(output, request);
+		setFields(fieldNames, request);
 
 		addSorts(sorts, request);
 
@@ -504,7 +509,7 @@ public class ESSearch implements Search {
 		log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
-		return new QueryResult(response.getHits().getTotalHits(), offset, limit, getFieldInfo(Arrays.asList(fields)),
+		return new QueryResult(response.getHits().getTotalHits(), offset, limit, getFieldInfo(QueryOutput.build(fields)),
 				processResults(response, null), processAggregations(response));
 
 	}
@@ -520,14 +525,14 @@ public class ESSearch implements Search {
 	}
 
 	@Override
-	public List<FieldInfo> getFieldInfo(List<String> fieldNames) {
+	public List<FieldInfo> getFieldInfo(QueryOutput output) {
 		// ES _always_ has ID
+		List<String> fieldNames = output.getFields();
 		if(!fieldNames.contains(ID)) {
 			fieldNames = Lists.newLinkedList(fieldNames);
 			fieldNames.add(0, ID);
 		}
-		List<FieldInfo> fields = Search.super.getFieldInfo(fieldNames);
-		return fields;
+		return Search.super.getFieldInfo(QueryOutput.build(fieldNames));
 	}
 	
 	

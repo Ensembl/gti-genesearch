@@ -41,14 +41,18 @@ public class QueryOutput {
 	private static final char ARRAY_END = ']';
 	private static final ObjectMapper om = new ObjectMapper();
 
+	public static QueryOutput build(Map<String, Object> fields) {
+		return new QueryOutput(fields);
+	}
+
 	public static QueryOutput build(String... fields) {
 		return new QueryOutput(fields);
 	}
-	
-	public static QueryOutput build(List<Object> fields) {
+
+	public static QueryOutput build(List<?> fields) {
 		return new QueryOutput(fields);
 	}
-	
+
 	public static QueryOutput build(String fieldStr) {
 		try {
 			char start = fieldStr.charAt(0);
@@ -68,7 +72,7 @@ public class QueryOutput {
 	private final List<String> fields = new ArrayList<>();
 	private final Map<String, QueryOutput> subFields = new HashMap<>();
 
-	public QueryOutput(List<Object> f) {
+	public QueryOutput(List<?> f) {
 		for (Object e : f) {
 			fields.add(String.valueOf(e).trim());
 		}

@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.impl.ESSearch;
@@ -105,7 +106,7 @@ public class QueryClient {
 		
 		log.info("Starting query");
 
-		SearchResult res = search.query(queries, params.resultFields,
+		SearchResult res = search.query(queries, QueryOutput.build(params.resultFields),
 				params.facets, params.offset, params.limit, params.sorts, params.target, targetQueries);
 
 		if (!StringUtils.isEmpty(params.outFile)) {

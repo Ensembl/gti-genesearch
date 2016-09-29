@@ -26,6 +26,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 
@@ -54,7 +55,7 @@ public class FetchParams {
 
 	private String accept;
 	private String contentType;
-	private List<String> fields = Collections.emptyList();
+	private QueryOutput fields = new QueryOutput();
 	private String fileName = "genes";
 	private List<Query> queries = Collections.emptyList();
 	private List<Query> targetQueries = Collections.emptyList();
@@ -69,7 +70,7 @@ public class FetchParams {
 		return contentType;
 	}
 
-	public List<String> getFields() {
+	public QueryOutput getFields() {
 		return fields;
 	}
 
@@ -96,15 +97,26 @@ public class FetchParams {
 	}
 
 	@JsonProperty("fields")
-	public void setFields(List<String> fields) {
-		this.fields = fields;
+	public void setFields(Object fields) {
+		Class<?> clazz = fields.getClass();
+		if (List.class.isAssignableFrom(clazz)) {
+			this.fields = QueryOutput.build((List<String>) fields);
+		} else if (Map.class.isAssignableFrom(fields.getClass())) {
+			this.fields = QueryOutput.build((Map<String, Object>) fields);
+		} else {
+			throw new IllegalArgumentException("Cannot handle query output of class " + clazz.getName());
+		}
 	}
 
 	@QueryParam("fields")
 	@DefaultValue("id,name,genome,description")
 	@JsonIgnore
 	public void setFields(String fields) {
-		this.fields = stringToList(fields);
+		if (fields.contains("{")) {
+			this.fields = QueryOutput.build(fields);
+		} else {
+			this.fields = QueryOutput.build(stringToList(fields));
+		}
 	}
 
 	@QueryParam("filename")
@@ -157,7 +169,7 @@ public class FetchParams {
 	public void setTarget(String target) {
 		this.target = target;
 	}
-	
+
 	@Override
 	public String toString() {
 		try {

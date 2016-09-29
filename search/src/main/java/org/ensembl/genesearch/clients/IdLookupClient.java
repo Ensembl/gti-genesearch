@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.impl.ESSearch;
@@ -107,7 +108,7 @@ public class IdLookupClient {
 				throw new RuntimeException(e);
 			} finally {
 			}
-		}, queries, params.resultField);
+		}, queries, QueryOutput.build(params.resultField));
 
 		log.info("Completed retrieval");
 		out.flush();

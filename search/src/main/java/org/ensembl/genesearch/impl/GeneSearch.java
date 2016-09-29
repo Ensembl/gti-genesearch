@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
 
@@ -46,7 +47,7 @@ public class GeneSearch extends JoinAwareSearch {
 
 		if (joinType.equals(SearchType.SEQUENCES)) {
 			Map<String, List<String>> genomeQs = new HashMap<>();
-			List<String> fields = getFromJoinFields(joinType);
+			QueryOutput fields = QueryOutput.build(getFromJoinFields(joinType));
 			int maxSize = maxJoinSize(joinType);
 			// collate IDs by division
 			provider.getSearch(getDefaultType()).fetch(doc -> {

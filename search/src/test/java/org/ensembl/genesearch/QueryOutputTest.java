@@ -19,6 +19,10 @@ package org.ensembl.genesearch;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -127,4 +131,35 @@ public class QueryOutputTest {
 		assertTrue("Checking subFields empty", o.getSubFields().isEmpty());
 	}
 	
+
+	/**
+	 * Test method for {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
+	 */
+	@Test
+	public void testBuildFromMap() {
+	
+		Map<String,Object> map = new HashMap<>();
+		map.put("genes", Arrays.asList("1","2","3"));
+		map.put("variations", Arrays.asList("A","B"));
+		QueryOutput o = QueryOutput.build(map);
+		assertEquals("Checking 0 elements returned", 0, o.getFields().size());
+		assertEquals("Checking for 2 subfields", 2, o.getSubFields().keySet().size());
+		assertTrue("Checking for genes",o.getSubFields().keySet().contains("genes"));
+		
+		QueryOutput g = o.getSubFields().get("genes");
+		assertEquals("Checking for 3 sub elems",3,g.getFields().size());
+		assertEquals("Checking element 1", "1", g.getFields().get(0));
+		assertEquals("Checking element 2", "2", g.getFields().get(1));
+		assertEquals("Checking element 3", "3", g.getFields().get(2));
+		assertTrue("Checking subFields empty", g.getSubFields().isEmpty());
+		
+		assertTrue("Checking for variations",o.getSubFields().keySet().contains("variations"));
+		QueryOutput v = o.getSubFields().get("variations");
+		assertEquals("Checking for 2 sub elems",2,v.getFields().size());
+		assertEquals("Checking element 1", "A", v.getFields().get(0));
+		assertEquals("Checking element 2", "B", v.getFields().get(1));
+		assertTrue("Checking subFields empty", v.getSubFields().isEmpty());
+	}
+
+
 }

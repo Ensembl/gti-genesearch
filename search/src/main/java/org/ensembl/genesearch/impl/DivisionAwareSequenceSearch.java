@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
@@ -74,7 +75,7 @@ public class DivisionAwareSequenceSearch implements Search {
 	 * java.util.List, java.util.List, java.lang.String, java.util.List)
 	 */
 	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames,
 			String target, List<Query> targetQueries) {
 
 		// expected a list of nested queries
@@ -100,7 +101,7 @@ public class DivisionAwareSequenceSearch implements Search {
 				if (ENSEMBL.equals(g.get(DIVISION))) {
 					isEnsembl.add((String) g.get(ID));
 				}
-			}, Collections.emptyList(), Arrays.asList(ID, DIVISION));
+			}, Collections.emptyList(), QueryOutput.build(ID, DIVISION));
 		}
 		return isEnsembl.contains(genome);
 	}
@@ -124,7 +125,7 @@ public class DivisionAwareSequenceSearch implements Search {
 	 * java.util.List)
 	 */
 	@Override
-	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
+	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
 			List<String> sorts, String target, List<Query> targetQueries) {
 		throw new UnsupportedOperationException();
 	}

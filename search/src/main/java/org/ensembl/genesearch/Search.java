@@ -42,7 +42,7 @@ public interface Search {
 	 *            (if empty the whole document will be returned)
 	 * @return set of results
 	 */
-	public default SearchResult fetch(List<Query> queries, List<String> fieldNames) {
+	public default SearchResult fetch(List<Query> queries, QueryOutput fieldNames) {
 		return fetch(queries, fieldNames, null);
 	}
 
@@ -58,7 +58,7 @@ public interface Search {
 	 *            etc.
 	 * @return
 	 */
-	public default SearchResult fetch(List<Query> queries, List<String> fieldNames, String target) {
+	public default SearchResult fetch(List<Query> queries, QueryOutput fieldNames, String target) {
 		if (queries.isEmpty()) {
 			throw new UnsupportedOperationException("Fetch requires at least one query term");
 		}
@@ -77,7 +77,7 @@ public interface Search {
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
 	 */
-	public default void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames) {
+	public default void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
 		fetch(consumer, queries, fieldNames, null, Collections.emptyList());
 	}
 
@@ -95,7 +95,7 @@ public interface Search {
 	 * @param targetQueries
 	 *            optional queries for join query
 	 */
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames,
 			String target, List<Query> targetQueries);
 
 	/**
@@ -155,7 +155,7 @@ public interface Search {
 	 *            optional queries for join query
 	 * @return
 	 */
-	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
+	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
 			List<String> sorts, String target, List<Query> targetQueries);
 
 	/**
@@ -186,10 +186,10 @@ public interface Search {
 	 * @param fieldNames
 	 * @return
 	 */
-	public default List<FieldInfo> getFieldInfo(List<String> fieldNames) {
+	public default List<FieldInfo> getFieldInfo(QueryOutput fieldNames) {
 		List<FieldInfo> fields = new ArrayList<>();
 		for (DataTypeInfo type : getDataTypes()) {
-			for (String field : fieldNames) {
+			for (String field : fieldNames.getFields()) {
 				for (FieldInfo f : type.getInfoForFieldName(field)) {
 					if (!fields.contains(f)) {
 						fields.add(f);

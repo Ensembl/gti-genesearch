@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.Query.QueryType;
@@ -60,7 +61,7 @@ public class ESGenomeSearchTest {
 	public void fetchAll() {
 		log.info("Fetching all genomes");
 		try {
-			search.fetch(Collections.emptyList(), Arrays.asList("_id"));
+			search.fetch(Collections.emptyList(), QueryOutput.build(Arrays.asList("_id")));
 			fail("Illegal operation succeeded");
 		} catch (UnsupportedOperationException e) {
 			// OK
@@ -71,7 +72,7 @@ public class ESGenomeSearchTest {
 	public void fetchGenomeById() {
 		log.info("Fetching  genomes from genome");
 		SearchResult result = search.fetch(Arrays.asList(new Query(QueryType.TERM, "id", "homo_sapiens")),
-				Arrays.asList("_id"));
+				QueryOutput.build(Arrays.asList("_id")));
 		List<Map<String, Object>> ids = result.getResults();
 		log.info("Fetched " + ids.size() + " genomes");
 		assertEquals("Number of genomes", 1, ids.size());
@@ -80,7 +81,7 @@ public class ESGenomeSearchTest {
 	@Test
 	public void querySimple() {
 		log.info("Querying for all genomes");
-		QueryResult result = search.query(Collections.emptyList(), Arrays.asList("id"), Collections.emptyList(), 0, 5,
+		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")), Collections.emptyList(), 0, 5,
 				Collections.emptyList(), null, Collections.emptyList());
 		assertEquals("Total hits", 4, result.getResultCount());
 		assertEquals("Fetched hits", 4, result.getResults().size());

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.util.CollectionUtils;
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
@@ -78,7 +79,7 @@ public class EnsemblRestSequenceSearch implements Search {
 	 * java.util.List, java.util.List, java.lang.String, java.util.List)
 	 */
 	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames,
 			String target, List<Query> targetQueries) {
 
 		// transform the query string into a URI
@@ -102,7 +103,7 @@ public class EnsemblRestSequenceSearch implements Search {
 	}
 
 	@Override
-	public List<FieldInfo> getFieldInfo(List<String> fields) {
+	public List<FieldInfo> getFieldInfo(QueryOutput fields) {
 		return getDataTypes().get(0).getFieldInfo();
 	}
 
@@ -154,7 +155,7 @@ public class EnsemblRestSequenceSearch implements Search {
 	 * java.util.List)
 	 */
 	@Override
-	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
+	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
 			List<String> sorts, String target, List<Query> targetQueries) {
 		throw new UnsupportedOperationException();
 	}

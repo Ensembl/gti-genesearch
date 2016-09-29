@@ -291,7 +291,7 @@ public class EndpointTests {
 		assertEquals("Checking limited results retrieved", 4, results.size());
 		assertTrue("ID found", results.get(0).containsKey("id"));
 	}
-
+	
 	@Test
 	public void testGenomeFetchGetEndpoint() {
 		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, GENOMES_FETCH);

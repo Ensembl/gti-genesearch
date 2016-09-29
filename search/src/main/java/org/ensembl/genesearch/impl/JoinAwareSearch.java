@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.SearchResult;
@@ -71,9 +72,9 @@ public abstract class JoinAwareSearch implements Search {
 	 * @return query to run against target
 	 */
 	protected List<Query> generateJoinQuery(SearchType joinType, List<Query> queries, List<Query> targetQueries) {
-		List<String> fields = getFromJoinFields(joinType);
+		QueryOutput fields = QueryOutput.build(getFromJoinFields(joinType));
 		// by default take the first field
-		String fieldName = fields.get(0);
+		String fieldName = fields.getFields().get(0);
 		String target = null;
 		if (fieldName.contains(".")) {
 			target = fieldName.substring(0, fieldName.lastIndexOf('.'));
@@ -116,7 +117,7 @@ public abstract class JoinAwareSearch implements Search {
 	 *            optional queries for join q
 	 * @return
 	 */
-	public List<Map<String, Object>> fetch(List<Query> queries, List<String> fieldNames, String target,
+	public List<Map<String, Object>> fetch(List<Query> queries, QueryOutput fieldNames, String target,
 			List<Query> targetQueries) {
 		if (queries.isEmpty()) {
 			throw new UnsupportedOperationException("Fetch requires at least one query term");
@@ -130,7 +131,7 @@ public abstract class JoinAwareSearch implements Search {
 	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer, java.util.List, java.util.List, java.lang.String, java.util.List)
 	 */
 	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, List<String> fieldNames,
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames,
 			String target, List<Query> targetQueries) {
 
 		SearchType joinType = SearchType.findByName(target);
@@ -165,7 +166,7 @@ public abstract class JoinAwareSearch implements Search {
 	 * @param targetQueries
 	 *            optional queries for join query
 	 */
-	public QueryResult query(List<Query> queries, List<String> output, List<String> facets, int offset, int limit,
+	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
 			List<String> sorts, String target, List<Query> targetQueries) {
 
 		SearchType joinType = SearchType.findByName(target);
