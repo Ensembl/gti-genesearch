@@ -16,10 +16,11 @@
 
 package org.ensembl.genesearch;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,13 +29,15 @@ import org.junit.Test;
 
 /**
  * Tests for creation of {@link QueryOutput}
+ * 
  * @author dstaines
  *
  */
 public class QueryOutputTest {
 
 	/**
-	 * Test method for {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
+	 * Test method for
+	 * {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
 	 */
 	@Test
 	public void testBuildSimple() {
@@ -48,7 +51,8 @@ public class QueryOutputTest {
 	}
 
 	/**
-	 * Test method for {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
+	 * Test method for
+	 * {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
 	 */
 	@Test
 	public void testBuildSimpleArray() {
@@ -60,27 +64,29 @@ public class QueryOutputTest {
 		assertEquals("Checking element 3", "3", o.getFields().get(2));
 		assertTrue("Checking subFields empty", o.getSubFields().isEmpty());
 	}
-	
+
 	/**
-	 * Test method for {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
+	 * Test method for
+	 * {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
 	 */
 	@Test
 	public void testBuildSingleHash() {
 		String testStr = "{\"genes\":[\"1\",\"2\",\"3\"]}";
 		QueryOutput o = QueryOutput.build(testStr);
 		assertEquals("Checking 0 elements returned", 0, o.getFields().size());
-		assertEquals("Checking for a single subfield",1, o.getSubFields().keySet().size());
-		assertTrue("Checking for genes",o.getSubFields().keySet().contains("genes"));
+		assertEquals("Checking for a single subfield", 1, o.getSubFields().keySet().size());
+		assertTrue("Checking for genes", o.getSubFields().keySet().contains("genes"));
 		QueryOutput g = o.getSubFields().get("genes");
-		assertEquals("Checking for 3 sub elems",3,g.getFields().size());
+		assertEquals("Checking for 3 sub elems", 3, g.getFields().size());
 		assertEquals("Checking element 1", "1", g.getFields().get(0));
 		assertEquals("Checking element 2", "2", g.getFields().get(1));
 		assertEquals("Checking element 3", "3", g.getFields().get(2));
 		assertTrue("Checking subFields empty", g.getSubFields().isEmpty());
 	}
-	
+
 	/**
-	 * Test method for {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
+	 * Test method for
+	 * {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
 	 */
 	@Test
 	public void testBuildDoubleHash() {
@@ -88,42 +94,30 @@ public class QueryOutputTest {
 		QueryOutput o = QueryOutput.build(testStr);
 		assertEquals("Checking 0 elements returned", 0, o.getFields().size());
 		assertEquals("Checking for 2 subfields", 2, o.getSubFields().keySet().size());
-		assertTrue("Checking for genes",o.getSubFields().keySet().contains("genes"));
-		
+		assertTrue("Checking for genes", o.getSubFields().keySet().contains("genes"));
+
 		QueryOutput g = o.getSubFields().get("genes");
-		assertEquals("Checking for 3 sub elems",3,g.getFields().size());
+		assertEquals("Checking for 3 sub elems", 3, g.getFields().size());
 		assertEquals("Checking element 1", "1", g.getFields().get(0));
 		assertEquals("Checking element 2", "2", g.getFields().get(1));
 		assertEquals("Checking element 3", "3", g.getFields().get(2));
 		assertTrue("Checking subFields empty", g.getSubFields().isEmpty());
-		
-		assertTrue("Checking for variations",o.getSubFields().keySet().contains("variations"));
+
+		assertTrue("Checking for variations", o.getSubFields().keySet().contains("variations"));
 		QueryOutput v = o.getSubFields().get("variations");
-		assertEquals("Checking for 2 sub elems",2,v.getFields().size());
+		assertEquals("Checking for 2 sub elems", 2, v.getFields().size());
 		assertEquals("Checking element 1", "A", v.getFields().get(0));
 		assertEquals("Checking element 2", "B", v.getFields().get(1));
 		assertTrue("Checking subFields empty", v.getSubFields().isEmpty());
 	}
-	
-	/**
-	 * Test method for {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
-	 */
-	@Test
-	public void testBuildFromArray() {
-		QueryOutput o = QueryOutput.build("1","2","3");
-		assertEquals("Checking 3 elements returned", 3, o.getFields().size());
-		assertEquals("Checking element 1", "1", o.getFields().get(0));
-		assertEquals("Checking element 2", "2", o.getFields().get(1));
-		assertEquals("Checking element 3", "3", o.getFields().get(2));
-		assertTrue("Checking subFields empty", o.getSubFields().isEmpty());
-	}
 
 	/**
-	 * Test method for {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
+	 * Test method for
+	 * {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
 	 */
 	@Test
 	public void testBuildFromList() {
-		QueryOutput o = QueryOutput.build(Arrays.asList("1","2","3"));
+		QueryOutput o = QueryOutput.build(Arrays.asList("1", "2", "3"));
 		assertEquals("Checking 3 elements returned", 3, o.getFields().size());
 		assertEquals("Checking element 1", "1", o.getFields().get(0));
 		assertEquals("Checking element 2", "2", o.getFields().get(1));
@@ -131,35 +125,66 @@ public class QueryOutputTest {
 		assertTrue("Checking subFields empty", o.getSubFields().isEmpty());
 	}
 	
+	/**
+	 * Test method for
+	 * {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
+	 */
+	@Test
+	public void testBuildFromMixedList() {
+		List<Object> asList = new ArrayList<>();
+		asList.add("1");
+		asList.add("2");
+		asList.add("3");
+		Map<String,Object> map = new HashMap<>();
+		map.put("A", Arrays.asList("4","5"));
+		asList.add(map);
+		QueryOutput o = QueryOutput.build(asList);
+		assertEquals("Checking 3 elements returned", 3, o.getFields().size());
+		assertEquals("Checking element 1", "1", o.getFields().get(0));
+		assertEquals("Checking element 2", "2", o.getFields().get(1));
+		assertEquals("Checking element 3", "3", o.getFields().get(2));
+		assertEquals("Checking subFields contains 1 element", 1, o.getSubFields().size());
+		QueryOutput elemA = o.getSubFields().get("A");
+		assertEquals("Checking 3 elements returned", 2, elemA.getFields().size());
+		assertEquals("Checking element 1", "4", elemA.getFields().get(0));
+		assertEquals("Checking element 2", "5", elemA.getFields().get(1));
+	}
+
 
 	/**
-	 * Test method for {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
+	 * Test method for
+	 * {@link org.ensembl.genesearch.QueryOutput#build(java.lang.String)}.
 	 */
 	@Test
 	public void testBuildFromMap() {
-	
-		Map<String,Object> map = new HashMap<>();
-		map.put("genes", Arrays.asList("1","2","3"));
-		map.put("variations", Arrays.asList("A","B"));
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("genes", Arrays.asList("1", "2", "3"));
+		map.put("variations", Arrays.asList("A", "B"));
 		QueryOutput o = QueryOutput.build(map);
 		assertEquals("Checking 0 elements returned", 0, o.getFields().size());
 		assertEquals("Checking for 2 subfields", 2, o.getSubFields().keySet().size());
-		assertTrue("Checking for genes",o.getSubFields().keySet().contains("genes"));
-		
+		assertTrue("Checking for genes", o.getSubFields().keySet().contains("genes"));
+
 		QueryOutput g = o.getSubFields().get("genes");
-		assertEquals("Checking for 3 sub elems",3,g.getFields().size());
+		assertEquals("Checking for 3 sub elems", 3, g.getFields().size());
 		assertEquals("Checking element 1", "1", g.getFields().get(0));
 		assertEquals("Checking element 2", "2", g.getFields().get(1));
 		assertEquals("Checking element 3", "3", g.getFields().get(2));
 		assertTrue("Checking subFields empty", g.getSubFields().isEmpty());
-		
-		assertTrue("Checking for variations",o.getSubFields().keySet().contains("variations"));
+
+		assertTrue("Checking for variations", o.getSubFields().keySet().contains("variations"));
 		QueryOutput v = o.getSubFields().get("variations");
-		assertEquals("Checking for 2 sub elems",2,v.getFields().size());
+		assertEquals("Checking for 2 sub elems", 2, v.getFields().size());
 		assertEquals("Checking element 1", "A", v.getFields().get(0));
 		assertEquals("Checking element 2", "B", v.getFields().get(1));
 		assertTrue("Checking subFields empty", v.getSubFields().isEmpty());
 	}
-
+	
+	@Test
+	public void testBuildFromMixedJson() {
+		String fieldStr = "[\"_id\",\"name\",{\"transcripts\":[]}]";
+		QueryOutput o = QueryOutput.build(fieldStr);
+	}
 
 }
