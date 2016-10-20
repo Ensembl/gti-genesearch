@@ -44,7 +44,7 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testId() {
-		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_TYPE, new Query(QueryType.TERM, "id", "DDB0231518"));
+		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, new Query(QueryType.TERM, "id", "DDB0231518"));
 
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -58,7 +58,7 @@ public class ESGeneSearchBuilderTest {
 		Query orthology = new Query(QueryType.TERM, "description", "ortholog_one2one");
 		Query homology = new Query(QueryType.NESTED, "homologues", genome, orthology);
 
-		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_TYPE, homology);
+		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, homology);
 
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -81,7 +81,7 @@ public class ESGeneSearchBuilderTest {
 		Query idQuery = new Query(QueryType.TERM, "id", "DDB0231518");
 		Query translationQuery = new Query(QueryType.NESTED, "translations", idQuery);
 		Query geneQuery = new Query(QueryType.NESTED, "transcripts", translationQuery);
-		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_TYPE, geneQuery);
+		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, geneQuery);
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
 		assertTrue("Nested set", obj.containsKey("nested"));
@@ -116,7 +116,7 @@ public class ESGeneSearchBuilderTest {
 		Query seqRegion = new Query(QueryType.TERM, "seq_region_name", "DDB0231518");
 		Query start = new Query(QueryType.RANGE, "start", (long) 1, null);
 		Query end = new Query(QueryType.RANGE, "end", null, (long) 100);
-		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_TYPE, seqRegion, start, end);
+		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, seqRegion, start, end);
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
 		assertTrue("Bool set", obj.containsKey("bool"));
@@ -134,7 +134,7 @@ public class ESGeneSearchBuilderTest {
 		QueryHandler handler = new DefaultQueryHandler();
 		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
 		List<Query> qs = handler.parseQuery(json);
-		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_TYPE, qs.get(0));
+		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, qs.get(0));
 		Map<String, Object> obj = jsonToMap(builder.toString());
 		System.out.println(obj);
 		assertTrue("Constant_score set", obj.containsKey("constant_score"));

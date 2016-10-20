@@ -48,7 +48,7 @@ public class ESGeneSearchTest {
 	static Logger log = LoggerFactory.getLogger(ESGeneSearchTest.class);
 
 	static ESTestServer testServer = new ESTestServer();
-	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
+	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
 
 	@BeforeClass
 	public static void setUp() throws IOException {
@@ -56,7 +56,7 @@ public class ESGeneSearchTest {
 		log.info("Reading documents");
 		String json = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
 		log.info("Creating test index");
-		testServer.indexTestDocs(json, ESSearch.GENE_TYPE);
+		testServer.indexTestDocs(json, ESSearch.GENE_ESTYPE);
 	}
 
 	@Test
@@ -79,18 +79,6 @@ public class ESGeneSearchTest {
 		List<Map<String, Object>> ids = result.getResults();
 		log.info("Fetched " + ids.size() + " genes");
 		assertEquals("Number of genes", 598, ids.size());
-	}
-	
-
-	@Test
-	public void fetchGenomeFlatten() {
-		log.info("Fetching all genes from genome and flattening to transcript");
-		SearchResult result = search.fetch(
-				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
-				QueryOutput.build("_id","name","transcripts.biotype","transcripts.id"),"transcripts");
-		List<Map<String, Object>> transcripts = result.getResults();
-		log.info("Fetched " + transcripts.size() + " transcripts");
-		assertEquals("Number of transcripts", 598, transcripts.size());
 	}
 
 	@Test
@@ -143,7 +131,7 @@ public class ESGeneSearchTest {
 		Query start = new Query(QueryType.RANGE, "start", (long) 30000, null);
 		Query end = new Query(QueryType.RANGE, "end", null, (long) 50000);
 		SearchResult result = search.fetch(Arrays.asList(new Query[] { seqRegion, start, end }),
-				QueryOutput.build("_id", "seq_region_name", "start", "end"));
+				QueryOutput.build(Arrays.asList("_id", "seq_region_name", "start", "end")));
 		List<Map<String, Object>> results = result.getResults();
 		assertEquals("Total hits", 26, results.size());
 		for (Map<String, Object> r : results) {
@@ -157,7 +145,7 @@ public class ESGeneSearchTest {
 	public void querySimple() {
 		log.info("Querying for all genes");
 		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")), Collections.emptyList(), 0, 5,
-				Collections.emptyList(), null, Collections.emptyList());
+				Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -171,7 +159,7 @@ public class ESGeneSearchTest {
 	public void querySimpleFields() {
 		log.info("Querying for all genes");
 		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("genome")), Collections.emptyList(), 0, 5,
-				Collections.emptyList(), null, Collections.emptyList());
+				Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -185,23 +173,10 @@ public class ESGeneSearchTest {
 
 	
 	@Test
-	public void querySimpleFlatten() {
-		log.info("Querying for all genes with flattening");
-		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build("id","biotype","transcripts.id","transcripts.biotype"), Collections.emptyList(), 0, 5,
-				Collections.emptyList(), "transcripts", Collections.emptyList());
-		assertEquals("Total hits", 598, result.getResultCount());
-		assertEquals("Fetched hits", 5, result.getResults().size());
-		assertEquals("Total facets", 0, result.getFacets().size());
-		assertTrue("id found", result.getResults().get(0).containsKey("id"));
-		assertEquals("4 field only", 4, result.getResults().get(0).keySet().size());
-	}
-
-
-	@Test
 	public void queryFacet() {
 		log.info("Querying for all genes faceted on genome");
 		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")), Arrays.asList("genome"), 0, 5,
-				Collections.emptyList(), null, Collections.emptyList());
+				Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 1, result.getFacets().size());
@@ -214,8 +189,8 @@ public class ESGeneSearchTest {
 	@Test
 	public void querySortAsc() {
 		log.info("Querying for all genes sorted by name");
-		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build("id", "name"), Collections.emptyList(),
-				0, 5, Arrays.asList("+name"), null, Collections.emptyList());
+		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id", "name")), Collections.emptyList(),
+				0, 5, Arrays.asList("+name"));
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -225,8 +200,8 @@ public class ESGeneSearchTest {
 	@Test
 	public void querySortDesc() {
 		log.info("Querying for all genes reverse sorted by name");
-		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build("id", "name"), Collections.emptyList(),
-				0, 5, Arrays.asList("-name"), null, Collections.emptyList());
+		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id", "name")), Collections.emptyList(),
+				0, 5, Arrays.asList("-name"));
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -237,8 +212,8 @@ public class ESGeneSearchTest {
 	@Test
 	public void querySource() {
 		log.info("Querying for all genes with limit on fields");
-		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build("id", "seq_region_name", "homologues"),
-				Collections.emptyList(), 0, 5, Collections.emptyList(), null, Collections.emptyList());
+		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id", "seq_region_name", "homologues")),
+				Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -252,20 +227,20 @@ public class ESGeneSearchTest {
 		QueryHandler handler = new DefaultQueryHandler();
 		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
 		List<Query> qs = handler.parseQuery(json);
-		search.query(qs, QueryOutput.build("id", "name", "homologues"), Collections.emptyList(), 0, 5,
-				Collections.emptyList(), null, Collections.emptyList());
+		search.query(qs, QueryOutput.build(Arrays.asList("id", "name", "homologues")), Collections.emptyList(), 0, 5,
+				Collections.emptyList());
 	}
 
 	@Test
 	public void queryWithOffset() throws IOException {
 		log.info("Querying for all genes");
 		SearchResult result1 = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")), Collections.emptyList(), 0, 2,
-				Collections.emptyList(), null, Collections.emptyList());
+				Collections.emptyList());
 		assertEquals("Got 2 results", 2, result1.getResults().size());
 
 		log.info("Querying for all genes with offset");
 		SearchResult result2 = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")), Collections.emptyList(), 1, 2,
-				Collections.emptyList(), null, Collections.emptyList());
+				Collections.emptyList());
 		assertEquals("Got 2 results", 2, result2.getResults().size());
 		assertTrue("Results 1.1 matches 2.0",
 				result1.getResults().get(1).get("id").equals(result2.getResults().get(0).get("id")));

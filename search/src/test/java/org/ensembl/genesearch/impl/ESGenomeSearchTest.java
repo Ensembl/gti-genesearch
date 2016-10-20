@@ -46,7 +46,7 @@ public class ESGenomeSearchTest {
 	static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
 
 	static ESTestServer testServer = new ESTestServer();
-	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_TYPE);
+	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE);
 
 	@BeforeClass
 	public static void setUp() throws IOException {
@@ -54,7 +54,7 @@ public class ESGenomeSearchTest {
 		log.info("Reading documents");
 		String json = ESTestServer.readGzipResource("/genomes.json.gz");
 		log.info("Creating test index");
-		testServer.indexTestDocs(json, ESSearch.GENOME_TYPE);
+		testServer.indexTestDocs(json, ESSearch.GENOME_ESTYPE);
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class ESGenomeSearchTest {
 	public void querySimple() {
 		log.info("Querying for all genomes");
 		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")), Collections.emptyList(), 0, 5,
-				Collections.emptyList(), null, Collections.emptyList());
+				Collections.emptyList());
 		assertEquals("Total hits", 4, result.getResultCount());
 		assertEquals("Fetched hits", 4, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
