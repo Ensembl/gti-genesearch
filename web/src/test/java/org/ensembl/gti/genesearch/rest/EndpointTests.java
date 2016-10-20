@@ -85,8 +85,8 @@ public class EndpointTests {
 		String geneJson = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
 		String genomeJson = ESTestServer.readGzipResource("/genomes.json.gz");
 		log.info("Creating test index");
-		testServer.indexTestDocs(geneJson, ESSearch.GENE_TYPE);
-		testServer.indexTestDocs(genomeJson, ESSearch.GENOME_TYPE);
+		testServer.indexTestDocs(geneJson, ESSearch.GENE_ESTYPE);
+		testServer.indexTestDocs(genomeJson, ESSearch.GENOME_ESTYPE);
 	}
 
 	@Autowired
