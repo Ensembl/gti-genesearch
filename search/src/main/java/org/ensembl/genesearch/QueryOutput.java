@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -45,15 +47,14 @@ public class QueryOutput {
 		return new QueryOutput(fields);
 	}
 
-	public static QueryOutput build(String... fields) {
-		return new QueryOutput(fields);
-	}
-
 	public static QueryOutput build(List<?> fields) {
 		return new QueryOutput(fields);
 	}
 
 	public static QueryOutput build(String fieldStr) {
+		if(StringUtils.isEmpty(fieldStr)) {
+			return new QueryOutput();
+		}
 		try {
 			char start = fieldStr.charAt(0);
 			char end = fieldStr.charAt(fieldStr.length() - 1);
@@ -65,7 +66,7 @@ public class QueryOutput {
 				return new QueryOutput(om.readValue(ARRAY_START + fieldStr + ARRAY_END, List.class));
 			}
 		} catch (IOException e) {
-			throw new IllegalArgumentException("Could not parse query output string " + fieldStr);
+			throw new IllegalArgumentException("Could not parse query output string " + fieldStr, e);
 		}
 	}
 
@@ -74,7 +75,13 @@ public class QueryOutput {
 
 	public QueryOutput(List<?> f) {
 		for (Object e : f) {
-			fields.add(String.valueOf(e).trim());
+			if (Map.class.isAssignableFrom(e.getClass())) {
+				for (Entry<String, List<Object>> e2 : ((Map<String, List<Object>>) e).entrySet()) {
+					subFields.put(e2.getKey(), QueryOutput.build(e2.getValue()));
+				}
+			} else {
+				fields.add(String.valueOf(e).trim());
+			}
 		}
 	}
 
