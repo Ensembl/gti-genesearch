@@ -18,15 +18,25 @@ package org.ensembl.genesearch;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ensembl.genesearch.query.DefaultQueryHandler;
+import org.ensembl.genesearch.query.QueryHandler;
 
 /**
  * Generic query encapsulating lists of key-value terms
+ * 
  * @author dstaines
  *
  */
 public class Query {
+
+	private static final QueryHandler handler = new DefaultQueryHandler();
+
+	public static final List<Query> build(String json) {
+		return handler.parseQuery(json);
+	}
 
 	public enum QueryType {
 		TEXT, TERM, RANGE, NESTED;
