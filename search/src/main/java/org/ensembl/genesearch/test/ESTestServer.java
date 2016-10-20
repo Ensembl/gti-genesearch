@@ -63,14 +63,14 @@ public class ESTestServer {
 		try {
 			log.info("Reading mapping");
 			// slurp the mapping file into memory
-			String geneMapping = readResource("/" + ESSearch.GENE_TYPE + "_mapping.json");
-			String genomeMapping = readResource("/" + ESSearch.GENOME_TYPE + "_mapping.json");
+			String geneMapping = readResource("/" + ESSearch.GENE_ESTYPE + "_mapping.json");
+			String genomeMapping = readResource("/" + ESSearch.GENOME_ESTYPE + "_mapping.json");
 			log.info("Creating index");
 
 			// create an index with mapping
 			client.admin().indices().prepareCreate(ESSearch.GENES_INDEX)
 					.setSettings(Settings.builder().put("index.number_of_shards", 4).put("index.number_of_replicas", 0))
-					.addMapping(ESSearch.GENE_TYPE, geneMapping).addMapping(ESSearch.GENOME_TYPE, genomeMapping).get();
+					.addMapping(ESSearch.GENE_ESTYPE, geneMapping).addMapping(ESSearch.GENOME_ESTYPE, genomeMapping).get();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
