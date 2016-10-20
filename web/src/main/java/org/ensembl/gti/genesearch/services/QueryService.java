@@ -60,8 +60,7 @@ public abstract class QueryService extends SearchBasedService {
 	public Map<String, Object> query(QueryParams params) {
 		log.info("query:" + params);
 		QueryResult results = getSearch().query(params.getQueries(), params.getFields(), params.getFacets(),
-				params.getOffset(), params.getLimit(), params.getSorts(), params.getTarget(),
-				params.getTargetQueries());
+				params.getOffset(), params.getLimit(), params.getSorts());
 		return results.toMap(params.isArray());
 	}
 

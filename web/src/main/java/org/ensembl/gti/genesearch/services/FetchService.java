@@ -203,8 +203,7 @@ public abstract class FetchService extends SearchBasedService {
 						}
 					};
 				}
-				getSearch().fetch(consumer, params.getQueries(), params.getFields(), params.getTarget(),
-						params.getTargetQueries());
+				getSearch().fetch(consumer, params.getQueries(), params.getFields());
 				jg.writeEndArray();
 				jg.writeEndObject();
 				jg.close();
@@ -245,7 +244,7 @@ public abstract class FetchService extends SearchBasedService {
 							} catch (XMLStreamException e) {
 								throw new WebApplicationException(e);
 							}
-					}, params.getQueries(), params.getFields(), params.getTarget(), params.getTargetQueries());
+					}, params.getQueries(), params.getFields());
 					xsw.writeEndElement();
 					xsw.writeEndElement();
 					xsw.writeEndDocument();
@@ -277,7 +276,7 @@ public abstract class FetchService extends SearchBasedService {
 						} catch (IOException e) {
 							throw new WebApplicationException(e);
 					}
-				}, params.getQueries(), params.getFields(), params.getTarget(), params.getTargetQueries());
+				}, params.getQueries(), params.getFields());
 				writer.close();
 			}
 		};

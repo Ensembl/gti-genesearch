@@ -58,8 +58,6 @@ public class FetchParams {
 	private QueryOutput fields = new QueryOutput();
 	private String fileName = "genes";
 	private List<Query> queries = Collections.emptyList();
-	private List<Query> targetQueries = Collections.emptyList();
-	private String target;
 	private boolean array = false;
 
 	public String getAccept() {
@@ -80,10 +78,6 @@ public class FetchParams {
 
 	public List<Query> getQueries() {
 		return queries;
-	}
-
-	public List<Query> getTargetQueries() {
-		return targetQueries;
 	}
 
 	@QueryParam("accept")
@@ -140,34 +134,6 @@ public class FetchParams {
 	@JsonIgnore
 	public void setQuery(String query) {
 		setQueries(new DefaultQueryHandler().parseQuery(query));
-	}
-
-	@JsonIgnore
-	public void setTargetQueries(List<Query> queries) {
-		this.targetQueries = queries;
-	}
-
-	@JsonProperty("targetQuery")
-	public void setTargetQuery(Map<String, Object> query) {
-		setTargetQueries(new DefaultQueryHandler().parseQuery(query));
-	}
-
-	@QueryParam("targetQuery")
-	@DefaultValue("")
-	@JsonIgnore
-	public void setTargetQuery(String query) {
-		setTargetQueries(new DefaultQueryHandler().parseQuery(query));
-	}
-
-	@JsonProperty("target")
-	public String getTarget() {
-		return target;
-	}
-
-	@QueryParam("target")
-	@DefaultValue("")
-	public void setTarget(String target) {
-		this.target = target;
 	}
 
 	@Override
