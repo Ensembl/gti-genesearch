@@ -72,15 +72,11 @@ public class EnsemblRestSequenceSearch implements Search {
 		this(baseUrl, DEFAULT_BATCH_SIZE);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
-	 * java.util.List, java.util.List, java.lang.String, java.util.List)
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer, java.util.List, org.ensembl.genesearch.QueryOutput)
 	 */
 	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames,
-			String target, List<Query> targetQueries) {
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
 
 		// transform the query string into a URI
 		String url = getPostUrl(queries);
@@ -147,16 +143,12 @@ public class EnsemblRestSequenceSearch implements Search {
 		throw new UnsupportedOperationException();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ensembl.genesearch.Search#query(java.util.List, java.util.List,
-	 * java.util.List, int, int, java.util.List, java.lang.String,
-	 * java.util.List)
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#query(java.util.List, org.ensembl.genesearch.QueryOutput, java.util.List, int, int, java.util.List)
 	 */
 	@Override
 	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
-			List<String> sorts, String target, List<Query> targetQueries) {
+			List<String> sorts) {
 		throw new UnsupportedOperationException();
 	}
 

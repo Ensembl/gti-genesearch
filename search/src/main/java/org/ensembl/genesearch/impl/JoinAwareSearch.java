@@ -19,10 +19,12 @@ package org.ensembl.genesearch.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryOutput;
@@ -42,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class JoinAwareSearch implements Search {
-
+	
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 	protected final SearchRegistry provider;
 
@@ -54,7 +56,7 @@ public abstract class JoinAwareSearch implements Search {
 
 	protected abstract boolean isPassThrough(SearchType type);
 
-	protected abstract List<String> getFromJoinFields(SearchType type);
+	protected abstract String getFromJoinField(SearchType type);
 
 	protected abstract String getToJoinField(SearchType type);
 
@@ -68,87 +70,83 @@ public abstract class JoinAwareSearch implements Search {
 	 *            target to join against
 	 * @param queries
 	 *            queries to use to build first set
-	 * @param targetQueries
+	 * @param fromOutput
+	 * 			  output to merge from "from" database
 	 * @return query to run against target
 	 */
-	protected List<Query> generateJoinQuery(SearchType joinType, List<Query> queries, List<Query> targetQueries) {
-		QueryOutput fields = QueryOutput.build(getFromJoinFields(joinType));
-		// by default take the first field
-		String fieldName = fields.getFields().get(0);
-		String target = null;
-		if (fieldName.contains(".")) {
-			target = fieldName.substring(0, fieldName.lastIndexOf('.'));
+	protected Pair<List<Query>, Map<String,Map<String,Object>>> executeFromJoinQuery(SearchType joinType, List<Query> queries, QueryOutput fromOutput) {
+
+		// divide queries into source and target
+		List<Query> fromQueries = new ArrayList<>();
+		List<Query> toQueries = new ArrayList<>();
+		for(Query query: queries) {
+			if(query.getFieldName().equalsIgnoreCase(getDefaultType().name())) {
+				for(Query subQ: query.getSubQueries()) {
+					toQueries.add(subQ);
+				}
+			} else {
+				fromQueries.add(query);
+			}
 		}
-		// create a list to hold the values
-		List<String> vals = new ArrayList<>();
+		
+		// create a list to hold the target values
+		
+		// find which join fields we need
+		String fromField = getFromJoinField(joinType);
+		
+		// merge fromFields if needed
+		if(!fromOutput.getFields().contains(fromField)) {
+			fromOutput = new QueryOutput(fromOutput.getFields());
+			fromOutput.getFields().add(0, fromField);
+		}
 
 		int maxSize = maxJoinSize(joinType);
+		
+		// execute the process
+		Map<String,Map<String,Object>> fromResults = new HashMap<>();
 		provider.getSearch(getDefaultType()).fetch(doc -> {
-			Object val = doc.get(fieldName);
+			Object val = doc.get(fromField);
+			doc.remove(val);
 			if (val != null) {
 				if (Collection.class.isAssignableFrom(val.getClass())) {
-					vals.addAll((Collection) val);
+					for(Object v: (Collection)val) {
+						fromResults.put(v.toString(), doc);
+					}
 				} else {
-					vals.add(val.toString());
+					fromResults.put(val.toString(), doc);
 				}
-				if (vals.size() > maxSize) {
+				if (fromResults.size() > maxSize) {
 					throw new RuntimeException("Can only join a maximum of " + maxSize + " " + joinType.name());
 				}
 			}
-		}, queries, fields, target, Collections.emptyList());
-		List<Query> qs = new ArrayList<>(1);
-		qs.add(new Query(QueryType.TERM, getToJoinField(joinType), vals));
-		// add target queries
-		qs.addAll(targetQueries);
-		return qs;
-	}
+		}, queries, fromOutput);
 
-	/**
-	 * Retrieve all results matching the supplied queries, flattening to the
-	 * specified target level
-	 * 
-	 * @param queries
-	 * @param fieldNames
-	 *            (if empty the whole document will be returned)
-	 * @param target
-	 *            level to flatten to e.g. transcripts, transcripts.translations
-	 *            etc.
-	 * @param targetQueries
-	 *            optional queries for join q
-	 * @return
-	 */
-	public List<Map<String, Object>> fetch(List<Query> queries, QueryOutput fieldNames, String target,
-			List<Query> targetQueries) {
-		if (queries.isEmpty()) {
-			throw new UnsupportedOperationException("Fetch requires at least one query term");
-		}
-		final List<Map<String, Object>> results = new ArrayList<>();
-		fetch(row -> results.add(row), queries, fieldNames, target, targetQueries);
-		return results;
+		toQueries.add(new Query(QueryType.TERM, getToJoinField(joinType), fromResults.keySet()));
+
+		return Pair.of(toQueries, fromResults);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer, java.util.List, java.util.List, java.lang.String, java.util.List)
 	 */
 	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames,
-			String target, List<Query> targetQueries) {
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
 
-		SearchType joinType = SearchType.findByName(target);
+		SearchType joinType =  getJoinType(fieldNames);
 
 		if (isPassThrough(joinType)) {
 
 			// passthrough
-			provider.getSearch(getDefaultType()).fetch(consumer, queries, fieldNames, target, targetQueries);
+			provider.getSearch(getDefaultType()).fetch(consumer, queries, fieldNames);
 
 		} else {
 
-			// 1. generate a "to" query using the "from" query
-			List<Query> joinQueries = generateJoinQuery(joinType, queries, targetQueries);
+			// 1. generate a "to" query using the "from" query and a set of results for merge
+			Pair<List<Query>, Map<String, Map<String, Object>>> jq = executeFromJoinQuery(joinType, queries, fieldNames);
 
 			// 2. pass the new query to the "to" search
 			log.debug("Querying for " + joinType);
-			provider.getSearch(joinType).fetch(consumer, joinQueries, fieldNames);
+			provider.getSearch(joinType).fetch(consumer, jq.getLeft(), fieldNames);
 
 		}
 
@@ -162,24 +160,19 @@ public abstract class JoinAwareSearch implements Search {
 	 * @param consumer
 	 * @param queries
 	 * @param fieldNames
-	 * @param target
-	 * @param targetQueries
-	 *            optional queries for join query
 	 */
 	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
-			List<String> sorts, String target, List<Query> targetQueries) {
+			List<String> sorts) {
 
-		SearchType joinType = SearchType.findByName(target);
+		SearchType joinType = getJoinType(output);
 		if (isPassThrough(joinType)) {
-			// passthrough
-			return provider.getSearch(getDefaultType()).query(queries, output, facets, offset, limit, sorts, target,
-					targetQueries);
+			// passthrough to the same search and let it figure out what to do
+			return provider.getSearch(getDefaultType()).query(queries, output, facets, offset, limit, sorts);
 		} else {
 			// 1. generate a "to" query using the "from" query
-			List<Query> joinQueries = generateJoinQuery(joinType, queries, targetQueries);
+			Pair<List<Query>, Map<String, Map<String, Object>>> jq = executeFromJoinQuery(joinType, queries, output);
 			// 2. pass the new query to the "to" search
-			return provider.getSearch(joinType).query(joinQueries, output, facets, offset, limit, sorts, null,
-					Collections.emptyList());
+			return provider.getSearch(joinType).query(jq.getLeft(), output, facets, offset, limit, sorts);
 		}
 	}
 
@@ -217,6 +210,17 @@ public abstract class JoinAwareSearch implements Search {
 	public QueryResult select(String name, int offset, int limit) {
 		// pass through
 		return provider.getSearch(getDefaultType()).select(name, offset, limit);
+	}
+	
+	protected SearchType getJoinType(QueryOutput output) {
+		SearchType defaultType = getDefaultType();
+		for(String subField: output.getSubFields().keySet()) {
+			SearchType t = SearchType.findByName(subField);
+			if(!defaultType.equals(t)) {
+				return t;
+			}
+		}
+		return defaultType;
 	}
 	
 }

@@ -43,27 +43,11 @@ public interface Search {
 	 * @return set of results
 	 */
 	public default SearchResult fetch(List<Query> queries, QueryOutput fieldNames) {
-		return fetch(queries, fieldNames, null);
-	}
-
-	/**
-	 * Retrieve all results matching the supplied queries, flattening to the
-	 * specified target level
-	 * 
-	 * @param queries
-	 * @param fieldNames
-	 *            (if empty the whole document will be returned)
-	 * @param target
-	 *            level to flatten to e.g. transcripts, transcripts.translations
-	 *            etc.
-	 * @return
-	 */
-	public default SearchResult fetch(List<Query> queries, QueryOutput fieldNames, String target) {
 		if (queries.isEmpty()) {
 			throw new UnsupportedOperationException("Fetch requires at least one query term");
 		}
 		final List<Map<String, Object>> results = new ArrayList<>();
-		fetch(row -> results.add(row), queries, fieldNames, target, Collections.emptyList());
+		fetch(row -> results.add(row), queries, fieldNames);
 		List<FieldInfo> fields = getFieldInfo(fieldNames);
 		return new SearchResult(fields, results);
 	}
@@ -77,26 +61,7 @@ public interface Search {
 	 * @param fieldNames
 	 *            (if empty the whole document will be returned)
 	 */
-	public default void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
-		fetch(consumer, queries, fieldNames, null, Collections.emptyList());
-	}
-
-	/**
-	 * Retrieve all results matching the supplied queries and process with the
-	 * supplied consumer
-	 * 
-	 * @param consumer
-	 * @param queries
-	 * @param fieldNames
-	 *            (if empty the whole document will be returned)
-	 * @param target
-	 *            level to flatten to e.g. transcripts, transcripts.translations
-	 *            etc.
-	 * @param targetQueries
-	 *            optional queries for join query
-	 */
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames,
-			String target, List<Query> targetQueries);
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames);
 
 	/**
 	 * Retrieve genes with the supplied IDs
@@ -149,14 +114,10 @@ public interface Search {
 	 *            place to start in query
 	 * @param limit
 	 *            number of hits to return
-	 * @param target
-	 *            object to flatten results onto
-	 * @param targetQueries
-	 *            optional queries for join query
 	 * @return
 	 */
 	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
-			List<String> sorts, String target, List<Query> targetQueries);
+			List<String> sorts);
 
 	/**
 	 * Retrieve genes with the supplied ID and write to the consumer

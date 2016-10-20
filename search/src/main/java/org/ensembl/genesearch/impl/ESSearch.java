@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,13 +79,16 @@ public class ESSearch implements Search {
 	public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
 	private static final int DEFAULT_AGGREGATION_SIZE = 10;
 	public static final String GENES_INDEX = "genes";
-	public static final String GENE_TYPE = "gene";
-	public static final String GENOME_TYPE = "genome";
+	public static final String GENE_ESTYPE = "gene";
+	public static final String GENOME_ESTYPE = "genome";
+	private static final String GENES = "genes";
+	private static final String GENOMES = "genomes";
 
 	private final Client client;
 	private final String index;
 	private final String type;
 	private final List<DataTypeInfo> dataTypes;
+	private final String defaultType;
 
 	public ESSearch(Client client, String index, String type) {
 		this(client, index, type,
@@ -102,10 +106,12 @@ public class ESSearch implements Search {
 		this.scrollSize = scrollSize;
 		this.scrollTimeout = scrollTimeout;
 		try {
-			if (type.equals(GENE_TYPE)) {
+			if (type.equals(GENE_ESTYPE)) {
 				dataTypes = JsonDataTypeInfoProvider.load("/gene_datatype_info.json").getAll();
-			} else if (type.equals(GENOME_TYPE)) {
+				defaultType = GENES;
+			} else if (type.equals(GENOME_ESTYPE)) {
 				dataTypes = JsonDataTypeInfoProvider.load("/genome_datatype_info.json").getAll();
+				defaultType = GENOMES;
 			} else {
 				throw new IllegalArgumentException("Type " + type + " is not supported by ESSearch");
 			}
@@ -116,11 +122,12 @@ public class ESSearch implements Search {
 	}
 
 	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput output,
-			String target, List<Query> targetQueries) {
+	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput output) {
+
+		String target = getTarget(output);
 
 		List<String> fieldNames = output.getFields();
-		
+
 		StopWatch watch = new StopWatch();
 
 		int queryScrollSize = calculateScroll(fieldNames);
@@ -134,8 +141,7 @@ public class ESSearch implements Search {
 				for (List<String> terms : ListUtils.partition(Arrays.asList(query.getValues()), queryScrollSize)) {
 					log.info("Querying " + terms.size() + "/" + query.getValues().length);
 					watch.start();
-					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)), output,
-							target, targetQueries);
+					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)), output);
 					watch.stop();
 					log.info("Queried " + terms.size() + "/" + query.getValues().length + " in " + watch.getTime()
 							+ " ms");
@@ -173,6 +179,23 @@ public class ESSearch implements Search {
 		watch.stop();
 		log.info("Retrieved all hits in " + watch.getTime() + " ms");
 
+	}
+
+	/**
+	 * Determine the desired target from the output
+	 * 
+	 * @param output
+	 * @return
+	 */
+	protected String getTarget(QueryOutput output) {
+		Set<String> keySet = output.getSubFields().keySet();
+		if (keySet.isEmpty()) {
+			return null;
+		} else if (keySet.size() <= 2) {
+			return keySet.stream().filter(k -> !k.equals(defaultType)).findAny().orElse(null);
+		} else {
+			throw new IllegalArgumentException("Only single join accepted");
+		}
 	}
 
 	private int calculateScroll(List<String> fieldNames) {
@@ -253,8 +276,8 @@ public class ESSearch implements Search {
 
 	@Override
 	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
-			List<String> sorts, String target, List<Query> targetQueries) {
-		
+			List<String> sorts) {
+
 		List<String> fieldNames = output.getFields();
 
 		log.debug("Building query");
@@ -282,7 +305,7 @@ public class ESSearch implements Search {
 				+ response.getTookInMillis() + " ms");
 
 		return new QueryResult(response.getHits().getTotalHits(), offset, limit, getFieldInfo(output),
-				processResults(response, target), processAggregations(response));
+				processResults(response, getTarget(output)), processAggregations(response));
 
 	}
 
@@ -475,7 +498,7 @@ public class ESSearch implements Search {
 		QueryBuilder query;
 		String[] fields;
 
-		if (ESSearch.GENOME_TYPE.equals(type)) {
+		if (ESSearch.GENOME_ESTYPE.equals(type)) {
 			query = QueryBuilders.functionScoreQuery(
 					QueryBuilders.boolQuery()
 							.should(QueryBuilders.matchPhrasePrefixQuery("organism.display_name", name).slop(10)
@@ -493,6 +516,8 @@ public class ESSearch implements Search {
 			fields = new String[] { "id", "organism.display_name", "organism.scientific_name" };
 		} else {
 			throw new UnsupportedOperationException("select not implemented for " + type);
+
+		
 		}
 
 		log.debug("Building query");
@@ -500,7 +525,7 @@ public class ESSearch implements Search {
 		log.info(query.toString());
 
 		SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
-				.setFetchSource(fields, new String[] {}).setSize(limit).setFrom(offset).setTypes(ESSearch.GENOME_TYPE);
+				.setFetchSource(fields, new String[] {}).setSize(limit).setFrom(offset).setTypes(ESSearch.GENOME_ESTYPE);
 
 		log.info("Starting query");
 		log.debug("Query " + request.toString());
@@ -509,8 +534,8 @@ public class ESSearch implements Search {
 		log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
 				+ response.getTookInMillis() + " ms");
 
-		return new QueryResult(response.getHits().getTotalHits(), offset, limit, getFieldInfo(QueryOutput.build(fields)),
-				processResults(response, null), processAggregations(response));
+		return new QueryResult(response.getHits().getTotalHits(), offset, limit,
+				getFieldInfo(QueryOutput.build(Arrays.asList(fields))), processResults(response, null), processAggregations(response));
 
 	}
 
@@ -528,13 +553,11 @@ public class ESSearch implements Search {
 	public List<FieldInfo> getFieldInfo(QueryOutput output) {
 		// ES _always_ has ID
 		List<String> fieldNames = output.getFields();
-		if(!fieldNames.contains(ID)) {
+		if (!fieldNames.contains(ID)) {
 			fieldNames = Lists.newLinkedList(fieldNames);
 			fieldNames.add(0, ID);
 		}
 		return Search.super.getFieldInfo(QueryOutput.build(fieldNames));
 	}
-	
-	
 
 }

@@ -93,7 +93,7 @@ public class QueryClient {
 			System.exit(1);
 		}
 
-		Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
+		Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
 
 		List<Query> queries = new DefaultQueryHandler()
 				.parseQuery(params.query);
@@ -107,7 +107,7 @@ public class QueryClient {
 		log.info("Starting query");
 
 		SearchResult res = search.query(queries, QueryOutput.build(params.resultFields),
-				params.facets, params.offset, params.limit, params.sorts, params.target, targetQueries);
+				params.facets, params.offset, params.limit, params.sorts);
 
 		if (!StringUtils.isEmpty(params.outFile)) {
 			log.info("Writing results to " + params.outFile);

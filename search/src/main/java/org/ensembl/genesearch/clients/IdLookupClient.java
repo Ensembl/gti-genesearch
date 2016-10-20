@@ -92,7 +92,7 @@ public class IdLookupClient {
 
 		final Writer out = getWriter(params);
 
-		Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_TYPE);
+		Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
 
 		List<String> ids = params.queryIds;
 		if (ids == null && !isEmpty(params.queryFile)) {
