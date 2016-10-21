@@ -47,9 +47,18 @@ import org.slf4j.LoggerFactory;
 public class GeneSearch implements Search {
 
 	protected static class SubSearchParams {
+
+		public static final SubSearchParams build(SearchType name, List<Query> queries, QueryOutput fields) {
+			return new SubSearchParams(name, queries, fields);
+		}
+
+		public static final SubSearchParams build(String name, List<Query> queries, QueryOutput fields) {
+			return new SubSearchParams(SearchType.findByName(name), queries, fields);
+		}
+
+		final QueryOutput fields;
 		final Optional<SearchType> name;
 		final List<Query> queries;
-		final QueryOutput fields;
 
 		private SubSearchParams(SearchType name, List<Query> queries, QueryOutput fields) {
 			this.name = Optional.ofNullable(name);
@@ -57,28 +66,21 @@ public class GeneSearch implements Search {
 			this.fields = fields;
 		}
 
-		public final static SubSearchParams build(SearchType name, List<Query> queries, QueryOutput fields) {
-			return new SubSearchParams(name, queries, fields);
-		}
-
-		public final static SubSearchParams build(String name, List<Query> queries, QueryOutput fields) {
-			return new SubSearchParams(SearchType.findByName(name), queries, fields);
-		}
-		
+		@Override
 		public String toString() {
 			return ToStringBuilder.reflectionToString(this);
 		}
 	}
 
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-
 	protected final List<DataTypeInfo> dataTypes = new ArrayList<>();
-	protected final SearchRegistry provider;
 
+	protected final Map<String, String> fromJoinField = new HashMap<>();
 	/**
 	 * Search types for which we need a proper join
 	 */
 	protected final Set<String> joinTargets = new HashSet<>();
+
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * Search types for which we can use the same search and flatten the data
@@ -90,7 +92,7 @@ public class GeneSearch implements Search {
 	 */
 	protected final Search primarySearch;
 
-	protected final Map<String, String> fromJoinField = new HashMap<>();
+	protected final SearchRegistry provider;
 	protected final Map<String, String> toJoinField = new HashMap<>();
 
 	public GeneSearch(SearchRegistry provider) {
@@ -126,6 +128,58 @@ public class GeneSearch implements Search {
 		this.provider = provider;
 	}
 
+	/**
+	 * Split a set of queries and fields into "to" and "from" for a joined query
+	 * 
+	 * @param queries
+	 * @param output
+	 * @return pair of "from" and "to" {@link SubSearchParams}
+	 */
+	protected Pair<SubSearchParams, SubSearchParams> decomposeQueryFields(List<Query> queries, QueryOutput output) {
+
+		String fromName = SearchType.GENES.name().toLowerCase();
+		String toName = getToName(output);
+		// TODO consider special case for homologues where we're only looking at
+		// the basic fields that you don't need a join for
+
+		if (StringUtils.isEmpty(toName)) {
+
+			return Pair.of(SubSearchParams.build(fromName, queries, output), SubSearchParams.build(toName, null, null));
+
+		} else {
+
+			List<Query> fromQueries = new ArrayList<>();
+			List<Query> toQueries = new ArrayList<>();
+
+			// split queries and output into from and to
+			for (Query query : queries) {
+				if (query.getType().equals(QueryType.NESTED) && query.getFieldName().equalsIgnoreCase(toName)) {
+					toQueries.addAll(Arrays.asList(query.getSubQueries()));
+				} else {
+					fromQueries.add(query);
+				}
+			}
+
+			// add the base fields
+			QueryOutput fromOutput = new QueryOutput();
+			fromOutput.getFields().addAll(output.getFields());
+			// split subfields into "to" and "from"
+			QueryOutput toOutput = null;
+			// NB: Could avoid adding into "from" here I guess
+			for (Entry<String, QueryOutput> e : output.getSubFields().entrySet()) {
+				if (e.getKey().equals(toName)) {
+					toOutput = e.getValue();
+				} else {
+					fromOutput.getSubFields().put(e.getKey(), e.getValue());
+				}
+			}
+
+			return Pair.of(SubSearchParams.build(fromName, fromQueries, fromOutput),
+					SubSearchParams.build(toName, toQueries, toOutput));
+		}
+
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -142,6 +196,19 @@ public class GeneSearch implements Search {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * org.ensembl.genesearch.Search#fetchByIds(java.util.function.Consumer,
+	 * java.lang.String[])
+	 */
+	@Override
+	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.ensembl.genesearch.Search#fetchByIds(java.util.List,
 	 * java.lang.String[])
 	 */
@@ -149,6 +216,41 @@ public class GeneSearch implements Search {
 	public List<Map<String, Object>> fetchByIds(List<String> fields, String... ids) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.Search#getDataTypes()
+	 */
+	@Override
+	public List<DataTypeInfo> getDataTypes() {
+		return dataTypes;
+	}
+
+	public String getToName(QueryOutput output) {
+		String toName = null;
+		// decomposition depends on the QueryOutput being one of the matched
+		boolean isSimple = true;
+		// do we have proper join targets?
+		for (String name : joinTargets) {
+			if (output.getSubFields().containsKey(name)) {
+				isSimple = false;
+				toName = name;
+				break;
+			}
+		}
+		if (isSimple) {
+			// if not do we have passthrough join targets?
+			for (String name : passThroughTargets) {
+				if (output.getSubFields().containsKey(name)) {
+					isSimple = false;
+					toName = name;
+					break;
+				}
+			}
+		}
+		return toName;
 	}
 
 	/*
@@ -225,96 +327,6 @@ public class GeneSearch implements Search {
 		return null;
 	}
 
-	/**
-	 * Split a set of queries and fields into "to" and "from" for a joined query
-	 * @param queries
-	 * @param output
-	 * @return pair of "from" and "to" {@link SubSearchParams}
-	 */
-	protected Pair<SubSearchParams, SubSearchParams> decomposeQueryFields(List<Query> queries, QueryOutput output) {
-		
-		String fromName = SearchType.GENES.name().toLowerCase();
-		String toName = getToName(output);
-		// TODO consider special case for homologues where we're only looking at the basic fields that you don't need a join for
-
-		if (StringUtils.isEmpty(toName)) {
-			
-			return Pair.of(SubSearchParams.build(fromName, queries, output),
-					SubSearchParams.build(toName, null, null));
-			
-		} else {
-			
-			List<Query> fromQueries = new ArrayList<>();
-			List<Query> toQueries = new ArrayList<>();
-			
-			// split queries and output into from and to
-			for (Query query : queries) {
-				if (query.getType().equals(QueryType.NESTED) && query.getFieldName().equalsIgnoreCase(toName)) {
-					toQueries.addAll(Arrays.asList(query.getSubQueries()));
-				} else {
-					fromQueries.add(query);
-				}
-			}
-
-			// add the base fields
-			QueryOutput fromOutput = new QueryOutput();
-			fromOutput.getFields().addAll(output.getFields());
-			// split subfields into "to" and "from"
-			QueryOutput toOutput = null;
-			// NB: Could avoid adding into "from" here I guess
-			for (Entry<String, QueryOutput> e : output.getSubFields().entrySet()) {
-				if (e.getKey().equals(toName)) {
-					toOutput = e.getValue();
-				} else {
-					fromOutput.getSubFields().put(e.getKey(), e.getValue());
-				}
-			}
-			
-			return Pair.of(SubSearchParams.build(fromName, fromQueries, fromOutput),
-					SubSearchParams.build(toName, toQueries, toOutput));
-		}
-
-
-	}
-
-	public String getToName(QueryOutput output) {
-		String toName = null;
-		// decomposition depends on the QueryOutput being one of the matched
-		boolean isSimple = true;
-		// do we have proper join targets?
-		for (String name : joinTargets) {
-			if (output.getSubFields().containsKey(name)) {
-				isSimple = false;
-				toName = name;
-				break;
-			}
-		}
-		if (isSimple) {
-			// if not do we have passthrough join targets?
-			for (String name : passThroughTargets) {
-				if (output.getSubFields().containsKey(name)) {
-					isSimple = false;
-					toName = name;
-					break;
-				}
-			}
-		}
-		return toName;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.ensembl.genesearch.Search#fetchByIds(java.util.function.Consumer,
-	 * java.lang.String[])
-	 */
-	@Override
-	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids) {
-		// TODO Auto-generated method stub
-
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -324,16 +336,6 @@ public class GeneSearch implements Search {
 	public QueryResult select(String name, int offset, int limit) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ensembl.genesearch.Search#getDataTypes()
-	 */
-	@Override
-	public List<DataTypeInfo> getDataTypes() {
-		return dataTypes;
 	}
 
 }
