@@ -20,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
@@ -41,10 +43,11 @@ public class DecomposeTest {
 
 	static ESTestServer testServer = new ESTestServer();
 	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
-
+	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE);
+	
 	// set up a provider
 	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.GENES, search)
-			.registerSearch(SearchType.HOMOLOGUES, null);
+			.registerSearch(SearchType.HOMOLOGUES, search).registerSearch(SearchType.GENOMES, gSearch);
 
 	// instantiate a join aware search
 	static GeneSearch geneSearch = new GeneSearch(provider);
@@ -73,8 +76,10 @@ public class DecomposeTest {
 
 	@Test
 	public void decomposeFieldSimple() {
+		List<Query> q = Query.build(StringUtils.EMPTY);
+		QueryOutput o = QueryOutput.build("[\"name\",\"genome\"]");
 		Pair<SubSearchParams, SubSearchParams> decomposeQueryFields = geneSearch
-				.decomposeQueryFields(Query.build(StringUtils.EMPTY), QueryOutput.build("[\"name\",\"genome\"]"));
+				.decomposeQueryFields(q, o);
 		SubSearchParams from = decomposeQueryFields.getLeft();
 		assertTrue("From name set", from.name.isPresent());
 		assertTrue("Fields contains name",from.fields.getFields().stream().anyMatch(f->f.equals("name")));
@@ -85,8 +90,10 @@ public class DecomposeTest {
 
 	@Test
 	public void decomposeQueryFieldSimple() {
+		List<Query> q = Query.build("{\"name\":\"bob\",\"genome\":\"frank\"}");
+		QueryOutput o = QueryOutput.build("[\"name\",\"genome\"]");
 		Pair<SubSearchParams, SubSearchParams> decomposeQueryFields = geneSearch
-				.decomposeQueryFields(Query.build("{\"name\":\"bob\",\"genome\":\"frank\"}"), QueryOutput.build("[\"name\",\"genome\"]"));
+				.decomposeQueryFields(q, o);
 		SubSearchParams from = decomposeQueryFields.getLeft();
 		assertTrue("From name set", from.name.isPresent());
 		assertTrue("Query contains name",from.queries.stream().anyMatch(f->f.getFieldName().equals("name")));
@@ -96,6 +103,42 @@ public class DecomposeTest {
 		SubSearchParams to = decomposeQueryFields.getRight();
 		assertFalse("To name not set", to.name.isPresent());
 	}
+	
+	@Test
+	public void decomposeFieldJoin() {
+		List<Query> q = Query.build(StringUtils.EMPTY);
+		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"display_name\",\"division\"]}]");
+		Pair<SubSearchParams, SubSearchParams> decomposeQueryFields = geneSearch
+				.decomposeQueryFields(q, o);
+		SubSearchParams from = decomposeQueryFields.getLeft();
+		assertTrue("From name set", from.name.isPresent());
+		assertTrue("Fields contains name",from.fields.getFields().stream().anyMatch(f->f.equals("name")));
+		assertTrue("Fields contains description",from.fields.getFields().stream().anyMatch(f->f.equals("description")));
+		SubSearchParams to = decomposeQueryFields.getRight();
+		assertEquals("To name set", SearchType.GENOMES.name(), to.name.get().name());
+		assertTrue("Fields contains display_name",to.fields.getFields().stream().anyMatch(f->f.equals("display_name")));
+		assertTrue("Fields contains division",to.fields.getFields().stream().anyMatch(f->f.equals("division")));
+	}
+
+	@Test
+	public void decomposeQueryFieldJoin() {
+		List<Query> q = Query.build("{\"name\":\"bob\",\"genome\":\"frank\",\"genomes\":{\"display_name\":\"eric\"}}");
+		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"display_name\",\"division\"]}]");
+		Pair<SubSearchParams, SubSearchParams> decomposeQueryFields = geneSearch
+				.decomposeQueryFields(q, o);
+		SubSearchParams from = decomposeQueryFields.getLeft();
+		assertTrue("From name set", from.name.isPresent());
+		assertTrue("Query contains name",from.queries.stream().anyMatch(f->f.getFieldName().equals("name")));
+		assertTrue("Query contains genome",from.queries.stream().anyMatch(f->f.getFieldName().equals("genome")));
+		assertTrue("Fields contains name",from.fields.getFields().stream().anyMatch(f->f.equals("name")));
+		assertTrue("Fields contains description",from.fields.getFields().stream().anyMatch(f->f.equals("description")));
+		SubSearchParams to = decomposeQueryFields.getRight();
+		assertEquals("To name set", SearchType.GENOMES.name(), to.name.get().name());
+		assertTrue("Fields contains display_name",to.fields.getFields().stream().anyMatch(f->f.equals("display_name")));
+		assertTrue("Fields contains division",to.fields.getFields().stream().anyMatch(f->f.equals("division")));
+		assertTrue("Query contains display_name",to.queries.stream().anyMatch(f->f.getFieldName().equals("display_name")));
+	}
+
 
 	@AfterClass
 	public static void tearDown() {

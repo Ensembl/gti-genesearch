@@ -17,14 +17,18 @@
 package org.ensembl.genesearch.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
@@ -59,6 +63,10 @@ public class GeneSearch implements Search {
 
 		public final static SubSearchParams build(String name, List<Query> queries, QueryOutput fields) {
 			return new SubSearchParams(SearchType.findByName(name), queries, fields);
+		}
+		
+		public String toString() {
+			return ToStringBuilder.reflectionToString(this);
 		}
 	}
 
@@ -182,8 +190,7 @@ public class GeneSearch implements Search {
 			to.fields.getFields().add(toField);
 
 			// query from first and generate a set of results
-			QueryResult fromResults = primarySearch.query(from.queries, from.fields, facets, offset, limit,
-					sorts);
+			QueryResult fromResults = primarySearch.query(from.queries, from.fields, facets, offset, limit, sorts);
 
 			// hash results by ID and also create a new "to" search
 			Map<String, List<Map<String, Object>>> resultsById = new HashMap<>();
@@ -219,47 +226,80 @@ public class GeneSearch implements Search {
 	}
 
 	/**
+	 * Split a set of queries and fields into "to" and "from" for a joined query
+	 * @param queries
 	 * @param output
-	 * @return
+	 * @return pair of "from" and "to" {@link SubSearchParams}
 	 */
 	protected Pair<SubSearchParams, SubSearchParams> decomposeQueryFields(List<Query> queries, QueryOutput output) {
-		String fromName = null;
-		List<Query> fromQueries = new ArrayList<>();
-		QueryOutput fromOutput = null;
+		
+		String fromName = SearchType.GENES.name().toLowerCase();
+		String toName = getToName(output);
+		// TODO consider special case for homologues where we're only looking at the basic fields that you don't need a join for
+
+		if (StringUtils.isEmpty(toName)) {
+			
+			return Pair.of(SubSearchParams.build(fromName, queries, output),
+					SubSearchParams.build(toName, null, null));
+			
+		} else {
+			
+			List<Query> fromQueries = new ArrayList<>();
+			List<Query> toQueries = new ArrayList<>();
+			
+			// split queries and output into from and to
+			for (Query query : queries) {
+				if (query.getType().equals(QueryType.NESTED) && query.getFieldName().equalsIgnoreCase(toName)) {
+					toQueries.addAll(Arrays.asList(query.getSubQueries()));
+				} else {
+					fromQueries.add(query);
+				}
+			}
+
+			// add the base fields
+			QueryOutput fromOutput = new QueryOutput();
+			fromOutput.getFields().addAll(output.getFields());
+			// split subfields into "to" and "from"
+			QueryOutput toOutput = null;
+			// NB: Could avoid adding into "from" here I guess
+			for (Entry<String, QueryOutput> e : output.getSubFields().entrySet()) {
+				if (e.getKey().equals(toName)) {
+					toOutput = e.getValue();
+				} else {
+					fromOutput.getSubFields().put(e.getKey(), e.getValue());
+				}
+			}
+			
+			return Pair.of(SubSearchParams.build(fromName, fromQueries, fromOutput),
+					SubSearchParams.build(toName, toQueries, toOutput));
+		}
+
+
+	}
+
+	public String getToName(QueryOutput output) {
 		String toName = null;
-		List<Query> toQueries = new ArrayList<>();
-		QueryOutput toOutput = null;
-		// decomposition depends on the QueryOutput being one of the matched 
+		// decomposition depends on the QueryOutput being one of the matched
 		boolean isSimple = true;
 		// do we have proper join targets?
-		for(String name: joinTargets) {
-			if(output.getSubFields().containsKey(name)) {
+		for (String name : joinTargets) {
+			if (output.getSubFields().containsKey(name)) {
 				isSimple = false;
 				toName = name;
 				break;
 			}
 		}
-		if(isSimple) {
+		if (isSimple) {
 			// if not do we have passthrough join targets?
-			for(String name: passThroughTargets) {
-				if(output.getSubFields().containsKey(name)) {
+			for (String name : passThroughTargets) {
+				if (output.getSubFields().containsKey(name)) {
 					isSimple = false;
 					toName = name;
 					break;
-				}				
+				}
 			}
 		}
-
-		if(isSimple) {
-			fromName = SearchType.GENES.name().toLowerCase();
-		    fromQueries = queries;
-			fromOutput = output;
-		} else {
-			
-		}
-		
-		return Pair.of(SubSearchParams.build(fromName, fromQueries, fromOutput),
-				SubSearchParams.build(toName, toQueries, toOutput));
+		return toName;
 	}
 
 	/*
