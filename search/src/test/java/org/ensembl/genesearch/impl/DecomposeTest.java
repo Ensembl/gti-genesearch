@@ -114,6 +114,7 @@ public class DecomposeTest {
 		assertTrue("From name set", from.name.isPresent());
 		assertTrue("Fields contains name",from.fields.getFields().stream().anyMatch(f->f.equals("name")));
 		assertTrue("Fields contains description",from.fields.getFields().stream().anyMatch(f->f.equals("description")));
+		assertFalse("Fields contains null",from.fields.getFields().stream().anyMatch(f->f==null));
 		SubSearchParams to = decomposeQueryFields.getRight();
 		assertEquals("To name set", SearchType.GENOMES.name(), to.name.get().name());
 		assertTrue("Fields contains display_name",to.fields.getFields().stream().anyMatch(f->f.equals("display_name")));
@@ -132,6 +133,7 @@ public class DecomposeTest {
 		assertTrue("Query contains genome",from.queries.stream().anyMatch(f->f.getFieldName().equals("genome")));
 		assertTrue("Fields contains name",from.fields.getFields().stream().anyMatch(f->f.equals("name")));
 		assertTrue("Fields contains description",from.fields.getFields().stream().anyMatch(f->f.equals("description")));
+		assertFalse("Fields contains null",from.fields.getFields().stream().anyMatch(f->f==null));
 		SubSearchParams to = decomposeQueryFields.getRight();
 		assertEquals("To name set", SearchType.GENOMES.name(), to.name.get().name());
 		assertTrue("Fields contains display_name",to.fields.getFields().stream().anyMatch(f->f.equals("display_name")));

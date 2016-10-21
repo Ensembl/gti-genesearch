@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
@@ -48,20 +47,20 @@ public class GeneSearch implements Search {
 
 	protected static class SubSearchParams {
 
-		public static final SubSearchParams build(SearchType name, List<Query> queries, QueryOutput fields) {
+		public static final SubSearchParams build(Optional<SearchType> name, List<Query> queries, QueryOutput fields) {
 			return new SubSearchParams(name, queries, fields);
 		}
 
 		public static final SubSearchParams build(String name, List<Query> queries, QueryOutput fields) {
-			return new SubSearchParams(SearchType.findByName(name), queries, fields);
+			return new SubSearchParams(Optional.of(SearchType.findByName(name)), queries, fields);
 		}
 
 		final QueryOutput fields;
 		final Optional<SearchType> name;
 		final List<Query> queries;
 
-		private SubSearchParams(SearchType name, List<Query> queries, QueryOutput fields) {
-			this.name = Optional.ofNullable(name);
+		private SubSearchParams(Optional<SearchType> name, List<Query> queries, QueryOutput fields) {
+			this.name = name;
 			this.queries = queries;
 			this.fields = fields;
 		}
@@ -74,18 +73,18 @@ public class GeneSearch implements Search {
 
 	protected final List<DataTypeInfo> dataTypes = new ArrayList<>();
 
-	protected final Map<String, String> fromJoinField = new HashMap<>();
+	protected final Map<SearchType, String> fromJoinField = new HashMap<>();
 	/**
 	 * Search types for which we need a proper join
 	 */
-	protected final Set<String> joinTargets = new HashSet<>();
+	protected final Set<SearchType> joinTargets = new HashSet<>();
 
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * Search types for which we can use the same search and flatten the data
 	 */
-	protected final Set<String> passThroughTargets = new HashSet<>();
+	protected final Set<SearchType> passThroughTargets = new HashSet<>();
 
 	/**
 	 * primary search
@@ -93,37 +92,34 @@ public class GeneSearch implements Search {
 	protected final Search primarySearch;
 
 	protected final SearchRegistry provider;
-	protected final Map<String, String> toJoinField = new HashMap<>();
+	protected final Map<SearchType, String> toJoinField = new HashMap<>();
 
 	public GeneSearch(SearchRegistry provider) {
 		// super(provider);
 		primarySearch = provider.getSearch(SearchType.GENES);
 		dataTypes.addAll(primarySearch.getDataTypes());
-		passThroughTargets.add(SearchType.TRANSCRIPTS.name().toLowerCase());
-		passThroughTargets.add(SearchType.TRANSLATIONS.name().toLowerCase());
+		passThroughTargets.add(SearchType.TRANSCRIPTS);
+		passThroughTargets.add(SearchType.TRANSLATIONS);
 		Search homologSearch = provider.getSearch(SearchType.HOMOLOGUES);
 		if (homologSearch != null) {
 			dataTypes.addAll(homologSearch.getDataTypes());
-			String homologues = SearchType.HOMOLOGUES.name().toLowerCase();
-			joinTargets.add(homologues);
-			fromJoinField.put(homologues, "homologues.stable_id");
-			toJoinField.put(homologues, "id");
+			joinTargets.add(SearchType.HOMOLOGUES);
+			fromJoinField.put(SearchType.HOMOLOGUES, "homologues.stable_id");
+			toJoinField.put(SearchType.HOMOLOGUES, "id");
 		}
 		Search seqSearch = provider.getSearch(SearchType.SEQUENCES);
 		if (seqSearch != null) {
 			dataTypes.addAll(seqSearch.getDataTypes());
-			String seqs = SearchType.SEQUENCES.name().toLowerCase();
-			joinTargets.add(seqs);
-			fromJoinField.put(seqs, "id");
-			toJoinField.put(seqs, "id");
+			joinTargets.add(SearchType.SEQUENCES);
+			fromJoinField.put(SearchType.SEQUENCES, "id");
+			toJoinField.put(SearchType.SEQUENCES, "id");
 		}
 		Search genomeSearch = provider.getSearch(SearchType.GENOMES);
 		if (genomeSearch != null) {
 			dataTypes.addAll(genomeSearch.getDataTypes());
-			String genomes = SearchType.GENOMES.name().toLowerCase();
-			joinTargets.add(genomes);
-			fromJoinField.put(genomes, "genome");
-			toJoinField.put(genomes, "id");
+			joinTargets.add(SearchType.GENOMES);
+			fromJoinField.put(SearchType.GENOMES, "genome");
+			toJoinField.put(SearchType.GENOMES, "id");
 		}
 		this.provider = provider;
 	}
@@ -137,13 +133,13 @@ public class GeneSearch implements Search {
 	 */
 	protected Pair<SubSearchParams, SubSearchParams> decomposeQueryFields(List<Query> queries, QueryOutput output) {
 
-		String fromName = SearchType.GENES.name().toLowerCase();
-		String toName = getToName(output);
+		Optional<SearchType> fromName = Optional.of(SearchType.GENES);
+		Optional<SearchType> toName = getToName(output);
 		// TODO consider special case for homologues where we're only looking at
-		// the basic fields that you don't need a join for
 
-		if (StringUtils.isEmpty(toName)) {
+		if (!toName.isPresent()) {
 
+			// the basic fields that you don't need a join for
 			return Pair.of(SubSearchParams.build(fromName, queries, output), SubSearchParams.build(toName, null, null));
 
 		} else {
@@ -153,7 +149,8 @@ public class GeneSearch implements Search {
 
 			// split queries and output into from and to
 			for (Query query : queries) {
-				if (query.getType().equals(QueryType.NESTED) && query.getFieldName().equalsIgnoreCase(toName)) {
+				if (query.getType().equals(QueryType.NESTED)
+						&& query.getFieldName().equalsIgnoreCase(toName.get().name())) {
 					toQueries.addAll(Arrays.asList(query.getSubQueries()));
 				} else {
 					fromQueries.add(query);
@@ -167,7 +164,7 @@ public class GeneSearch implements Search {
 			QueryOutput toOutput = null;
 			// NB: Could avoid adding into "from" here I guess
 			for (Entry<String, QueryOutput> e : output.getSubFields().entrySet()) {
-				if (e.getKey().equals(toName)) {
+				if (e.getKey().equalsIgnoreCase(toName.get().name())) {
 					toOutput = e.getValue();
 				} else {
 					fromOutput.getSubFields().put(e.getKey(), e.getValue());
@@ -228,29 +225,18 @@ public class GeneSearch implements Search {
 		return dataTypes;
 	}
 
-	public String getToName(QueryOutput output) {
-		String toName = null;
+	public Optional<SearchType> getToName(QueryOutput output) {
+		SearchType toName = null;
 		// decomposition depends on the QueryOutput being one of the matched
-		boolean isSimple = true;
 		// do we have proper join targets?
-		for (String name : joinTargets) {
-			if (output.getSubFields().containsKey(name)) {
-				isSimple = false;
-				toName = name;
+		for (String field : output.getSubFields().keySet()) {
+			SearchType t = SearchType.findByName(field);
+			if (t != null && (joinTargets.contains(t) || passThroughTargets.contains(t))) {
+				toName = t;
 				break;
 			}
 		}
-		if (isSimple) {
-			// if not do we have passthrough join targets?
-			for (String name : passThroughTargets) {
-				if (output.getSubFields().containsKey(name)) {
-					isSimple = false;
-					toName = name;
-					break;
-				}
-			}
-		}
-		return toName;
+		return Optional.ofNullable(toName);
 	}
 
 	/*
@@ -270,7 +256,7 @@ public class GeneSearch implements Search {
 		SubSearchParams from = qf.getLeft();
 		SubSearchParams to = qf.getRight();
 
-		if (!to.name.isPresent() || passThroughTargets.contains(to.name.get())) {
+		if (!to.name.isPresent()) {
 
 			// we either have no target, or the target is a passthrough
 			log.debug("Passing query through to primary search");
@@ -281,7 +267,7 @@ public class GeneSearch implements Search {
 			// actually, what we'd do is to attack this flattening via another
 			// end point e.g. TranscriptSearch
 
-		} else if (joinTargets.contains(to.name.get())) {
+		} else {
 
 			log.debug("Executing join query through to primary search with flattening");
 
@@ -315,16 +301,15 @@ public class GeneSearch implements Search {
 			provider.getSearch(to.name.get()).fetch(r -> {
 				String id = (String) r.get(toField);
 				resultsById.get(id).stream().forEach(fromR -> {
-					fromR.put(to.name.get().name().toLowerCase(), fromR);
+					fromR.remove(fromField);
+					fromR.put(to.name.get().name().toLowerCase(), r);
 				});
-
 			}, to.queries, to.fields);
 
-		} else {
-			throw new IllegalArgumentException("Do not know how to deal with search target " + to.name.get());
+			return fromResults;
+
 		}
 
-		return null;
 	}
 
 	/*
