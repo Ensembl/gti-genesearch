@@ -224,9 +224,16 @@ public class GeneSearch implements Search {
 			Search toSearch = provider.getSearch(to.name.get());
 			Map<String, List<Map<String, Object>>> resultsById = new HashMap<>();
 			Set<String> ids = new HashSet<>();
-			provider.getSearch(from.name.get()).fetch(r -> readFrom(r, toSearch, to, from, resultsById, ids),
-					from.queries, from.fields);
+			provider.getSearch(from.name.get()).fetch(r -> {
+				readFrom(r, toSearch, to, from, resultsById, ids);
+				if (resultsById.size() == BATCH_SIZE) {
+					mapTo(toSearch, to, from, resultsById, ids);
+					resultsById.values().stream().forEach(l -> l.stream().forEach(consumer));
+					resultsById.clear();
+				}
+			}, from.queries, from.fields);
 			mapTo(toSearch, to, from, resultsById, ids);
+			resultsById.values().stream().forEach(l -> l.stream().forEach(consumer));
 
 		}
 	}
@@ -242,9 +249,6 @@ public class GeneSearch implements Search {
 		}
 		resultsForId.add(r);
 		ids.add((String) r.get(fromParams.key));
-		if (resultsById.size() == BATCH_SIZE) {
-			mapTo(search, toParams, fromParams, resultsById, ids);
-		}
 
 	}
 
@@ -263,7 +267,6 @@ public class GeneSearch implements Search {
 				});
 			}, to.queries, to.fields);
 			to.queries.remove(to.queries.size() - 1);
-			resultsById.clear();
 			ids.clear();
 		}
 	}
@@ -327,7 +330,6 @@ public class GeneSearch implements Search {
 			Map<String, List<Map<String, Object>>> resultsById = new HashMap<>();
 			Set<String> ids = new HashSet<>();
 			Search toSearch = provider.getSearch(to.name.get());
-			// query in batches
 			fromResults.getResults().stream().forEach(r -> readFrom(r, toSearch, to, from, resultsById, ids));
 			// mop up leftovers
 			mapTo(toSearch, to, from, resultsById, ids);

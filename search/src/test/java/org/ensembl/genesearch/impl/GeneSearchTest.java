@@ -30,6 +30,7 @@ import java.util.Optional;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
+import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -153,6 +154,79 @@ public class GeneSearchTest {
 		Optional<Map<String, Object>> genome = result.getResults().stream().filter(f -> f.containsKey("genomes")).findFirst();
 		assertFalse("genomes found", genome.isPresent());
 	}
+	
+	@Test
+	public void fetchSimple() {
+		log.info("Fetching for all genes");
+		SearchResult result = geneSearch.fetch(Query.build("{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}"), QueryOutput.build(Arrays.asList("id")));
+		assertEquals("Total hits", 598, result.getResults().size());
+		assertTrue("id found", result.getResults().get(0).containsKey("id"));
+		assertEquals("1 field only", 1, result.getResults().get(0).keySet().size());
+	}
+	
+	@Test
+	public void fetchJoin() {
+		log.info("Querying for all genes joining to genomes");
+		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
+		SearchResult result = geneSearch.fetch(Query.build("{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}"), o);
+		assertEquals("Fetched hits", 598, result.getResults().size());
+		assertTrue("id found", result.getResults().stream().anyMatch(f -> f.containsKey("id")));
+		assertTrue("description found", result.getResults().stream().anyMatch(f -> f.containsKey("description")));
+		Optional<Map<String, Object>> genome = result.getResults().stream().filter(f -> f.containsKey("genomes")).findFirst();
+		assertTrue("genomes found", genome.isPresent());
+		Map<String,Object> genomes = (Map)genome.get().get("genomes");
+		assertTrue("genomes.id found", genomes.containsKey("id"));
+		assertTrue("genomes.name found", genomes.containsKey("name"));
+		assertTrue("genomes.division found", genomes.containsKey("division"));
+	}
+
+	@Test
+	public void fetchJoinQueryFrom() {
+		log.info("Querying for all genes joining to genomes");
+		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
+		List<Query> q = Query.build("{\"id\":\"NEQ043\"}");
+		SearchResult result = geneSearch.fetch(q, o);
+		assertEquals("Fetched hits", 1, result.getResults().size());
+		assertTrue("id found", result.getResults().stream().anyMatch(f -> f.containsKey("id")));
+		assertTrue("description found", result.getResults().stream().anyMatch(f -> f.containsKey("description")));
+		Optional<Map<String, Object>> genome = result.getResults().stream().filter(f -> f.containsKey("genomes")).findFirst();
+		assertTrue("genomes found", genome.isPresent());
+		Map<String,Object> genomes = (Map)genome.get().get("genomes");
+		assertTrue("genomes.id found", genomes.containsKey("id"));
+		assertTrue("genomes.name found", genomes.containsKey("name"));
+		assertTrue("genomes.division found", genomes.containsKey("division"));
+	}
+	
+	@Test
+	public void fetchJoinQueryTo() {
+		log.info("Querying for all genes joining to genomes");
+		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
+		List<Query> q = Query.build("{\"id\":\"NEQ043\",\"genomes\":{\"division\":\"EnsemblBacteria\"}}");
+		SearchResult result = geneSearch.fetch(q, o);
+		assertEquals("Fetched hits", 1, result.getResults().size());
+		assertTrue("id found", result.getResults().stream().anyMatch(f -> f.containsKey("id")));
+		assertTrue("description found", result.getResults().stream().anyMatch(f -> f.containsKey("description")));
+		Optional<Map<String, Object>> genome = result.getResults().stream().filter(f -> f.containsKey("genomes")).findFirst();
+		assertTrue("genomes found", genome.isPresent());
+		Map<String,Object> genomes = (Map)genome.get().get("genomes");
+		assertTrue("genomes.id found", genomes.containsKey("id"));
+		assertTrue("genomes.name found", genomes.containsKey("name"));
+		assertTrue("genomes.division found", genomes.containsKey("division"));
+	}
+	
+	@Test
+	public void fetchJoinQueryToNone() {
+		log.info("Querying for all genes joining to genomes");
+		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
+		List<Query> q = Query.build("{\"id\":\"NEQ043\",\"genomes\":{\"division\":\"EnsemblFruit\"}}");
+		SearchResult result = geneSearch.fetch(q, o);
+		assertEquals("Fetched hits", 1, result.getResults().size());
+		assertTrue("id found", result.getResults().stream().anyMatch(f -> f.containsKey("id")));
+		assertTrue("description found", result.getResults().stream().anyMatch(f -> f.containsKey("description")));
+		Optional<Map<String, Object>> genome = result.getResults().stream().filter(f -> f.containsKey("genomes")).findFirst();
+		assertFalse("genomes found", genome.isPresent());
+	}
+
 
 	@AfterClass
 	public static void tearDown() {
