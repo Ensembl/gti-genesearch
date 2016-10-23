@@ -48,7 +48,6 @@ public class DivisionAwareSequenceSearch implements Search {
 	public static final String SPECIES = "species";
 	public static final String ENSEMBL = "Ensembl";
 	public static final String GENOME = "genome";
-	public static final String ID = "id";
 	public static final String DIVISION = "division";
 	private final Search genomeSearch;
 	private final EnsemblRestSequenceSearch eSearch;
@@ -109,7 +108,7 @@ public class DivisionAwareSequenceSearch implements Search {
 	 * java.lang.String[])
 	 */
 	@Override
-	public List<Map<String, Object>> fetchByIds(List<String> fields, String... ids) {
+	public List<Map<String, Object>> fetchByIds(QueryOutput fields, String... ids) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -128,7 +128,7 @@ public class EnsemblRestSequenceSearch implements Search {
 	 * @return
 	 */
 	protected List<String> getIds(List<Query> queries) {
-		return queries.stream().filter(q -> q.getFieldName().equals("id"))
+		return queries.stream().filter(q -> q.getFieldName().equals(getIdField()))
 				.flatMap(q -> Arrays.asList(q.getValues()).stream()).collect(Collectors.toList());
 	}
 
@@ -139,7 +139,7 @@ public class EnsemblRestSequenceSearch implements Search {
 	 * java.lang.String[])
 	 */
 	@Override
-	public List<Map<String, Object>> fetchByIds(List<String> fields, String... ids) {
+	public List<Map<String, Object>> fetchByIds(QueryOutput fields, String... ids) {
 		throw new UnsupportedOperationException();
 	}
 

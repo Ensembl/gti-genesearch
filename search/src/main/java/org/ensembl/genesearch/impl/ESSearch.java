@@ -468,11 +468,11 @@ public class ESSearch implements Search {
 	 * java.lang.String[])
 	 */
 	@Override
-	public List<Map<String, Object>> fetchByIds(List<String> fields, String... ids) {
+	public List<Map<String, Object>> fetchByIds(QueryOutput fields, String... ids) {
 		SearchRequestBuilder request = client.prepareSearch(index)
 				.setQuery(new ConstantScoreQueryBuilder(QueryBuilders.idsQuery(type).addIds(ids)));
-		if (!fields.isEmpty()) {
-			request.setFetchSource(fields.toArray(new String[] {}), new String[] {});
+		if (!fields.getFields().isEmpty()) {
+			request.setFetchSource(fields.getFields().toArray(new String[] {}), new String[] {});
 		}
 		SearchResponse response = request.execute().actionGet();
 		return processResults(response, null);
@@ -558,6 +558,14 @@ public class ESSearch implements Search {
 			fieldNames.add(0, ID);
 		}
 		return Search.super.getFieldInfo(QueryOutput.build(fieldNames));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#getIdField()
+	 */
+	@Override
+	public String getIdField() {
+		return ID;
 	}
 
 }

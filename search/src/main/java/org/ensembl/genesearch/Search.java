@@ -17,11 +17,13 @@
 package org.ensembl.genesearch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
 
@@ -33,6 +35,8 @@ import org.ensembl.genesearch.info.FieldInfo;
  *
  */
 public interface Search {
+
+	public static final String ID = "id";
 
 	/**
 	 * Retrieve all results matching the supplied queries
@@ -70,10 +74,18 @@ public interface Search {
 	 * @return
 	 */
 	public default List<Map<String, Object>> fetchByIds(String... ids) {
-		return fetchByIds(Collections.emptyList(), ids);
+		return fetchByIds(QueryOutput.build(Collections.emptyList()), ids);
 	}
 
-	public List<Map<String, Object>> fetchByIds(List<String> fields, String... ids);
+	/**
+	 * 
+	 * @param fields
+	 * @param ids
+	 * @return
+	 */
+	public default List<Map<String, Object>> fetchByIds(QueryOutput fields, String... ids) {
+		return fetch(Arrays.asList(new Query(QueryType.TERM, getIdField(), ids)), fields).getResults();
+	}
 
 	/**
 	 * Retrieve genes with the supplied ID
@@ -82,7 +94,7 @@ public interface Search {
 	 * @return
 	 */
 	public default Map<String, Object> fetchById(String id) {
-		return fetchById(Collections.emptyList(), id);
+		return fetchById(QueryOutput.build(Collections.emptyList()), id);
 	}
 
 	/**
@@ -91,7 +103,7 @@ public interface Search {
 	 * @param id
 	 * @return
 	 */
-	public default Map<String, Object> fetchById(List<String> fields, String id) {
+	public default Map<String, Object> fetchById(QueryOutput fields, String id) {
 		List<Map<String, Object>> genes = this.fetchByIds(fields, id);
 		if (genes.isEmpty()) {
 			return Collections.emptyMap();
@@ -104,8 +116,7 @@ public interface Search {
 	 * Search with the supplied queries and return a summary object containing
 	 * results and facets
 	 * 
-	 * @param queries
-	 *            list of queries to combine with AND
+	 * @gparam queries list of queries to combine with AND
 	 * @param output
 	 *            source fields to include
 	 * @param facets
@@ -125,7 +136,9 @@ public interface Search {
 	 * @param consumer
 	 * @param ids
 	 */
-	public void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids);
+	public default void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids) {
+		fetch(consumer, Arrays.asList(new Query(QueryType.TERM, getIdField(), ids)), new QueryOutput());
+	}
 
 	/**
 	 * Find a document matching the supplied string
@@ -134,16 +147,17 @@ public interface Search {
 	 * @return
 	 */
 	public QueryResult select(String name, int offset, int limit);
-	
+
 	/**
 	 * Get a list of the different datatypes that this search can return
 	 * 
 	 * @return
 	 */
 	public List<DataTypeInfo> getDataTypes();
-	
+
 	/**
 	 * Find the list of names for the given fields
+	 * 
 	 * @param fieldNames
 	 * @return
 	 */
@@ -159,6 +173,10 @@ public interface Search {
 			}
 		}
 		return fields;
+	}
+
+	public default String getIdField() {
+		return ID;
 	}
 
 }
