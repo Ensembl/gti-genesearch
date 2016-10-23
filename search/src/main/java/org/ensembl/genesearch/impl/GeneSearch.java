@@ -47,7 +47,8 @@ public class GeneSearch implements Search {
 
 	protected static class SubSearchParams {
 
-		public static final SubSearchParams build(Optional<SearchType> name, String key, List<Query> queries, QueryOutput fields) {
+		public static final SubSearchParams build(Optional<SearchType> name, String key, List<Query> queries,
+				QueryOutput fields) {
 			return new SubSearchParams(name, key, queries, fields);
 		}
 
@@ -65,7 +66,7 @@ public class GeneSearch implements Search {
 			this.key = key;
 			this.queries = queries;
 			this.fields = fields;
-			if(key!=null && !this.fields.getFields().contains(key)) {
+			if (key != null && !this.fields.getFields().contains(key)) {
 				this.fields.getFields().add(key);
 			}
 		}
@@ -75,6 +76,8 @@ public class GeneSearch implements Search {
 			return ToStringBuilder.reflectionToString(this);
 		}
 	}
+
+	private static final int BATCH_SIZE = 1000;
 
 	protected final List<DataTypeInfo> dataTypes = new ArrayList<>();
 
@@ -146,7 +149,8 @@ public class GeneSearch implements Search {
 		if (!toName.isPresent()) {
 
 			// the basic fields that you don't need a join for
-			return Pair.of(SubSearchParams.build(fromName, null, queries, output), SubSearchParams.build(toName, null, null, null));
+			return Pair.of(SubSearchParams.build(fromName, null, queries, output),
+					SubSearchParams.build(toName, null, null, null));
 
 		} else {
 
@@ -212,20 +216,56 @@ public class GeneSearch implements Search {
 			log.debug("Passing query through to primary search");
 			provider.getSearch(getPrimarySearchType()).fetch(consumer, queries, fieldNames);
 
-			// TODO how do we do flattening here? Need a target after all
-			// perhaps...
-			// actually, what we'd do is to attack this flattening via another
-			// end point e.g. TranscriptSearch
-
 		} else {
 
 			log.debug("Executing join query through to primary search with flattening");
 
 			// process in batches
-			
+			Search toSearch = provider.getSearch(to.name.get());
+			Map<String, List<Map<String, Object>>> resultsById = new HashMap<>();
+			Set<String> ids = new HashSet<>();
+			provider.getSearch(from.name.get()).fetch(r -> readFrom(r, toSearch, to, from, resultsById, ids),
+					from.queries, from.fields);
+			mapTo(toSearch, to, from, resultsById, ids);
 
 		}
+	}
 
+	protected void readFrom(Map<String, Object> r, Search search, SubSearchParams toParams, SubSearchParams fromParams,
+			Map<String, List<Map<String, Object>>> resultsById, Set<String> ids) {
+
+		String fromId = (String) r.get(fromParams.key);
+		List<Map<String, Object>> resultsForId = resultsById.get(fromId);
+		if (resultsForId == null) {
+			resultsForId = new ArrayList<>();
+			resultsById.put(fromId, resultsForId);
+		}
+		resultsForId.add(r);
+		ids.add((String) r.get(fromParams.key));
+		if (resultsById.size() == BATCH_SIZE) {
+			mapTo(search, toParams, fromParams, resultsById, ids);
+		}
+
+	}
+
+	protected void mapTo(Search search, SubSearchParams to, SubSearchParams from,
+			Map<String, List<Map<String, Object>>> resultsById, Set<String> ids) {
+		if (!resultsById.isEmpty()) {
+			// additional query joining to "to"
+			to.queries.add(new Query(QueryType.TERM, to.key, ids));
+
+			// run query on "to" and map values over
+			provider.getSearch(to.name.get()).fetch(r -> {
+				String id = (String) r.get(to.key);
+				resultsById.get(id).stream().forEach(fromR -> {
+					fromR.remove(from.key);
+					fromR.put(to.name.get().name().toLowerCase(), r);
+				});
+			}, to.queries, to.fields);
+			to.queries.remove(to.queries.size() - 1);
+			resultsById.clear();
+			ids.clear();
+		}
 	}
 
 	/*
@@ -275,15 +315,9 @@ public class GeneSearch implements Search {
 			log.debug("Passing query through to primary search");
 			return provider.getSearch(getPrimarySearchType()).query(queries, output, facets, offset, limit, sorts);
 
-			// TODO how do we do flattening here? Need a target after all
-			// perhaps...
-			// actually, what we'd do is to attack this flattening via another
-			// end point e.g. TranscriptSearch
-
 		} else {
 
 			log.debug("Executing join query through to primary search with flattening");
-
 
 			// query from first and generate a set of results
 			QueryResult fromResults = provider.getSearch(getPrimarySearchType()).query(from.queries, from.fields,
@@ -292,28 +326,11 @@ public class GeneSearch implements Search {
 			// hash results by ID and also create a new "to" search
 			Map<String, List<Map<String, Object>>> resultsById = new HashMap<>();
 			Set<String> ids = new HashSet<>();
-			fromResults.getResults().stream().forEach(r -> {
-				String fromId = (String) r.get(from.key);
-				List<Map<String, Object>> resultsForId = resultsById.get(fromId);
-				if (resultsForId == null) {
-					resultsForId = new ArrayList<>();
-					resultsById.put(fromId, resultsForId);
-				}
-				resultsForId.add(r);
-				ids.add((String) r.get(from.key));
-			});
-
-			// additional query joining to "to"
-			to.queries.add(new Query(QueryType.TERM, to.key, ids));
-
-			// run query on "to" and map values over
-			provider.getSearch(to.name.get()).fetch(r -> {
-				String id = (String) r.get(to.key);
-				resultsById.get(id).stream().forEach(fromR -> {
-					fromR.remove(from.key);
-					fromR.put(to.name.get().name().toLowerCase(), r);
-				});
-			}, to.queries, to.fields);
+			Search toSearch = provider.getSearch(to.name.get());
+			// query in batches
+			fromResults.getResults().stream().forEach(r -> readFrom(r, toSearch, to, from, resultsById, ids));
+			// mop up leftovers
+			mapTo(toSearch, to, from, resultsById, ids);
 
 			return fromResults;
 
