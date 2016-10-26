@@ -34,10 +34,8 @@ import org.ensembl.genesearch.impl.ESSearchBuilder;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
 import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SuppressWarnings("unchecked")
 public class ESGeneSearchBuilderTest {
@@ -46,7 +44,7 @@ public class ESGeneSearchBuilderTest {
 	public void testId() {
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, new Query(QueryType.TERM, "id", "DDB0231518"));
 
-		Map<String, Object> obj = jsonToMap(builder.toString());
+		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		System.out.println(obj);
 		assertObjCorrect("Object string check", "{constant_score={filter={ids={type=gene, values=[DDB0231518]}}}}",
 				obj);
@@ -60,7 +58,7 @@ public class ESGeneSearchBuilderTest {
 
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, homology);
 
-		Map<String, Object> obj = jsonToMap(builder.toString());
+		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		System.out.println(obj);
 
 		assertTrue("Nested set", obj.containsKey("nested"));
@@ -82,7 +80,7 @@ public class ESGeneSearchBuilderTest {
 		Query translationQuery = new Query(QueryType.NESTED, "translations", idQuery);
 		Query geneQuery = new Query(QueryType.NESTED, "transcripts", translationQuery);
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, geneQuery);
-		Map<String, Object> obj = jsonToMap(builder.toString());
+		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		System.out.println(obj);
 		assertTrue("Nested set", obj.containsKey("nested"));
 
@@ -117,7 +115,7 @@ public class ESGeneSearchBuilderTest {
 		Query start = new Query(QueryType.RANGE, "start", (long) 1, null);
 		Query end = new Query(QueryType.RANGE, "end", null, (long) 100);
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, seqRegion, start, end);
-		Map<String, Object> obj = jsonToMap(builder.toString());
+		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		System.out.println(obj);
 		assertTrue("Bool set", obj.containsKey("bool"));
 		Map<String, Object> bool = (Map<String, Object>) obj.get("bool");
@@ -135,7 +133,7 @@ public class ESGeneSearchBuilderTest {
 		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
 		List<Query> qs = handler.parseQuery(json);
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, qs.get(0));
-		Map<String, Object> obj = jsonToMap(builder.toString());
+		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		System.out.println(obj);
 		assertTrue("Constant_score set", obj.containsKey("constant_score"));
 		Map<String, Object> constant = (Map<String, Object>) obj.get("constant_score");
@@ -146,15 +144,6 @@ public class ESGeneSearchBuilderTest {
 		assertTrue("Uniprot_SWISSPROT set", terms.containsKey("Uniprot_SWISSPROT"));
 		List<String> uniprot = (List<String>) (terms.get("Uniprot_SWISSPROT"));
 		assertEquals("Uniprot_SWISSPROT size", 18920, uniprot.size());
-	}
-
-	protected Map<String, Object> jsonToMap(String json) {
-		try {
-			return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {
-			});
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	protected static void assertObjCorrect(String message, String expected, Object obj) {
