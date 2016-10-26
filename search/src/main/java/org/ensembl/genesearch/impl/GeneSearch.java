@@ -35,10 +35,12 @@ import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Implementation of gene search that can join to other searches
  * 
  * @author dstaines
  *
@@ -82,17 +84,13 @@ public class GeneSearch implements Search {
 	protected final List<DataTypeInfo> dataTypes = new ArrayList<>();
 
 	protected final Map<SearchType, String> fromJoinField = new HashMap<>();
+
 	/**
 	 * Search types for which we need a proper join
 	 */
 	protected final Set<SearchType> joinTargets = new HashSet<>();
 
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-
-	/**
-	 * Search types for which we can use the same search and flatten the data
-	 */
-	protected final Set<SearchType> passThroughTargets = new HashSet<>();
 
 	/**
 	 * primary search
@@ -103,12 +101,9 @@ public class GeneSearch implements Search {
 	protected final Map<SearchType, String> toJoinField = new HashMap<>();
 
 	public GeneSearch(SearchRegistry provider) {
-		// super(provider);
 
 		primarySearchType = SearchType.GENES;
 		dataTypes.addAll(provider.getSearch(primarySearchType).getDataTypes());
-		passThroughTargets.add(SearchType.TRANSCRIPTS);
-		passThroughTargets.add(SearchType.TRANSLATIONS);
 		Search homologSearch = provider.getSearch(SearchType.HOMOLOGUES);
 		if (homologSearch != null) {
 			dataTypes.addAll(homologSearch.getDataTypes());
@@ -241,14 +236,17 @@ public class GeneSearch implements Search {
 	protected void readFrom(Map<String, Object> r, Search search, SubSearchParams toParams, SubSearchParams fromParams,
 			Map<String, List<Map<String, Object>>> resultsById, Set<String> ids) {
 
-		String fromId = (String) r.get(fromParams.key);
-		List<Map<String, Object>> resultsForId = resultsById.get(fromId);
-		if (resultsForId == null) {
-			resultsForId = new ArrayList<>();
-			resultsById.put(fromId, resultsForId);
+		Map<String, Map<String, Object>> objsForKey = DataUtils.getObjsForKey(r, fromParams.key);
+		for (Entry<String, Map<String, Object>> e : objsForKey.entrySet()) {
+			String fromId = e.getKey();
+			List<Map<String, Object>> resultsForId = resultsById.get(fromId);
+			if (resultsForId == null) {
+				resultsForId = new ArrayList<>();
+				resultsById.put(fromId, resultsForId);
+			}
+			resultsForId.add(e.getValue());
+			ids.add(fromId);
 		}
-		resultsForId.add(r);
-		ids.add((String) r.get(fromParams.key));
 
 	}
 
@@ -287,7 +285,7 @@ public class GeneSearch implements Search {
 		// do we have proper join targets?
 		for (String field : output.getSubFields().keySet()) {
 			SearchType t = SearchType.findByName(field);
-			if (t != null && (joinTargets.contains(t) || passThroughTargets.contains(t))) {
+			if (t != null && joinTargets.contains(t)) {
 				toName = t;
 				break;
 			}
