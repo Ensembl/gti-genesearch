@@ -37,11 +37,9 @@ public class DataUtilsTest {
 	@Test
 	public void testGetObjsForKeySimple() {
 		Map<String, Object> data = jsonToMap("{\"a\":\"one\", \"c\":\"two\"}");
-		Map<String, Object> values = getObjsForKey(data, "a");
+		Map<String, Map<String,Object>> values = getObjsForKey(data, "a");
 		assertTrue("one found", values.containsKey("one"));
-		Object oneObj = values.get("one");
-		assertTrue("Map retrieved", Map.class.isAssignableFrom(oneObj.getClass()));
-		Map<String, Object> oneMap = (Map<String, Object>) oneObj;
+		Map<String, Object> oneMap = values.get("one");
 		assertEquals("Map contains a:one", "one", oneMap.get("a"));
 		assertEquals("Map contains c:two", "two", oneMap.get("c"));
 	}
@@ -49,12 +47,10 @@ public class DataUtilsTest {
 	@Test
 	public void testGetObjsForKeyNested() {
 		Map<String, Object> data = jsonToMap("{\"a\":{\"b\":\"one\", \"c\":\"two\"}}");
-		Map<String, Object> values = getObjsForKey(data, "a.b");
+		Map<String, Map<String,Object>> values = getObjsForKey(data, "a.b");
 		System.out.println(values);
 		assertTrue("one found", values.containsKey("one"));
-		Object oneObj = values.get("one");
-		assertTrue("Map retrieved", Map.class.isAssignableFrom(oneObj.getClass()));
-		Map<String, Object> oneMap = (Map<String, Object>) oneObj;
+		Map<String, Object> oneMap =  values.get("one");
 		assertEquals("Map contains a:one", "one", oneMap.get("b"));
 		assertEquals("Map contains c:two", "two", oneMap.get("c"));
 	}
@@ -62,18 +58,14 @@ public class DataUtilsTest {
 	@Test
 	public void testGetObjsForKeyList() {
 		Map<String, Object> data = jsonToMap("{\"a\":[{\"b\":\"one\", \"c\":\"two\"},{\"b\":\"three\", \"c\":\"four\"}]}");
-		Map<String, Object> values = getObjsForKey(data, "a.b");
+		Map<String, Map<String,Object>> values = getObjsForKey(data, "a.b");
 		System.out.println(values);
 		assertTrue("one found", values.containsKey("one"));
 		assertTrue("three found", values.containsKey("three"));
-		Object oneObj = values.get("one");
-		assertTrue("Map retrieved", Map.class.isAssignableFrom(oneObj.getClass()));
-		Map<String, Object> oneMap = (Map<String, Object>) oneObj;
+		Map<String, Object> oneMap = values.get("one");
 		assertEquals("Map contains a:one", "one", oneMap.get("b"));
 		assertEquals("Map contains c:two", "two", oneMap.get("c"));
-		oneObj = values.get("three");
-		assertTrue("Map retrieved", Map.class.isAssignableFrom(oneObj.getClass()));
-		oneMap = (Map<String, Object>) oneObj;
+		oneMap = values.get("three");
 		assertEquals("Map contains a:three", "three", oneMap.get("b"));
 		assertEquals("Map contains c:four", "four", oneMap.get("c"));
 	}

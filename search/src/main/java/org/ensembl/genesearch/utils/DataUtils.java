@@ -33,18 +33,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class DataUtils {
 
 	/**
-	 * Find all data for a given object
+	 * Find all data for a given key, keyed by the value of that key
 	 * 
 	 * @param r
 	 * @param key
 	 * @return
 	 */
-	public static Map<String,Object> getObjsForKey(Map<String, Object> r, String key) {
-		Map<String,Object> keys = new HashMap<>();
+	public static Map<String,Map<String, Object>> getObjsForKey(Map<String, Object> r, String key) {
+		Map<String,Map<String,Object>> keys = new HashMap<>();
 		getObjsForKey(r, key, keys);
 		return keys;
 	}
-	protected static void getObjsForKey(Map<String, Object> r, String key, Map<String,Object> keys) {
+	protected static void getObjsForKey(Map<String, Object> r, String key, Map<String,Map<String,Object>> keys) {
 		int i = key.indexOf('.');
 		if (i != -1) {
 			String stem = key.substring(0, i);
