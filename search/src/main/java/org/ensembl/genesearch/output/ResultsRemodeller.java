@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,47 +30,90 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Class for flattening results to a given path/level
+ * 
  * @author dstaines
  *
  */
 public class ResultsRemodeller {
-	
+
+	/**
+	 * Flatten the supplied object to the desired level, capturing top level
+	 * elems
+	 * 
+	 * @param input
+	 * @param targetPath
+	 *            e.g. a.b will flatten to b children of a children of the
+	 *            supplied object
+	 * @param topLevel
+	 *            e.g. name for top level elems
+	 * @return
+	 */
+	public static List<Map<String, Object>> flatten(Map<String, Object> input, String targetPath, String topLevel) {
+		List<Map<String, Object>> flat = flatten(Arrays.asList(input), StringUtils.EMPTY,
+				StringUtils.split(targetPath, "."));
+		Map<String,Object> newMap = new HashMap<>();
+		flat.stream().forEach(r -> {
+			Iterator<Entry<String,Object>> i = r.entrySet().iterator();
+			while(i.hasNext()) {
+				Entry<String,Object> e = i.next();
+				String newKey = null;
+				if (e.getKey().startsWith(targetPath)) {
+					newKey = e.getKey().substring(e.getKey().indexOf('.') + 1);
+				} else {
+					newKey = topLevel+'.'+e.getKey();
+				}
+				newMap.put(newKey, e.getValue());
+				i.remove();
+			}
+			r.putAll(newMap);
+			newMap.clear();
+		}
+		);
+		return flat;
+	}
+
 	/**
 	 * Flatten the supplied object to the desired level
+	 * 
 	 * @param input
-	 * @param targetPath e.g. a.b will flatten to b children of a children of the supplied object
-	 * @return 
+	 * @param targetPath
+	 *            e.g. a.b will flatten to b children of a children of the
+	 *            supplied object
+	 * @return
 	 */
 	public static List<Map<String, Object>> flatten(Map<String, Object> input, String targetPath) {
-		return flatten(Arrays.asList(input), StringUtils.EMPTY, StringUtils.split(targetPath,"."));
+		return flatten(Arrays.asList(input), StringUtils.EMPTY, StringUtils.split(targetPath, "."));
 	}
 
 	/**
 	 * Flatten the supplied objects to the desired level. Invoked recursively.
+	 * 
 	 * @param input
-	 * @param baseKey current path
+	 * @param baseKey
+	 *            current path
 	 * @param targetPath
 	 * @return
 	 */
-	protected static List<Map<String, Object>> flatten(List<Map<String, Object>> input, String baseKey, String... targetPath) {
-		if(targetPath.length==0) {
+	protected static List<Map<String, Object>> flatten(List<Map<String, Object>> input, String baseKey,
+			String... targetPath) {
+		if (targetPath.length == 0) {
 			return input;
 		}
 		List<Map<String, Object>> output = new ArrayList<>();
 		// work out the current path e.g. b, b.c, b.c.d
-		if(StringUtils.isEmpty(baseKey)) {
+		if (StringUtils.isEmpty(baseKey)) {
 			baseKey = targetPath[0];
 		} else {
 			baseKey = baseKey + "." + targetPath[0];
 		}
-		for(Map<String,Object> obj: input) {
-			Object subobj = obj.get(baseKey);			
-			if(subobj!=null && subobj instanceof List) {
-				for(Map<String,Object> o: (List<Map<String,Object>>)subobj) {
+		for (Map<String, Object> obj : input) {
+			Object subobj = obj.get(baseKey);
+			if (subobj != null && subobj instanceof List) {
+				for (Map<String, Object> o : (List<Map<String, Object>>) subobj) {
 					// create a new object for this row from the parent
-					Map<String,Object> newObj = cloneObject(obj, Arrays.asList(baseKey));
-					for(Entry<String,Object> e: o.entrySet()) {
-						newObj.put(baseKey+"."+e.getKey(), e.getValue());
+					Map<String, Object> newObj = cloneObject(obj, Arrays.asList(baseKey));
+					for (Entry<String, Object> e : o.entrySet()) {
+						newObj.put(baseKey + "." + e.getKey(), e.getValue());
 					}
 					output.add(newObj);
 				}
@@ -77,8 +121,9 @@ public class ResultsRemodeller {
 				output.add(obj);
 			}
 		}
-		if(targetPath.length>1) {
-			// if we still have flattening levels, recursively invoke for the remaining levels
+		if (targetPath.length > 1) {
+			// if we still have flattening levels, recursively invoke for the
+			// remaining levels
 			return flatten(output, baseKey, ArrayUtils.subarray(targetPath, 1, targetPath.length));
 		} else {
 			// otherwise return the flattened arrays
