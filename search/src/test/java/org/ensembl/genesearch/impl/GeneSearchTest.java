@@ -52,7 +52,7 @@ public class GeneSearchTest {
 
 	// set up a provider
 	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.GENES, search)
-			.registerSearch(SearchType.GENOMES, gSearch);
+			.registerSearch(SearchType.GENOMES, gSearch).registerSearch(SearchType.HOMOLOGUES, search);
 
 	// instantiate a join aware search
 	static GeneSearch geneSearch = new GeneSearch(provider);
@@ -230,7 +230,27 @@ public class GeneSearchTest {
 		Optional<Map<String, Object>> genome = result.getResults().stream().filter(f -> f.containsKey("genomes")).findFirst();
 		assertFalse("genomes found", genome.isPresent());
 	}
-
+	
+	@Test
+	public void queryJoinQueryHomologues() {
+		log.info("Querying for all genes joining to genomes");
+		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"homologues\":[\"name\",\"genome\"]}]");
+		List<Query> q = Query.build("{\"id\":\"NEQ519\"}");
+		QueryResult result = geneSearch.query(q, o,
+				Collections.emptyList(), 0, 5, Collections.emptyList());
+		assertEquals("Total hits", 1, result.getResultCount());
+		assertEquals("Fetched hits", 1, result.getResults().size());
+		assertEquals("Total facets", 0, result.getFacets().size());
+		assertTrue("id found", result.getResults().stream().anyMatch(f -> f.containsKey("id")));
+		System.out.println(result.getResults());
+//		assertTrue("description found", result.getResults().stream().anyMatch(f -> f.containsKey("description")));
+//		Optional<Map<String, Object>> genome = result.getResults().stream().filter(f -> f.containsKey("genomes")).findFirst();
+//		assertTrue("genomes found", genome.isPresent());
+//		Map<String,Object> genomes = (Map)genome.get().get("genomes");
+//		assertTrue("genomes.id found", genomes.containsKey("id"));
+//		assertTrue("genomes.name found", genomes.containsKey("name"));
+//		assertTrue("genomes.division found", genomes.containsKey("division"));
+	}
 
 	@AfterClass
 	public static void tearDown() {

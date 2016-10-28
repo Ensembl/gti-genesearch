@@ -47,27 +47,55 @@ import org.slf4j.LoggerFactory;
  */
 public class GeneSearch implements Search {
 
+	protected static enum MergeStrategy {
+		MERGE, APPEND;
+	}
+
+	/**
+	 * Class encapsulating information on how to join a source
+	 * @author dstaines
+	 *
+	 */
+	protected static class JoinStrategy {
+		static JoinStrategy as(MergeStrategy merge, String fromKey, String toKey) {
+			return new JoinStrategy(merge, fromKey, toKey);
+		}
+
+		protected JoinStrategy(MergeStrategy merge, String fromKey, String toKey) {
+			this.merge = merge;
+			this.fromKey = fromKey;
+			this.toKey = toKey;
+		}
+
+		final MergeStrategy merge;
+		final String fromKey;
+		final String toKey;
+	}
+
+	/**
+	 * Class encapsulating fields and queries used in a join query
+	 * @author dstaines
+	 *
+	 */
 	protected static class SubSearchParams {
 
 		public static final SubSearchParams build(Optional<SearchType> name, String key, List<Query> queries,
-				QueryOutput fields) {
-			return new SubSearchParams(name, key, queries, fields);
-		}
-
-		public static final SubSearchParams build(String name, String key, List<Query> queries, QueryOutput fields) {
-			return new SubSearchParams(Optional.of(SearchType.findByName(name)), key, queries, fields);
+				QueryOutput fields, MergeStrategy mergeStrategy) {
+			return new SubSearchParams(name, key, queries, fields, mergeStrategy);
 		}
 
 		final QueryOutput fields;
 		final Optional<SearchType> name;
 		final List<Query> queries;
 		final String key;
+		final MergeStrategy mergeStrategy;
 
-		private SubSearchParams(Optional<SearchType> name, String key, List<Query> queries, QueryOutput fields) {
+		private SubSearchParams(Optional<SearchType> name, String key, List<Query> queries, QueryOutput fields, MergeStrategy mergeStrategy) {
 			this.name = name;
 			this.key = key;
 			this.queries = queries;
 			this.fields = fields;
+			this.mergeStrategy = mergeStrategy;
 			if (key != null && !this.fields.getFields().contains(key)) {
 				this.fields.getFields().add(key);
 			}
@@ -83,12 +111,10 @@ public class GeneSearch implements Search {
 
 	protected final List<DataTypeInfo> dataTypes = new ArrayList<>();
 
-	protected final Map<SearchType, String> fromJoinField = new HashMap<>();
-
 	/**
 	 * Search types for which we need a proper join
 	 */
-	protected final Set<SearchType> joinTargets = new HashSet<>();
+	protected final Map<SearchType,JoinStrategy> joinTargets = new HashMap<>();
 
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -98,7 +124,6 @@ public class GeneSearch implements Search {
 	protected final SearchType primarySearchType;
 
 	protected final SearchRegistry provider;
-	protected final Map<SearchType, String> toJoinField = new HashMap<>();
 
 	public GeneSearch(SearchRegistry provider) {
 
@@ -107,23 +132,17 @@ public class GeneSearch implements Search {
 		Search homologSearch = provider.getSearch(SearchType.HOMOLOGUES);
 		if (homologSearch != null) {
 			dataTypes.addAll(homologSearch.getDataTypes());
-			joinTargets.add(SearchType.HOMOLOGUES);
-			fromJoinField.put(SearchType.HOMOLOGUES, "homologues.stable_id");
-			toJoinField.put(SearchType.HOMOLOGUES, "id");
+			joinTargets.put(SearchType.HOMOLOGUES, JoinStrategy.as(MergeStrategy.MERGE, "homologues.stable_id", "id"));
 		}
 		Search seqSearch = provider.getSearch(SearchType.SEQUENCES);
 		if (seqSearch != null) {
 			dataTypes.addAll(seqSearch.getDataTypes());
-			joinTargets.add(SearchType.SEQUENCES);
-			fromJoinField.put(SearchType.SEQUENCES, "id");
-			toJoinField.put(SearchType.SEQUENCES, "id");
+			joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.APPEND, "id", "id"));
 		}
 		Search genomeSearch = provider.getSearch(SearchType.GENOMES);
 		if (genomeSearch != null) {
 			dataTypes.addAll(genomeSearch.getDataTypes());
-			joinTargets.add(SearchType.GENOMES);
-			fromJoinField.put(SearchType.GENOMES, "genome");
-			toJoinField.put(SearchType.GENOMES, "id");
+			joinTargets.put(SearchType.GENOMES, JoinStrategy.as(MergeStrategy.APPEND, "genome", "id"));
 		}
 		this.provider = provider;
 	}
@@ -144,8 +163,8 @@ public class GeneSearch implements Search {
 		if (!toName.isPresent()) {
 
 			// the basic fields that you don't need a join for
-			return Pair.of(SubSearchParams.build(fromName, null, queries, output),
-					SubSearchParams.build(toName, null, null, null));
+			return Pair.of(SubSearchParams.build(fromName, null, queries, output, null),
+					SubSearchParams.build(toName, null, null, null, null));
 
 		} else {
 
@@ -177,11 +196,11 @@ public class GeneSearch implements Search {
 			}
 
 			// find the to/from join fields and add to the output
-			String fromField = fromJoinField.get(toName.get());
-			String toField = toJoinField.get(toName.get());
+			String fromField = joinTargets.get(toName.get()).fromKey;
+			String toField = joinTargets.get(toName.get()).toKey;
 
-			return Pair.of(SubSearchParams.build(fromName, fromField, fromQueries, fromOutput),
-					SubSearchParams.build(toName, toField, toQueries, toOutput));
+			return Pair.of(SubSearchParams.build(fromName, fromField, fromQueries, fromOutput, joinTargets.get(toName.get()).merge),
+					SubSearchParams.build(toName, toField, toQueries, toOutput, joinTargets.get(toName.get()).merge));
 		}
 
 	}
@@ -259,14 +278,24 @@ public class GeneSearch implements Search {
 			// run query on "to" and map values over
 			provider.getSearch(to.name.get()).fetch(r -> {
 				String id = (String) r.get(to.key);
-				resultsById.get(id).stream().forEach(fromR -> {
-					fromR.remove(from.key);
-					fromR.put(to.name.get().name().toLowerCase(), r);
-				});
+				resultsById.get(id).stream().forEach(mergeResults(to, from, r));
 			}, to.queries, to.fields);
 			to.queries.remove(to.queries.size() - 1);
 			ids.clear();
 		}
+	}
+
+	protected Consumer<Map<String, Object>> mergeResults(SubSearchParams to, SubSearchParams from,
+			Map<String, Object> r) {
+		return fromR -> {
+			fromR.remove(from.key);
+			String key = to.name.get().name().toLowerCase();
+			if(to.mergeStrategy==MergeStrategy.MERGE) {
+				fromR.putAll(r);
+			} else {
+				fromR.put(key, r);
+			}
+		};
 	}
 
 	/*
@@ -285,7 +314,7 @@ public class GeneSearch implements Search {
 		// do we have proper join targets?
 		for (String field : output.getSubFields().keySet()) {
 			SearchType t = SearchType.findByName(field);
-			if (t != null && joinTargets.contains(t)) {
+			if (t != null && joinTargets.containsKey(t)) {
 				toName = t;
 				break;
 			}
