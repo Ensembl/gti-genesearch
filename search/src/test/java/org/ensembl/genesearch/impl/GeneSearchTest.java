@@ -18,6 +18,7 @@ package org.ensembl.genesearch.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -234,22 +235,24 @@ public class GeneSearchTest {
 	@Test
 	public void queryJoinQueryHomologues() {
 		log.info("Querying for all genes joining to genomes");
-		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"homologues\":[\"name\",\"genome\"]}]");
+		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"homologues\":[\"name\",\"genome\",\"seq_region_name\"]}]");
 		List<Query> q = Query.build("{\"id\":\"NEQ519\"}");
 		QueryResult result = geneSearch.query(q, o,
 				Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 1, result.getResultCount());
 		assertEquals("Fetched hits", 1, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
-		assertTrue("id found", result.getResults().stream().anyMatch(f -> f.containsKey("id")));
-		System.out.println(result.getResults());
-//		assertTrue("description found", result.getResults().stream().anyMatch(f -> f.containsKey("description")));
-//		Optional<Map<String, Object>> genome = result.getResults().stream().filter(f -> f.containsKey("genomes")).findFirst();
-//		assertTrue("genomes found", genome.isPresent());
-//		Map<String,Object> genomes = (Map)genome.get().get("genomes");
-//		assertTrue("genomes.id found", genomes.containsKey("id"));
-//		assertTrue("genomes.name found", genomes.containsKey("name"));
-//		assertTrue("genomes.division found", genomes.containsKey("division"));
+		Map<String,Object> gene = result.getResults().get(0);
+		assertTrue("id found", gene.containsKey("id"));
+		assertTrue("description found", gene.containsKey("description"));
+		assertTrue("homologues found", gene.containsKey("homologues"));
+		System.out.println(gene);
+		List<Map<String,Object>> homologs = (List)gene.get("homologues");
+		System.out.println(homologs);
+		Optional<Map<String, Object>> homolog = homologs.stream().filter(h -> h.containsKey("seq_region_name")).findAny();
+		assertTrue("Expanded homologue", homolog.isPresent());
+		assertNotNull("Expanded homologue", homolog.get().get("genome"));
+		assertNotNull("Expanded homologue", homolog.get().get("seq_region_name"));
 	}
 
 	@AfterClass
