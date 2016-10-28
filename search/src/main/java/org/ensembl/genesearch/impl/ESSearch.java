@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -35,6 +36,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.lucene.search.function.FieldValueFactorFunction.Modifier;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
@@ -44,6 +46,7 @@ import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.sort.SortParseElement;
@@ -262,7 +265,7 @@ public class ESSearch implements Search {
 		addFacets(facets, request, DEFAULT_AGGREGATION_SIZE);
 
 		log.info("Starting query (limit " + limit + ")");
-		log.debug("Query " + request.toString());
+		log.info("Query " + request.toString());
 
 		SearchResponse response = request.execute().actionGet();
 		log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
@@ -317,7 +320,12 @@ public class ESSearch implements Search {
 		for (String sortStr : sorts) {
 			Sort sort = new Sort(sortStr);
 			log.info("Adding " + sort.direction + " sort on '" + sort.name + "'");
-			request.addSort(SortBuilders.fieldSort(sort.name).order(sort.direction).missing("_last"));
+			FieldSortBuilder missing = SortBuilders.fieldSort(sort.name).order(sort.direction).missing("_last");
+			if(sort.path!=null) {
+				missing.setNestedPath(sort.path);
+				// TODO support for nested filter but would need to reparse the query as QueryBuilder is not readable
+			}
+			request.addSort(missing);
 		}
 	}
 
@@ -361,13 +369,28 @@ public class ESSearch implements Search {
 		Map<String, Map<String, Long>> facetResults = new HashMap<>();
 		if (response.getAggregations() != null) {
 			for (Aggregation facet : response.getAggregations().asList()) {
-				log.debug("Getting facet on " + facet.getName());
+				String name = getFacetName(facet, StringUtils.EMPTY);
+				log.debug("Getting facet on " + name);
 				Map<String, Long> facetResult = new LinkedHashMap<>();
 				processAggregation(facetResult, facet);
-				facetResults.put(facet.getName(), facetResult);
+				facetResults.put(name, facetResult);
 			}
 		}
 		return facetResults;
+	}
+	
+	protected String getFacetName(Aggregation aggregation, String path) {
+		String aggregationName = aggregation.getName();
+		if(!StringUtils.isEmpty(path)) {
+			aggregationName = path + '.' + aggregationName;
+		}
+		if (Nested.class.isAssignableFrom(aggregation.getClass())) {
+			for (Aggregation subAgg : ((Nested) aggregation).getAggregations()) {
+				// note that no support for multiple nested aggs
+				aggregationName = getFacetName(subAgg, aggregationName);
+			}
+		}
+		return aggregationName;
 	}
 
 	/**
@@ -404,6 +427,7 @@ public class ESSearch implements Search {
 		private final Pattern sortPattern = Pattern.compile("([+-])(.*)");
 		public final String name;
 		public final SortOrder direction;
+		public final String path;
 
 		public Sort(String str) {
 			// deal with URL encoding which treats + as a space
@@ -416,7 +440,13 @@ public class ESSearch implements Search {
 				name = str;
 				direction = SortOrder.ASC;
 			}
-		}
+			int i = name.lastIndexOf('.');
+			if(i>-1) {
+				path = name.substring(0, i);
+			} else {
+				path = null;
+			}
+ 		}
 	}
 
 	/*

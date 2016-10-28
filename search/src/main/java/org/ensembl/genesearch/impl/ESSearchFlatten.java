@@ -29,9 +29,9 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
-import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.output.ResultsRemodeller;
 
 /**
@@ -90,7 +90,14 @@ public class ESSearchFlatten extends ESSearch {
 	@Override
 	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
 			List<String> sorts) {
-		return super.query(transformQueries(queries), transformOutput(output), facets, offset, limit, sorts);
+		return super.query(transformQueries(queries), transformOutput(output), transformFields(facets), offset, limit,
+				transformFields(sorts));
+	}
+
+	@Override
+	protected Map<String, Map<String, Long>> processAggregations(SearchResponse response) {
+		return super.processAggregations(response).entrySet().stream()
+				.collect(Collectors.toMap(e -> reverseTransformField(e.getKey()), Map.Entry::getValue));
 	}
 
 	/**
@@ -101,9 +108,9 @@ public class ESSearchFlatten extends ESSearch {
 	 */
 	protected List<Query> transformQueries(List<Query> queries) {
 		List<Query> qs = new ArrayList<>();
-		List<Query> targetQs = new ArrayList<>();	
-		for(Query q: queries) {
-			if(q.getType()==QueryType.NESTED && q.getFieldName().equals(topLevel)) {
+		List<Query> targetQs = new ArrayList<>();
+		for (Query q : queries) {
+			if (q.getType() == QueryType.NESTED && q.getFieldName().equals(topLevel)) {
 				// promote top level
 				qs.addAll(Arrays.asList(q.getSubQueries()));
 			} else {
@@ -111,7 +118,7 @@ public class ESSearchFlatten extends ESSearch {
 				targetQs.add(q);
 			}
 		}
-		qs.add(new Query(QueryType.NESTED, target, targetQs.toArray(new Query[]{})));
+		qs.add(new Query(QueryType.NESTED, target, targetQs.toArray(new Query[] {})));
 		return qs;
 	}
 
@@ -134,9 +141,42 @@ public class ESSearchFlatten extends ESSearch {
 				o.getSubFields().put(e.getKey(), e.getValue());
 			}
 		}
-		;
 		return o;
+	}
 
+	/**
+	 * Transform the required fields to the correct level (use for sorts and
+	 * facets)
+	 * 
+	 * @param fields
+	 * @return
+	 */
+	protected List<String> transformFields(List<String> fields) {
+		return fields.stream().map(this::transformField).collect(Collectors.toList());
+	}
+	
+	protected String reverseTransformField(String field) {
+		if (field.startsWith(target + '.')) {
+			return field.substring(field.indexOf('.') + 1);
+		} else {
+			return topLevel + '.' + field;
+		}
+	}
+
+	protected String transformField(String field) {
+		char prefix = field.charAt(0);
+		if(prefix=='+' || prefix=='-') {
+			field = field.substring(1);
+		}
+		if (field.startsWith(topLevel + '.')) {
+			field = field.substring(field.indexOf('.') + 1);
+		} else {
+			field = target + '.' + field;
+		}
+		if(prefix=='+' || prefix=='-') {
+			field = prefix+field;
+		}
+		return field;
 	}
 
 	@Override

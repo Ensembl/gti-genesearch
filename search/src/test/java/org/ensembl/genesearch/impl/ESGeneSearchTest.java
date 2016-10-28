@@ -208,6 +208,42 @@ public class ESGeneSearchTest {
 		// nulls are always last, so will be the last name, alphabetically
 		assertEquals("Name found", "tRNA", result.getResults().get(0).get("name"));
 	}
+	
+	@Test
+	public void querySortNestedAsc() {
+		log.info("Querying for all genes sorted by transcripts.start");
+		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id", "name","start","transcripts.start")), Collections.emptyList(),
+				0, 5, Arrays.asList("+transcripts.start"));
+		System.out.println(result.getResults());
+		assertEquals("Total hits", 598, result.getResultCount());
+		assertEquals("Fetched hits", 5, result.getResults().size());
+		assertEquals("Total facets", 0, result.getFacets().size());
+		assertEquals("Start found", 883, Integer.parseInt(result.getResults().get(0).get("start").toString()));
+	}
+
+	@Test
+	public void querySortNestedDesc() {
+		log.info("Querying for all genes sorted by -transcripts.start");
+		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id", "name","start","transcripts.start")), Collections.emptyList(),
+				0, 5, Arrays.asList("-transcripts.start"));
+		System.out.println(result.getResults());
+		assertEquals("Total hits", 598, result.getResultCount());
+		assertEquals("Fetched hits", 5, result.getResults().size());
+		assertEquals("Total facets", 0, result.getFacets().size());
+		assertEquals("Start found", 490883, Integer.parseInt(result.getResults().get(0).get("start").toString()));
+	}
+	
+	@Test
+	public void querySortNestedFilterAsc() {
+		log.info("Querying for all genes sorted by transcripts.start");
+		QueryResult result = search.query(Query.build("{\"transcripts\":{\"biotype\":\"protein_coding\"}}"), QueryOutput.build(Arrays.asList("id", "name","start","transcripts.start")), Collections.emptyList(),
+				0, 5, Arrays.asList("+transcripts.start"));
+		System.out.println(result.getResults());
+		assertEquals("Total hits", 536, result.getResultCount());
+		assertEquals("Fetched hits", 5, result.getResults().size());
+		assertEquals("Total facets", 0, result.getFacets().size());
+		assertEquals("Start found", 883, Integer.parseInt(result.getResults().get(0).get("start").toString()));
+	}
 
 	@Test
 	public void querySource() {

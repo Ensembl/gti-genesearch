@@ -78,6 +78,17 @@ public class ESTranscriptSearchTest {
 		assertTrue("transcripts.biotype found", transcripts.get().getSubQueries()[0].getFieldName().equals("biotype"));
 	}
 	
+	@Test 
+	public void transformFields() {
+		List<String> fields = Arrays.asList("biotype","genes.genome","-start","-genes.end");
+		List<String> newFields = search.transformFields(fields);
+		assertTrue("transcripts.biotype found", newFields.contains("transcripts.biotype"));
+		assertTrue("genome found",newFields.contains("genome"));
+		assertTrue("transcripts.biotype found", newFields.contains("-transcripts.start"));
+		assertTrue("genome found",newFields.contains("-end"));
+		System.out.println(newFields);
+	}
+	
 	@Test
 	public void queryGenomeFlatten() {
 		log.info("Fetching all genes from genome and flattening to transcript");
@@ -87,8 +98,6 @@ public class ESTranscriptSearchTest {
 				q,
 				o,Collections.emptyList(),0,10, Collections.emptyList());
 		List<Map<String, Object>> transcripts = result.getResults();
-		System.out.println(transcripts);
-		System.out.println(transcripts.get(0));
 		log.info("Fetched " + transcripts.size() + " transcripts");
 		transcripts.stream().allMatch(r -> r.get("genes.genome").equals("nanoarchaeum_equitans_kin4_m"));
 		transcripts.stream().allMatch(r -> r.get("biotype").equals("protein_coding"));
@@ -115,6 +124,60 @@ public class ESTranscriptSearchTest {
 		transcripts.stream().allMatch(r -> r.containsKey("genes.id"));	
 		transcripts.stream().allMatch(r -> r.containsKey("xrefs"));
 		assertEquals("Number of transcripts", 536, transcripts.size());
+	}
+	
+	@Test
+	public void queryGenomeFacetTop() {
+		log.info("Fetching all genes from genome and flattening to transcript, faceting by genome");
+		QueryOutput o = QueryOutput.build("[\"biotype\",\"xrefs\",\"id\",{\"genes\":[\"name\",\"description\",\"genome\"]}]");
+		List<Query> q = Query.build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
+		List<String> f = Arrays.asList("genes.genome");
+		QueryResult result = search.query(
+				q,
+				o,f,0,10, Collections.emptyList());
+		List<Map<String, Object>> transcripts = result.getResults();
+		log.info("Fetched " + transcripts.size() + " transcripts");
+		Map<String, Map<String, Long>> facets = result.getFacets();
+		log.info("Facets: "+facets);
+		assertTrue("genes.genome facet", facets.containsKey("genes.genome"));
+		assertEquals("genes.genome facet set", Long.valueOf(536), facets.get("genes.genome").get("nanoarchaeum_equitans_kin4_m"));
+	}
+	
+	@Test
+	public void queryGenomeFacetTranscript() {
+		log.info("Fetching all genes from genome and flattening to transcript, faceting by genome");
+		QueryOutput o = QueryOutput.build("[\"biotype\",\"xrefs\",\"id\",{\"genes\":[\"name\",\"description\",\"genome\"]}]");
+		List<Query> q = Query.build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
+		List<String> f = Arrays.asList("biotype");
+		QueryResult result = search.query(
+				q,
+				o,f,0,10, Collections.emptyList());
+		List<Map<String, Object>> transcripts = result.getResults();
+		log.info("Fetched " + transcripts.size() + " transcripts");
+		Map<String, Map<String, Long>> facets = result.getFacets();
+		log.info("Facets: "+facets);
+		assertTrue("biotype facet", facets.containsKey("biotype"));
+		assertEquals("biotype facet set", Long.valueOf(536), facets.get("biotype").get("protein_coding"));
+	}
+	
+	@Test
+	public void queryGenomeSort() {
+		log.info("Fetching all genes from genome and flattening to transcript, sort by seq_region_start");
+		QueryOutput o = QueryOutput.build("[\"biotype\",\"start\",\"id\",{\"genes\":[\"name\",\"description\",\"genome\",\"start\"]}]");
+		List<Query> q = Query.build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
+		QueryResult result = search.query(
+				q,
+				o,Collections.emptyList(),0,10, Arrays.asList("-start"));
+		List<Map<String, Object>> transcripts = result.getResults();
+		log.info("Fetched " + transcripts.size() + " transcripts");
+		long last = Long.MAX_VALUE;
+		int n = 1;
+		for(Map<String,Object> t: transcripts) {
+			System.out.println(t);
+			long current = Long.parseLong(t.get("start").toString());
+			assertTrue("Checking start of transcript "+(n++)+" "+last+" vs "+current,last>current);
+			last = current;
+		}
 	}
 
 	@AfterClass
