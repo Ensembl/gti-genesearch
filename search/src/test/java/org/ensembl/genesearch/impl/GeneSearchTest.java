@@ -246,9 +246,7 @@ public class GeneSearchTest {
 		assertTrue("id found", gene.containsKey("id"));
 		assertTrue("description found", gene.containsKey("description"));
 		assertTrue("homologues found", gene.containsKey("homologues"));
-		System.out.println(gene);
 		List<Map<String,Object>> homologs = (List)gene.get("homologues");
-		System.out.println(homologs);
 		Optional<Map<String, Object>> homolog = homologs.stream().filter(h -> h.containsKey("seq_region_name")).findAny();
 		assertTrue("Expanded homologue", homolog.isPresent());
 		assertNotNull("Expanded homologue", homolog.get().get("genome"));
