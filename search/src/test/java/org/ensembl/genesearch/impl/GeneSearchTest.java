@@ -62,9 +62,13 @@ public class GeneSearchTest {
 		// index a sample of JSON
 		log.info("Reading documents");
 		String json = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
+		String json2 = ESTestServer.readGzipResource("/mycoplasma_pneumoniae_m129.json.gz");
+		String json3 = ESTestServer.readGzipResource("/wolbachia_endosymbiont_of_drosophila_melanogaster.json.gz");
 		String gJson = ESTestServer.readGzipResource("/genomes.json.gz");
 		log.info("Creating test indices");
 		testServer.indexTestDocs(json, ESSearch.GENE_ESTYPE);
+		testServer.indexTestDocs(json2, ESSearch.GENE_ESTYPE);
+		testServer.indexTestDocs(json3, ESSearch.GENE_ESTYPE);
 		testServer.indexTestDocs(gJson, ESSearch.GENOME_ESTYPE);
 	}
 
@@ -73,7 +77,7 @@ public class GeneSearchTest {
 		log.info("Querying for all genes");
 		QueryResult result = geneSearch.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")),
 				Collections.emptyList(), 0, 5, Collections.emptyList());
-		assertEquals("Total hits", 598, result.getResultCount());
+		assertEquals("Total hits", 2646, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
 		assertTrue("id found", result.getResults().get(0).containsKey("id"));
@@ -84,7 +88,7 @@ public class GeneSearchTest {
 	public void queryJoin() {
 		log.info("Querying for all genes joining to genomes");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
-		QueryResult result = geneSearch.query(Collections.emptyList(), o,
+		QueryResult result = geneSearch.query(Query.build("{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}"), o,
 				Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
