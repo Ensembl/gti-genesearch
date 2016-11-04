@@ -21,9 +21,11 @@ import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.clients.ClientBuilder;
 import org.ensembl.genesearch.impl.DivisionAwareSequenceSearch;
 import org.ensembl.genesearch.impl.ESSearch;
+import org.ensembl.genesearch.impl.ESSearchFlatten;
 import org.ensembl.genesearch.impl.GeneSearch;
 import org.ensembl.genesearch.impl.SearchRegistry;
 import org.ensembl.genesearch.impl.SearchType;
+import org.ensembl.genesearch.impl.TranscriptSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +44,7 @@ public class EndpointSearchProvider {
 	final Logger log = LoggerFactory.getLogger(this.getClass());
 	protected Search geneSearch = null;
 	protected Search genomeSearch = null;
+	private Search transcriptSearch = null;
 	protected Client client = null;
 	private SearchRegistry registry = null;
 	@Value("${es.host}")
@@ -82,7 +85,10 @@ public class EndpointSearchProvider {
 			Search esGenomeSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE);
 			Search esGeneSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
 			Search seqSearch = new DivisionAwareSequenceSearch(esGenomeSearch, getEnsRestUrl(), getEgRestUrl());
+			Search esTranscriptSearch = new ESSearchFlatten(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
+					"transcripts", "genes");
 			registry = new SearchRegistry().registerSearch(SearchType.GENES, esGeneSearch)
+					.registerSearch(SearchType.TRANSCRIPTS, esTranscriptSearch)
 					.registerSearch(SearchType.HOMOLOGUES, esGeneSearch)
 					.registerSearch(SearchType.GENOMES, esGenomeSearch).registerSearch(SearchType.SEQUENCES, seqSearch);
 		}
@@ -125,6 +131,17 @@ public class EndpointSearchProvider {
 
 	public void setEgRestUrl(String egRestUrl) {
 		this.egRestUrl = egRestUrl;
+	}
+
+	public Search getTranscriptSearch() {
+		if (transcriptSearch == null) {
+			transcriptSearch = new TranscriptSearch(getRegistry());
+		}
+		return transcriptSearch;
+	}
+
+	public void setTranscriptSearch(Search transcriptSearch) {
+		this.transcriptSearch = transcriptSearch;
 	}
 
 }

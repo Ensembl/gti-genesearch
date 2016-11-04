@@ -36,12 +36,16 @@ public class JerseyConfig extends ResourceConfig {
 	public JerseyConfig() {
 		register(HealthService.class);
 		register(GeneQueryService.class);
-		register(GenomeQueryService.class);
 		register(GeneFetchService.class);
 		register(GeneService.class);
+		register(GeneInfoService.class);
+		register(TranscriptQueryService.class);
+		register(TranscriptFetchService.class);
+		register(TranscriptService.class);
+		register(TranscriptInfoService.class);
+		register(GenomeQueryService.class);
 		register(GenomeFetchService.class);
 		register(GenomeService.class);
-		register(GeneInfoService.class);
 		register(GenomeInfoService.class);
 		register(JacksonFeature.class);
 		register(InfoService.class);

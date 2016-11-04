@@ -68,6 +68,8 @@ public class EndpointTests {
 	private static final String GENOMES_FETCH = API_BASE + "/genomes/fetch";
 	private static final String GENOMES_QUERY = API_BASE + "/genomes/query";
 	private static final String GENOMES_SELECT = API_BASE + "/genomes/select";
+	private static final String TRANSCRIPTS_FETCH = API_BASE + "/transcripts/fetch";
+	private static final String TRANSCRIPTS_QUERY = API_BASE + "/transcripts/query";
 	private static final String INFO = API_BASE + "/genes/fieldinfo";
 
 	static Logger log = LoggerFactory.getLogger(EndpointTests.class);
@@ -273,6 +275,170 @@ public class EndpointTests {
 		assertTrue("Start found", results.get(0).containsKey("start"));
 		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
 	}
+	
+	@Test
+	public void testTranscriptsQueryGetEndpoint() {
+		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_QUERY);
+		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
+		assertEquals("Checking limited results retrieved", 10, ((List<?>) result.get("results")).size());
+		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
+		assertTrue("ID found", results.stream().anyMatch(f -> f.containsKey("id")));
+		assertTrue("Homologues not found", results.stream().anyMatch(f -> !f.containsKey("homologues")));
+		List<Map<String, Object>> fields = (List<Map<String, Object>>) (result.get("fields"));
+		assertTrue("ID found in fields", fields.stream().anyMatch(f -> f.get("name").equals("id")));
+	}
+	
+	@Test
+	public void testTranscriptsQueryGetArrayEndpoint() {
+		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_QUERY + "?array=true");
+		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));		
+		List<Map<String, Object>> fields = (List<Map<String, Object>>) result.get("fields");
+		List<List<Object>> results = (List<List<Object>>) result.get("results");
+		assertEquals("Checking limited results retrieved", 10, results.size());
+		// check we have the same number
+		int n = 0;
+		int m = fields.size();
+		for (List<Object> row : results) {
+			assertEquals("Checking row " + (++n) + " has " + m + " columns", m, row.size());
+		}
+	}
+
+	@Test
+	public void testTranscriptsQueryPostEndpoint() {
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_QUERY, "{\"fields\":[\"id\",\"name\"]}");
+		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
+		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
+		assertEquals("Checking limited results retrieved", 10, results.size());
+		assertTrue("ID found", results.stream().anyMatch(f -> f.containsKey("id")));
+		assertTrue("Homologues found", results.stream().anyMatch(f -> !f.containsKey("homologues")));
+		List<Map<String, Object>> fields = (List<Map<String, Object>>) (result.get("fields"));
+		assertTrue("ID found in fields", fields.stream().anyMatch(f -> f.get("name").equals("id")));
+		Map<String, Object> facets = (Map<String, Object>) (result.get("facets"));
+		assertTrue("Checking no facets retrieved", facets.isEmpty());
+	}
+
+	@Test
+	public void testTranscriptsFullQueryGetEndpoint() {
+		String url = GENES_QUERY + "?query={query}" + "&limit=5" + "&fields=name,seq_region_name" + "&sort=+name,-start"
+				+ "&facets=biotype";
+		// rest template expands {} as variables so supply JSON separately
+		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, url,
+				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
+		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
+		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
+		assertEquals("Checking limited results retrieved", 5, results.size());
+		assertTrue("ID found", results.get(0).containsKey("id"));
+		assertTrue("Name found", results.get(0).containsKey("name"));
+		assertTrue("seq_region_name found", results.get(0).containsKey("seq_region_name"));
+		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
+		Map<String, Object> facets = (Map<String, Object>) (result.get("facets"));
+		assertEquals("Checking 1 facet retrieved", 1, facets.size());
+		assertTrue("Checking facets populated", facets.containsKey("biotype"));
+		assertEquals("Name found", "5S_rRNA", results.get(0).get("name"));
+		List<Map<String, Object>> fields = (List<Map<String, Object>>) (result.get("fields"));
+		assertEquals("ID found", "id", fields.get(0).get("name"));
+		assertEquals("name found", "name", fields.get(1).get("name"));
+		assertEquals("seq_region_name found", "seq_region_name", fields.get(2).get("name"));
+	}
+
+	public void testTranscriptsOffsetQueryGetEndpoint() {
+		String url1 = TRANSCRIPTS_QUERY + "?query={query}" + "&limit=2" + "&fields=id";
+		String url2 = TRANSCRIPTS_QUERY + "?query={query}" + "&limit=2&offset=1" + "&fields=id";
+		// rest template expands {} as variables so supply JSON separately
+		Map<String, Object> response1 = getUrlToObject(MAP_REF, restTemplate, url1,
+				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
+		Map<String, Object> response2 = getUrlToObject(MAP_REF, restTemplate, url2,
+				"{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
+		List<Map<String, Object>> results1 = (List<Map<String, Object>>) (response1.get("results"));
+		List<Map<String, Object>> results2 = (List<Map<String, Object>>) (response2.get("results"));
+
+		assertEquals("Got 2 results", 2, results1.size());
+
+		log.info("Querying for all genes with offset");
+		assertEquals("Got 2 results", 2, results2.size());
+		assertTrue("Results 1.1 matches 2.0", results1.get(1).get("id").equals(results2.get(0).get("id")));
+	}
+
+	@Test
+	public void testTranscriptsFullQueryPostEndpoint() {
+		String paramJson = "{\"query\":{\"biotype\":\"protein_coding\"},"
+				+ "\"limit\":5,\"fields\":[\"id\",\"name\",\"biotype\",\"description\"]," + "\"sort\":[\"+genes.name\",\"-start\"],"
+				+ "\"facets\":[\"biotype\"]}";
+		// rest template expands {} as variables so supply JSON separately
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_QUERY, paramJson);
+		assertEquals("Checking all results found", 536, Long.parseLong(result.get("resultCount").toString()));
+		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
+		assertEquals("Checking limited results retrieved", 5, results.size());
+		assertTrue("ID found", results.get(0).containsKey("id"));
+		assertTrue("Biotype found", results.get(0).containsKey("biotype"));
+		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
+		Map<String, Object> facets = (Map<String, Object>) (result.get("facets"));
+		assertEquals("Checking 1 facet retrieved", 1, facets.size());
+		assertTrue("Checking facets populated", facets.containsKey("biotype"));
+		//TODO requires sorting to be fixed first
+		//assertEquals("Name found", "5S_rRNA", results.get(0).get("name"));
+	}
+
+	@Test
+	public void testTranscriptsFetchGetEndpoint() {
+		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_FETCH);
+		List<Map<String, Object>> result = (List<Map<String, Object>>) results.get("results");
+		assertEquals("Checking all results found", 598, result.size());
+		assertTrue("ID found", result.get(0).containsKey("id"));
+		assertFalse("Homologues found", result.get(0).containsKey("homologues"));
+		assertFalse("Transcripts found", result.get(0).containsKey("transcripts"));
+	}
+
+	@Test
+	public void testTranscriptsFetchArrayGetEndpoint() {
+		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_FETCH + "?array=true");
+		List<Map<String, Object>> fields = (List<Map<String, Object>>) results.get("fields");
+		List<List<Object>> result = (List<List<Object>>) results.get("results");
+		assertEquals("Checking all results found", 598, result.size());
+		// check we have the same number
+		int n = 0;
+		int m = fields.size();
+		for (List<Object> row : result) {
+			assertEquals("Checking row " + (++n) + " has " + m + " columns", m, row.size());
+		}
+	}
+
+	@Test
+	public void testTranscriptsFetchPostEndpoint() {
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_FETCH, "{}");
+		List<Map<String, Object>> results = (List<Map<String, Object>>) result.get("results");
+		assertEquals("Checking all results found", 598, results.size());
+		assertTrue("ID found", results.get(0).containsKey("id"));
+	}
+
+	@Test
+	public void testTranscriptsFullFetchGetEndpoint() {
+		String url = TRANSCRIPTS_FETCH + "?query={query}" + "&fields=id,name,start";
+		// rest template expands {} as variables so supply JSON separately
+		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, url,
+				"{}");
+		List<Map<String, Object>> result = (List<Map<String, Object>>) results.get("results");
+		assertEquals("Checking all results found", 598, result.size());
+		assertTrue("ID found", result.get(0).containsKey("id"));
+		assertTrue("Start found", result.get(0).containsKey("start"));
+		assertFalse("homologues not found", result.get(0).containsKey("homologues"));
+		List<Map<String, Object>> fields = (List<Map<String, Object>>) (results.get("fields"));
+		assertEquals("ID found", "id", fields.get(0).get("name"));
+	}
+
+	@Test
+	public void testTranscriptsFullFetchPostEndpoint() {
+		String paramJson = "{\"query\":{},"
+				+ "\"fields\":[\"id\",\"name\",\"start\"]}";
+		// rest template expands {} as variables so supply JSON separately
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_FETCH, paramJson);
+		List<Map<String, Object>> results = (List<Map<String, Object>>) result.get("results");
+		assertEquals("Checking all results found", 598, results.size());
+		assertTrue("ID found", results.get(0).containsKey("id"));
+		assertTrue("Start found", results.get(0).containsKey("start"));
+		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
+	}
+	
 
 	@Test
 	public void testGenomeQueryGetEndpoint() {
