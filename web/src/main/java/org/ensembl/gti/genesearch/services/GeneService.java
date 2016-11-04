@@ -40,7 +40,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.ensembl.genesearch.Search;
 import org.ensembl.gti.genesearch.services.converter.MapXmlWriter;
-import org.ensembl.gti.genesearch.services.errors.GeneNotFoundException;
+import org.ensembl.gti.genesearch.services.errors.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -77,7 +77,7 @@ public class GeneService extends ObjectService {
 		try {
 			Map<String, Object> gene = provider.getGeneSearch().fetchById(id);
 			if (gene.isEmpty()) {
-				throw new GeneNotFoundException("Gene with ID " + id + " not found");
+				throw new ObjectNotFoundException("Gene with ID " + id + " not found");
 			} else {
 				String xml = MapXmlWriter.mapToXml("gene", gene);
 				return Response.ok().entity(xml).type(MediaType.APPLICATION_XML)

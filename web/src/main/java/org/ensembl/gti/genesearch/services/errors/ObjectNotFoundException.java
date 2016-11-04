@@ -1,10 +1,10 @@
 package org.ensembl.gti.genesearch.services.errors;
 
-public class GeneNotFoundException extends RuntimeException {
+public class ObjectNotFoundException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public GeneNotFoundException(String message) {
+	public ObjectNotFoundException(String message) {
 		super(message);
 	}
 	
