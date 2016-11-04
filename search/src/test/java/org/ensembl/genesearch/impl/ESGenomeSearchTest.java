@@ -83,8 +83,8 @@ public class ESGenomeSearchTest {
 		log.info("Querying for all genomes");
 		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")), Collections.emptyList(), 0, 5,
 				Collections.emptyList());
-		assertEquals("Total hits", 4, result.getResultCount());
-		assertEquals("Fetched hits", 4, result.getResults().size());
+		assertEquals("Total hits", 5, result.getResultCount());
+		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
 		assertTrue("id found", result.getResults().get(0).containsKey("id"));
 		assertEquals("1 field only", 1, result.getResults().get(0).keySet().size());
