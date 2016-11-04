@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 
 import com.fasterxml.jackson.core.JsonEncoding;
@@ -65,7 +66,7 @@ public abstract class ObjectService extends SearchBasedService {
 		if (StringUtils.isEmpty(fields)) {
 			return getSearch().fetchById(id);
 		} else {
-			return getSearch().fetchById(Arrays.asList(StringUtils.split(fields, ",")), id);
+			return getSearch().fetchById(QueryOutput.build(Arrays.asList(StringUtils.split(fields, ","))), id);
 		}
 	}
 
