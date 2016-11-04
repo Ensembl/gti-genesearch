@@ -132,6 +132,12 @@ public class ESSearchFlatten extends ESSearch {
 		QueryOutput o = new QueryOutput();
 		// add required prefix to toplevel e.g. id -> transcripts.id
 		output.getFields().forEach(f -> o.getFields().add(target + '.' + f));
+		// append ID if not present
+		String idStr = target+".id";
+		if(output.getFields().stream().anyMatch(f -> 
+			f.equals(idStr))) {
+			output.getFields().add(idStr);
+		}
 		// promote top level element e.g. genes:[id] -> id
 		for (Entry<String, QueryOutput> e : output.getSubFields().entrySet()) {
 			if (e.getKey().equals(topLevel)) {
