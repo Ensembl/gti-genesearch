@@ -1,0 +1,974 @@
+[
+   {
+      "search" : "true",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "displayName" : "BRENDA",
+      "name" : "transcripts.translations.BRENDA",
+      "type" : "string"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.BindingDB",
+      "displayName" : "BindingDB",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "type" : "string",
+      "displayName" : "BioCyc",
+      "name" : "transcripts.translations.BioCyc",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "name" : "transcripts.translations.Celera_Gene",
+      "displayName" : "Celera gene",
+      "type" : "string"
+   },
+   {
+      "name" : "transcripts.translations.Celera_Pep",
+      "displayName" : "Celera peptide",
+      "type" : "string",
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.ChEMBL",
+      "displayName" : "ChEMBL",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.DIP",
+      "displayName" : "DIP"
+   },
+   {
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.DisProt",
+      "displayName" : "DisProt"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.DrugBank",
+      "displayName" : "DrugBank",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "displayName" : "Enzyme EC Number",
+      "name" : "transcripts.translations.EC_NUMBER",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true"
+   },
+   {
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "displayName" : "European Nucleotide Archive",
+      "name" : "transcripts.translations.EMBL",
+      "type" : "string"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.EMBL_predicted",
+      "displayName" : "Predicted European Nucleotide Archive",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "displayName" : "Ensembl Stickleback Translation",
+      "name" : "transcripts.translations.Ens_Ga_translation"
+   },
+   {
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "displayName" : "Ensembl Human Translation",
+      "name" : "transcripts.translations.Ens_Hs_translation",
+      "type" : "string"
+   },
+   {
+      "name" : "transcripts.translations.FYPO",
+      "displayName" : "Fission Yeast Phenotype Ontology",
+      "type" : "object",
+      "search" : "false",
+      "display" : "true",
+      "facet" : "false",
+      "sort" : "false"
+   },
+   {
+      "search" : "true",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "name" : "transcripts.translations.FYPO.evidence",
+      "displayName" : "transcripts.translations.FYPO.evidence",
+      "type" : "string"
+   },
+   {
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "name" : "transcripts.translations.FYPO.parents",
+      "displayName" : "transcripts.translations.FYPO.parents",
+      "type" : "string"
+   },
+   {
+      "name" : "transcripts.translations.FYPO.term",
+      "displayName" : "transcripts.translations.FYPO.term",
+      "type" : "string",
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true"
+   },
+   {
+      "name" : "transcripts.translations.FlyBaseCGID_translation",
+      "displayName" : "FlyBase translation CGID",
+      "type" : "string",
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true"
+   },
+   {
+      "type" : "string",
+      "displayName" : "FlyBase translation name",
+      "name" : "transcripts.translations.FlyBaseName_translation",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "false",
+      "display" : "true",
+      "facet" : "false",
+      "sort" : "false",
+      "displayName" : "GO",
+      "name" : "transcripts.translations.GO",
+      "type" : "object"
+   },
+   {
+      "type" : "string",
+      "displayName" : "transcripts.translations.GO.evidence",
+      "name" : "transcripts.translations.GO.evidence",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "displayName" : "transcripts.translations.GO.parents",
+      "name" : "transcripts.translations.GO.parents",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true"
+   },
+   {
+      "name" : "transcripts.translations.GO.term",
+      "displayName" : "transcripts.translations.GO.term",
+      "type" : "string",
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true"
+   },
+   {
+      "type" : "string",
+      "displayName" : "GenBank",
+      "name" : "transcripts.translations.GenBank",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.HAMAP",
+      "displayName" : "HAMAP",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "displayName" : "Human Protein Atlas",
+      "name" : "transcripts.translations.HPA",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true"
+   },
+   {
+      "type" : "string",
+      "displayName" : "HSSP",
+      "name" : "transcripts.translations.HSSP",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "displayName" : "IntAct",
+      "name" : "transcripts.translations.IntAct",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true"
+   },
+   {
+      "search" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "displayName" : "EnzymeCommission",
+      "name" : "transcripts.translations.IntEnz",
+      "type" : "string"
+   },
+   {
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "name" : "transcripts.translations.Interpro",
+      "displayName" : "InterPro",
+      "type" : "string"
+   },
+   {
+      "name" : "transcripts.translations.KEGG",
+      "displayName" : "KEGG",
+      "type" : "string",
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.KEGG_Enzyme",
+      "displayName" : "KEGG",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "displayName" : "MEROPS - the Peptidase Database",
+      "name" : "transcripts.translations.MEROPS",
+      "type" : "string"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.MINT",
+      "displayName" : "MINT",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "false",
+      "display" : "true",
+      "facet" : "false",
+      "sort" : "false",
+      "name" : "transcripts.translations.MOD",
+      "displayName" : "PSI-MOD, Post Translational Modification Ontology",
+      "type" : "object"
+   },
+   {
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.MOD.evidence",
+      "displayName" : "transcripts.translations.MOD.evidence"
+   },
+   {
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.MOD.parents",
+      "displayName" : "transcripts.translations.MOD.parents"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.MOD.term",
+      "displayName" : "transcripts.translations.MOD.term",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "displayName" : "MetaCyc",
+      "name" : "transcripts.translations.MetaCyc",
+      "type" : "string"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.OTTP",
+      "displayName" : "Havana translation",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "false",
+      "facet" : "false",
+      "sort" : "false",
+      "display" : "true",
+      "displayName" : "PomBase Ontology ID",
+      "name" : "transcripts.translations.PBO",
+      "type" : "object"
+   },
+   {
+      "search" : "true",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "name" : "transcripts.translations.PBO.evidence",
+      "displayName" : "transcripts.translations.PBO.evidence",
+      "type" : "string"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.PBO.parents",
+      "displayName" : "transcripts.translations.PBO.parents"
+   },
+   {
+      "name" : "transcripts.translations.PBO.term",
+      "displayName" : "transcripts.translations.PBO.term",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true"
+   },
+   {
+      "displayName" : "PDB",
+      "name" : "transcripts.translations.PDB",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.PDBsum",
+      "displayName" : "PDBsum"
+   },
+   {
+      "type" : "object",
+      "name" : "transcripts.translations.PHI",
+      "displayName" : "PHI-base accession",
+      "sort" : "false",
+      "facet" : "false",
+      "display" : "true",
+      "search" : "false"
+   },
+   {
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "displayName" : "transcripts.translations.PHI.condition",
+      "name" : "transcripts.translations.PHI.condition"
+   },
+   {
+      "type" : "string",
+      "displayName" : "transcripts.translations.PHI.host",
+      "name" : "transcripts.translations.PHI.host",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "true",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "name" : "transcripts.translations.PHI.phenotype",
+      "displayName" : "transcripts.translations.PHI.phenotype",
+      "type" : "string"
+   },
+   {
+      "name" : "transcripts.translations.PHI.term",
+      "displayName" : "transcripts.translations.PHI.term",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.PIR",
+      "displayName" : "PIR",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "type" : "object",
+      "name" : "transcripts.translations.PO",
+      "displayName" : "Plant Structure Ontology",
+      "sort" : "false",
+      "facet" : "false",
+      "display" : "true",
+      "search" : "false"
+   },
+   {
+      "search" : "true",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "name" : "transcripts.translations.PO.evidence",
+      "displayName" : "transcripts.translations.PO.evidence",
+      "type" : "string"
+   },
+   {
+      "name" : "transcripts.translations.PO.parents",
+      "displayName" : "transcripts.translations.PO.parents",
+      "type" : "string",
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true"
+   },
+   {
+      "search" : "true",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "displayName" : "transcripts.translations.PO.term",
+      "name" : "transcripts.translations.PO.term",
+      "type" : "string"
+   },
+   {
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.PRIDE",
+      "displayName" : "PRIDE"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.PeroxiBase",
+      "displayName" : "PeroxiBase",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "name" : "transcripts.translations.PomBase_TRANSLATION",
+      "displayName" : "PomBase",
+      "type" : "string",
+      "search" : "true",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true"
+   },
+   {
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "name" : "transcripts.translations.REBASE",
+      "displayName" : "REBASE",
+      "type" : "string"
+   },
+   {
+      "displayName" : "Reactome",
+      "name" : "transcripts.translations.Reactome",
+      "type" : "string",
+      "search" : "true",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true"
+   },
+   {
+      "name" : "transcripts.translations.RefSeq_peptide",
+      "displayName" : "RefSeq peptide",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.RefSeq_peptide_predicted",
+      "displayName" : "RefSeq peptide predicted",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "false",
+      "facet" : "false",
+      "sort" : "false",
+      "display" : "true",
+      "displayName" : "Sequence Ontology",
+      "name" : "transcripts.translations.SO",
+      "type" : "object"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.SO.evidence",
+      "displayName" : "transcripts.translations.SO.evidence",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "name" : "transcripts.translations.SO.parents",
+      "displayName" : "transcripts.translations.SO.parents",
+      "type" : "string"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "displayName" : "transcripts.translations.SO.term",
+      "name" : "transcripts.translations.SO.term"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.STRING",
+      "displayName" : "STRING",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "name" : "transcripts.translations.SWISS_MODEL",
+      "displayName" : "SWISS-MODEL",
+      "type" : "string"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.TAIR_TRANSLATION",
+      "displayName" : "TAIR Translation identifier"
+   },
+   {
+      "type" : "string",
+      "displayName" : "UniGene",
+      "name" : "transcripts.translations.UniGene",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.UniParc",
+      "displayName" : "UniParc"
+   },
+   {
+      "search" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "displayName" : "UniPathway",
+      "name" : "transcripts.translations.UniPathway",
+      "type" : "string"
+   },
+   {
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true",
+      "type" : "string",
+      "displayName" : "UniProtKB/TrEMBL",
+      "name" : "transcripts.translations.Uniprot/SPTREMBL"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.Uniprot/SWISSPROT",
+      "displayName" : "UniProtKB/Swiss-Prot",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.Uniprot_SWISSPROT",
+      "displayName" : "transcripts.translations.Uniprot_SWISSPROT"
+   },
+   {
+      "type" : "string",
+      "displayName" : "Vega translation",
+      "name" : "transcripts.translations.Vega_translation",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "name" : "transcripts.translations.cint_aniseed_v1",
+      "displayName" : "ANISEED (JGI 1.0)",
+      "type" : "string",
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.cint_aniseed_v2",
+      "displayName" : "ANISEED (JGI 2.0)",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "type" : "string",
+      "displayName" : "JGI Gene ID (JGI 1.0)",
+      "name" : "transcripts.translations.cint_jgi_v1",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.cint_jgi_v2",
+      "displayName" : "JGI Gene ID (JGI 2.0)"
+   },
+   {
+      "name" : "transcripts.translations.coding_end",
+      "displayName" : "transcripts.translations.coding_end",
+      "type" : "integer",
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true"
+   },
+   {
+      "type" : "integer",
+      "name" : "transcripts.translations.coding_start",
+      "displayName" : "transcripts.translations.coding_start",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "true",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "displayName" : "FlyBase translation",
+      "name" : "transcripts.translations.flybase_translation_id",
+      "type" : "string"
+   },
+   {
+      "type" : "string",
+      "displayName" : "GOSlim GOA",
+      "name" : "transcripts.translations.goslim_goa",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "search" : "true"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "displayName" : "transcripts.translations.id",
+      "name" : "transcripts.translations.id"
+   },
+   {
+      "name" : "transcripts.translations.protein_features",
+      "displayName" : "transcripts.translations.protein_features",
+      "type" : "object",
+      "search" : "false",
+      "display" : "true",
+      "facet" : "false",
+      "sort" : "false"
+   },
+   {
+      "displayName" : "transcripts.translations.protein_features.dbname",
+      "name" : "transcripts.translations.protein_features.dbname",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "displayName" : "transcripts.translations.protein_features.description",
+      "name" : "transcripts.translations.protein_features.description"
+   },
+   {
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "integer",
+      "displayName" : "transcripts.translations.protein_features.end",
+      "name" : "transcripts.translations.protein_features.end"
+   },
+   {
+      "search" : "true",
+      "sort" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "name" : "transcripts.translations.protein_features.interpro_ac",
+      "displayName" : "transcripts.translations.protein_features.interpro_ac",
+      "type" : "string"
+   },
+   {
+      "name" : "transcripts.translations.protein_features.name",
+      "displayName" : "transcripts.translations.protein_features.name",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true"
+   },
+   {
+      "type" : "integer",
+      "displayName" : "transcripts.translations.protein_features.start",
+      "name" : "transcripts.translations.protein_features.start",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "displayName" : "INSDC protein ID",
+      "name" : "transcripts.translations.protein_id",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true"
+   },
+   {
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "displayName" : "Predicted INSDC Protein ID",
+      "name" : "transcripts.translations.protein_id_predicted"
+   },
+   {
+      "name" : "transcripts.translations.wormpep_id",
+      "displayName" : "Wormpep ID",
+      "type" : "string",
+      "search" : "true",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true"
+   },
+   {
+      "type" : "object",
+      "name" : "transcripts.translations.xrefs",
+      "displayName" : "transcripts.translations.xrefs",
+      "sort" : "false",
+      "facet" : "false",
+      "display" : "true",
+      "search" : "false"
+   },
+   {
+      "name" : "transcripts.translations.xrefs.dbname",
+      "displayName" : "transcripts.translations.xrefs.dbname",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true"
+   },
+   {
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.xrefs.display_name",
+      "displayName" : "transcripts.translations.xrefs.display_name"
+   },
+   {
+      "facet" : "false",
+      "display" : "true",
+      "sort" : "false",
+      "search" : "false",
+      "type" : "object",
+      "displayName" : "transcripts.translations.xrefs.linkage_types",
+      "name" : "transcripts.translations.xrefs.linkage_types"
+   },
+   {
+      "displayName" : "transcripts.translations.xrefs.linkage_types.evidence",
+      "name" : "transcripts.translations.xrefs.linkage_types.evidence",
+      "type" : "string",
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true"
+   },
+   {
+      "facet" : "false",
+      "sort" : "false",
+      "display" : "true",
+      "search" : "false",
+      "type" : "object",
+      "name" : "transcripts.translations.xrefs.linkage_types.source",
+      "displayName" : "transcripts.translations.xrefs.linkage_types.source"
+   },
+   {
+      "search" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "display" : "true",
+      "displayName" : "transcripts.translations.xrefs.linkage_types.source.dbname",
+      "name" : "transcripts.translations.xrefs.linkage_types.source.dbname",
+      "type" : "string"
+   },
+   {
+      "type" : "string",
+      "displayName" : "transcripts.translations.xrefs.linkage_types.source.display_id",
+      "name" : "transcripts.translations.xrefs.linkage_types.source.display_id",
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "type" : "string",
+      "name" : "transcripts.translations.xrefs.linkage_types.source.primary_id",
+      "displayName" : "transcripts.translations.xrefs.linkage_types.source.primary_id",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "search" : "true"
+   },
+   {
+      "search" : "true",
+      "facet" : "true",
+      "display" : "true",
+      "sort" : "true",
+      "displayName" : "transcripts.translations.xrefs.parents",
+      "name" : "transcripts.translations.xrefs.parents",
+      "type" : "string"
+   },
+   {
+      "display" : "true",
+      "facet" : "true",
+      "sort" : "true",
+      "search" : "true",
+      "type" : "string",
+      "name" : "transcripts.translations.xrefs.primary_id",
+      "displayName" : "transcripts.translations.xrefs.primary_id"
+   }
+]
