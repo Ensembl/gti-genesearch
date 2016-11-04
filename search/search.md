@@ -109,18 +109,15 @@ The REST sequence endpoints are currently limited in that EG and e! genomes are 
 
 # Join-aware implementation
 
-Although the majority of queries will be against the gene store, there are scenarios where the user wants objects from another search implementation to be returned. For example, one might want to search for kinase genes on chromosome 1 and then find variants associated with those genes. To support this, a join mechanism is implemented by `org.ensembl.genesearch.impl.JoinAwareSearch`. This is an abstract class which supports using the results from 1 query to build a second query as follows:
-1. Client code invokes `query` or `fetch` and supplies a main "from" query, target fields and a target type (specified as an instance of `org.ensembl.genesearch.impl.SearchType`)
-2. A search is executed using the first query against the main search (specified in `getDefaultType`), with fields specific to the target type (e.g. homologues.stable_id) specified in `getFromJoinFields`)
-3. The output of the first search is used to generate a second query (e.g. homologues.stable_id is used to generate an id search) - specified in `getToJoinField`
-4. The target type is used to determine which secondary search to use, using `org.ensembl.genesearch.impl.SearchRegistry` (a class allowing search instances to be registered aginst given types)
-5. The second search is then executed against the secondary search (e.g. IDs vs gene search) using any provided fields, facets, sort, limit etc.
+Although the majority of queries will be against the gene store, there are scenarios where the user wants objects from another search implementation to be returned. For example, one might want to search for kinase genes on chromosome 1 and then find variants associated with those genes. To support this, a join mechanism is implemented by `org.ensembl.genesearch.impl.JoinMergeSearch`. This is an abstract class which supports using the results from 1 query to build a second query as follows:
+* decompose queries and fields to split them into "from" and "to" using `decomposeQueryFields`. These are packaged into `SubSearchParams` objects for "from" and "to"
+* query the primary db including join field
+* hash results (in batches)
+* for the hits, query the secondary and then pull back and add to the results
 
-Optionally, a target query can be provided which allows the target query to be further refined e.g. consequence type. This is added to the second search.
+For each "to" search, the fields used and strategies for joining are encapsulated in instances of `JoinStrategy`. `MergeStrategy` is an enum controlling whether results from the "to" search should simply be appended to each "from" document or merged into an existing field e.g. `homologues`.
 
-For targets which do not require a join (specified in `isPassThrough`) or methods which do not accept a target, a straight pass through is used.
-
-A concrete implementation is `org.ensembl.genesearch.impl.GeneSearch` which supports homologue and sequence querying using `ESSearch` and `DivisionAwareSequenceSearch`. Note that the implementation of `generateJoinQuery` uses custom code for `sequences` which aggregates IDs by genome to provide a query suitable for use by `DivisionAwareSequenceSearch`.
+A concrete implementation is `org.ensembl.genesearch.impl.GeneSearch` which supports homologue, transcript and sequence querying using `ESSearch` and `DivisionAwareSequenceSearch`. 
 
 Subsequent development will implement this approach for variants.
 

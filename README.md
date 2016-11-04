@@ -1,7 +1,7 @@
 # gti-genesearch
 This application is composed of two sub-packages:
-- [`search`](search/README.md) - code for indexing and searching genes
-- [`web`](web/README.md) - web and REST interfaces for `search`
+- [search](search/README.md) - code for indexing and searching genes
+- [web](web/README.md) - web and REST interfaces for `search`
 
 # Copyright and Licensing
 Copyright 1999-2016 EMBL-European Bioinformatics Institute
