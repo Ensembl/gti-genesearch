@@ -106,13 +106,13 @@ public class FetchParams {
 	@DefaultValue("id,name,genome,description")
 	@JsonIgnore
 	public void setFields(String fields) {
-		if (fields.contains("{")) {
+		if (fields.charAt(0)=='[') {
 			this.fields = QueryOutput.build(fields);
 		} else {
 			this.fields = QueryOutput.build(stringToList(fields));
 		}
 	}
-
+	
 	@QueryParam("filename")
 	@DefaultValue("genes")
 	public void setFileName(String fileName) {
