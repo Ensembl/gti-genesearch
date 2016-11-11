@@ -111,7 +111,6 @@ public class DataTypeInfo {
 	}
 
 	public FieldInfo getFieldByName(String name) {
-		getFieldInfo().forEach(f -> System.out.println(f));
 		return getFieldInfo().stream().filter(f -> name.equalsIgnoreCase(f.getName())).findAny().orElse(null);
 	}
 
