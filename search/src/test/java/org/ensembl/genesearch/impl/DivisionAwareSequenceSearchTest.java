@@ -33,6 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.SearchResult;
 import org.junit.Test;
@@ -45,9 +46,10 @@ import org.junit.Test;
  */
 public class DivisionAwareSequenceSearchTest {
 
+	static DataTypeInfo sequenceInfo = DataTypeInfo.fromResource("/sequences_datatype_info.json");
 	private final static DivisionAwareSequenceSearch search = new DivisionAwareSequenceSearch(null,
-			new EnsemblRestSequenceSearch("http://rest.ensembl.org/sequence/id"),
-			new EnsemblRestSequenceSearch("http://rest.ensemblgenomes.org/sequence/id"));
+			new EnsemblRestSequenceSearch("http://rest.ensembl.org/sequence/id", sequenceInfo),
+			new EnsemblRestSequenceSearch("http://rest.ensemblgenomes.org/sequence/id", sequenceInfo));
 
 	public List<Query> buildQuery(List<String> ids, Query... qs) {
 		search.isEnsembl = new HashSet<>();

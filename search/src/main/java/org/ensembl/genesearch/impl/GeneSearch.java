@@ -30,17 +30,14 @@ public class GeneSearch extends JoinMergeSearch {
 		super(SearchType.GENES, provider);
 		Search homologSearch = provider.getSearch(SearchType.HOMOLOGUES);
 		if (homologSearch != null) {
-			dataTypes.addAll(homologSearch.getDataTypes());
 			joinTargets.put(SearchType.HOMOLOGUES, JoinStrategy.as(MergeStrategy.MERGE, "homologues.stable_id", "id"));
 		}
 		Search seqSearch = provider.getSearch(SearchType.SEQUENCES);
 		if (seqSearch != null) {
-			dataTypes.addAll(seqSearch.getDataTypes());
-			joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.APPEND, "id", "id"));
+			joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.MERGE, "id", "id", "genome"));
 		}
 		Search genomeSearch = provider.getSearch(SearchType.GENOMES);
 		if (genomeSearch != null) {
-			dataTypes.addAll(genomeSearch.getDataTypes());
 			joinTargets.put(SearchType.GENOMES, JoinStrategy.as(MergeStrategy.APPEND, "genome", "id"));
 		}
 	}

@@ -29,6 +29,7 @@ import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
+import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -41,9 +42,11 @@ public class TranscriptSearchTest {
 	static Logger log = LoggerFactory.getLogger(TranscriptSearchTest.class);
 
 	static ESTestServer testServer = new ESTestServer();
+	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/genes_datatype_info.json");
+	static DataTypeInfo transcriptsInfo = DataTypeInfo.fromResource("/transcripts_datatype_info.json");
 	static ESSearchFlatten search = new ESSearchFlatten(testServer.getClient(), ESSearch.GENES_INDEX,
-			ESSearch.GENE_ESTYPE, "transcripts", "genes");
-	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+			ESSearch.GENE_ESTYPE, "transcripts", "genes", transcriptsInfo);
+	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
 
 	// set up a provider
 	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.TRANSCRIPTS, search)

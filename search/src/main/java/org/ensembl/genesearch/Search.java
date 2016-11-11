@@ -149,11 +149,11 @@ public interface Search {
 	public QueryResult select(String name, int offset, int limit);
 
 	/**
-	 * Get a list of the different datatypes that this search can return
+	 * Get the primary data type returned by this instance
 	 * 
 	 * @return
 	 */
-	public List<DataTypeInfo> getDataTypes();
+	public DataTypeInfo getDataType();
 
 	/**
 	 * Find the list of names for the given fields
@@ -163,12 +163,10 @@ public interface Search {
 	 */
 	public default List<FieldInfo> getFieldInfo(QueryOutput fieldNames) {
 		List<FieldInfo> fields = new ArrayList<>();
-		for (DataTypeInfo type : getDataTypes()) {
-			for (String field : fieldNames.getFields()) {
-				for (FieldInfo f : type.getInfoForFieldName(field)) {
-					if (!fields.contains(f)) {
-						fields.add(f);
-					}
+		for (String field : fieldNames.getFields()) {
+			for (FieldInfo f : getDataType().getInfoForFieldName(field)) {
+				if (!fields.contains(f)) {
+					fields.add(f);
 				}
 			}
 		}

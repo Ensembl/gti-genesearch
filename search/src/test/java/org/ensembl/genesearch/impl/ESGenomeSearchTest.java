@@ -34,6 +34,7 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.impl.ESSearch;
+import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -46,7 +47,7 @@ public class ESGenomeSearchTest {
 	static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
 
 	static ESTestServer testServer = new ESTestServer();
-	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE);
+	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/genomes_datatype_info.json"));
 
 	@BeforeClass
 	public static void setUp() throws IOException {

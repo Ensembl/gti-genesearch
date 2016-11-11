@@ -17,10 +17,9 @@
 package org.ensembl.genesearch.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,9 +30,10 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.SearchResult;
+import org.ensembl.genesearch.info.DataTypeInfo;
 import org.junit.Test;
 
 /**
@@ -44,8 +44,9 @@ import org.junit.Test;
  */
 public class EnsemblRestSequenceSearchTest {
 
+	static DataTypeInfo sequenceInfo = DataTypeInfo.fromResource("/sequences_datatype_info.json");
 	private final static EnsemblRestSequenceSearch search = new EnsemblRestSequenceSearch(
-			"http://rest.ensembl.org/sequence/id");
+			"http://rest.ensembl.org/sequence/id", sequenceInfo);
 
 	@Test
 	public void testSingleGene() throws IOException {
@@ -114,9 +115,9 @@ public class EnsemblRestSequenceSearchTest {
 		SearchResult result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		assertEquals("Checking correct number of sequences", ids.size(), seqs.size());
-		assertTrue("Checking ID present", !StringUtils.isEmpty((String)seqs.get(0).get("id")));
+		assertTrue("Checking ID present", !StringUtils.isEmpty((String) seqs.get(0).get("id")));
 		assertNull("Checking description present", seqs.get(0).get("desc"));
-		assertTrue("Checking sequence present", !StringUtils.isEmpty((String)seqs.get(0).get("seq")));
+		assertTrue("Checking sequence present", !StringUtils.isEmpty((String) seqs.get(0).get("seq")));
 	}
 
 	private List<String> getIds(String name) throws IOException {
@@ -161,7 +162,7 @@ public class EnsemblRestSequenceSearchTest {
 		String newSeq = seqs.get(0).get("seq").toString();
 		assertFalse("New sequence found", StringUtils.isEmpty(newSeq));
 		assertTrue("Old in new", newSeq.contains(origSeq));
-		assertEquals("Checking for correct lengths", origSeq.length()+200, newSeq.length());
+		assertEquals("Checking for correct lengths", origSeq.length() + 200, newSeq.length());
 		assertEquals("Checking for position of original sequence", 100, newSeq.lastIndexOf(origSeq));
 	}
 

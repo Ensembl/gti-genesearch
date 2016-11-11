@@ -53,10 +53,11 @@ public class DivisionAwareSequenceSearch implements Search {
 	private final EnsemblRestSequenceSearch eSearch;
 	private final EnsemblRestSequenceSearch egSearch;
 	protected Set<String> isEnsembl;
-	private final List<DataTypeInfo> dataTypes;
 
-	public DivisionAwareSequenceSearch(Search genomeSearch, String eSearchUri, String egSearchUri) {
-		this(genomeSearch, new EnsemblRestSequenceSearch(eSearchUri), new EnsemblRestSequenceSearch(egSearchUri));
+	public DivisionAwareSequenceSearch(Search genomeSearch, DataTypeInfo dataType, String eSearchUri,
+			String egSearchUri) {
+		this(genomeSearch, new EnsemblRestSequenceSearch(eSearchUri, dataType),
+				new EnsemblRestSequenceSearch(egSearchUri, dataType));
 	}
 
 	public DivisionAwareSequenceSearch(Search genomeSearch, EnsemblRestSequenceSearch eSearch,
@@ -64,11 +65,13 @@ public class DivisionAwareSequenceSearch implements Search {
 		this.genomeSearch = genomeSearch;
 		this.eSearch = eSearch;
 		this.egSearch = egSearch;
-		dataTypes = eSearch.getDataTypes();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer, java.util.List, org.ensembl.genesearch.QueryOutput)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
+	 * java.util.List, org.ensembl.genesearch.QueryOutput)
 	 */
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
@@ -112,9 +115,12 @@ public class DivisionAwareSequenceSearch implements Search {
 		throw new UnsupportedOperationException();
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see org.ensembl.genesearch.Search#query(java.util.List, org.ensembl.genesearch.QueryOutput, java.util.List, int, int, java.util.List)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.Search#query(java.util.List,
+	 * org.ensembl.genesearch.QueryOutput, java.util.List, int, int,
+	 * java.util.List)
 	 */
 	@Override
 	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
@@ -147,11 +153,11 @@ public class DivisionAwareSequenceSearch implements Search {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ensembl.genesearch.Search#getDataTypes()
+	 * @see org.ensembl.genesearch.Search#getDataType()
 	 */
 	@Override
-	public List<DataTypeInfo> getDataTypes() {
-		return dataTypes;
+	public DataTypeInfo getDataType() {
+		return eSearch.getDataType();
 	}
 
 }

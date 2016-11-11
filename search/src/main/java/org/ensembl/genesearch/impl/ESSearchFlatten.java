@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -32,6 +33,8 @@ import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
+import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldInfo;
 import org.ensembl.genesearch.output.ResultsRemodeller;
 
 /**
@@ -60,8 +63,9 @@ public class ESSearchFlatten extends ESSearch {
 	 * @param target
 	 *            e.g. transcripts
 	 */
-	public ESSearchFlatten(Client client, String index, String type, String target, String topLevel) {
-		super(client, index, type);
+	public ESSearchFlatten(Client client, String index, String type, String target, String topLevel,
+			DataTypeInfo info) {
+		super(client, index, type, info);
 		this.target = target;
 		this.topLevel = topLevel;
 	}
@@ -75,9 +79,9 @@ public class ESSearchFlatten extends ESSearch {
 	 * @param scrollSize
 	 * @param scrollTimeout
 	 */
-	public ESSearchFlatten(Client client, String index, String type, String target, String topLevel, int scrollSize,
-			int scrollTimeout) {
-		super(client, index, type, scrollSize, scrollTimeout);
+	public ESSearchFlatten(Client client, String index, String type, String target, String topLevel, DataTypeInfo info,
+			int scrollSize, int scrollTimeout) {
+		super(client, index, type, info, scrollSize, scrollTimeout);
 		this.target = target;
 		this.topLevel = topLevel;
 	}
@@ -129,13 +133,20 @@ public class ESSearchFlatten extends ESSearch {
 	 * @return
 	 */
 	protected QueryOutput transformOutput(QueryOutput output) {
+
 		QueryOutput o = new QueryOutput();
 		// add required prefix to toplevel e.g. id -> transcripts.id
-		output.getFields().forEach(f -> o.getFields().add(target + '.' + f));
+		for(String f: output.getFields()) {
+			// turn genes.genome into genes:[genome]
+			if(f.startsWith(topLevel+".")) {
+				o.getFields().add(f.replaceFirst(topLevel+".", StringUtils.EMPTY));
+			} else {
+				o.getFields().add(target + '.' + f);
+			}
+		}
 		// append ID if not present
-		String idStr = target+".id";
-		if(output.getFields().stream().anyMatch(f -> 
-			f.equals(idStr))) {
+		String idStr = target + ".id";
+		if (output.getFields().stream().anyMatch(f -> f.equals(idStr))) {
 			output.getFields().add(idStr);
 		}
 		// promote top level element e.g. genes:[id] -> id
@@ -160,7 +171,7 @@ public class ESSearchFlatten extends ESSearch {
 	protected List<String> transformFields(List<String> fields) {
 		return fields.stream().map(this::transformField).collect(Collectors.toList());
 	}
-	
+
 	protected String reverseTransformField(String field) {
 		if (field.startsWith(target + '.')) {
 			return field.substring(field.indexOf('.') + 1);
@@ -171,7 +182,7 @@ public class ESSearchFlatten extends ESSearch {
 
 	protected String transformField(String field) {
 		char prefix = field.charAt(0);
-		if(prefix=='+' || prefix=='-') {
+		if (prefix == '+' || prefix == '-') {
 			field = field.substring(1);
 		}
 		if (field.startsWith(topLevel + '.')) {
@@ -179,8 +190,8 @@ public class ESSearchFlatten extends ESSearch {
 		} else {
 			field = target + '.' + field;
 		}
-		if(prefix=='+' || prefix=='-') {
-			field = prefix+field;
+		if (prefix == '+' || prefix == '-') {
+			field = prefix + field;
 		}
 		return field;
 	}
@@ -206,4 +217,25 @@ public class ESSearchFlatten extends ESSearch {
 				.map(hit -> ResultsRemodeller.flatten(hitToMap(hit), target, topLevel)).flatMap(l -> l.stream())
 				.collect(Collectors.toList());
 	}
+
+	@Override
+	public List<FieldInfo> getFieldInfo(QueryOutput output) {
+		List<FieldInfo> fields = new ArrayList<>();
+		for (String field : output.getFields()) {
+			if(field.startsWith(target+".")) {
+				field = reverseTransformField(field);
+			} else {
+				field = topLevel+"."+field;
+			}
+			for (FieldInfo f : getDataType().getInfoForFieldName(field)) {
+				if (!fields.contains(f)) {
+					fields.add(f);
+				}
+			}
+		}
+		return fields;
+	}
+	
+	
+	
 }

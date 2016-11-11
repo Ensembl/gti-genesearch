@@ -27,6 +27,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.impl.JoinMergeSearch.SubSearchParams;
+import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -42,8 +43,11 @@ public class DecomposeTest {
 	static Logger log = LoggerFactory.getLogger(ESGeneSearchTest.class);
 
 	static ESTestServer testServer = new ESTestServer();
-	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
-	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE);
+	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/genes_datatype_info.json");
+	static DataTypeInfo genomeInfo = DataTypeInfo.fromResource("/genomes_datatype_info.json");
+	static DataTypeInfo homologueInfo = DataTypeInfo.fromResource("/homologues_datatype_info.json");
+	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
+	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE, genomeInfo);
 
 	// set up a provider
 	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.GENES, search)

@@ -18,7 +18,6 @@ package org.ensembl.genesearch.clients;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +29,7 @@ import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.impl.ESSearch;
+import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,13 +61,13 @@ public class QueryClient {
 
 		@Parameter(names = "-limit", description = "Number of rows to retrieve")
 		private int limit = 10;
-		
+
 		@Parameter(names = "-offset", description = "Place to start from")
 		private int offset = 0;
-		
+
 		@Parameter(names = "-target", description = "Object target to flatten to")
 		private String target = null;
-		
+
 		@Parameter(names = "-targetQuery", description = "Object target query to flatten to")
 		private String targetQuery = null;
 
@@ -76,11 +76,9 @@ public class QueryClient {
 
 	}
 
-	private final static Logger log = LoggerFactory
-			.getLogger(QueryClient.class);
+	private final static Logger log = LoggerFactory.getLogger(QueryClient.class);
 
-	public static void main(String[] args) throws InterruptedException,
-			IOException {
+	public static void main(String[] args) throws InterruptedException, IOException {
 
 		Params params = new Params();
 		JCommander jc = new JCommander(params, args);
@@ -93,21 +91,15 @@ public class QueryClient {
 			System.exit(1);
 		}
 
-		Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+		Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
+				DataTypeInfo.fromResource("/gene_datatype_info.json"));
 
-		List<Query> queries = new DefaultQueryHandler()
-				.parseQuery(params.query);
-		
-		List<Query> targetQueries = null;
-		if(!StringUtils.isEmpty(params.targetQuery)) {
-			targetQueries = new DefaultQueryHandler()
-					.parseQuery(params.targetQuery);
-		}
-		
+		List<Query> queries = new DefaultQueryHandler().parseQuery(params.query);
+
 		log.info("Starting query");
 
-		SearchResult res = search.query(queries, QueryOutput.build(params.resultFields),
-				params.facets, params.offset, params.limit, params.sorts);
+		SearchResult res = search.query(queries, QueryOutput.build(params.resultFields), params.facets, params.offset,
+				params.limit, params.sorts);
 
 		if (!StringUtils.isEmpty(params.outFile)) {
 			log.info("Writing results to " + params.outFile);

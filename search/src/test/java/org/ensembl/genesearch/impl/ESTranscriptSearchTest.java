@@ -28,6 +28,8 @@ import java.util.Optional;
 
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldInfo;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
@@ -44,7 +46,7 @@ public class ESTranscriptSearchTest {
 
 	static ESTestServer testServer = new ESTestServer();
 	static ESSearchFlatten search = new ESSearchFlatten(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
-			"transcripts", "genes");
+			"transcripts", "genes", DataTypeInfo.fromResource("/transcripts_datatype_info.json"));
 
 	@BeforeClass
 	public static void setUp() throws IOException {
@@ -99,12 +101,15 @@ public class ESTranscriptSearchTest {
 				o,Collections.emptyList(),0,10, Collections.emptyList());
 		List<Map<String, Object>> transcripts = result.getResults();
 		log.info("Fetched " + transcripts.size() + " transcripts");
-		transcripts.stream().allMatch(r -> r.get("genes.genome").equals("nanoarchaeum_equitans_kin4_m"));
-		transcripts.stream().allMatch(r -> r.get("biotype").equals("protein_coding"));
-		transcripts.stream().allMatch(r -> r.containsKey("id"));
-		transcripts.stream().allMatch(r -> r.containsKey("xrefs"));
-		transcripts.stream().allMatch(r -> r.containsKey("genes.id"));		
 		assertEquals("Number of transcripts", 10, transcripts.size());
+		assertTrue("Genome present",transcripts.stream().allMatch(r -> r.get("genes.genome").equals("nanoarchaeum_equitans_kin4_m")));
+		assertTrue("Biotype present",transcripts.stream().allMatch(r -> r.get("biotype").equals("protein_coding")));
+		assertTrue("ID present",transcripts.stream().allMatch(r -> r.containsKey("id")));
+		assertTrue("Xrefs present",transcripts.stream().allMatch(r -> r.containsKey("xrefs")));
+		assertTrue("Genes ID present",transcripts.stream().allMatch(r -> r.containsKey("genes.id")));	
+		List<FieldInfo> fields = result.getFields();
+		System.out.println(fields);
+		assertEquals("Number of fields", 6, fields.size());
 	}
 
 	@Test
@@ -118,12 +123,12 @@ public class ESTranscriptSearchTest {
 		List<Map<String, Object>> transcripts = result.getResults();
 		System.out.println(transcripts.get(0));
 		log.info("Fetched " + transcripts.size() + " transcripts");
-		transcripts.stream().allMatch(r -> r.get("genes.genome").equals("nanoarchaeum_equitans_kin4_m"));
-		transcripts.stream().allMatch(r -> r.get("biotype").equals("protein_coding"));
-		transcripts.stream().allMatch(r -> r.containsKey("id"));
-		transcripts.stream().allMatch(r -> r.containsKey("genes.id"));	
-		transcripts.stream().allMatch(r -> r.containsKey("xrefs"));
 		assertEquals("Number of transcripts", 536, transcripts.size());
+		assertTrue("Genome present",transcripts.stream().allMatch(r -> r.get("genes.genome").equals("nanoarchaeum_equitans_kin4_m")));
+		assertTrue("Biotype present",transcripts.stream().allMatch(r -> r.get("biotype").equals("protein_coding")));
+		assertTrue("ID present",transcripts.stream().allMatch(r -> r.containsKey("id")));
+		assertTrue("Xrefs present",transcripts.stream().allMatch(r -> r.containsKey("xrefs")));
+		assertTrue("Genes ID present",transcripts.stream().allMatch(r -> r.containsKey("genes.id")));	
 	}
 	
 	@Test

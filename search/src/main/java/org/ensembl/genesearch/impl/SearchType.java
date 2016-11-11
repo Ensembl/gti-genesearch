@@ -25,7 +25,7 @@ package org.ensembl.genesearch.impl;
 public enum SearchType {
 	GENOMES, GENES, TRANSCRIPTS, TRANSLATIONS, HOMOLOGUES, VARIANTS, SEQUENCES;
 
-	static SearchType findByName(String name) {
+	public static SearchType findByName(String name) {
 		SearchType type = null;
 		for (SearchType t : SearchType.values()) {
 			if (t.name().equalsIgnoreCase(name)) {
@@ -35,4 +35,10 @@ public enum SearchType {
 		}
 		return type;
 	}
+	
+	@Override
+	public String toString() {
+		return this.name().toLowerCase();
+	}
+	
 }

@@ -83,8 +83,8 @@ public class Query {
 		this.subQueries = subQueries;
 		this.start = null;
 		this.end = null;
-	}
-
+	}	
+	
 	public String getFieldName() {
 		return fieldName;
 	}

@@ -16,6 +16,8 @@
 
 package org.ensembl.genesearch.impl;
 
+import org.ensembl.genesearch.Search;
+
 /**
  * Implementation of transcript search that can join to other searches
  * 
@@ -30,6 +32,10 @@ public class TranscriptSearch extends JoinMergeSearch {
 	 */
 	public TranscriptSearch(SearchRegistry provider) {
 		super(SearchType.TRANSCRIPTS, provider);
+		Search seqSearch = provider.getSearch(SearchType.SEQUENCES);
+		if (seqSearch != null) {
+			joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.MERGE, "id", "id", "genes.genome"));
+		}
 		// TODO add variation & expression joins etc. later
 	}
 

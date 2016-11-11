@@ -16,7 +16,6 @@
 
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -36,7 +35,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.lucene.search.function.FieldValueFactorFunction.Modifier;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
-import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
@@ -57,7 +55,6 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
-import org.ensembl.genesearch.info.JsonDataTypeInfoProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,10 +81,10 @@ public class ESSearch implements Search {
 	private final Client client;
 	private final String index;
 	private final String type;
-	private final List<DataTypeInfo> dataTypes;
+	private final DataTypeInfo dataType;
 
-	public ESSearch(Client client, String index, String type) {
-		this(client, index, type,
+	public ESSearch(Client client, String index, String type, DataTypeInfo dataType) {
+		this(client, index, type, dataType,
 				Integer.parseInt(System.getProperty("es.scroll_size", String.valueOf(DEFAULT_SCROLL_SIZE))),
 				Integer.parseInt(System.getProperty("es.scroll_timeout", String.valueOf(DEFAULT_SCROLL_TIMEOUT))));
 	}
@@ -95,24 +92,14 @@ public class ESSearch implements Search {
 	private final int scrollSize;
 	private final int scrollTimeout;
 
-	public ESSearch(Client client, String index, String type, int scrollSize, int scrollTimeout) {
+	public ESSearch(Client client, String index, String type, DataTypeInfo dataType, int scrollSize,
+			int scrollTimeout) {
 		this.client = client;
 		this.index = index;
 		this.type = type;
 		this.scrollSize = scrollSize;
 		this.scrollTimeout = scrollTimeout;
-		try {
-			if (type.equals(GENE_ESTYPE)) {
-				dataTypes = JsonDataTypeInfoProvider.load("/gene_datatype_info.json").getAll();
-			} else if (type.equals(GENOME_ESTYPE)) {
-				dataTypes = JsonDataTypeInfoProvider.load("/genome_datatype_info.json").getAll();
-			} else {
-				throw new IllegalArgumentException("Type " + type + " is not supported by ESSearch");
-			}
-		} catch (IOException e) {
-			// cannot do anything about this but need to handle the exception
-			throw new RuntimeException("Could not load the specified JSON resource");
-		}
+		this.dataType = dataType;
 	}
 
 	@Override
@@ -321,9 +308,10 @@ public class ESSearch implements Search {
 			Sort sort = new Sort(sortStr);
 			log.info("Adding " + sort.direction + " sort on '" + sort.name + "'");
 			FieldSortBuilder missing = SortBuilders.fieldSort(sort.name).order(sort.direction).missing("_last");
-			if(sort.path!=null) {
+			if (sort.path != null) {
 				missing.setNestedPath(sort.path);
-				// TODO support for nested filter but would need to reparse the query as QueryBuilder is not readable
+				// TODO support for nested filter but would need to reparse the
+				// query as QueryBuilder is not readable
 			}
 			request.addSort(missing);
 		}
@@ -378,10 +366,10 @@ public class ESSearch implements Search {
 		}
 		return facetResults;
 	}
-	
+
 	protected String getFacetName(Aggregation aggregation, String path) {
 		String aggregationName = aggregation.getName();
-		if(!StringUtils.isEmpty(path)) {
+		if (!StringUtils.isEmpty(path)) {
 			aggregationName = path + '.' + aggregationName;
 		}
 		if (Nested.class.isAssignableFrom(aggregation.getClass())) {
@@ -441,12 +429,12 @@ public class ESSearch implements Search {
 				direction = SortOrder.ASC;
 			}
 			int i = name.lastIndexOf('.');
-			if(i>-1) {
+			if (i > -1) {
 				path = name.substring(0, i);
 			} else {
 				path = null;
 			}
- 		}
+		}
 	}
 
 	/*
@@ -528,16 +516,6 @@ public class ESSearch implements Search {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ensembl.genesearch.Search#getDataTypes()
-	 */
-	@Override
-	public List<DataTypeInfo> getDataTypes() {
-		return dataTypes;
-	}
-
 	@Override
 	public List<FieldInfo> getFieldInfo(QueryOutput output) {
 		// ES _always_ has ID
@@ -557,6 +535,16 @@ public class ESSearch implements Search {
 	@Override
 	public String getIdField() {
 		return ID;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.Search#getDataType()
+	 */
+	@Override
+	public DataTypeInfo getDataType() {
+		return dataType;
 	}
 
 }

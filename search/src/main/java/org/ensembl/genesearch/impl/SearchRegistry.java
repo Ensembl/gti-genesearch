@@ -22,30 +22,34 @@ import java.util.Map;
 import org.ensembl.genesearch.Search;
 
 /**
- * Class for providing a search for a supplied target type
+ * Class for providing a search and data type info for a supplied target type
+ * 
  * @author dstaines
  *
  */
 public class SearchRegistry {
 
 	private final Map<SearchType, Search> searches = new HashMap<>();
+
 	protected Map<SearchType, Search> getSearches() {
 		return searches;
 	}
 
 	/**
 	 * Register a given search object against a type
+	 * 
 	 * @param type
 	 * @param search
 	 * @return Provider (allows fluent-style calls)
 	 */
 	public SearchRegistry registerSearch(SearchType type, Search search) {
-		getSearches().put(type,search);
+		getSearches().put(type, search);
 		return this;
 	}
-	
+
 	/**
 	 * Find the search for a given type
+	 * 
 	 * @param type
 	 * @return
 	 */

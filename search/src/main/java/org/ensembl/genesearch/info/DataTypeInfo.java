@@ -16,11 +16,19 @@
 
 package org.ensembl.genesearch.info;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
+import org.ensembl.genesearch.impl.SearchType;
 import org.ensembl.genesearch.info.FieldInfo.FieldType;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Object encapsulating information about a data source and its fields
@@ -30,18 +38,43 @@ import org.ensembl.genesearch.info.FieldInfo.FieldType;
  */
 public class DataTypeInfo {
 
-	private String name;
+	private static final ObjectMapper mapper = new ObjectMapper();
+	private static final TypeReference<DataTypeInfo> typeRef = new TypeReference<DataTypeInfo>() {
+	};
+
+	public static DataTypeInfo fromString(String json) {
+		try {
+			return mapper.readValue(json, typeRef);
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Could not parse data type from JSON string", e);
+		}
+	}
+
+	public static DataTypeInfo fromResource(String resourceName) {
+		try {
+			return fromString(IOUtils.toString(DataTypeInfo.class.getResource(resourceName), StandardCharsets.UTF_8));
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Could not parse data type from resource " + resourceName, e);
+		}
+	}
+
+	private SearchType name;
 	private List<FieldInfo> fieldInfo;
-	private List<String> targets;
+	private List<SearchType> targets;
 
 	public DataTypeInfo() {
 	}
 
-	public String getName() {
+	public SearchType getName() {
 		return name;
 	}
 
 	public void setName(String name) {
+		this.name = SearchType.findByName(name);
+	}
+	
+
+	public void setNameType(SearchType name) {
 		this.name = name;
 	}
 
@@ -53,12 +86,12 @@ public class DataTypeInfo {
 		this.fieldInfo = fieldInfo;
 	}
 
-	public List<String> getTargets() {
+	public List<SearchType> getTargets() {
 		return targets;
 	}
 
 	public void setTargets(List<String> targets) {
-		this.targets = targets;
+		this.targets = targets.stream().map(SearchType::findByName).collect(Collectors.toList());
 	}
 
 	public List<FieldInfo> getFacetableFields() {
@@ -78,7 +111,8 @@ public class DataTypeInfo {
 	}
 
 	public FieldInfo getFieldByName(String name) {
-		return getFieldInfo().stream().filter(f -> name.equals(f.getName())).findAny().orElse(null);
+		getFieldInfo().forEach(f -> System.out.println(f));
+		return getFieldInfo().stream().filter(f -> name.equalsIgnoreCase(f.getName())).findAny().orElse(null);
 	}
 
 	public List<FieldInfo> getFieldByType(FieldType type) {

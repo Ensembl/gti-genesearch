@@ -80,6 +80,10 @@ public class FieldInfo {
 		this.type = type;
 	}
 
-
+	@Override
+	public String toString() {
+		return "FieldInfo [display=" + display + ", displayName=" + displayName + ", facet=" + facet + ", name=" + name
+				+ ", search=" + search + ", sort=" + sort + ", type=" + type + "]";
+	}
 	
 }
