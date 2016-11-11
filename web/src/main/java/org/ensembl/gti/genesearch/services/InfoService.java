@@ -23,34 +23,19 @@ public abstract class InfoService extends SearchBasedService {
 		super(provider);
 	}
 
-	@Path("fieldinfo")
+	@Path("info")
 	@GET
 	@JSONP
-	public Collection<DataTypeInfo> getDataTypes() {
-		return getSearch().getDataTypes();
+	public DataTypeInfo getDataType() {
+		return getSearch().getDataType();
 	}
 
-	@Path("fieldinfo/names")
-	@GET
-	@JSONP
-	public Collection<String> getDataTypeNames() {
-		return getSearch().getDataTypes().stream().map(t -> t.getName()).collect(Collectors.toList());
-	}
 
-	@Path("fieldinfo/{datatype}")
+	@Path("info/fields")
 	@GET
 	@JSONP
-	public DataTypeInfo getDataType(@PathParam("datatype") String dataType) {
-		return getSearch().getDataTypes().stream().filter(t -> t.getName().equalsIgnoreCase(dataType)).findFirst()
-				.orElse(null);
-	}
-
-	@Path("fieldinfo/{datatype}/fields")
-	@GET
-	@JSONP
-	public Collection<FieldInfo> getFields(@PathParam("datatype") String dataTypeName,
-			@QueryParam("type") String type) {
-		DataTypeInfo dataType = getDataType(dataTypeName);
+	public Collection<FieldInfo> getFields(@QueryParam("type") String type) {
+		DataTypeInfo dataType = getDataType();
 		if (!StringUtils.isEmpty(type)) {
 			switch (type.toLowerCase()) {
 			case "facet":

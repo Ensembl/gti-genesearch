@@ -70,7 +70,7 @@ public class EndpointTests {
 	private static final String GENOMES_SELECT = API_BASE + "/genomes/select";
 	private static final String TRANSCRIPTS_FETCH = API_BASE + "/transcripts/fetch";
 	private static final String TRANSCRIPTS_QUERY = API_BASE + "/transcripts/query";
-	private static final String INFO = API_BASE + "/genes/fieldinfo";
+	private static final String INFO = API_BASE + "/genes/info";
 
 	static Logger log = LoggerFactory.getLogger(EndpointTests.class);
 	static ESSearch geneSearch;
@@ -486,28 +486,20 @@ public class EndpointTests {
 	@Test
 	public void testInfo() {
 
-		List<Map<String, Object>> result = getUrlToObject(LIST_REF, restTemplate, INFO);
-		assertTrue("Data types found", result.size() > 0);
-		Map<String, Object> type = result.get(0);
+		Map<String, Object> type = getUrlToObject(MAP_REF, restTemplate, INFO);
 		assertTrue("Name found", type.containsKey("name"));
 		assertTrue("Targets found", type.containsKey("targets"));
 		assertTrue("Fields found", type.containsKey("fieldInfo"));
 
-		List<String> names = getUrlToObject(STRING_LIST_REF, restTemplate, INFO + "/names");
-		assertEquals("Correct number of names found", result.size(), names.size());
-
-		Map<String, Object> typeObj = getUrlToObject(MAP_REF, restTemplate, INFO + "/" + type.get("name"));
-		assertEquals("Checking correct name", type.get("name"), typeObj.get("name"));
-
 		List<Map<String, Object>> fields = getUrlToObject(LIST_REF, restTemplate,
-				INFO + "/" + type.get("name") + "/fields");
+				INFO + "/fields");
 		assertEquals("Checking number of fields", ((List) type.get("fieldInfo")).size(), fields.size());
 
 		List<Map<String, Object>> facetFields = getUrlToObject(LIST_REF, restTemplate,
-				INFO + "/" + type.get("name") + "/fields?type=facet");
+				INFO + "/fields?type=facet");
 		facetFields.stream().anyMatch(f -> f.get("facet").equals("true"));
 		List<Map<String, Object>> strandFields = getUrlToObject(LIST_REF, restTemplate,
-				INFO + "/" + type.get("name") + "/fields?type=strand");
+				INFO + "/fields?type=strand");
 		strandFields.stream().anyMatch(f -> f.get("type").equals("STRAND"));
 
 	}

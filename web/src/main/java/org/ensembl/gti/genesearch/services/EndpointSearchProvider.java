@@ -26,6 +26,7 @@ import org.ensembl.genesearch.impl.GeneSearch;
 import org.ensembl.genesearch.impl.SearchRegistry;
 import org.ensembl.genesearch.impl.SearchType;
 import org.ensembl.genesearch.impl.TranscriptSearch;
+import org.ensembl.genesearch.info.DataTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,11 +83,16 @@ public class EndpointSearchProvider {
 
 	protected SearchRegistry getRegistry() {
 		if (registry == null) {
-			Search esGenomeSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE);
-			Search esGeneSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
-			Search seqSearch = new DivisionAwareSequenceSearch(esGenomeSearch, getEnsRestUrl(), getEgRestUrl());
+			DataTypeInfo geneType = DataTypeInfo.fromResource("/genes_datatype_info.json");
+			DataTypeInfo genomeType = DataTypeInfo.fromResource("/genomes_datatype_info.json");
+			DataTypeInfo transcriptType = DataTypeInfo.fromResource("/transcripts_datatype_info.json");
+			DataTypeInfo seqType = DataTypeInfo.fromResource("/sequences_datatype_info.json");
+			Search esGenomeSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE, genomeType);
+			Search esGeneSearch = new ESSearch(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneType);
+			Search seqSearch = new DivisionAwareSequenceSearch(esGenomeSearch, seqType, getEnsRestUrl(),
+					getEgRestUrl());
 			Search esTranscriptSearch = new ESSearchFlatten(getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
-					"transcripts", "genes");
+					"transcripts", "genes", transcriptType);
 			registry = new SearchRegistry().registerSearch(SearchType.GENES, esGeneSearch)
 					.registerSearch(SearchType.TRANSCRIPTS, esTranscriptSearch)
 					.registerSearch(SearchType.HOMOLOGUES, esGeneSearch)
