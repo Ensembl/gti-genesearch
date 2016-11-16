@@ -32,6 +32,11 @@ import org.ensembl.genesearch.Query.QueryType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Handler to parse out queries
+ * @author dstaines
+ *
+ */
 public class DefaultQueryHandler implements QueryHandler {
 
 	private static final String SEQ_REGION = "seq_region_name";
@@ -116,7 +121,7 @@ public class DefaultQueryHandler implements QueryHandler {
 	/**
 	 * Merge queries of the form x.y,x.z into one of the form x:{y,z}
 	 * 
-	 * @param query
+	 * @param input
 	 *            to merge
 	 * @return merged query
 	 */
@@ -130,7 +135,7 @@ public class DefaultQueryHandler implements QueryHandler {
 			int n = key.indexOf('.');
 			if (n != -1) {
 				String keyStem = key.substring(0, n);
-				for (int j = i+1; j < keys.size(); j++) {
+				for (int j = i + 1; j < keys.size(); j++) {
 					String key2 = keys.get(j);
 					int m = key.indexOf('.');
 					if (m != -1) {

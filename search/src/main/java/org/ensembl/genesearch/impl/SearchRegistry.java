@@ -51,7 +51,7 @@ public class SearchRegistry {
 	 * Find the search for a given type
 	 * 
 	 * @param type
-	 * @return
+	 * @return search instance for given type
 	 */
 	public Search getSearch(SearchType type) {
 		return getSearches().get(type);

@@ -27,8 +27,7 @@ import org.ensembl.genesearch.Search;
 public class TranscriptSearch extends JoinMergeSearch {
 
 	/**
-	 * @param primarySearchType
-	 * @param provider
+n	 * @param provider
 	 */
 	public TranscriptSearch(SearchRegistry provider) {
 		super(SearchType.TRANSCRIPTS, provider);

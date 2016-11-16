@@ -121,11 +121,11 @@ public class EndpointTests {
 		List<Map<String, Object>> fields = (List<Map<String, Object>>) (result.get("fields"));
 		assertEquals("ID found", "id", fields.get(0).get("name"));
 	}
-	
+
 	@Test
 	public void testQueryGetArrayEndpoint() {
 		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, GENES_QUERY + "?array=true");
-		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));		
+		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
 		List<Map<String, Object>> fields = (List<Map<String, Object>>) result.get("fields");
 		List<List<Object>> results = (List<List<Object>>) result.get("results");
 		assertEquals("Checking limited results retrieved", 10, results.size());
@@ -275,7 +275,7 @@ public class EndpointTests {
 		assertTrue("Start found", results.get(0).containsKey("start"));
 		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
 	}
-	
+
 	@Test
 	public void testTranscriptsQueryGetEndpoint() {
 		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_QUERY);
@@ -287,11 +287,11 @@ public class EndpointTests {
 		List<Map<String, Object>> fields = (List<Map<String, Object>>) (result.get("fields"));
 		assertTrue("ID found in fields", fields.stream().anyMatch(f -> f.get("name").equals("id")));
 	}
-	
+
 	@Test
 	public void testTranscriptsQueryGetArrayEndpoint() {
 		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_QUERY + "?array=true");
-		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));		
+		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
 		List<Map<String, Object>> fields = (List<Map<String, Object>>) result.get("fields");
 		List<List<Object>> results = (List<List<Object>>) result.get("results");
 		assertEquals("Checking limited results retrieved", 10, results.size());
@@ -305,7 +305,8 @@ public class EndpointTests {
 
 	@Test
 	public void testTranscriptsQueryPostEndpoint() {
-		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_QUERY, "{\"fields\":[\"id\",\"name\"]}");
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_QUERY,
+				"{\"fields\":[\"id\",\"name\"]}");
 		assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
 		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
 		assertEquals("Checking limited results retrieved", 10, results.size());
@@ -362,8 +363,8 @@ public class EndpointTests {
 	@Test
 	public void testTranscriptsFullQueryPostEndpoint() {
 		String paramJson = "{\"query\":{\"biotype\":\"protein_coding\"},"
-				+ "\"limit\":5,\"fields\":[\"id\",\"name\",\"biotype\",\"description\"]," + "\"sort\":[\"+genes.name\",\"-start\"],"
-				+ "\"facets\":[\"biotype\"]}";
+				+ "\"limit\":5,\"fields\":[\"id\",\"name\",\"biotype\",\"description\"],"
+				+ "\"sort\":[\"+genes.name\",\"-start\"]," + "\"facets\":[\"biotype\"]}";
 		// rest template expands {} as variables so supply JSON separately
 		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_QUERY, paramJson);
 		assertEquals("Checking all results found", 536, Long.parseLong(result.get("resultCount").toString()));
@@ -375,8 +376,8 @@ public class EndpointTests {
 		Map<String, Object> facets = (Map<String, Object>) (result.get("facets"));
 		assertEquals("Checking 1 facet retrieved", 1, facets.size());
 		assertTrue("Checking facets populated", facets.containsKey("biotype"));
-		//TODO requires sorting to be fixed first
-		//assertEquals("Name found", "5S_rRNA", results.get(0).get("name"));
+		// TODO requires sorting to be fixed first
+		// assertEquals("Name found", "5S_rRNA", results.get(0).get("name"));
 	}
 
 	@Test
@@ -415,8 +416,7 @@ public class EndpointTests {
 	public void testTranscriptsFullFetchGetEndpoint() {
 		String url = TRANSCRIPTS_FETCH + "?query={query}" + "&fields=id,name,start";
 		// rest template expands {} as variables so supply JSON separately
-		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, url,
-				"{}");
+		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, url, "{}");
 		List<Map<String, Object>> result = (List<Map<String, Object>>) results.get("results");
 		assertEquals("Checking all results found", 598, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
@@ -428,8 +428,7 @@ public class EndpointTests {
 
 	@Test
 	public void testTranscriptsFullFetchPostEndpoint() {
-		String paramJson = "{\"query\":{},"
-				+ "\"fields\":[\"id\",\"name\",\"start\"]}";
+		String paramJson = "{\"query\":{}," + "\"fields\":[\"id\",\"name\",\"start\"]}";
 		// rest template expands {} as variables so supply JSON separately
 		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, TRANSCRIPTS_FETCH, paramJson);
 		List<Map<String, Object>> results = (List<Map<String, Object>>) result.get("results");
@@ -438,7 +437,6 @@ public class EndpointTests {
 		assertTrue("Start found", results.get(0).containsKey("start"));
 		assertFalse("homologues not found", results.get(0).containsKey("homologues"));
 	}
-	
 
 	@Test
 	public void testGenomeQueryGetEndpoint() {
@@ -457,7 +455,7 @@ public class EndpointTests {
 		assertEquals("Checking limited results retrieved", 4, results.size());
 		assertTrue("ID found", results.get(0).containsKey("id"));
 	}
-	
+
 	@Test
 	public void testGenomeFetchGetEndpoint() {
 		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, GENOMES_FETCH);
@@ -491,15 +489,12 @@ public class EndpointTests {
 		assertTrue("Targets found", type.containsKey("targets"));
 		assertTrue("Fields found", type.containsKey("fieldInfo"));
 
-		List<Map<String, Object>> fields = getUrlToObject(LIST_REF, restTemplate,
-				INFO + "/fields");
+		List<Map<String, Object>> fields = getUrlToObject(LIST_REF, restTemplate, INFO + "/fields");
 		assertEquals("Checking number of fields", ((List) type.get("fieldInfo")).size(), fields.size());
 
-		List<Map<String, Object>> facetFields = getUrlToObject(LIST_REF, restTemplate,
-				INFO + "/fields?type=facet");
+		List<Map<String, Object>> facetFields = getUrlToObject(LIST_REF, restTemplate, INFO + "/fields?type=facet");
 		facetFields.stream().anyMatch(f -> f.get("facet").equals("true"));
-		List<Map<String, Object>> strandFields = getUrlToObject(LIST_REF, restTemplate,
-				INFO + "/fields?type=strand");
+		List<Map<String, Object>> strandFields = getUrlToObject(LIST_REF, restTemplate, INFO + "/fields?type=strand");
 		strandFields.stream().anyMatch(f -> f.get("type").equals("STRAND"));
 
 	}
@@ -512,7 +507,7 @@ public class EndpointTests {
 	 *            URL template
 	 * @param params
 	 *            bind parameters for URL
-	 * @return
+	 * @return object retrieved from GET
 	 */
 	public static <T> T getUrlToObject(TypeReference<T> type, RestTemplate restTemplate, String url, Object... params) {
 		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class, params);
@@ -537,7 +532,7 @@ public class EndpointTests {
 	 *            object to post
 	 * @param params
 	 *            URL bind params
-	 * @return
+	 * @return object retrieved from POST
 	 */
 	public static <T> T postUrlToObject(TypeReference<T> type, RestTemplate restTemplate, String url, String json,
 			Object... params) {

@@ -25,8 +25,7 @@ import org.ensembl.genesearch.info.FieldInfo;
 
 /**
  * Class encapsulating a limited query result set. Returned by
- * {@link Search#query(List, List, List, int, int, List, String, List)}.
- * 
+ * {@link Search#query(List, QueryOutput, List, int, int, List)} 
  * @author dstaines
  *
  */

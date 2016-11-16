@@ -104,7 +104,7 @@ public class EnsemblRestSequenceSearch implements Search {
 	 * using VALID_ARGS as a lookup
 	 * 
 	 * @param queries
-	 * @return
+	 * @return URL for params
 	 */
 	protected String getPostUrl(List<Query> queries) {
 		List<String> params = queries.stream()
@@ -121,7 +121,7 @@ public class EnsemblRestSequenceSearch implements Search {
 	 * extract IDs from the queries
 	 * 
 	 * @param queries
-	 * @return
+	 * @return IDs as list
 	 */
 	protected List<String> getIds(List<Query> queries) {
 		return queries.stream().filter(q -> q.getFieldName().equals(getIdField()))
