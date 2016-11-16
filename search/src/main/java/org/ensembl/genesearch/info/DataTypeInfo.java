@@ -26,7 +26,6 @@ import org.apache.commons.io.IOUtils;
 import org.ensembl.genesearch.impl.SearchType;
 import org.ensembl.genesearch.info.FieldInfo.FieldType;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -72,7 +71,6 @@ public class DataTypeInfo {
 	public void setName(String name) {
 		this.name = SearchType.findByName(name);
 	}
-	
 
 	public void setNameType(SearchType name) {
 		this.name = name;
@@ -122,7 +120,7 @@ public class DataTypeInfo {
 	 * Find detailed fieldinfo for the supplied field name, supporting wildcards
 	 * 
 	 * @param fieldName
-	 * @return
+	 * @return list of field info
 	 */
 	public List<FieldInfo> getInfoForFieldName(String fieldName) {
 		List<FieldInfo> fields = new ArrayList<>(1);

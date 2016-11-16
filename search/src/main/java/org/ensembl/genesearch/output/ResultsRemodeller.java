@@ -46,7 +46,7 @@ public class ResultsRemodeller {
 	 *            supplied object
 	 * @param topLevel
 	 *            e.g. name for top level elems
-	 * @return
+	 * @return object as list
 	 */
 	public static List<Map<String, Object>> flatten(Map<String, Object> input, String targetPath, String topLevel) {
 		List<Map<String, Object>> flat = flatten(Arrays.asList(input), StringUtils.EMPTY,
@@ -79,7 +79,7 @@ public class ResultsRemodeller {
 	 * @param targetPath
 	 *            e.g. a.b will flatten to b children of a children of the
 	 *            supplied object
-	 * @return
+	 * @return object as list
 	 */
 	public static List<Map<String, Object>> flatten(Map<String, Object> input, String targetPath) {
 		return flatten(Arrays.asList(input), StringUtils.EMPTY, StringUtils.split(targetPath, "."));
@@ -163,3 +163,4 @@ public class ResultsRemodeller {
 	}
 
 }
+ 

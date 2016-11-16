@@ -24,7 +24,7 @@ public class MapXmlWriter {
 	 * Transform a map into XML
 	 * @param name
 	 * @param map
-	 * @return
+	 * @return String in XML format
 	 * @throws XMLStreamException
 	 * @throws FactoryConfigurationError
 	 * @throws UnsupportedEncodingException

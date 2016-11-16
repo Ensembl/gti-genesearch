@@ -37,28 +37,29 @@ public class DataUtils {
 	 * 
 	 * @param r
 	 * @param key
-	 * @return
+	 * @return map containing data
 	 */
-	public static Map<String,Map<String, Object>> getObjsForKey(Map<String, Object> r, String key) {
-		Map<String,Map<String,Object>> keys = new HashMap<>();
+	public static Map<String, Map<String, Object>> getObjsForKey(Map<String, Object> r, String key) {
+		Map<String, Map<String, Object>> keys = new HashMap<>();
 		getObjsForKey(r, key, keys);
 		return keys;
 	}
-	protected static void getObjsForKey(Map<String, Object> r, String key, Map<String,Map<String,Object>> keys) {
+
+	protected static void getObjsForKey(Map<String, Object> r, String key, Map<String, Map<String, Object>> keys) {
 		int i = key.indexOf('.');
 		if (i != -1) {
 			String stem = key.substring(0, i);
 			String tail = key.substring(i + 1);
 			Object subObj = r.get(stem);
-			if(subObj!=null) {
-				if(Map.class.isAssignableFrom(subObj.getClass())) {
-					getObjsForKey((Map)subObj, tail, keys);					
-				} else if(List.class.isAssignableFrom(subObj.getClass())) {
-					for(Object o: (List)subObj) {
-						getObjsForKey((Map)o, tail, keys);
+			if (subObj != null) {
+				if (Map.class.isAssignableFrom(subObj.getClass())) {
+					getObjsForKey((Map) subObj, tail, keys);
+				} else if (List.class.isAssignableFrom(subObj.getClass())) {
+					for (Object o : (List) subObj) {
+						getObjsForKey((Map) o, tail, keys);
 					}
 				} else {
-					throw new IllegalArgumentException("Cannot find map for key "+stem);
+					throw new IllegalArgumentException("Cannot find map for key " + stem);
 				}
 			}
 		} else {

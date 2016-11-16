@@ -68,40 +68,44 @@ public interface Search {
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames);
 
 	/**
-	 * Retrieve genes with the supplied IDs
+	 * Retrieve complete objects with the supplied IDs
 	 * 
 	 * @param ids
-	 * @return
+	 * @return list of objects
 	 */
 	public default List<Map<String, Object>> fetchByIds(String... ids) {
 		return fetchByIds(QueryOutput.build(Collections.emptyList()), ids);
 	}
 
 	/**
+	 * Return objects with specified content given the supplied IDs
 	 * 
 	 * @param fields
 	 * @param ids
-	 * @return
+	 * @return list of objects
 	 */
 	public default List<Map<String, Object>> fetchByIds(QueryOutput fields, String... ids) {
 		return fetch(Arrays.asList(new Query(QueryType.TERM, getIdField(), ids)), fields).getResults();
 	}
 
 	/**
-	 * Retrieve genes with the supplied ID
+	 * Retrieve object with the supplied ID
 	 * 
 	 * @param id
-	 * @return
+	 * @return object
 	 */
 	public default Map<String, Object> fetchById(String id) {
 		return fetchById(QueryOutput.build(Collections.emptyList()), id);
 	}
 
 	/**
-	 * Retrieve genes with the supplied ID
+	 * Retrieve object with the supplied ID
 	 * 
+	 * @param fields
+	 *            to return
 	 * @param id
-	 * @return
+	 *            for object
+	 * @return object
 	 */
 	public default Map<String, Object> fetchById(QueryOutput fields, String id) {
 		List<Map<String, Object>> genes = this.fetchByIds(fields, id);
@@ -116,7 +120,8 @@ public interface Search {
 	 * Search with the supplied queries and return a summary object containing
 	 * results and facets
 	 * 
-	 * @gparam queries list of queries to combine with AND
+	 * @param queries
+	 *            list of queries to combine with AND
 	 * @param output
 	 *            source fields to include
 	 * @param facets
@@ -125,7 +130,7 @@ public interface Search {
 	 *            place to start in query
 	 * @param limit
 	 *            number of hits to return
-	 * @return
+	 * @return result object
 	 */
 	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
 			List<String> sorts);
@@ -141,17 +146,17 @@ public interface Search {
 	}
 
 	/**
-	 * Find a document matching the supplied string
+	 * Find objects matching the supplied string e.g. genome by name
 	 * 
 	 * @param name
-	 * @return
+	 * @return set of objects
 	 */
 	public QueryResult select(String name, int offset, int limit);
 
 	/**
 	 * Get the primary data type returned by this instance
 	 * 
-	 * @return
+	 * @return object describing data type
 	 */
 	public DataTypeInfo getDataType();
 
@@ -159,7 +164,7 @@ public interface Search {
 	 * Find the list of names for the given fields
 	 * 
 	 * @param fieldNames
-	 * @return
+	 * @return list of fields
 	 */
 	public default List<FieldInfo> getFieldInfo(QueryOutput fieldNames) {
 		List<FieldInfo> fields = new ArrayList<>();
