@@ -184,8 +184,8 @@ public class ESSearch implements Search {
 	 * Process hits using scan/scroll
 	 * 
 	 * @param consumer
-	 * @param response
-	 * @return
+	 * @param response initial response for hit processing
+	 * @return current response (replaced during subsequent scrolls)
 	 */
 	protected SearchResponse consumeAllHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
 		// scroll until no hits are returned
@@ -214,7 +214,6 @@ public class ESSearch implements Search {
 	 * 
 	 * @param consumer
 	 * @param response
-	 * @param target
 	 */
 	protected void consumeHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
 		SearchHit[] hits = response.getHits().getHits();
@@ -322,8 +321,6 @@ public class ESSearch implements Search {
 	 * {@link List} of {@link Map}s
 	 * 
 	 * @param response
-	 * @param target
-	 *            optional target for flattening e.g. transcripts
 	 * @return collection representation of hit
 	 */
 	protected List<Map<String, Object>> processResults(SearchResponse response) {

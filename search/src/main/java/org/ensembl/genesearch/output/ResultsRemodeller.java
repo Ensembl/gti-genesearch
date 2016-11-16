@@ -92,7 +92,7 @@ public class ResultsRemodeller {
 	 * @param baseKey
 	 *            current path
 	 * @param targetPath
-	 * @return
+	 * @return list of flattened object
 	 */
 	protected static List<Map<String, Object>> flatten(List<Map<String, Object>> input, String baseKey,
 			String... targetPath) {
@@ -136,7 +136,7 @@ public class ResultsRemodeller {
 	 * 
 	 * @param target
 	 * @param exclude
-	 * @return
+	 * @return copy of supplied object
 	 */
 	protected static Map<String, Object> cloneObject(Map<String, Object> target, Collection<String> exclude) {
 		Map<String, Object> output = new HashMap<>(target.size());

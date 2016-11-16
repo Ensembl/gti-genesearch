@@ -108,7 +108,7 @@ public class ESSearchFlatten extends ESSearch {
 	 * Transform the queries into the correct form
 	 * 
 	 * @param queries
-	 * @return
+	 * @return transformed queries
 	 */
 	protected List<Query> transformQueries(List<Query> queries) {
 		List<Query> qs = new ArrayList<>();
@@ -130,7 +130,7 @@ public class ESSearchFlatten extends ESSearch {
 	 * Transform the required output to the correct level
 	 * 
 	 * @param output
-	 * @return
+	 * @return transformed output
 	 */
 	protected QueryOutput transformOutput(QueryOutput output) {
 
@@ -166,7 +166,7 @@ public class ESSearchFlatten extends ESSearch {
 	 * facets)
 	 * 
 	 * @param fields
-	 * @return
+	 * @return transformed fields
 	 */
 	protected List<String> transformFields(List<String> fields) {
 		return fields.stream().map(this::transformField).collect(Collectors.toList());
