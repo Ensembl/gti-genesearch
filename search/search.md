@@ -25,6 +25,7 @@ The interface to the search API is as follows:
 * `org.ensembl.genesearch.Search`
 * `org.ensembl.genesearch.Query`
 * `org.ensembl.genesearch.QueryResult`
+* `org.ensembl.genesearch.SearchResult`
 
 ## Search
 The `Search` interface provides two main sets of search methods - fetch and query. `Search` also includes default methods which are independent of implementation to reduce the numbers of methods required for an implementation.
@@ -107,6 +108,34 @@ Support for sequence retrieval is provided by the Ensembl `/sequence/id` endpoin
 ## `DivisonAwareSequenceSearch` 
 The REST sequence endpoints are currently limited in that EG and e! genomes are provided by two different URLs, and performance in EG is very poor unless a `genome` parameter is passed. To deal with these two limitations, `org.ensembl.genesearch.impl.DivisionAwareSequenceSearch` accepts nested queries where the top level field name is the name of the genome, with the nested sub-queries being those normally passed to `EnsemblRestSequenceSearch`. Each query is checked against a list of genomes from Ensembl (lazily loaded from an instance of `ESSearch` for genomes) and dispatched to one of two `EnsemblRestSequenceSearch` instances (EG or e!).
 
+# MongoDB implementation
+`MongoSearch` provides a baseline implementation for searches against Mongo databases, namely the EVA database of variants. This does not currently support facets or sorting, and all counts are returned as -1 since MongoDB does not return a count on a search and would require a second execution. This can be provided if needed.
+
+*Important*: MongoDB's use of indices is not as comprehensive as that of Elastic. Particular combinations of filters may not have an index available. For instances, `annot.ct.ensg` alone will not use an index as the index requires the use of `annot.ct.ensg.so` first. This will need careful handling in any web interface.
+
+# Flattening implementation
+
+The Elastic implementations implicitly support nesting, and the gene search contains transcripts as sub-objects. However, some times we need to 'flatten' results to subobjects e.g. transcripts. This can be carried out using instances of `ESSearchFlatten` which flattens returned results to a specified target. For instance, if the target is "transcripts" then the documents are split to provide a list of documents representing each transcript. Any gene level fields are attached to each transcript. For instance, consider a query matching the following gene:
+```
+{
+  id:"123", 
+  name:"xyz", 
+  description:"my gene", 
+  transcripts:[
+    {id:"123.1", name:"xyz1"}, 
+    {id:"123.2", name:"xyz2"}
+ ]
+}
+```
+If the target is transcripts, then the following two objects would be returned:
+```
+[
+  {gene.id:"123", id:"123.1", name:"xyz1"},
+  {gene.id:"123", id:"123.2", name:"xyz2"}
+]
+```
+Note that currently result counts and offsets etc. will still indicate the number of genes.
+
 # Join-aware implementation
 
 Although the majority of queries will be against the gene store, there are scenarios where the user wants objects from another search implementation to be returned. For example, one might want to search for kinase genes on chromosome 1 and then find variants associated with those genes. To support this, a join mechanism is implemented by `org.ensembl.genesearch.impl.JoinMergeSearch`. This is an abstract class which supports using the results from 1 query to build a second query as follows:
@@ -117,9 +146,10 @@ Although the majority of queries will be against the gene store, there are scena
 
 For each "to" search, the fields used and strategies for joining are encapsulated in instances of `JoinStrategy`. `MergeStrategy` is an enum controlling whether results from the "to" search should simply be appended to each "from" document or merged into an existing field e.g. `homologues`.
 
-A concrete implementation is `org.ensembl.genesearch.impl.GeneSearch` which supports homologue, transcript and sequence querying using `ESSearch` and `DivisionAwareSequenceSearch`. 
-
-Subsequent development will implement this approach for variants.
+Concrete implementations are:
+- `org.ensembl.genesearch.impl.GeneSearch`
+- `org.ensembl.genesearch.impl.TranscriptSearch`
+- `org.ensembl.genesearch.impl.VariantSearch`
 
 # Copyright and Licensing
 Copyright 1999-2016 EMBL-European Bioinformatics Institute

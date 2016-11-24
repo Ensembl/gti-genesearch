@@ -26,8 +26,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.Document;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.test.MongoTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.ensembl.gti.genesearch.services.Application;
 import org.ensembl.gti.genesearch.services.EndpointSearchProvider;
 import org.junit.Before;
@@ -51,6 +54,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.client.MongoCollection;
 
 /**
  * @author dstaines
@@ -70,25 +74,32 @@ public class EndpointTests {
 	private static final String GENOMES_SELECT = API_BASE + "/genomes/select";
 	private static final String TRANSCRIPTS_FETCH = API_BASE + "/transcripts/fetch";
 	private static final String TRANSCRIPTS_QUERY = API_BASE + "/transcripts/query";
+	private static final String VARIANTS_FETCH = API_BASE + "/variants/fetch";
+	private static final String VARIANTS_QUERY = API_BASE + "/variants/query";
 	private static final String INFO = API_BASE + "/genes/info";
 
 	static Logger log = LoggerFactory.getLogger(EndpointTests.class);
 	static ESSearch geneSearch;
 	static ESSearch genomeSearch;
-	static ESTestServer testServer;
+	static ESTestServer esTestServer;
+	static MongoCollection<Document> mongoCollection;
+	static MongoTestServer mongoTestServer;
 
 	@BeforeClass
 	public static void setUp() throws IOException {
 		// create our ES test server once only
 		log.info("Setting up");
-		testServer = new ESTestServer();
+		esTestServer = new ESTestServer();
 		// index a sample of JSON
 		log.info("Reading documents");
-		String geneJson = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
-		String genomeJson = ESTestServer.readGzipResource("/genomes.json.gz");
+		String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
+		String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
 		log.info("Creating test index");
-		testServer.indexTestDocs(geneJson, ESSearch.GENE_ESTYPE);
-		testServer.indexTestDocs(genomeJson, ESSearch.GENOME_ESTYPE);
+		esTestServer.indexTestDocs(geneJson, ESSearch.GENE_ESTYPE);
+		esTestServer.indexTestDocs(genomeJson, ESSearch.GENOME_ESTYPE);
+		String variantJson = DataUtils.readGzipResource("/variants.json.gz");
+		mongoTestServer = new MongoTestServer();
+		mongoTestServer.indexData(variantJson);
 	}
 
 	@Autowired
@@ -105,8 +116,9 @@ public class EndpointTests {
 
 	@Before
 	public void injectSearch() {
-		// ensure we always use our test instance
-		provider.setClient(testServer.getClient());
+		// ensure we always use our test instances
+		provider.setESClient(esTestServer.getClient());
+		provider.setMongoCollection(mongoTestServer.getCollection());
 	}
 
 	@Test
@@ -470,6 +482,38 @@ public class EndpointTests {
 		List<Map<String, Object>> result = (List<Map<String, Object>>) results.get("results");
 		assertEquals("Checking all results found", 4, result.size());
 		assertTrue("ID found", result.get(0).containsKey("id"));
+	}
+
+	@Test
+	public void testVariantQueryGetEndpoint() {
+		Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, VARIANTS_QUERY);
+		assertEquals("Checking limited results retrieved", 10, ((List<?>) result.get("results")).size());
+		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
+		assertTrue("ID found", results.get(0).containsKey("_id"));
+	}
+
+	@Test
+	public void testVariantQueryPostEndpoint() {
+		Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, VARIANTS_QUERY, "{}");
+		List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
+		assertEquals("Checking limited results retrieved", 10, results.size());
+		assertTrue("ID found", results.get(0).containsKey("_id"));
+	}
+
+	@Test
+	public void testVariantFetchGetEndpoint() {
+		Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, VARIANTS_FETCH);
+		List<Map<String, Object>> result = (List<Map<String, Object>>) results.get("results");
+		assertEquals("Checking all results found", 10, result.size());
+		assertTrue("ID found", result.get(0).containsKey("_id"));
+	}
+
+	@Test
+	public void testVariantFetchPostEndpoint() {
+		Map<String, Object> results = postUrlToObject(MAP_REF, restTemplate, VARIANTS_FETCH, "{}");
+		List<Map<String, Object>> result = (List<Map<String, Object>>) results.get("results");
+		assertEquals("Checking all results found", 10, result.size());
+		assertTrue("ID found", result.get(0).containsKey("_id"));
 	}
 
 	@Test
