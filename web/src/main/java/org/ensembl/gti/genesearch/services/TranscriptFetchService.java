@@ -30,8 +30,6 @@ import org.springframework.stereotype.Service;
 @Path("/transcripts/fetch")
 public class TranscriptFetchService extends FetchService {
 
-	private static final String TRANSCRIPT = "transcript";
-
 	/**
 	 * @param provider
 	 */
@@ -48,16 +46,6 @@ public class TranscriptFetchService extends FetchService {
 	@Override
 	public Search getSearch() {
 		return provider.getTranscriptSearch();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ensembl.gti.genesearch.services.FetchService#getObjectType()
-	 */
-	@Override
-	protected String getObjectType() {
-		return TRANSCRIPT;
 	}
 
 }

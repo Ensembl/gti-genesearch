@@ -18,6 +18,7 @@ package org.ensembl.gti.genesearch.services;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +36,16 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
+import org.ensembl.gti.genesearch.services.converter.MapXmlWriter;
+import org.ensembl.gti.genesearch.services.errors.ObjectNotFoundException;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -55,7 +62,7 @@ public abstract class ObjectService extends SearchBasedService {
 	/**
 	 * @param provider
 	 */
-	public ObjectService(EndpointSearchProvider provider) {
+	public ObjectService(EndpointSearchProvider provider, String name) {
 		super(provider);
 	}
 
@@ -108,5 +115,69 @@ public abstract class ObjectService extends SearchBasedService {
 			@DefaultValue("10") @QueryParam("limit") int limit) {
 		return getSearch().select(query, offset, limit);
 	}
+	
+	
+	@Path("{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
+	public Response getAsXml(@PathParam("id") String id) {
+		String name = getSearch().getDataType().getName().getObjectName();
+		try {
+			Map<String, Object> object = getSearch().fetchById(id);
+			if (object.isEmpty()) {
+				throw new ObjectNotFoundException("Object with ID " + id + " not found");
+			} else {
+				String xml = MapXmlWriter.mapToXml(name, object);
+				return Response.ok().entity(xml).type(MediaType.APPLICATION_XML)
+						.header("Content-Disposition", "attachment; filename=" + id + ".xml").build();
+			}
+		} catch (UnsupportedEncodingException | XMLStreamException | FactoryConfigurationError e) {
+			throw new WebApplicationException(e);
+		}
+
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response postAsXml(List<String> ids) {
+		String name = getSearch().getDataType().getName().getObjectName();
+		String plName = getSearch().getDataType().getName().toString();
+
+		log.info(plName+" to XML");
+		StreamingOutput stream = new StreamingOutput() {
+			@Override
+			public void write(OutputStream os) throws IOException, WebApplicationException {
+
+				try {
+					XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
+					xsw.writeStartDocument();
+					xsw.writeStartElement(plName);
+					MapXmlWriter writer = new MapXmlWriter(xsw);
+					getSearch().fetchByIds(new Consumer<Map<String, Object>>() {
+						@Override
+						public void accept(Map<String, Object> t) {
+							try {
+								writer.writeObject(name, t);
+							} catch (XMLStreamException e) {
+								e.printStackTrace();
+							}
+						}
+
+					}, ids.toArray(new String[ids.size()]));
+					xsw.writeEndElement();
+					xsw.writeEndDocument();
+					xsw.close();
+				} catch (XMLStreamException | FactoryConfigurationError e) {
+					throw new WebApplicationException(e);
+				}
+			}
+		};
+
+		return Response.ok().entity(stream).type(MediaType.APPLICATION_XML)
+				.header("Content-Disposition", "attachment; filename="+name+"s.xml").build();
+
+	}
+
 
 }

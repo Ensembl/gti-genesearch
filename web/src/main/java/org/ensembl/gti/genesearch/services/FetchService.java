@@ -68,9 +68,7 @@ public abstract class FetchService extends SearchBasedService {
 	public FetchService(EndpointSearchProvider provider) {
 		super(provider);
 	}
-
-	protected abstract String getObjectType();
-
+	
 	@GET
 	@JSONP
 	public Response get(@BeanParam FetchParams params) {
@@ -215,6 +213,7 @@ public abstract class FetchService extends SearchBasedService {
 	}
 
 	public Response fetchAsXml(FetchParams params) {
+		String name = getSearch().getDataType().getName().getObjectName();
 		log.info("fetch to XML:" + params.toString());
 		StreamingOutput stream = new StreamingOutput() {
 			@Override
@@ -222,7 +221,7 @@ public abstract class FetchService extends SearchBasedService {
 				try {
 					XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(output);
 					xsw.writeStartDocument();
-					xsw.writeStartElement(getObjectType() + "s");
+					xsw.writeStartElement(name + "s");
 					xsw.writeStartElement("fields");
 					for (FieldInfo info : getSearch().getFieldInfo(params.getFields())) {
 						xsw.writeStartElement("field");
@@ -240,7 +239,7 @@ public abstract class FetchService extends SearchBasedService {
 					MapXmlWriter writer = new MapXmlWriter(xsw);
 					getSearch().fetch(t -> {
 							try {
-								writer.writeObject(getObjectType(), t);
+								writer.writeObject(name, t);
 							} catch (XMLStreamException e) {
 								throw new WebApplicationException(e);
 							}

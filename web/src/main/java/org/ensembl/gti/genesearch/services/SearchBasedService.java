@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Base class for services dealing with SearchProviders
+ * 
  * @author dstaines
  *
  */
