@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,7 +45,7 @@ import com.mongodb.client.model.Projections;
  *
  */
 public class MongoSearch implements Search {
-	
+
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private static final String MONGO_ID = "_id";
@@ -74,15 +75,18 @@ public class MongoSearch implements Search {
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput output) {
 		// 1. turn queries into filter
 		Document filter = MongoSearchBuilder.buildQuery(queries);
-		log.info("Using filter "+filter.toJson());
+		log.info("Using filter " + filter.toJson());
 		// 2. turn output into projection
-		if(!output.getFields().contains(getIdField())) {
+		if (!output.getFields().contains(getIdField())) {
 			output.getFields().add(0, getIdField());
 		}
 		List<String> fieldNames = output.getFields();
 		// 3. execute query and pass to consumer
-		mongoC.find(filter).projection(Projections.include(fieldNames))
-				.forEach((Document d) -> consumer.accept(documentToMap(d)));
+		Iterator<Document> iterD = mongoC.find(filter).projection(Projections.include(fieldNames)).iterator();
+		while (iterD.hasNext()) {
+			consumer.accept(documentToMap(iterD.next()));
+		}
+
 		return;
 	}
 
@@ -98,16 +102,19 @@ public class MongoSearch implements Search {
 			List<String> sorts) {
 		// 1. turn queries into filter
 		Document filter = MongoSearchBuilder.buildQuery(queries);
-		log.info("Using filter "+filter.toJson());
+		log.info("Using filter " + filter.toJson());
 		// 2. turn output into projection
-		if(!output.getFields().contains(getIdField())) {
+		if (!output.getFields().contains(getIdField())) {
 			output.getFields().add(0, getIdField());
 		}
 		List<String> fieldNames = output.getFields();
 		// 3. execute query
 		List<Map<String, Object>> results = new ArrayList<>(offset);
-		mongoC.find(filter).limit(limit).skip(offset).projection(Projections.include(fieldNames))
-				.forEach((Document d) -> results.add(documentToMap(d)));
+		Iterator<Document> iterD = mongoC.find(filter).limit(limit).skip(offset)
+				.projection(Projections.include(fieldNames)).iterator();
+		while (iterD.hasNext()) {
+			results.add(documentToMap(iterD.next()));
+		}
 		// 4. populate QueryResult
 		return new QueryResult(-1L, offset, limit, getFieldInfo(output), results, Collections.emptyMap());
 	}
@@ -158,6 +165,5 @@ public class MongoSearch implements Search {
 	public String getIdField() {
 		return MONGO_ID;
 	}
-	
 
 }

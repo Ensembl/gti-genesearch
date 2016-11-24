@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.bson.Document;
-import org.ensembl.genesearch.impl.MongoSearchTest;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,16 +37,16 @@ import com.mongodb.client.MongoDatabase;
 public class MongoTestServer {
 
 	private final Logger log = LoggerFactory.getLogger(MongoTestServer.class);
-	
+
 	private final MongoCollection<Document> collection;
 
 	public MongoTestServer() {
 		log.info("Starting Fongo server");
 		Fongo fongo = new Fongo("testMongo");
 		MongoDatabase database = fongo.getDatabase(MongoTestServer.class.getSimpleName());
-		String collectionName = MongoSearchTest.class.getSimpleName() + "_col";
+		String collectionName = MongoTestServer.class.getSimpleName() + "_col";
 		collection = database.getCollection(collectionName);
-		log.info("Retrieved Fongo collection "+collectionName);
+		log.info("Retrieved Fongo collection " + collectionName);
 	}
 
 	public void indexDataResource(String resourceName) {
@@ -62,17 +61,17 @@ public class MongoTestServer {
 		// insert some test data
 		Document testData = Document.parse(json);
 		List list = (List) testData.get("docs");
-		log.info("Indexing "+list.size()+" test docs");
+		log.info("Indexing " + list.size() + " test docs");
 		for (Object o : list) {
 			collection.insertOne((Document) o);
 		}
-		log.info("Completed indexing "+list.size()+" test docs");
+		log.info("Completed indexing " + list.size() + " test docs");
 	}
 
 	public MongoCollection<Document> getCollection() {
 		return collection;
 	}
-	
+
 	public void disconnect() {
 		// no disconnect required with Fongo
 	}
