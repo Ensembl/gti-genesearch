@@ -58,8 +58,8 @@ public class DataTypeInfo {
 	}
 
 	private SearchType name;
-	private List<FieldInfo> fieldInfo;
-	private List<SearchType> targets;
+	private List<FieldInfo> fieldInfo = new ArrayList<>();
+	private List<SearchType> targets = new ArrayList<>();
 
 	public DataTypeInfo() {
 	}
