@@ -8,7 +8,7 @@ package org.ensembl.genesearch.info;
  */
 public class FieldInfo {
 
-	public static enum FieldType {
+	public enum FieldType {
 		GENOME, ID, LOCATION, NUMBER, OBJECT, ONTOLOGY, TEXT, STRAND;
 	}
 
@@ -25,6 +25,11 @@ public class FieldInfo {
 	private boolean sort;
 
 	private FieldType type = FieldType.TEXT;
+
+	public FieldInfo(String name, FieldType type) {
+		this.name = name;
+		this.type = type;
+	}
 
 	public FieldInfo() {
 	}
