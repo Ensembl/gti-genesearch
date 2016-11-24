@@ -37,6 +37,7 @@ import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
 import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class ESGeneSearchTest {
 	public static void setUp() throws IOException {
 		// index a sample of JSON
 		log.info("Reading documents");
-		String json = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
+		String json = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
 		log.info("Creating test index");
 		testServer.indexTestDocs(json, ESSearch.GENE_ESTYPE);
 	}
@@ -267,7 +268,7 @@ public class ESGeneSearchTest {
 	@Test
 	public void queryLargeTerms() throws IOException {
 		QueryHandler handler = new DefaultQueryHandler();
-		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
+		String json = DataUtils.readGzipResource("/q08_human_swissprot_full.json.gz");
 		List<Query> qs = handler.parseQuery(json);
 		search.query(qs, QueryOutput.build(Arrays.asList("id", "name", "homologues")), Collections.emptyList(), 0, 5,
 				Collections.emptyList());

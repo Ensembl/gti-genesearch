@@ -31,6 +31,7 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class TranscriptSearchTest {
 	public static void setUp() throws IOException {
 		// index a sample of JSON
 		log.info("Reading documents");
-		String json = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
+		String json = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
 		log.info("Creating test index");
 		testServer.indexTestDocs(json, ESSearch.GENE_ESTYPE);
 	}

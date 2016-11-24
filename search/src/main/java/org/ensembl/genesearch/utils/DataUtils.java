@@ -20,6 +20,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+
+import org.apache.commons.io.IOUtils;
+import org.ensembl.genesearch.test.ESTestServer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,5 +79,13 @@ public class DataUtils {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static String readGzipResource(String name) throws IOException {
+		return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)));
+	}
+
+	public static String readResource(String name) throws IOException {
+		return IOUtils.toString(ESTestServer.class.getResourceAsStream(name));
 	}
 }

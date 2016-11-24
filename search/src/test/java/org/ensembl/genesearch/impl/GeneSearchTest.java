@@ -34,6 +34,7 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -67,10 +68,10 @@ public class GeneSearchTest {
 	public static void setUp() throws IOException {
 		// index a sample of JSON
 		log.info("Reading documents");
-		String json = ESTestServer.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
-		String json2 = ESTestServer.readGzipResource("/mycoplasma_pneumoniae_m129.json.gz");
-		String json3 = ESTestServer.readGzipResource("/wolbachia_endosymbiont_of_drosophila_melanogaster.json.gz");
-		String gJson = ESTestServer.readGzipResource("/genomes.json.gz");
+		String json = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
+		String json2 = DataUtils.readGzipResource("/mycoplasma_pneumoniae_m129.json.gz");
+		String json3 = DataUtils.readGzipResource("/wolbachia_endosymbiont_of_drosophila_melanogaster.json.gz");
+		String gJson = DataUtils.readGzipResource("/genomes.json.gz");
 		log.info("Creating test indices");
 		testServer.indexTestDocs(json, ESSearch.GENE_ESTYPE);
 		testServer.indexTestDocs(json2, ESSearch.GENE_ESTYPE);

@@ -36,6 +36,7 @@ import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class ESGenomeSearchTest {
 	public static void setUp() throws IOException {
 		// index a sample of JSON
 		log.info("Reading documents");
-		String json = ESTestServer.readGzipResource("/genomes.json.gz");
+		String json = DataUtils.readGzipResource("/genomes.json.gz");
 		log.info("Creating test index");
 		testServer.indexTestDocs(json, ESSearch.GENOME_ESTYPE);
 	}
