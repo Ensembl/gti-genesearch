@@ -97,7 +97,7 @@ public class EndpointSearchProvider {
 	}
 	
 	public MongoCollection<Document> getMongoCollection() {
-		if(mongoCollectionName==null) {
+		if(mongoCollection==null) {
 			log.info("Connecting to MongoDB "+mongoUrl);
 			MongoClient mongoC = new MongoClient(new MongoClientURI(mongoUrl));
 			log.info("Connecting to MongoDB "+mongoDatabaseName+"/"+mongoCollectionName);
