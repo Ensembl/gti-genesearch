@@ -23,16 +23,19 @@ package org.ensembl.genesearch.impl;
  *
  */
 public enum SearchType {
-	
-	GENOMES("genomes","genome"), GENES("genes","gene"), TRANSCRIPTS("transcripts","transcript"), TRANSLATIONS("translations","translation"), HOMOLOGUES("homologues","homologue"), VARIANTS("variants","variant"), SEQUENCES("sequences","sequence");
+
+	GENOMES("genomes", "genome"), GENES("genes", "gene"), TRANSCRIPTS("transcripts", "transcript"), TRANSLATIONS(
+			"translations", "translation"), HOMOLOGUES("homologues",
+					"homologue"), VARIANTS("variants", "variant"), SEQUENCES("sequences", "sequence");
 
 	private final String pluralName;
 	private final String singleName;
+
 	private SearchType(String pluralName, String singleName) {
 		this.pluralName = pluralName;
 		this.singleName = singleName;
 	}
-	
+
 	public static SearchType findByName(String name) {
 		SearchType type = null;
 		for (SearchType t : SearchType.values()) {
@@ -43,7 +46,7 @@ public enum SearchType {
 		}
 		return type;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.pluralName;
@@ -52,5 +55,5 @@ public enum SearchType {
 	public String getObjectName() {
 		return this.singleName;
 	}
-	
+
 }
