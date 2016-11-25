@@ -18,7 +18,6 @@ package org.ensembl.genesearch.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -262,7 +261,7 @@ public abstract class JoinMergeSearch implements Search {
 		Map<String, Map<String, Object>> objsForKey = DataUtils.getObjsForKey(r, fromParams.key);
 		for (Entry<String, Map<String, Object>> e : objsForKey.entrySet()) {
 			String fromId = e.getKey();
-			if(StringUtils.isEmpty(fromId)) {
+			if (StringUtils.isEmpty(fromId)) {
 				continue;
 			}
 			List<Map<String, Object>> resultsForId = resultsById.get(fromId);
@@ -273,7 +272,8 @@ public abstract class JoinMergeSearch implements Search {
 			resultsForId.add(e.getValue());
 			if (toParams.joinStrategy.toGroupBy.isPresent()) {
 				// where we're grouping IDs togther (e.g. sequences by genome)
-				// we need to retrieve or create a set to add IDs to for that genome
+				// we need to retrieve or create a set to add IDs to for that
+				// genome
 				String groupValue = e.getValue().get(toParams.joinStrategy.toGroupBy.get()).toString();
 				Set<String> s = ids.get(groupValue);
 				if (s == null) {
@@ -298,13 +298,12 @@ public abstract class JoinMergeSearch implements Search {
 				// for a join query, we need to use the group value as the term,
 				// and the IDs as the values
 				for (Entry<String, Set<String>> e : ids.entrySet()) {
-					Query[] qs = new Query[1+to.queries.size()];
+					Query[] qs = new Query[1 + to.queries.size()];
 					qs[0] = new Query(QueryType.TERM, to.key, e.getValue());
-					for(int i=0; i<to.queries.size(); i++) {
-						qs[i+1]  = to.queries.get(i);
+					for (int i = 0; i < to.queries.size(); i++) {
+						qs[i + 1] = to.queries.get(i);
 					}
-					newQueries.add(
-							new Query(QueryType.NESTED, e.getKey(), qs));
+					newQueries.add(new Query(QueryType.NESTED, e.getKey(), qs));
 				}
 			} else {
 				newQueries.addAll(to.queries);
@@ -314,13 +313,13 @@ public abstract class JoinMergeSearch implements Search {
 			// run query on "to" and map values over
 			provider.getSearch(to.name.get()).fetch(r -> {
 				String id = (String) r.get(to.key);
-				resultsById.get(id).stream().forEach(mergeResults(to, from, r));
+				List<Map<String, Object>> results = resultsById.get(id);
+				if (results != null)
+					results.stream().forEach(mergeResults(to, from, r));
 			}, newQueries, to.fields);
 			ids.clear();
 		}
 	}
-
-
 
 	protected Consumer<Map<String, Object>> mergeResults(SubSearchParams to, SubSearchParams from,
 			Map<String, Object> r) {
