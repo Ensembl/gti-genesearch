@@ -42,7 +42,7 @@ public class GeneSearch extends JoinMergeSearch {
 		}
 		Search variantSearch = provider.getSearch(SearchType.VARIANTS);
 		if (variantSearch != null) {
-			joinTargets.put(SearchType.VARIANTS, JoinStrategy.as(MergeStrategy.APPEND, "id", "annot.ct-list.ensg"));
+			joinTargets.put(SearchType.VARIANTS, JoinStrategy.as(MergeStrategy.APPEND, "id", "annot.xrefs.id"));
 		}
 	}
 
