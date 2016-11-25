@@ -375,7 +375,7 @@ public abstract class JoinMergeSearch implements Search {
 
 		} else {
 
-			log.debug("Executing join query through to primary search with flattening");
+			log.debug("Executing join query through primary");
 
 			// query from first and generate a set of results
 			QueryResult fromResults = provider.getSearch(getPrimarySearchType()).query(from.queries, from.fields,
