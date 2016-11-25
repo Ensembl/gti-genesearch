@@ -81,6 +81,7 @@ public class MongoSearch implements Search {
 			output.getFields().add(0, getIdField());
 		}
 		List<String> fieldNames = output.getFields();
+		log.info("Using projections " + fieldNames);
 		// 3. execute query and pass to consumer
 		Iterator<Document> iterD = mongoC.find(filter).projection(Projections.include(fieldNames)).iterator();
 		while (iterD.hasNext()) {
@@ -108,6 +109,7 @@ public class MongoSearch implements Search {
 			output.getFields().add(0, getIdField());
 		}
 		List<String> fieldNames = output.getFields();
+		log.info("Using projections " + fieldNames);
 		// 3. execute query
 		List<Map<String, Object>> results = new ArrayList<>(offset);
 		Iterator<Document> iterD = mongoC.find(filter).limit(limit).skip(offset)
