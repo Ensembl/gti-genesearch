@@ -74,7 +74,6 @@ public class MongoSearchBuilder {
 				throw new UnsupportedOperationException("No support for type " + q.getType());
 			}
 		}
-		// collapse single paths
 		return doc;
 	}
 

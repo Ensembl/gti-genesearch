@@ -30,11 +30,11 @@ public class VariantSearch extends JoinMergeSearch {
 		super(SearchType.VARIANTS, provider);
 		Search geneSearch = provider.getSearch(SearchType.GENES);
 		if (geneSearch != null) {
-			joinTargets.put(SearchType.GENES, JoinStrategy.as(MergeStrategy.APPEND, "genes", "annot.ct.ensg"));
+			joinTargets.put(SearchType.GENES, JoinStrategy.as(MergeStrategy.APPEND, "annot.ct.ensg", "id"));
 		}
 		Search transcriptSearch = provider.getSearch(SearchType.TRANSCRIPTS);
 		if (transcriptSearch != null) {
-			joinTargets.put(SearchType.TRANSCRIPTS, JoinStrategy.as(MergeStrategy.APPEND, "transcripts", "annot.ct.enst"));
+			joinTargets.put(SearchType.TRANSCRIPTS, JoinStrategy.as(MergeStrategy.APPEND, "annot.ct.enst", "id"));
 		}
 	}
 

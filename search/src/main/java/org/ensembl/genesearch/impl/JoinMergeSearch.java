@@ -18,6 +18,7 @@ package org.ensembl.genesearch.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
@@ -260,6 +262,9 @@ public abstract class JoinMergeSearch implements Search {
 		Map<String, Map<String, Object>> objsForKey = DataUtils.getObjsForKey(r, fromParams.key);
 		for (Entry<String, Map<String, Object>> e : objsForKey.entrySet()) {
 			String fromId = e.getKey();
+			if(StringUtils.isEmpty(fromId)) {
+				continue;
+			}
 			List<Map<String, Object>> resultsForId = resultsById.get(fromId);
 			if (resultsForId == null) {
 				resultsForId = new ArrayList<>();
@@ -303,7 +308,7 @@ public abstract class JoinMergeSearch implements Search {
 				}
 			} else {
 				newQueries.addAll(to.queries);
-				newQueries.add(new Query(QueryType.TERM, to.key, ids.keySet()));
+				newQueries.add(Query.expandQuery(to.key, ids.keySet()));
 			}
 
 			// run query on "to" and map values over
@@ -314,6 +319,8 @@ public abstract class JoinMergeSearch implements Search {
 			ids.clear();
 		}
 	}
+
+
 
 	protected Consumer<Map<String, Object>> mergeResults(SubSearchParams to, SubSearchParams from,
 			Map<String, Object> r) {
