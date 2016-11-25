@@ -51,7 +51,7 @@ public class MongoSearchBuilderTest {
 	public void testNested() {
 		List<Query> q = Query.build("{\"A\":{\"B\":\"C\"}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
-		System.out.println(doc);
+		System.out.println(doc.toJson());
 		Object subDoc = doc.get("A.B");
 		assertNotNull("A.B found", subDoc);
 		assertEquals("B:C found", "C", subDoc);
@@ -61,7 +61,7 @@ public class MongoSearchBuilderTest {
 	public void testNestedArray() {
 		List<Query> q = Query.build("{\"A-list\":{\"B\":\"C\"}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
-		System.out.println(doc);
+		System.out.println(doc.toJson());
 		Object subDoc = doc.get("A");
 		assertNotNull("A found", subDoc);
 		assertTrue("A is a Document", Document.class.isAssignableFrom(subDoc.getClass()));
@@ -75,7 +75,7 @@ public class MongoSearchBuilderTest {
 	public void testNestedArrayDouble() {
 		List<Query> q = Query.build("{\"A-list\":{\"B\":\"C\",\"D\":\"E\"}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
-		System.out.println(doc);
+		System.out.println(doc.toJson());
 		Object subDoc = doc.get("A");
 		assertNotNull("A found", subDoc);
 		assertTrue("A is a Document", Document.class.isAssignableFrom(subDoc.getClass()));
@@ -90,7 +90,7 @@ public class MongoSearchBuilderTest {
 	public void testNestedSubArray() {
 		List<Query> q = Query.build("{\"top\":{\"A-list\":{\"B\":\"C\"}}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
-		System.out.println(doc);
+		System.out.println(doc.toJson());
 		Object subDoc = doc.get("top.A");
 		assertNotNull("top.A found", subDoc);
 		assertTrue("top.A is a Document", Document.class.isAssignableFrom(subDoc.getClass()));
@@ -104,7 +104,7 @@ public class MongoSearchBuilderTest {
 	public void testNestedSubArrayDouble() {
 		List<Query> q = Query.build("{\"top\":{\"A-list\":{\"B\":\"C\"},\"X-list\":{\"Y\":\"Z\"}}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
-		System.out.println(doc);
+		System.out.println(doc.toJson());
 		{
 			Object subDoc = doc.get("top.A");
 			assertNotNull("top.A found", subDoc);
@@ -131,6 +131,30 @@ public class MongoSearchBuilderTest {
 		List<Query> q = Query.build("{\"so\":1234}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		assertTrue("so is a number",Number.class.isAssignableFrom(doc.get("so").getClass()));
+	}
+	
+	@Test
+	public void testMerge() {
+		List<Query> q = Query.build("{\"a\":\"x\"}");
+		List<Query> q2 = Query.build("{\"b\":\"y\"}");
+		q.addAll(q2);
+		Document doc = MongoSearchBuilder.buildQuery(q);
+		assertEquals("a set","x",doc.get("a"));
+		assertEquals("b set","y",doc.get("b"));
+	}
+	
+	@Test
+	public void testMergeNested() {
+		List<Query> q = Query.build("{\"annot\":{\"ct-list\":{\"ensg\":\"x\"}}}");
+		List<Query> q2 = Query.build("{\"annot\":{\"ct-list\":{\"so\":\"y\"}}}");
+		q.addAll(q2);
+		Document doc = MongoSearchBuilder.buildQuery(q);
+		Object subDoc = doc.get("annot.ct");
+		assertNotNull("annot.ct found"+ subDoc);
+		subDoc = ((Document)subDoc).get(MongoSearchBuilder.ELEM_MATCH);
+		assertNotNull(MongoSearchBuilder.ELEM_MATCH+" found",subDoc);
+		assertEquals("ensg=x","x",((Document)subDoc).get("ensg"));
+		assertEquals("so=y","y",((Document)subDoc).get("so"));
 	}
 
 }
