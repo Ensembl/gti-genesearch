@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +51,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class JoinMergeSearch implements Search {
+
+	/**
+	 * 
+	 */
+	private static final String COUNT = "count";
 
 	protected static enum MergeStrategy {
 		MERGE, APPEND;
@@ -310,19 +316,50 @@ public abstract class JoinMergeSearch implements Search {
 				newQueries.add(Query.expandQuery(to.key, ids.keySet()));
 			}
 
-			// run query on "to" and map values over
-			provider.getSearch(to.name.get()).fetch(r -> {
-				for (String id : DataUtils.getObjValsForKey(r, to.key)) {
-					if (!StringUtils.isEmpty(id)) {
-						List<Map<String, Object>> results = resultsById.get(id);
-						if (results != null) {
-							results.stream().forEach(mergeResults(to, from, r));
+			if (to.fields.getFields().size() == 2 && to.fields.getFields().contains(COUNT)) {
+				provider.getSearch(to.name.get()).fetch(r -> {
+					for (String id : DataUtils.getObjValsForKey(r, to.key)) {
+						if (!StringUtils.isEmpty(id)) {
+							List<Map<String, Object>> results = resultsById.get(id);
+							if (results != null) {
+								results.stream().forEach(result -> incrementCount(result, to.name.get().toString()));
+							}
 						}
 					}
-				}
-			}, newQueries, to.fields);
+				}, newQueries, to.fields);
+			} else {
+				// run query on "to" and map values over
+				provider.getSearch(to.name.get()).fetch(r -> {
+					for (String id : DataUtils.getObjValsForKey(r, to.key)) {
+						if (!StringUtils.isEmpty(id)) {
+							List<Map<String, Object>> results = resultsById.get(id);
+							if (results != null) {
+								results.stream().forEach(mergeResults(to, from, r));
+							}
+						}
+					}
+				}, newQueries, to.fields);
+			}
 			ids.clear();
 		}
+	}
+
+	/**
+	 * @param result
+	 * @param toName
+	 */
+	protected void incrementCount(Map<String, Object> result, String toName) {
+		Object tgt = result.get(toName);
+		if (tgt == null) {
+			tgt = new HashMap<String, Object>();
+			result.put(toName, tgt);
+		}
+		Object i = ((Map<String, Object>) tgt).get(COUNT);
+		if (i == null) {
+			i = new AtomicInteger(0);
+			((Map<String, Object>) tgt).put(COUNT, i);
+		}
+		((AtomicInteger) i).incrementAndGet();
 	}
 
 	protected Consumer<Map<String, Object>> mergeResults(SubSearchParams to, SubSearchParams from,
