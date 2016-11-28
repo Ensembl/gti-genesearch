@@ -6,15 +6,28 @@ The web interface is implemented as a REST interface and a Javascript client. Th
 
 The REST interface is implemented as Jersey REST services running within a Spring Boot application. 
 
-The main `Application` uses a set of services (configured in `JerseyConfig`) which implement the GET and POST methods of the API:
-* `GeneQueryService` - query for genes by query, supporting faceting and sorting. Intended for use by a Javascript web interface.
-* `GeneFetchService` - retrieve full results set genes by query. Intended for bulk download.
-* `GeneService` - retrieve complete genes by ID. Intended for bulk download or use by other web applications.
-* `GenomeQueryService` - query for genome by query, supporting faceting and sorting. Intended for use by a Javascript web interface.
-* `GenomeFetchService` - retrieve full results set by query. Intended for bulk download.
-* `GenomeService` - retrieve complete genome by ID. Intended for bulk download or use by other web applications.
-* `FieldInfoService` - returns a JSON representation of available fields. Intended for use by a web interface
-* `HealthService` - returns the status of the service. Currently limited to the main Spring Boot application and does not check Elasticsearch.
+The main `Application` uses a set of services (configured in `JerseyConfig`) which implement the GET and POST methods of the API. These can be grouped by base class:
+* `QueryService` - query for objects by query, supporting faceting and sorting. Intended for use by a Javascript web interface. Implementations are:
+** `GeneQueryService`
+** `TranscriptQueryService`
+** `VariantQueryService`
+** `GenomeQueryService`
+* `FetchServiceQueryService` - retrieve full results sets by query. Intended for bulk download. Implementations are:
+** `GeneQueryService`
+** `TranscriptQueryService`
+** `VariantQueryService`
+** `GenomeQueryService`
+* `ObjectService` - retrieve complete objects by ID. Intended for bulk download or use by other web applications. Implementations are:
+** `GeneQueryService`
+** `TranscriptQueryService`
+** `VariantQueryService`
+** `GenomeQueryService`
+* `InfoService` - returns a JSON representation of available fields. Intended for use by a web interface. Implementations are:
+** `GeneQueryService`
+** `TranscriptQueryService`
+** `VariantQueryService`
+** `GenomeQueryService`
+* `HealthService` - returns the status of the service. Currently limited to the main Spring Boot application and does not check component searches.
 
 The main query services are shown below:
 

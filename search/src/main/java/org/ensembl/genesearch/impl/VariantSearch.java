@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-package org.ensembl.gti.genesearch.services;
+package org.ensembl.genesearch.impl;
 
 import org.ensembl.genesearch.Search;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Base class for services dealing with SearchProviders
+ * Implementation of gene search that can join to other searches
  * 
  * @author dstaines
  *
  */
-public abstract class SearchBasedService {
+public class VariantSearch extends JoinMergeSearch {
 
-	final Logger log = LoggerFactory.getLogger(this.getClass());
-	protected final EndpointSearchProvider provider;
-
-	public SearchBasedService(EndpointSearchProvider provider) {
-		this.provider = provider;
+	public VariantSearch(SearchRegistry provider) {
+		super(SearchType.VARIANTS, provider);
+		Search geneSearch = provider.getSearch(SearchType.GENES);
+		if (geneSearch != null) {
+			joinTargets.put(SearchType.GENES, JoinStrategy.as(MergeStrategy.APPEND, "annot.xrefs.id", "id"));
+		}
+		Search transcriptSearch = provider.getSearch(SearchType.TRANSCRIPTS);
+		if (transcriptSearch != null) {
+			joinTargets.put(SearchType.TRANSCRIPTS, JoinStrategy.as(MergeStrategy.APPEND, "annot.xrefs.id", "id"));
+		}
 	}
-
-	public abstract Search getSearch();
 
 }

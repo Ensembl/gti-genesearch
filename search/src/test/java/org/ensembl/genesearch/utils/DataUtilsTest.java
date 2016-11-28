@@ -17,11 +17,13 @@
 package org.ensembl.genesearch.utils;
 
 import static org.ensembl.genesearch.utils.DataUtils.getObjsForKey;
+import static org.ensembl.genesearch.utils.DataUtils.getObjValsForKey;
 import static org.ensembl.genesearch.utils.DataUtils.jsonToMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.Test;
@@ -70,5 +72,13 @@ public class DataUtilsTest {
 		assertEquals("Map contains c:four", "four", oneMap.get("c"));
 	}
 	
-
+	
+	@Test
+	public void testGetObjValsForKeyList() {
+		Map<String, Object> data = jsonToMap("{\"a\":[{\"b\":\"one\", \"c\":\"two\"},{\"b\":\"three\", \"c\":\"four\"}]}");
+		Set<String> values = getObjValsForKey(data, "a.b");
+		assertTrue("one found", values.contains("one"));
+		assertTrue("three found", values.contains("three"));
+	}
+	
 }

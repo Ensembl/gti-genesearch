@@ -35,7 +35,7 @@ public class GenomeService extends ObjectService {
 	 */
 	@Autowired
 	public GenomeService(EndpointSearchProvider provider) {
-		super(provider);
+		super(provider,"genome");
 	}
 
 	/* (non-Javadoc)

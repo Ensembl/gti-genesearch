@@ -16,31 +16,9 @@
 
 package org.ensembl.gti.genesearch.services;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.ensembl.genesearch.Search;
-import org.ensembl.gti.genesearch.services.converter.MapXmlWriter;
-import org.ensembl.gti.genesearch.services.errors.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -57,7 +35,7 @@ public class TranscriptService extends ObjectService {
 	 */
 	@Autowired
 	public TranscriptService(EndpointSearchProvider provider) {
-		super(provider);
+		super(provider, "transcript");
 	}
 
 	/*
@@ -68,65 +46,6 @@ public class TranscriptService extends ObjectService {
 	@Override
 	public Search getSearch() {
 		return provider.getTranscriptSearch();
-	}
-
-	@Path("{id}")
-	@GET
-	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
-	public Response getAsXml(@PathParam("id") String id) {
-		try {
-			Map<String, Object> transcript = getSearch().fetchById(id);
-			if (transcript.isEmpty()) {
-				throw new ObjectNotFoundException("Transcript with ID " + id + " not found");
-			} else {
-				String xml = MapXmlWriter.mapToXml("transcript", transcript);
-				return Response.ok().entity(xml).type(MediaType.APPLICATION_XML)
-						.header("Content-Disposition", "attachment; filename=" + id + ".xml").build();
-			}
-		} catch (UnsupportedEncodingException | XMLStreamException | FactoryConfigurationError e) {
-			throw new WebApplicationException(e);
-		}
-
-	}
-
-	@POST
-	@Produces(MediaType.APPLICATION_XML + ";qs=0.1")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response postAsXml(List<String> ids) {
-
-		log.info("genes to XML");
-		StreamingOutput stream = new StreamingOutput() {
-			@Override
-			public void write(OutputStream os) throws IOException, WebApplicationException {
-
-				try {
-					XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
-					xsw.writeStartDocument();
-					xsw.writeStartElement("transcripts");
-					MapXmlWriter writer = new MapXmlWriter(xsw);
-					provider.getGeneSearch().fetchByIds(new Consumer<Map<String, Object>>() {
-						@Override
-						public void accept(Map<String, Object> t) {
-							try {
-								writer.writeObject("transcript", t);
-							} catch (XMLStreamException e) {
-								e.printStackTrace();
-							}
-						}
-
-					}, ids.toArray(new String[ids.size()]));
-					xsw.writeEndElement();
-					xsw.writeEndDocument();
-					xsw.close();
-				} catch (XMLStreamException | FactoryConfigurationError e) {
-					throw new WebApplicationException(e);
-				}
-			}
-		};
-
-		return Response.ok().entity(stream).type(MediaType.APPLICATION_XML)
-				.header("Content-Disposition", "attachment; filename=transcripts.xml").build();
-
 	}
 
 }

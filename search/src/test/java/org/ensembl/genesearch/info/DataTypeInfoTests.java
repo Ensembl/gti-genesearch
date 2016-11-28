@@ -10,14 +10,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.ensembl.genesearch.info.FieldInfo.FieldType;
-import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.Test;
 
 public class DataTypeInfoTests {
 
 	@Test
 	public void testCreation() throws IOException {
-		DataTypeInfo genes = DataTypeInfo.fromString(ESTestServer.readResource("/genes_datatype_info.json"));
+		DataTypeInfo genes = DataTypeInfo.fromString(DataUtils.readResource("/genes_datatype_info.json"));
 		assertNotNull("genes found", genes);
 		assertTrue("Genes have targets", genes.getTargets().size() > 0);
 		assertTrue("Genes have fields", genes.getFieldInfo().size() > 0);

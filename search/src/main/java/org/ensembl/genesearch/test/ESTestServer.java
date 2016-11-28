@@ -20,15 +20,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.ensembl.genesearch.impl.ESSearch;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +62,8 @@ public class ESTestServer {
 		try {
 			log.info("Reading mapping");
 			// slurp the mapping file into memory
-			String geneMapping = readResource("/" + ESSearch.GENE_ESTYPE + "_mapping.json");
-			String genomeMapping = readResource("/" + ESSearch.GENOME_ESTYPE + "_mapping.json");
+			String geneMapping = DataUtils.readResource("/" + ESSearch.GENE_ESTYPE + "_mapping.json");
+			String genomeMapping = DataUtils.readResource("/" + ESSearch.GENOME_ESTYPE + "_mapping.json");
 			log.info("Creating index");
 
 			// create an index with mapping
@@ -127,14 +126,6 @@ public class ESTestServer {
 	public void disconnect() {
 		client.close();
 		node.close();
-	}
-
-	public static String readGzipResource(String name) throws IOException {
-		return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)));
-	}
-
-	public static String readResource(String name) throws IOException {
-		return IOUtils.toString(ESTestServer.class.getResourceAsStream(name));
 	}
 
 }

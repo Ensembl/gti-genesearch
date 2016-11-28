@@ -33,7 +33,6 @@ import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.ESSearchBuilder;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.Test;
 
@@ -130,7 +129,7 @@ public class ESGeneSearchBuilderTest {
 	@Test
 	public void testLargeTerms() throws IOException {
 		QueryHandler handler = new DefaultQueryHandler();
-		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
+		String json = DataUtils.readGzipResource("/q08_human_swissprot_full.json.gz");
 		List<Query> qs = handler.parseQuery(json);
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, qs.get(0));
 		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());

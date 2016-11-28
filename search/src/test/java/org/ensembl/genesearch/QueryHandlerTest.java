@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ import java.util.Map;
 import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
-import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.Test;
 
 public class QueryHandlerTest {
@@ -111,8 +112,8 @@ public class QueryHandlerTest {
 	@Test
 	public void testLocationStranded() {
 		QueryHandler handler = new DefaultQueryHandler();
-		List<Query> qs = handler
-				.parseQuery("{\"location\":{\"seq_region_name\":\"chr1\",\"start\":\"2\",\"end\":\"10\",\"strand\":\"1\"}}");
+		List<Query> qs = handler.parseQuery(
+				"{\"location\":{\"seq_region_name\":\"chr1\",\"start\":\"2\",\"end\":\"10\",\"strand\":\"1\"}}");
 		System.out.println(qs);
 		assertEquals("Multi query", 4, qs.size());
 		assertEquals("seq_region type", QueryType.TERM, qs.get(0).getType());
@@ -152,7 +153,7 @@ public class QueryHandlerTest {
 	@Test
 	public void testLargeTerms() throws IOException {
 		QueryHandler handler = new DefaultQueryHandler();
-		String json = ESTestServer.readGzipResource("/q08_human_swissprot_full.json.gz");
+		String json = DataUtils.readGzipResource("/q08_human_swissprot_full.json.gz");
 		List<Query> qs = handler.parseQuery(json);
 	}
 
@@ -209,7 +210,7 @@ public class QueryHandlerTest {
 		assertEquals("b found", "1", ((Map) bVal).get("c"));
 		assertEquals("c found", "2", ((Map) bVal).get("d"));
 	}
-	
+
 	@Test
 	public void testParseAndMerge() {
 		QueryHandler handler = new DefaultQueryHandler();
@@ -230,6 +231,38 @@ public class QueryHandlerTest {
 		assertEquals("Query field", "b", subQ2.getFieldName());
 		assertEquals("Query value size", 1, subQ2.getValues().length);
 		assertEquals("Query value", "2", subQ2.getValues()[0]);
+	}
+
+	@Test
+	public void testExpandQuery() {
+		List<String> ids = Arrays.asList("1", "2", "3");
+		{
+			Query q = Query.expandQuery("a", ids);
+			assertEquals("a found","a",q.getFieldName());
+			assertEquals("TERM query",QueryType.TERM,q.getType());
+			assertEquals("Correct IDs found",ids.size(),q.getValues().length);
+		}
+		{
+			Query q = Query.expandQuery("a.b", Arrays.asList("1", "2", "3"));
+			assertEquals("a found","a",q.getFieldName());
+			assertEquals("NESTED query",QueryType.NESTED,q.getType());
+			Query q2 = q.getSubQueries()[0];
+			assertEquals("b found","b",q2.getFieldName());
+			assertEquals("TERM query",QueryType.TERM,q2.getType());
+			assertEquals("Correct IDs found",ids.size(),q2.getValues().length);			
+		}
+		{
+			Query q = Query.expandQuery("a.b.c", Arrays.asList("1", "2", "3"));
+			assertEquals("a found","a",q.getFieldName());
+			assertEquals("NESTED query",QueryType.NESTED,q.getType());
+			Query q2 = q.getSubQueries()[0];
+			assertEquals("b found","b",q2.getFieldName());
+			assertEquals("NESTED query",QueryType.NESTED,q2.getType());
+			Query q3 = q2.getSubQueries()[0];
+			assertEquals("c found","c",q3.getFieldName());
+			assertEquals("TERM query",QueryType.TERM,q3.getType());
+			assertEquals("Correct IDs found",ids.size(),q3.getValues().length);			
+		}
 	}
 
 }

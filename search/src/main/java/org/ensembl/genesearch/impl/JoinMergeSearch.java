@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
@@ -260,6 +261,9 @@ public abstract class JoinMergeSearch implements Search {
 		Map<String, Map<String, Object>> objsForKey = DataUtils.getObjsForKey(r, fromParams.key);
 		for (Entry<String, Map<String, Object>> e : objsForKey.entrySet()) {
 			String fromId = e.getKey();
+			if (StringUtils.isEmpty(fromId)) {
+				continue;
+			}
 			List<Map<String, Object>> resultsForId = resultsById.get(fromId);
 			if (resultsForId == null) {
 				resultsForId = new ArrayList<>();
@@ -268,7 +272,8 @@ public abstract class JoinMergeSearch implements Search {
 			resultsForId.add(e.getValue());
 			if (toParams.joinStrategy.toGroupBy.isPresent()) {
 				// where we're grouping IDs togther (e.g. sequences by genome)
-				// we need to retrieve or create a set to add IDs to for that genome
+				// we need to retrieve or create a set to add IDs to for that
+				// genome
 				String groupValue = e.getValue().get(toParams.joinStrategy.toGroupBy.get()).toString();
 				Set<String> s = ids.get(groupValue);
 				if (s == null) {
@@ -293,23 +298,28 @@ public abstract class JoinMergeSearch implements Search {
 				// for a join query, we need to use the group value as the term,
 				// and the IDs as the values
 				for (Entry<String, Set<String>> e : ids.entrySet()) {
-					Query[] qs = new Query[1+to.queries.size()];
+					Query[] qs = new Query[1 + to.queries.size()];
 					qs[0] = new Query(QueryType.TERM, to.key, e.getValue());
-					for(int i=0; i<to.queries.size(); i++) {
-						qs[i+1]  = to.queries.get(i);
+					for (int i = 0; i < to.queries.size(); i++) {
+						qs[i + 1] = to.queries.get(i);
 					}
-					newQueries.add(
-							new Query(QueryType.NESTED, e.getKey(), qs));
+					newQueries.add(new Query(QueryType.NESTED, e.getKey(), qs));
 				}
 			} else {
 				newQueries.addAll(to.queries);
-				newQueries.add(new Query(QueryType.TERM, to.key, ids.keySet()));
+				newQueries.add(Query.expandQuery(to.key, ids.keySet()));
 			}
 
 			// run query on "to" and map values over
 			provider.getSearch(to.name.get()).fetch(r -> {
-				String id = (String) r.get(to.key);
-				resultsById.get(id).stream().forEach(mergeResults(to, from, r));
+				for (String id : DataUtils.getObjValsForKey(r, to.key)) {
+					if (!StringUtils.isEmpty(id)) {
+						List<Map<String, Object>> results = resultsById.get(id);
+						if (results != null) {
+							results.stream().forEach(mergeResults(to, from, r));
+						}
+					}
+				}
 			}, newQueries, to.fields);
 			ids.clear();
 		}
@@ -326,9 +336,32 @@ public abstract class JoinMergeSearch implements Search {
 			if (to.joinStrategy.merge == MergeStrategy.MERGE) {
 				fromR.putAll(r);
 			} else {
-				fromR.put(key, r);
+				putOrAppend(key, r, fromR);
 			}
 		};
+	}
+
+	/**
+	 * Copy the value for the supplied key from the source hash to the target
+	 * hash, creating a list in the target if needed
+	 * 
+	 * @param key
+	 * @param src
+	 * @param tgt
+	 */
+	protected void putOrAppend(String key, Map<String, Object> src, Map<String, Object> tgt) {
+		Object existingResults = tgt.get(key);
+		if (existingResults == null) {
+			tgt.put(key, src);
+		} else {
+			if (!List.class.isAssignableFrom(existingResults.getClass())) {
+				List<Object> resultsList = new ArrayList<>();
+				resultsList.add(existingResults);
+				tgt.put(key, resultsList);
+				existingResults = resultsList;
+			}
+			((List) existingResults).add(src);
+		}
 	}
 
 	@Override
@@ -368,7 +401,7 @@ public abstract class JoinMergeSearch implements Search {
 
 		} else {
 
-			log.debug("Executing join query through to primary search with flattening");
+			log.debug("Executing join query through primary");
 
 			// query from first and generate a set of results
 			QueryResult fromResults = provider.getSearch(getPrimarySearchType()).query(from.queries, from.fields,

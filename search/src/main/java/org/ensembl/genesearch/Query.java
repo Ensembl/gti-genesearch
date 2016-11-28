@@ -83,8 +83,8 @@ public class Query {
 		this.subQueries = subQueries;
 		this.start = null;
 		this.end = null;
-	}	
-	
+	}
+
 	public String getFieldName() {
 		return fieldName;
 	}
@@ -109,6 +109,7 @@ public class Query {
 		return end;
 	}
 
+	@Override
 	public String toString() {
 		if (type == QueryType.NESTED) {
 			return StringUtils.join(Arrays.asList(this.type, this.fieldName, Arrays.asList(this.subQueries)), ":");
@@ -126,6 +127,34 @@ public class Query {
 			}
 		} else {
 			return StringUtils.join(Arrays.asList(this.type, this.fieldName, Arrays.asList(this.values)), ":");
+		}
+	}
+
+	/**
+	 * Expand a query of the form a.b.c:[] into a:{b:{c:[]}}
+	 * 
+	 * @param q
+	 *            query to expand
+	 * @return expanded query
+	 */
+	public static Query expandQuery(Query q) {
+		return expandQuery(q.getFieldName(), Arrays.asList(q.getValues()));
+	}
+
+	/**
+	 * Return a query for a.b.c:[] as a:{b:{c:[]}}
+	 * 
+	 * @param field
+	 * @param values
+	 * @return expanded query
+	 */
+	public static Query expandQuery(String field, Collection<String> values) {
+		// turn a.b.c into a:{b:{c:ids}}
+		int i = field.indexOf('.');
+		if (i != -1) {
+			return new Query(QueryType.NESTED, field.substring(0, i), expandQuery(field.substring(i + 1), values));
+		} else {
+			return new Query(QueryType.TERM, field, values);
 		}
 	}
 

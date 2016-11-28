@@ -1,0 +1,216 @@
+{
+	"name": "genomes",
+	"targets": [
+		"genes",
+		"transcripts"
+	],
+	"fieldInfo": [
+		{
+			"type": "TEXT",
+			"displayName": "Variant ID",
+			"name": "_id",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"displayName": "Sequence Region",
+			"name": "chr",
+			"type": "TEXT",
+			"search": "true",
+			"facet": "false",
+			"sort": "false",
+			"display": "true"
+		},
+		{
+			"type": "NUMBER",
+			"displayName": "Start",
+			"name": "start",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "NUMBER",
+			"displayName": "End",
+			"name": "end",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "NUMBER",
+			"displayName": "Length",
+			"name": "len",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "IDs",
+			"name": "ids",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Variant type",
+			"name": "type",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Reference allele",
+			"name": "ref",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "false"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Alternative allele",
+			"name": "alt",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "false"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "HGVS type",
+			"name": "hgvs.type",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "HGVS name",
+			"name": "hgvs.name",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "OBJECT",
+			"displayName": "Annotation",
+			"name": "annot",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "false"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Associated gene name",
+			"name": "annot.ct.gn",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "OBJECT",
+			"displayName": "Associated gene",
+			"name": "annot.ct",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "false"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Associated gene ID",
+			"name": "annot.ct.ensg",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Associated transcript ID",
+			"name": "annot.ct.enst",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Codon change",
+			"name": "annot.ct.codon",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "false"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Associated gene type",
+			"name": "annot.ct.bt",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "false"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Consequence SO TEXT",
+			"name": "annot.ct.so",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Consequence amino acid change",
+			"name": "annot.ct.aaChange",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "false"
+		},
+		{
+			"type": "OBJECT",
+			"displayName": "Cross-references",
+			"name": "annot.xrefs",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "false"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Cross-reference source",
+			"name": "annot.xrefs.src",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		},
+		{
+			"type": "TEXT",
+			"displayName": "Cross-reference ID",
+			"name": "annot.xrefs.id",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "true"
+		}
+	]
+}

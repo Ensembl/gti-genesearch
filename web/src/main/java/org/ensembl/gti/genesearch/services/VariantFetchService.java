@@ -16,25 +16,36 @@
 
 package org.ensembl.gti.genesearch.services;
 
+import javax.ws.rs.Path;
+
 import org.ensembl.genesearch.Search;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
- * Base class for services dealing with SearchProviders
- * 
  * @author dstaines
  *
  */
-public abstract class SearchBasedService {
+@Service
+@Path("/variants/fetch")
+public class VariantFetchService extends FetchService {
 
-	final Logger log = LoggerFactory.getLogger(this.getClass());
-	protected final EndpointSearchProvider provider;
-
-	public SearchBasedService(EndpointSearchProvider provider) {
-		this.provider = provider;
+	/**
+	 * @param provider
+	 */
+	@Autowired
+	public VariantFetchService(EndpointSearchProvider provider) {
+		super(provider);
 	}
 
-	public abstract Search getSearch();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.gti.genesearch.services.FetchService#getSearch()
+	 */
+	@Override
+	public Search getSearch() {
+		return provider.getVariantSearch();
+	}
 
 }
