@@ -312,10 +312,14 @@ public abstract class JoinMergeSearch implements Search {
 
 			// run query on "to" and map values over
 			provider.getSearch(to.name.get()).fetch(r -> {
-				String id = (String) r.get(to.key);
-				List<Map<String, Object>> results = resultsById.get(id);
-				if (results != null)
-					results.stream().forEach(mergeResults(to, from, r));
+				for (String id : DataUtils.getObjValsForKey(r, to.key)) {
+					if (!StringUtils.isEmpty(id)) {
+						List<Map<String, Object>> results = resultsById.get(id);
+						if (results != null) {
+							results.stream().forEach(mergeResults(to, from, r));
+						}
+					}
+				}
 			}, newQueries, to.fields);
 			ids.clear();
 		}
@@ -332,9 +336,32 @@ public abstract class JoinMergeSearch implements Search {
 			if (to.joinStrategy.merge == MergeStrategy.MERGE) {
 				fromR.putAll(r);
 			} else {
-				fromR.put(key, r);
+				putOrAppend(key, r, fromR);
 			}
 		};
+	}
+
+	/**
+	 * Copy the value for the supplied key from the source hash to the target
+	 * hash, creating a list in the target if needed
+	 * 
+	 * @param key
+	 * @param src
+	 * @param tgt
+	 */
+	protected void putOrAppend(String key, Map<String, Object> src, Map<String, Object> tgt) {
+		Object existingResults = tgt.get(key);
+		if (existingResults == null) {
+			tgt.put(key, src);
+		} else {
+			if (!List.class.isAssignableFrom(existingResults.getClass())) {
+				List<Object> resultsList = new ArrayList<>();
+				resultsList.add(existingResults);
+				tgt.put(key, resultsList);
+				existingResults = resultsList;
+			}
+			((List) existingResults).add(src);
+		}
 	}
 
 	@Override
