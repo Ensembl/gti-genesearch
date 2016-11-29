@@ -348,6 +348,7 @@ public abstract class JoinMergeSearch implements Search {
 	 * @param result
 	 * @param toName
 	 */
+	@SuppressWarnings("unchecked")
 	protected void incrementCount(Map<String, Object> result, String toName) {
 		Object tgt = result.get(toName);
 		if (tgt == null) {
@@ -356,10 +357,10 @@ public abstract class JoinMergeSearch implements Search {
 		}
 		Object i = ((Map<String, Object>) tgt).get(COUNT);
 		if (i == null) {
-			i = new AtomicInteger(0);
-			((Map<String, Object>) tgt).put(COUNT, i);
+			((Map<String, Object>) tgt).put(COUNT, 1);
+		} else {
+			((Map<String, Object>) tgt).put(COUNT, (int)i+1);
 		}
-		((AtomicInteger) i).incrementAndGet();
 	}
 
 	protected Consumer<Map<String, Object>> mergeResults(SubSearchParams to, SubSearchParams from,
