@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -45,22 +44,30 @@ public class VariantSearchTest {
 
 	static Logger log = LoggerFactory.getLogger(VariantSearchTest.class);
 
+	static ESTestServer testServer = new ESTestServer();
+	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/genes_datatype_info.json");
+	static ESSearch esGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
+			geneInfo);
+
 	static MongoTestServer mongoTestServer = new MongoTestServer();
 	static DataTypeInfo variantInfo = DataTypeInfo.fromResource("/variants_datatype_info.json");
-	
 	static Search mSearch = new MongoSearch(mongoTestServer.getCollection(), variantInfo);
-	
-	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.VARIANTS, mSearch);
+
+	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.VARIANTS, mSearch)
+			.registerSearch(SearchType.GENES, esGeneSearch);
 	static Search search = new VariantSearch(provider);
-	
+	static Search geneSearch = new GeneSearch(provider);
+
 	@BeforeClass
 	public static void setUp() throws IOException {
 		// index a sample of JSON
 		log.info("Reading documents");
 		String variantJson = DataUtils.readGzipResource("/variants.json.gz");
-		mongoTestServer.indexData(variantJson);	
+		mongoTestServer.indexData(variantJson);
+		String geneData = DataUtils.readGzipResource("/rice_genes.json.gz");
+		testServer.indexTestDocs(geneData, ESSearch.GENE_ESTYPE);
 	}
-	
+
 	@Test
 	public void testQueryAll() {
 		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build("[\"chr\",\"annot\"]"),
@@ -117,6 +124,38 @@ public class VariantSearchTest {
 		assertEquals("Checking for result fields", 3, result.getFields().size());
 		assertEquals("Checking for correct rows", 5, result.getResults().size());
 		assertTrue("", result.getResults().stream().allMatch(r -> r.get("chr").equals("Chr1")));
+	}
+
+	@Test
+	public void testQueryJoinTo() {
+		QueryResult result = geneSearch.query(Collections.emptyList(),
+				QueryOutput.build("\"id\",{\"variants\":[\"chr\",\"annot\"]}"), Collections.emptyList(), 0, 10,
+				Collections.emptyList());
+		assertEquals("Checking for correct rows", 1, result.getResults().size());
+		Map<String, Object> gene = result.getResults().get(0);
+		assertTrue("ID found", gene.containsKey("id"));
+		assertTrue("Variants found", gene.containsKey("variants"));
+		List<Map<String, Object>> variants = (List) gene.get("variants");
+		assertEquals("Checking for correct rows", 10, variants.size());
+		for (String key : new String[] { "_id", "chr", "annot" }) {
+			assertTrue(key + " found", variants.stream().allMatch(v -> v.containsKey(key)));
+		}
+	}
+
+	@Test
+	public void testQueryJoinToCount() {
+		QueryResult result = geneSearch.query(Collections.emptyList(),
+				QueryOutput.build("\"id\",{\"variants\":[\"count\"]}"), Collections.emptyList(), 0, 10,
+				Collections.emptyList());
+		System.out.println(result.getResults());
+		assertEquals("Checking for correct rows", 1, result.getResults().size());
+		Map<String, Object> gene = result.getResults().get(0);
+		assertTrue("ID found", gene.containsKey("id"));
+		assertTrue("Variants found", gene.containsKey("variants"));
+		Map<String,Object> variants = (Map<String, Object>) gene.get("variants");
+		assertTrue("Count found", variants.containsKey("count"));
+		int count = (int)variants.get("count");
+		assertEquals("Count correct", 10, count);
 	}
 
 	@AfterClass
