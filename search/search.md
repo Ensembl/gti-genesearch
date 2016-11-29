@@ -146,6 +146,11 @@ Although the majority of queries will be against the gene store, there are scena
 
 For each "to" search, the fields used and strategies for joining are encapsulated in instances of `JoinStrategy`. `MergeStrategy` is an enum controlling whether results from the "to" search should simply be appended to each "from" document or merged into an existing field e.g. `homologues`.
 
+Joining is triggered by specifying the type to join to in the fields list e.g. to retrieve IDs and chromosomes of linked variants:
+`["id","name",{"variants":["_id","chr"]}]`
+
+For large join sets, it may be best to get a count for the numbers of joined documents. This can be done by specifying the field `count` in the join field list e.g. `["id","name",{"variants":["count"]}]`
+
 Concrete implementations are:
 - `org.ensembl.genesearch.impl.GeneSearch`
 - `org.ensembl.genesearch.impl.TranscriptSearch`
