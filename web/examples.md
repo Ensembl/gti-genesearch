@@ -68,19 +68,31 @@ Adding all fields:
 http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=*
 ```
 
-Flattening to a sub-object (query count still reflects number of genes):
+## Joining other data types
+
+Joining to homologues:
 ```
-http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=id,name,genome,transcripts.name,transcripts.biotype&target=transcripts
+http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"homologues":["division","name"]}]
 ```
 
-Joining via homologues:
+Joining to homologues and restricting further to just primates:
 ```
-http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&target=homologues
+http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","homologues":{"lineage":"9443"}}&fields=["name","description",{"homologues":["division","name"]}]
 ```
 
-Joining via homologues and restricting further to just primates:
+Joining to variants:
 ```
-http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&target=homologues&targetQuery={"lineage":"9443"}
+http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"variants":["id","chr","start","stop"]}]
+```
+
+Joining to variants and showing counts only:
+```
+http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"variants":["count"]}]
+```
+
+Joining to variants with given SO term:
+```
+http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"annot":{"ct":{"so":"1627"}}}}&fields=["name","description",{"variants":["id","chr","start","stop"]}]
 ```
 
 ## Faceting
@@ -157,20 +169,20 @@ http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&accept=text/csv
 
 Retrieving genomic sequences for all results:
 ```
-http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&target=sequences
+http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&fields=[{"sequences":[]}]
 ```
 
 Retrieving genomic sequences for all results with additional 100bp:
 ```
-http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&target=sequences&targetQuery={"expand3_prime":"100","expand5_prime":"100}
+http://localhost:8080/api/genes/fetch?query={"name":"BRCA2","sequences":{"expand3_prime":"100","expand5_prime":"100}}&fields=[{"sequences":[]}]
 ```
 
 Retrieving CDS sequences for all results:
 ```
-http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&target=sequences&targetQuery={"type":"cds"}
+http://localhost:8080/api/genes/fetch?query={"name":"BRCA2","sequences":{"type":"cds"}}&fields=[{"sequences":[]}]
 ```
 
 Retrieving protein sequences for all results:
 ```
-http://localhost:8080/api/genes/fetch?query={"name":"BRCA2"}&target=sequences&targetQuery={"type":"protein"}
+http://localhost:8080/api/genes/fetch?query={"name":"BRCA2","sequences":{"type":"protein"}}&fields=[{"sequences":[]}]
 ```
