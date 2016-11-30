@@ -33,6 +33,7 @@ import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -88,7 +89,11 @@ public class EnsemblRestSequenceSearch implements Search {
 			n += idList.size();
 			// pass sequences to consumer
 			log.debug("Posting " + idList.size() + " IDs to " + url);
-			template.postForObject(url, idParams, List.class).stream().forEach(consumer);
+			try {
+				template.postForObject(url, idParams, List.class).stream().forEach(consumer);
+			} catch (HttpMessageNotReadableException e) {
+				log.warn("Could not find sequences for " + idList);
+			}
 		}
 		log.info("Completed querying " + n + " IDs");
 
