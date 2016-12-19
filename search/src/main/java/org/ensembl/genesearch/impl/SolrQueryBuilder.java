@@ -47,6 +47,14 @@ public class SolrQueryBuilder {
 	 * Parameter name for Solr sort
 	 */
 	public static final String SORT_PARAM = "sort";
+	/**
+	 * Parameter name for start (==offset)
+	 */
+	public static final String START_PARAM = "start";
+	/**
+	 * Parameter name for rows (==limit)
+	 */
+	public static final String ROWS_PARAM = "rows";
 
 	/**
 	 * @param queries
@@ -71,7 +79,8 @@ public class SolrQueryBuilder {
 	}
 
 	/**
-	 * @param sort string e.g. start,-end,+name
+	 * @param sort
+	 *            string e.g. start,-end,+name
 	 * @return Solr sort string e.g. start asc
 	 */
 	public static String parseSort(String sort) {
@@ -86,7 +95,7 @@ public class SolrQueryBuilder {
 	}
 
 	/**
-	 * @param sorts 
+	 * @param sorts
 	 * @return Solr sort string
 	 */
 	public static String parseSorts(Collection<String> sorts) {
