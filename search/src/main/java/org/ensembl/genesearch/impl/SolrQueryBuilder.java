@@ -17,7 +17,9 @@
 package org.ensembl.genesearch.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -32,9 +34,19 @@ import org.ensembl.genesearch.Query.QueryType;
  */
 public class SolrQueryBuilder {
 
-	public static final String AND = " AND ";
-	public static final String OR = " OR ";
+	private static final String DELIMITER = ",";
+	private static final String ASC = "asc";
+	private static final String DESC = "desc";
+	private static final String AND = " AND ";
+	private static final String OR = " OR ";
+	/**
+	 * Parameter name for Solr query
+	 */
 	public static final String QUERY_PARAM = "q";
+	/**
+	 * Parameter name for Solr sort
+	 */
+	public static final String SORT_PARAM = "sort";
 
 	/**
 	 * @param queries
@@ -56,6 +68,29 @@ public class SolrQueryBuilder {
 		}
 		solrQ.add(QUERY_PARAM, StringUtils.join(clauses, AND));
 		return solrQ;
+	}
+
+	/**
+	 * @param sort string e.g. start,-end,+name
+	 * @return Solr sort string e.g. start asc
+	 */
+	public static String parseSort(String sort) {
+		char s = sort.charAt(0);
+		if (s == '+') {
+			return sort.substring(1) + ' ' + ASC;
+		} else if (s == '-') {
+			return sort.substring(1) + ' ' + DESC;
+		} else {
+			return sort + ' ' + ASC;
+		}
+	}
+
+	/**
+	 * @param sorts 
+	 * @return Solr sort string
+	 */
+	public static String parseSorts(Collection<String> sorts) {
+		return sorts.stream().map(SolrQueryBuilder::parseSort).collect(Collectors.joining(DELIMITER));
 	}
 
 	private SolrQueryBuilder() {

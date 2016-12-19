@@ -16,7 +16,9 @@
 
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.ensembl.genesearch.Query;
@@ -35,9 +37,9 @@ public class SolrQueryBuilderTest {
 	public void testSimple() {
 		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":\"1\",\"B\":\"2\"}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
-		assertTrue("Checking "+qStr+" has correct syntax",qStr.equals("A:1 AND B:2"));
+		assertEquals("Checking " + qStr + " has correct syntax", "A:1 AND B:2", qStr);
 	}
-	
+
 	/**
 	 * Test multiple value query
 	 */
@@ -45,11 +47,9 @@ public class SolrQueryBuilderTest {
 	public void testIn() {
 		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":[\"1\",\"2\",\"3\"]}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
-		assertTrue("Checking "+qStr+" has correct IN syntax", qStr.equals("A:(1 OR 2 OR 3)"));
+		assertEquals("Checking " + qStr + " has correct IN syntax", "A:(1 OR 2 OR 3)", qStr);
 	}
-	
 
-	
 	/**
 	 * Test compound of multiple value and simple key-value query
 	 */
@@ -57,7 +57,39 @@ public class SolrQueryBuilderTest {
 	public void testCompound() {
 		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":[\"1\",\"2\",\"3\"], \"B\":\"99\"}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
-		assertTrue("Checking "+qStr+" has correct IN syntax", qStr.equals("A:(1 OR 2 OR 3) AND B:99"));
+		assertEquals("Checking " + qStr + " has correct IN syntax", "A:(1 OR 2 OR 3) AND B:99", qStr);
+	}
+
+	/**
+	 * Test construction of a default sort string
+	 */
+	public void testSimpleSort() {
+		String sort = SolrQueryBuilder.parseSort("start");
+		assertEquals("Checking " + sort, "start asc", sort);
+	}
+
+	/**
+	 * Test +clause
+	 */
+	public void testAscSort() {
+		String sort = SolrQueryBuilder.parseSort("+start");
+		assertEquals("Checking " + sort, "start asc", sort);
+	}
+
+	/**
+	 * Test -clause
+	 */
+	public void testDescSort() {
+		String sort = SolrQueryBuilder.parseSort("-start");
+		assertEquals("Checking " + sort, "start desc", sort);
+	}
+	
+	/**
+	 * Test compound
+	 */
+	public void testCompoundSort() {
+		String sort = SolrQueryBuilder.parseSorts(Arrays.asList(new String[]{"start","-end","+name"}));
+		assertEquals("Checking " + sort, "start asc,end desc,name asc", sort);
 	}
 
 }
