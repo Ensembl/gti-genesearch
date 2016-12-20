@@ -16,6 +16,9 @@
 
 package org.ensembl.gti.genesearch.services;
 
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.common.cloud.SolrZkClient;
 import org.bson.Document;
 import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Search;
@@ -23,10 +26,12 @@ import org.ensembl.genesearch.clients.ClientBuilder;
 import org.ensembl.genesearch.impl.DivisionAwareSequenceSearch;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.ESSearchFlatten;
+import org.ensembl.genesearch.impl.ExpressionSearch;
 import org.ensembl.genesearch.impl.GeneSearch;
 import org.ensembl.genesearch.impl.MongoSearch;
 import org.ensembl.genesearch.impl.SearchRegistry;
 import org.ensembl.genesearch.impl.SearchType;
+import org.ensembl.genesearch.impl.SolrSearch;
 import org.ensembl.genesearch.impl.TranscriptSearch;
 import org.ensembl.genesearch.impl.VariantSearch;
 import org.ensembl.genesearch.info.DataTypeInfo;
@@ -53,9 +58,11 @@ public class EndpointSearchProvider {
 	protected Search variantSearch = null;
 	protected Search geneSearch = null;
 	protected Search genomeSearch = null;
-	private Search transcriptSearch = null;
+	protected Search transcriptSearch = null;
+	protected Search expressionSearch = null;
 	protected Client client = null;
 	protected MongoCollection<Document> mongoCollection = null;
+	private SolrClient solrClient = null;
 	private SearchRegistry registry = null;
 	@Value("${es.host}")
 	private String hostName;
@@ -75,7 +82,9 @@ public class EndpointSearchProvider {
 	private String mongoDatabaseName;
 	@Value("${mongo.collection}")
 	private String mongoCollectionName;
-
+	@Value("${solr.url}")
+	private String solrUrl;
+	
 	public EndpointSearchProvider() {
 	}
 
@@ -109,6 +118,18 @@ public class EndpointSearchProvider {
 	public void setMongoCollection(MongoCollection<Document> mongoCollection) {
 		this.mongoCollection = mongoCollection;
 	}
+	
+	public SolrClient getSolrClient() {
+		if(solrClient==null) {
+			solrClient = new HttpSolrClient.Builder().withBaseSolrUrl(solrUrl).build();
+		}
+		return solrClient;
+	}
+
+	public void setSolrClient(SolrClient solrClient) {
+		this.solrClient = solrClient;
+	}
+
 
 	protected SearchRegistry getRegistry() {
 		if (registry == null) {
@@ -117,6 +138,7 @@ public class EndpointSearchProvider {
 			DataTypeInfo transcriptType = DataTypeInfo.fromResource("/transcripts_datatype_info.json");
 			DataTypeInfo seqType = DataTypeInfo.fromResource("/sequences_datatype_info.json");
 			DataTypeInfo variantType = DataTypeInfo.fromResource("/variants_datatype_info.json");
+			DataTypeInfo expressionType = DataTypeInfo.fromResource("/expression_datatype_info.json");
 			Search esGenomeSearch = new ESSearch(getESClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE, genomeType);
 			Search esGeneSearch = new ESSearch(getESClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneType);
 			Search seqSearch = new DivisionAwareSequenceSearch(esGenomeSearch, seqType, getEnsRestUrl(),
@@ -125,12 +147,13 @@ public class EndpointSearchProvider {
 					"transcripts", "genes", transcriptType);
 			Search mongoVariantSearch = new MongoSearch(
 					getMongoCollection(), variantType);
+			Search solrExpressionSearch = new SolrSearch(getSolrClient(),  expressionType);
 
 			registry = new SearchRegistry().registerSearch(SearchType.GENES, esGeneSearch)
 					.registerSearch(SearchType.TRANSCRIPTS, esTranscriptSearch)
 					.registerSearch(SearchType.HOMOLOGUES, esGeneSearch)
 					.registerSearch(SearchType.GENOMES, esGenomeSearch).registerSearch(SearchType.SEQUENCES, seqSearch)
-					.registerSearch(SearchType.VARIANTS, mongoVariantSearch);
+					.registerSearch(SearchType.VARIANTS, mongoVariantSearch).registerSearch(SearchType.EXPRESSION, solrExpressionSearch);
 		}
 		return registry;
 	}
@@ -194,5 +217,17 @@ public class EndpointSearchProvider {
 	public void setVariantSearch(Search variantSearch) {
 		this.variantSearch = variantSearch;
 	}
+
+	public Search getExpressionSearch() {
+		if(expressionSearch==null) {
+			expressionSearch = new ExpressionSearch(getRegistry());
+		}
+		return expressionSearch;
+	}
+
+	public void setExpressionSearch(Search expressionSearch) {
+		this.expressionSearch = expressionSearch;
+	}
+
 
 }

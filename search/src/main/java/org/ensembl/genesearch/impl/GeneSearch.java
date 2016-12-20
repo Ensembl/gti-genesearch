@@ -44,6 +44,10 @@ public class GeneSearch extends JoinMergeSearch {
 		if (variantSearch != null) {
 			joinTargets.put(SearchType.VARIANTS, JoinStrategy.as(MergeStrategy.APPEND, "id", "annot.xrefs.id"));
 		}
+		Search expressionSearch = provider.getSearch(SearchType.EXPRESSION);
+		if (expressionSearch != null) {
+			joinTargets.put(SearchType.EXPRESSION, JoinStrategy.as(MergeStrategy.APPEND, "id", "bioentityIdentifier"));
+		}
 	}
 
 }

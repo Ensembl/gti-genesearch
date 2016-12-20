@@ -25,8 +25,8 @@ package org.ensembl.genesearch.impl;
 public enum SearchType {
 
 	GENOMES("genomes", "genome"), GENES("genes", "gene"), TRANSCRIPTS("transcripts", "transcript"), TRANSLATIONS(
-			"translations", "translation"), HOMOLOGUES("homologues",
-					"homologue"), VARIANTS("variants", "variant"), SEQUENCES("sequences", "sequence");
+			"translations", "translation"), HOMOLOGUES("homologues", "homologue"), VARIANTS("variants",
+					"variant"), SEQUENCES("sequences", "sequence"), EXPRESSION("expression", "expression");
 
 	private final String pluralName;
 	private final String singleName;

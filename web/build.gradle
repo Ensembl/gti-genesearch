@@ -36,8 +36,9 @@ configurations {
 
 dependencies {
     compile project (':search')
-    // explicitly force ES to avoid weird transitive behaviour
+    // explicitly force ES & Solr to avoid weird transitive behaviour
     compile 'org.elasticsearch:elasticsearch:2.2.0' 
+ 	compile 'org.apache.solr:solr-solrj:6.3.0'
     // tag::jetty[]
     compile("org.springframework.boot:spring-boot-starter-web") {
         exclude module: "spring-boot-starter-tomcat"

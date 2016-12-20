@@ -27,7 +27,7 @@ import org.ensembl.genesearch.Search;
 public class TranscriptSearch extends JoinMergeSearch {
 
 	/**
-n	 * @param provider
+	 * @param provider
 	 */
 	public TranscriptSearch(SearchRegistry provider) {
 		super(SearchType.TRANSCRIPTS, provider);
@@ -35,7 +35,14 @@ n	 * @param provider
 		if (seqSearch != null) {
 			joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.MERGE, "id", "id", "genes.genome"));
 		}
-		// TODO add variation & expression joins etc. later
+		Search variantSearch = provider.getSearch(SearchType.VARIANTS);
+		if (variantSearch != null) {
+			joinTargets.put(SearchType.VARIANTS, JoinStrategy.as(MergeStrategy.APPEND, "id", "annot.xrefs.id"));
+		}
+		Search expressionSearch = provider.getSearch(SearchType.EXPRESSION);
+		if (expressionSearch != null) {
+			joinTargets.put(SearchType.EXPRESSION, JoinStrategy.as(MergeStrategy.APPEND, "id", "bioentityIdentifier"));
+		}
 	}
 
 }
