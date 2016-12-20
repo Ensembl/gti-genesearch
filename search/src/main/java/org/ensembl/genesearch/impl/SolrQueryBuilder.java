@@ -34,6 +34,7 @@ import org.ensembl.genesearch.Query.QueryType;
  */
 public class SolrQueryBuilder {
 
+	private static final String ALL_Q = "*:*";
 	private static final String DELIMITER = ",";
 	private static final String ASC = "asc";
 	private static final String DESC = "desc";
@@ -64,6 +65,9 @@ public class SolrQueryBuilder {
 	public static SolrQuery build(List<Query> queries) {
 		SolrQuery solrQ = new SolrQuery();
 		List<String> clauses = new ArrayList<>(queries.size());
+		if(queries.isEmpty()) {
+			clauses.add(ALL_Q);
+		} else {
 		for (Query q : queries) {
 			if (q.getType() != QueryType.TERM) {
 				throw new IllegalArgumentException("Solr querying support limited to TERM only");
@@ -73,6 +77,7 @@ public class SolrQueryBuilder {
 			} else {
 				clauses.add(q.getFieldName() + ':' + q.getValues()[0]);
 			}
+		}
 		}
 		solrQ.add(QUERY_PARAM, StringUtils.join(clauses, AND));
 		return solrQ;

@@ -26,9 +26,11 @@ import java.util.stream.Collectors;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.SortClause;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.params.CursorMarkParams;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
@@ -66,8 +68,25 @@ public class SolrSearch implements Search {
 	 */
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
-		// TODO Auto-generated method stub
-
+		try {
+			SolrQuery q = SolrQueryBuilder.build(queries);
+			q.setFields(fieldNames.getFields().toArray(new String[] {}));
+			q.setSort(SortClause.asc("id"));
+			String cursorMark = CursorMarkParams.CURSOR_MARK_START;
+			boolean done = false;
+			while (!done) {
+				q.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
+				QueryResponse response = solr.query(q);
+				String nextCursorMark = response.getNextCursorMark();
+				response.getResults().stream().map(this::parseResult).forEach(consumer);
+				if (cursorMark.equals(nextCursorMark)) {
+					done = true;
+				}
+				cursorMark = nextCursorMark;
+			}
+		} catch (SolrServerException | IOException e) {
+			throw new UnsupportedOperationException("Could not execute query", e);
+		}
 	}
 
 	/*
