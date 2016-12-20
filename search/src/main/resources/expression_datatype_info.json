@@ -1,0 +1,198 @@
+{
+	"name": "expression",
+	"targets": [
+		"genes",
+		"transcripts"
+	],
+	"fieldInfo": [
+		{
+			"displayName": "id",
+			"name": "id",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "bioentityIdentifier",
+			"name": "bioentityIdentifier",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "identifierSearch",
+			"name": "identifierSearch",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_symbol",
+			"name": "keyword_symbol",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "keyword_*",
+			"name": "keyword_*",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "species",
+			"name": "species",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "kingdom",
+			"name": "kingdom",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "experimentAccession",
+			"name": "experimentAccession",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "experimentType",
+			"name": "experimentType",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "defaultQueryFactorType",
+			"name": "defaultQueryFactorType",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "conditionsSearch",
+			"name": "conditionsSearch",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "assayGroupId",
+			"name": "assayGroupId",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "expressionLevel",
+			"name": "expressionLevel",
+			"type": "NUMBER",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "contrastId",
+			"name": "contrastId",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "factors",
+			"name": "factors",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "numReplicates",
+			"name": "numReplicates",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "foldChange",
+			"name": "foldChange",
+			"type": "NUMBER",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "pValue",
+			"name": "pValue",
+			"type": "NUMBER",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "tStatistics",
+			"name": "tStatistics",
+			"type": "NUMBER",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "regulation",
+			"name": "regulation",
+			"type": "TEXT",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "_version",
+			"name": "_version_",
+			"type": "NUMBER",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		}
+	]
+}
