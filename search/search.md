@@ -113,6 +113,9 @@ The REST sequence endpoints are currently limited in that EG and e! genomes are 
 
 *Important*: MongoDB's use of indices is not as comprehensive as that of Elastic. Particular combinations of filters may not have an index available. For instances, `annot.ct.ensg` alone will not use an index as the index requires the use of `annot.ct.ensg.so` first. This will need careful handling in any web interface.
 
+# Solr implementation
+`SolrSearch` provides a baseline implementation for searches against Solr servers, namely the GXA database of expression data. This does not currently support facets.
+
 # Flattening implementation
 
 The Elastic implementations implicitly support nesting, and the gene search contains transcripts as sub-objects. However, some times we need to 'flatten' results to subobjects e.g. transcripts. This can be carried out using instances of `ESSearchFlatten` which flattens returned results to a specified target. For instance, if the target is "transcripts" then the documents are split to provide a list of documents representing each transcript. Any gene level fields are attached to each transcript. For instance, consider a query matching the following gene:
@@ -155,6 +158,7 @@ Concrete implementations are:
 - `org.ensembl.genesearch.impl.GeneSearch`
 - `org.ensembl.genesearch.impl.TranscriptSearch`
 - `org.ensembl.genesearch.impl.VariantSearch`
+- `org.ensembl.genesearch.impl.ExpressionSearch`
 
 # Copyright and Licensing
 Copyright 1999-2016 EMBL-European Bioinformatics Institute

@@ -95,6 +95,11 @@ Joining to variants with given SO term:
 http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"annot":{"ct":{"so":"1627"}}}}&fields=["name","description",{"variants":["id","chr","start","stop"]}]
 ```
 
+Joining to expression data:
+```
+http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"expression":["experimentType","expressionLevel"]}]
+```
+
 ## Faceting
 To facet by genome:
 ```

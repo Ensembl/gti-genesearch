@@ -21,6 +21,14 @@ The service is now available on http://localhost:8080/api with service descripto
 
 The application supports GZIP compression of responses where the client header has `Accept-Encoding:gzip` set.
 
+Note that the majority of endpoints described below are implemented using the same pattern for the following objects (denoted by `{object}` in the URL):
+* genes
+* transcripts
+* sequences
+* genomes 
+* variants
+* expression
+
 ## `/api/health`
 This can be used to check if the server is running
 
