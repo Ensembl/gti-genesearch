@@ -1,5 +1,5 @@
 {
-	"name": "genomes",
+	"name": "variants",
 	"targets": [
 		"genes",
 		"transcripts"
