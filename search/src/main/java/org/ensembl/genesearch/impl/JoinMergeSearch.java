@@ -16,17 +16,19 @@
 
 package org.ensembl.genesearch.impl;
 
+import static org.ensembl.genesearch.utils.DataUtils.getObjValsForKey;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +55,12 @@ import org.slf4j.LoggerFactory;
 public abstract class JoinMergeSearch implements Search {
 
 	/**
-	 * 
+	 * special query term to trigger an inner join
+	 */
+	private static final String INNER = "inner";
+
+	/**
+	 * special field term to trigger a count
 	 */
 	private static final String COUNT = "count";
 
@@ -220,7 +227,7 @@ public abstract class JoinMergeSearch implements Search {
 
 	}
 
-	public SearchType getPrimarySearchType() {
+	private SearchType getPrimarySearchType() {
 		return primarySearchType;
 	}
 
@@ -239,26 +246,63 @@ public abstract class JoinMergeSearch implements Search {
 			log.debug("Passing query through to primary search");
 			provider.getSearch(getPrimarySearchType()).fetch(consumer, queries, fieldNames);
 
+		} else if (isInner(from, to)) {
+			fetchWithJoin(consumer, innerJoinQuery(from, to), to);
+
 		} else {
 
-			log.debug("Executing join query through to primary search with flattening");
-
-			// process in batches
-			Search toSearch = provider.getSearch(to.name.get());
-			Map<String, List<Map<String, Object>>> resultsById = new HashMap<>();
-			Map<String, Set<String>> ids = new HashMap<>();
-			provider.getSearch(from.name.get()).fetch(r -> {
-				readFrom(r, to, from, resultsById, ids);
-				if (resultsById.size() == getBatchSize()) {
-					mapTo(toSearch, to, from, resultsById, ids);
-					resultsById.values().stream().forEach(l -> l.stream().forEach(consumer));
-					resultsById.clear();
-				}
-			}, from.queries, from.fields);
-			mapTo(toSearch, to, from, resultsById, ids);
-			resultsById.values().stream().forEach(l -> l.stream().forEach(consumer));
+			fetchWithJoin(consumer, from, to);
 
 		}
+	}
+
+	/**
+	 * Detect if join will be inner
+	 * 
+	 * @param from
+	 * @param to
+	 * @return
+	 */
+	private boolean isInner(SubSearchParams from, SubSearchParams to) {
+		boolean hasInner = false;
+		Iterator<Query> iterator = to.queries.iterator();
+		while (iterator.hasNext()) {
+			Query next = iterator.next();
+			if (INNER.equalsIgnoreCase(next.getFieldName())) {
+				// remove the special inner term
+				iterator.remove();
+				hasInner = true;
+				break;
+			}
+		}
+		return hasInner;
+	}
+
+	/**
+	 * Use outer join mechanism to add optional "to" content to all rows in
+	 * "from"
+	 * 
+	 * @param consumer
+	 * @param from
+	 * @param to
+	 */
+	protected void fetchWithJoin(Consumer<Map<String, Object>> consumer, SubSearchParams from, SubSearchParams to) {
+		log.debug("Executing outer join query through to primary search");
+
+		// process in batches
+		Search toSearch = provider.getSearch(to.name.get());
+		Map<String, List<Map<String, Object>>> resultsById = new HashMap<>();
+		Map<String, Set<String>> ids = new HashMap<>();
+		provider.getSearch(from.name.get()).fetch(r -> {
+			readFrom(r, to, from, resultsById, ids);
+			if (resultsById.size() == getBatchSize()) {
+				mapTo(toSearch, to, from, resultsById, ids);
+				resultsById.values().stream().forEach(l -> l.stream().forEach(consumer));
+				resultsById.clear();
+			}
+		}, from.queries, from.fields);
+		mapTo(toSearch, to, from, resultsById, ids);
+		resultsById.values().stream().forEach(l -> l.stream().forEach(consumer));
 	}
 
 	protected void readFrom(Map<String, Object> r, SubSearchParams toParams, SubSearchParams fromParams,
@@ -359,7 +403,7 @@ public abstract class JoinMergeSearch implements Search {
 		if (i == null) {
 			((Map<String, Object>) tgt).put(COUNT, 1);
 		} else {
-			((Map<String, Object>) tgt).put(COUNT, (int)i+1);
+			((Map<String, Object>) tgt).put(COUNT, (int) i + 1);
 		}
 	}
 
@@ -437,28 +481,92 @@ public abstract class JoinMergeSearch implements Search {
 			log.debug("Passing query through to primary search");
 			return provider.getSearch(getPrimarySearchType()).query(queries, output, facets, offset, limit, sorts);
 
+		} else if (isInner(from, to)) {
+
+			return queryWithJoin(output, facets, offset, limit, sorts, innerJoinQuery(from, to), to);
+
 		} else {
 
-			log.debug("Executing join query through primary");
-
-			// query from first and generate a set of results
-			QueryResult fromResults = provider.getSearch(getPrimarySearchType()).query(from.queries, from.fields,
-					facets, offset, limit, sorts);
-
-			// hash results by ID and also create a new "to" search
-			Map<String, List<Map<String, Object>>> resultsById = new HashMap<>();
-			Map<String, Set<String>> ids = new HashMap<>();
-			Search toSearch = provider.getSearch(to.name.get());
-			fromResults.getResults().stream().forEach(r -> readFrom(r, to, from, resultsById, ids));
-			// mop up leftovers
-			mapTo(toSearch, to, from, resultsById, ids);
-			fromResults.getFields().clear();
-			fromResults.getFields().addAll(this.getFieldInfo(output));
-
-			return fromResults;
+			return queryWithJoin(output, facets, offset, limit, sorts, from, to);
 
 		}
 
+	}
+
+	/**
+	 * Method for updating "from" for just those entries in "from" that are
+	 * joined in "to"
+	 * 
+	 * @param from
+	 * @param to
+	 * @return new "from" query
+	 */
+	private SubSearchParams innerJoinQuery(SubSearchParams from, SubSearchParams to) {
+		// example: search a: x:1, b:{c:2} where b is a separate dataset joined
+		// by a.n to
+		// b.m
+
+		// step 1: find all a.n where a.x=1 -> list[a.n]
+		Set<String> fromIds = new HashSet<>(); // all "from" IDs matched in
+												// "from"
+		provider.getSearch(getPrimarySearchType()).fetch(r -> fromIds.addAll(getObjValsForKey(r, from.key)),
+				from.queries, QueryOutput.build(Arrays.asList(from.key)));
+		log.debug("Retrieved " + fromIds.size() + " " + from.name + "." + from.key);
+
+		// step 2: query b for b.n=list[a.n] and b.c=2 and retrieve b.m ->
+		// list[b.m]
+		List<Query> qs = new ArrayList<>();
+		qs.add(new Query(QueryType.TERM, to.key, fromIds.toArray(new String[] {})));
+		qs.addAll(to.queries);
+		Set<String> fromJoinedIds = new HashSet<>(); // all "from" IDs found
+														// in "to"
+		provider.getSearch(to.name.get()).fetch(r -> fromJoinedIds.addAll(getObjValsForKey(r, to.key)), qs,
+				QueryOutput.build(Arrays.asList(to.key)));
+		log.debug("Retrieved " + fromJoinedIds.size() + " " + to.name + "." + to.key);
+
+		// step 3: query is now n:list[b.m], b:{c.2} which can be passed
+		// directly to query
+		List<Query> newFromQ = new ArrayList<>(1);
+		newFromQ.add(new Query(QueryType.TERM, from.key, fromJoinedIds.toArray(new String[] {})));
+		if (!from.key.equalsIgnoreCase(from.name.get().getId())) {
+			// if from.key is the ID, we can just use it directly
+			// otherwise we still need the original x:1 query
+			newFromQ.addAll(from.queries);
+		}
+		return new SubSearchParams(from.name, from.key, newFromQ, from.fields, from.joinStrategy);
+	}
+
+	/**
+	 * Run a query using "to" and "from" to join between two datasets
+	 * 
+	 * @param output
+	 * @param facets
+	 * @param offset
+	 * @param limit
+	 * @param sorts
+	 * @param from
+	 * @param to
+	 * @return result of query
+	 */
+	protected QueryResult queryWithJoin(QueryOutput output, List<String> facets, int offset, int limit,
+			List<String> sorts, SubSearchParams from, SubSearchParams to) {
+		log.debug("Executing join query through primary");
+
+		// query from first and generate a set of results
+		QueryResult fromResults = provider.getSearch(getPrimarySearchType()).query(from.queries, from.fields, facets,
+				offset, limit, sorts);
+
+		// hash results by ID and also create a new "to" search
+		Map<String, List<Map<String, Object>>> resultsById = new HashMap<>();
+		Map<String, Set<String>> ids = new HashMap<>();
+		Search toSearch = provider.getSearch(to.name.get());
+		fromResults.getResults().stream().forEach(r -> readFrom(r, to, from, resultsById, ids));
+		// mop up leftovers
+		mapTo(toSearch, to, from, resultsById, ids);
+		fromResults.getFields().clear();
+		fromResults.getFields().addAll(this.getFieldInfo(output));
+
+		return fromResults;
 	}
 
 	@Override

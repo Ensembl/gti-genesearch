@@ -85,6 +85,12 @@ Joining to variants:
 http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"variants":["id","chr","start","stop"]}]
 ```
 
+Joining to variants and showing only genes with variants:
+```
+http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"inner":1}}&fields=["name","description",{"variants":["id","chr","start","stop"]}]
+```
+
+
 Joining to variants and showing counts only:
 ```
 http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"variants":["count"]}]

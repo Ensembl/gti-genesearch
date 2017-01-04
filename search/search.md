@@ -154,6 +154,9 @@ Joining is triggered by specifying the type to join to in the fields list e.g. t
 
 For large join sets, it may be best to get a count for the numbers of joined documents. This can be done by specifying the field `count` in the join field list e.g. `["id","name",{"variants":["count"]}]`
 
+Lastly, joining can be used to restrict the "from" result set to only those that have results in the joined set. This is triggered by specifying the special query field `inner` in the join query e.g.
+`{"biotype":"protein_coding","variants":{"inner":1}}`
+
 Concrete implementations are:
 - `org.ensembl.genesearch.impl.GeneSearch`
 - `org.ensembl.genesearch.impl.TranscriptSearch`

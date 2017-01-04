@@ -131,8 +131,8 @@ public class VariantSearchTest {
 		QueryResult result = geneSearch.query(Collections.emptyList(),
 				QueryOutput.build("\"id\",{\"variants\":[\"chr\",\"annot\"]}"), Collections.emptyList(), 0, 10,
 				Collections.emptyList());
-		assertEquals("Checking for correct rows", 1, result.getResults().size());
-		Map<String, Object> gene = result.getResults().get(0);
+		assertEquals("Checking for correct rows", 2, result.getResults().size());
+		Map<String, Object> gene = result.getResults().stream().filter(g -> g.get("id").equals("EPlOSAG00000002326")).findFirst().get();
 		assertTrue("ID found", gene.containsKey("id"));
 		assertTrue("Variants found", gene.containsKey("variants"));
 		List<Map<String, Object>> variants = (List) gene.get("variants");
@@ -148,8 +148,8 @@ public class VariantSearchTest {
 				QueryOutput.build("\"id\",{\"variants\":[\"count\"]}"), Collections.emptyList(), 0, 10,
 				Collections.emptyList());
 		System.out.println(result.getResults());
-		assertEquals("Checking for correct rows", 1, result.getResults().size());
-		Map<String, Object> gene = result.getResults().get(0);
+		assertEquals("Checking for correct rows", 2, result.getResults().size());
+		Map<String, Object> gene = result.getResults().stream().filter(g -> g.get("id").equals("EPlOSAG00000002326")).findFirst().get();
 		assertTrue("ID found", gene.containsKey("id"));
 		assertTrue("Variants found", gene.containsKey("variants"));
 		Map<String,Object> variants = (Map<String, Object>) gene.get("variants");
@@ -157,7 +157,46 @@ public class VariantSearchTest {
 		int count = (int)variants.get("count");
 		assertEquals("Count correct", 10, count);
 	}
+	
+	@Test
+	public void testQueryJoinToInner() {
+		QueryResult result = geneSearch.query(Query.build("{\"variants\":{\"inner\":1}}"),
+				QueryOutput.build("\"id\",{\"variants\":[\"chr\",\"annot\"]}"), Collections.emptyList(), 0, 10,
+				Collections.emptyList());
+		assertEquals("Checking for correct rows", 1, result.getResults().size());
+		Map<String, Object> gene = result.getResults().get(0);
+		assertTrue("ID found", gene.containsKey("id"));
+		assertTrue("Variants found", gene.containsKey("variants"));
+		List<Map<String, Object>> variants = (List) gene.get("variants");
+		assertEquals("Checking for correct rows", 10, variants.size());
+		for (String key : new String[] { "_id", "chr", "annot" }) {
+			assertTrue(key + " found", variants.stream().allMatch(v -> v.containsKey(key)));
+		}
+	}
+	
+	@Test
+	public void testQueryJoinToInnerQuery() {
+		QueryResult result = geneSearch.query(Query.build("{\"variants\":{\"inner\":1, \"annot\":{\"ct-list\":{\"so\":1631}}}}"),
+				QueryOutput.build("\"id\",{\"variants\":[\"chr\",\"annot\"]}"), Collections.emptyList(), 0, 10,
+				Collections.emptyList());
+		assertEquals("Checking for correct rows", 1, result.getResults().size());
+		Map<String, Object> gene = result.getResults().get(0);
+		assertTrue("ID found", gene.containsKey("id"));
+		assertTrue("Variants found", gene.containsKey("variants"));
+		List<Map<String, Object>> variants = (List) gene.get("variants");
+		assertEquals("Checking for correct rows", 10, variants.size());
+		for (String key : new String[] { "_id", "chr", "annot" }) {
+			assertTrue(key + " found", variants.stream().allMatch(v -> v.containsKey(key)));
+		}
+	}
 
+	@Test
+	public void testQueryJoinToInnerQueryExcl() {
+		QueryResult result = geneSearch.query(Query.build("{\"variants\":{\"inner\":1, \"annot\":{\"ct-list\":{\"so\":16310}}}}"),
+				QueryOutput.build("\"id\",{\"variants\":[\"chr\",\"annot\"]}"), Collections.emptyList(), 0, 10,
+				Collections.emptyList());
+		assertEquals("Checking for correct rows", 0, result.getResults().size());
+	}
 	@AfterClass
 	public static void tearDown() {
 		log.info("Disconnecting server");

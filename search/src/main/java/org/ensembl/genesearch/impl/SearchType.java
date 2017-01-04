@@ -16,6 +16,8 @@
 
 package org.ensembl.genesearch.impl;
 
+import org.ensembl.genesearch.Search;
+
 /**
  * Enum of target types currently supported by search
  * 
@@ -30,10 +32,15 @@ public enum SearchType {
 
 	private final String pluralName;
 	private final String singleName;
+	private final String idField;
 
 	private SearchType(String pluralName, String singleName) {
+		this(pluralName, singleName, Search.ID);
+	}
+	private SearchType(String pluralName, String singleName, String idField) {
 		this.pluralName = pluralName;
 		this.singleName = singleName;
+		this.idField = idField;
 	}
 
 	public static SearchType findByName(String name) {
@@ -56,4 +63,8 @@ public enum SearchType {
 		return this.singleName;
 	}
 
+	public String getId() {
+		return this.idField;
+	}
+	
 }
