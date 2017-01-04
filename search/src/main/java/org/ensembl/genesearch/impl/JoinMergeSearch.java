@@ -55,6 +55,11 @@ import org.slf4j.LoggerFactory;
 public abstract class JoinMergeSearch implements Search {
 
 	/**
+	 * default batch size
+	 */
+	private static final int BATCH_SIZE = 1000;
+
+	/**
 	 * special query term to trigger an inner join
 	 */
 	private static final String INNER = "inner";
@@ -63,6 +68,11 @@ public abstract class JoinMergeSearch implements Search {
 	 * special field term to trigger a count
 	 */
 	private static final String COUNT = "count";
+
+	/**
+	 * Maximum number of "from" IDs to use in an inner join
+	 */
+	private static final int JOIN_LIMIT = 1000;
 
 	protected static enum MergeStrategy {
 		MERGE, APPEND;
@@ -137,11 +147,6 @@ public abstract class JoinMergeSearch implements Search {
 			return ToStringBuilder.reflectionToString(this);
 		}
 	}
-
-	/**
-	 * default batch size
-	 */
-	private static final int BATCH_SIZE = 1000;
 
 	/**
 	 * Search types for which we need a proper join
@@ -511,6 +516,10 @@ public abstract class JoinMergeSearch implements Search {
 												// "from"
 		provider.getSearch(getPrimarySearchType()).fetch(r -> fromIds.addAll(getObjValsForKey(r, from.key)),
 				from.queries, QueryOutput.build(Arrays.asList(from.key)));
+		if (fromIds.size() > JOIN_LIMIT) {
+			throw new UnsupportedOperationException(
+					"Inner joins not currently supported for more than " + JOIN_LIMIT + " entries");
+		}
 		log.debug("Retrieved " + fromIds.size() + " " + from.name + "." + from.key);
 
 		// step 2: query b for b.n=list[a.n] and b.c=2 and retrieve b.m ->
@@ -526,7 +535,7 @@ public abstract class JoinMergeSearch implements Search {
 
 		// step 3: query is now n:list[b.m], b:{c.2} which can be passed
 		// directly to query
-		List<Query> newFromQ = new ArrayList<>(from.queries.size()+1);
+		List<Query> newFromQ = new ArrayList<>(from.queries.size() + 1);
 		newFromQ.add(new Query(QueryType.TERM, from.key, fromJoinedIds.toArray(new String[] {})));
 		// we still need the original x:1 query to avoid issues with n-m queries
 		newFromQ.addAll(from.queries);
