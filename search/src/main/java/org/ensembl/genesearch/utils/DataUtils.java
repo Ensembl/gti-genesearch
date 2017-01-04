@@ -17,6 +17,7 @@
 package org.ensembl.genesearch.utils;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class DataUtils {
 	
+	/**
+	 * Find values for a given key in a data structure
+	 * @param r
+	 * @param key
+	 * @return set of values
+	 */
 	public static Set<String> getObjValsForKey(Map<String, Object> r, String key) {
 		return getObjsForKey(r, key).keySet();
 	}
@@ -77,6 +84,11 @@ public class DataUtils {
 		}
 	}
 
+	/**
+	 * Transform a JSON string into a hash map
+	 * @param json
+	 * @return string-obj map representation of JSON
+	 */
 	public static Map<String, Object> jsonToMap(String json) {
 		try {
 			return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {
@@ -87,10 +99,10 @@ public class DataUtils {
 	}
 
 	public static String readGzipResource(String name) throws IOException {
-		return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)));
+		return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)),Charset.defaultCharset());
 	}
 
 	public static String readResource(String name) throws IOException {
-		return IOUtils.toString(ESTestServer.class.getResourceAsStream(name));
+		return IOUtils.toString(ESTestServer.class.getResourceAsStream(name),Charset.defaultCharset());
 	}
 }
