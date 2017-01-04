@@ -526,13 +526,10 @@ public abstract class JoinMergeSearch implements Search {
 
 		// step 3: query is now n:list[b.m], b:{c.2} which can be passed
 		// directly to query
-		List<Query> newFromQ = new ArrayList<>(1);
+		List<Query> newFromQ = new ArrayList<>(from.queries.size()+1);
 		newFromQ.add(new Query(QueryType.TERM, from.key, fromJoinedIds.toArray(new String[] {})));
-		if (!from.key.equalsIgnoreCase(from.name.get().getId())) {
-			// if from.key is the ID, we can just use it directly
-			// otherwise we still need the original x:1 query
-			newFromQ.addAll(from.queries);
-		}
+		// we still need the original x:1 query to avoid issues with n-m queries
+		newFromQ.addAll(from.queries);
 		return new SubSearchParams(from.name, from.key, newFromQ, from.fields, from.joinStrategy);
 	}
 
