@@ -36,6 +36,9 @@ import org.ensembl.genesearch.info.FieldInfo;
  */
 public interface Search {
 
+	/**
+	 * default ID string
+	 */
 	public static final String ID = "id";
 
 	/**
