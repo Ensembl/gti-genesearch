@@ -63,7 +63,8 @@ Note that currently result counts and offsets etc. will still indicate the numbe
 The `Query` object encapsulates parameters to be used when querying the `Search` interface. There are four types of `Query` possible, defined by an enum passed during construction.
 * `TERM` - specifies a field and an exact match for 1 or more values
 * `TEXT` - specifies a field and a sub-text match for 1 or more values
-* `RANGE` - accepts a field plus start and end e.g. for a genomic location
+* `NUMBER` - accepts a numeric field and optional operators e.g. 1, 1.2, -1.2, >1.2, <1.3, 1.3-1.6 etc.
+* `LOCATION` - accepts one of more specially formatted genomic location strings of the form `<name>:<start>:<end>[:<strand>]
 * `NESTED` - a field and combines multiple sub-`Query` objects to be combined with an "AND" operator
 _Note:_ This may be changed to a hierarchy of classes in due course
 
