@@ -95,62 +95,6 @@ public class QueryHandlerTest {
 	}
 
 	@Test
-	public void testLocation() {
-		QueryHandler handler = new DefaultQueryHandler();
-		List<Query> qs = handler
-				.parseQuery("{\"location\":{\"seq_region_name\":\"chr1\",\"start\":\"2\",\"end\":\"10\"}}");
-		System.out.println(qs);
-		assertEquals("Multi query", 3, qs.size());
-		assertEquals("seq_region type", QueryType.TERM, qs.get(0).getType());
-		assertEquals("seq_region name", "chr1", qs.get(0).getValues()[0]);
-		assertEquals("start name", QueryType.RANGE, qs.get(1).getType());
-		assertEquals("start type", new Long(2), qs.get(1).getStart());
-		assertEquals("end name", QueryType.RANGE, qs.get(2).getType());
-		assertEquals("end type", new Long(10), qs.get(2).getEnd());
-	}
-
-	@Test
-	public void testLocationStranded() {
-		QueryHandler handler = new DefaultQueryHandler();
-		List<Query> qs = handler.parseQuery(
-				"{\"location\":{\"seq_region_name\":\"chr1\",\"start\":\"2\",\"end\":\"10\",\"strand\":\"1\"}}");
-		System.out.println(qs);
-		assertEquals("Multi query", 4, qs.size());
-		assertEquals("seq_region type", QueryType.TERM, qs.get(0).getType());
-		assertEquals("seq_region name", "chr1", qs.get(0).getValues()[0]);
-		assertEquals("start name", QueryType.RANGE, qs.get(1).getType());
-		assertEquals("start type", new Long(2), qs.get(1).getStart());
-		assertEquals("end name", QueryType.RANGE, qs.get(2).getType());
-		assertEquals("end type", new Long(10), qs.get(2).getEnd());
-		assertEquals("end name", QueryType.TERM, qs.get(3).getType());
-		assertEquals("end type", "1", qs.get(3).getValues()[0]);
-	}
-
-	@Test
-	public void testLocationStart() {
-		QueryHandler handler = new DefaultQueryHandler();
-		List<Query> qs = handler.parseQuery("{\"location\":{\"seq_region_name\":\"chr1\",\"start\":\"2\"}}");
-		System.out.println(qs);
-		assertEquals("Multi query", 2, qs.size());
-		assertEquals("seq_region type", QueryType.TERM, qs.get(0).getType());
-		assertEquals("seq_region name", "chr1", qs.get(0).getValues()[0]);
-		assertEquals("start name", QueryType.RANGE, qs.get(1).getType());
-		assertEquals("start type", new Long(2), qs.get(1).getStart());
-	}
-
-	@Test
-	public void testLocationEnd() {
-		QueryHandler handler = new DefaultQueryHandler();
-		List<Query> qs = handler.parseQuery("{\"location\":{\"seq_region_name\":\"chr1\",\"end\":\"10\"}}");
-		System.out.println(qs);
-		assertEquals("Multi query", 2, qs.size());
-		assertEquals("seq_region type", QueryType.TERM, qs.get(0).getType());
-		assertEquals("seq_region name", "chr1", qs.get(0).getValues()[0]);
-		assertEquals("end name", QueryType.RANGE, qs.get(1).getType());
-		assertEquals("end type", new Long(10), qs.get(1).getEnd());
-	}
-
-	@Test
 	public void testLargeTerms() throws IOException {
 		QueryHandler handler = new DefaultQueryHandler();
 		String json = DataUtils.readGzipResource("/q08_human_swissprot_full.json.gz");

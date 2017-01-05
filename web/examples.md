@@ -47,6 +47,13 @@ To find genes matching any of a list of UniProt records:
 http://localhost:8080/api/genes/query?query={"Uniprot/SWISSPROT":["P03886","P03891","P00395","P00403","P03928"]}
 ```
 
+To find genes matching with different values of a number such as a start position:
+```
+http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":"45000-46000"]}
+http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":">45000"]}
+http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":"<=45000"]}
+```
+
 ## Controlling output
 Adding different fields:
 ```

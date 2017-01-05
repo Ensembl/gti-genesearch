@@ -29,8 +29,6 @@ import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Query.QueryType;
-import org.ensembl.genesearch.impl.ESSearch;
-import org.ensembl.genesearch.impl.ESSearchBuilder;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
 import org.ensembl.genesearch.utils.DataUtils;
@@ -41,7 +39,8 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testId() {
-		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, new Query(QueryType.TERM, "id", "DDB0231518"));
+		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+				new Query(QueryType.TERM, "id", "DDB0231518"));
 
 		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -92,38 +91,195 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testSimpleFacet() {
-		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("GO",10);
+		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("GO", 10);
 		assertEquals("Class check", TermsBuilder.class, buildAggregation.getClass());
 	}
 
 	@Test
 	public void testNestedFacet() {
-		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("homologues.genome",10);
+		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("homologues.genome", 10);
 		assertEquals("Class check", NestedBuilder.class, buildAggregation.getClass());
 	}
 
 	@Test
 	public void testDoubleNestedFacet() {
-		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("homologues.genome.banana",10);
+		AbstractAggregationBuilder buildAggregation = ESSearchBuilder.buildAggregation("homologues.genome.banana", 10);
 		assertEquals("Class check", NestedBuilder.class, buildAggregation.getClass());
 	}
 
 	@Test
-	public void testRange() {
-		Query seqRegion = new Query(QueryType.TERM, "seq_region_name", "DDB0231518");
-		Query start = new Query(QueryType.RANGE, "start", (long) 1, null);
-		Query end = new Query(QueryType.RANGE, "end", null, (long) 100);
-		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, seqRegion, start, end);
-		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
-		System.out.println(obj);
-		assertTrue("Bool set", obj.containsKey("bool"));
-		Map<String, Object> bool = (Map<String, Object>) obj.get("bool");
-		assertTrue("Values set", bool.containsKey("must"));
-		assertObjCorrect("Object string check",
-				"[{constant_score={filter={term={seq_region_name=DDB0231518}}}}, "
-						+ "{constant_score={filter={range={start={from=1, to=null, include_lower=true, include_upper=true}}}}}, "
-						+ "{constant_score={filter={range={end={from=null, to=100, include_lower=true, include_upper=true}}}}}]",
-				bool.get("must"));
+	public void testNumEq() {
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":123}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertObjCorrect("Simple number check", "{constant_score={filter={term={num=123}}}}", obj);
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":-123}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertObjCorrect("Negative number check", "{constant_score={filter={term={num=-123}}}}", obj);
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":123.456}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertObjCorrect("Negative number check", "{constant_score={filter={term={num=123.456}}}}", obj);
+		}
+	}
+
+	@Test
+	public void testNumGt() {
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\">123\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			System.out.println(obj);
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.from").contains("123"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.to").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_lower").contains("false"));
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\">-123\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.from").contains("-123"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.to").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_lower").contains("false"));
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\">123.456\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.from").contains("123.456"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.to").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_lower").contains("false"));
+		}
+	}
+
+	@Test
+	public void testNumGte() {
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\">=123\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			System.out.println(obj);
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.from").contains("123"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.to").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_lower").contains("true"));
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\">=-123\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.from").contains("-123"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.to").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_lower").contains("true"));
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\">=123.456\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.from").contains("123.456"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.to").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_lower").contains("true"));
+		}
+	}
+
+	@Test
+	public void testNumLt() {
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\"<123\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			System.out.println(obj);
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.to").contains("123"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.from").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_upper").contains("false"));
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\"<-123\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.to").contains("-123"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.from").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_upper").contains("false"));
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\"<123.456\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.to").contains("123.456"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.from").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_upper").contains("false"));
+		}
+	}
+
+	@Test
+	public void testNumLte() {
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\"<=123\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			System.out.println(obj);
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.to").contains("123"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.from").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_upper").contains("true"));
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\"<=-123\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.to").contains("-123"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.from").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_upper").contains("true"));
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\"<=123.456\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.to").contains("123.456"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.from").contains("null"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_upper").contains("true"));
+		}
+	}
+
+	@Test
+	public void testNumRange() {
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\"123-789\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			System.out.println(obj);
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.from").contains("123"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.to").contains("789"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_upper").contains("true"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_lower").contains("true"));
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\"-123--789\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.from").contains("-123"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.to").contains("-789"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_upper").contains("true"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_lower").contains("true"));
+		}
+		{
+			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					Query.build("{\"num\":\"123.456-789.987\"}").toArray(new Query[] {}));
+			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
+			assertTrue("From correct",DataUtils.getObjValsForKey(obj,"range.num.from").contains("123.456"));
+			assertTrue("To not set",DataUtils.getObjValsForKey(obj,"range.num.to").contains("789.987"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_upper").contains("true"));
+			assertTrue("From lower not included",DataUtils.getObjValsForKey(obj,"range.num.include_lower").contains("true"));
+		}
+	}
+
+	@Test
+	public void testLocation() {
+
 	}
 
 	@Test

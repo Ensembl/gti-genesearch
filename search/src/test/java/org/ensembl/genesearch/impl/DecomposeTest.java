@@ -47,7 +47,8 @@ public class DecomposeTest {
 	static DataTypeInfo genomeInfo = DataTypeInfo.fromResource("/genomes_datatype_info.json");
 	static DataTypeInfo homologueInfo = DataTypeInfo.fromResource("/homologues_datatype_info.json");
 	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
-	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE, genomeInfo);
+	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE,
+			genomeInfo);
 
 	// set up a provider
 	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.GENES, search)

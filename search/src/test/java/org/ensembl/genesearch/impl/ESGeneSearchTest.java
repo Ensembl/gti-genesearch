@@ -129,23 +129,6 @@ public class ESGeneSearchTest {
 	}
 
 	@Test
-	public void fetchRange() {
-		log.info("Fetching for Chromosome:30000-50000");
-		Query seqRegion = new Query(QueryType.TERM, "seq_region_name", "Chromosome");
-		Query start = new Query(QueryType.RANGE, "start", (long) 30000, null);
-		Query end = new Query(QueryType.RANGE, "end", null, (long) 50000);
-		SearchResult result = search.fetch(Arrays.asList(new Query[] { seqRegion, start, end }),
-				QueryOutput.build(Arrays.asList("_id", "seq_region_name", "start", "end")));
-		List<Map<String, Object>> results = result.getResults();
-		assertEquals("Total hits", 26, results.size());
-		for (Map<String, Object> r : results) {
-			assertEquals("Chromosome name", "Chromosome", r.get("seq_region_name"));
-			assertTrue("Start", (Long.parseLong(String.valueOf(r.get("start")))) >= 30000);
-			assertTrue("End", (Long.parseLong(String.valueOf(r.get("end")))) <= 50000);
-		}
-	}
-
-	@Test
 	public void querySimple() {
 		log.info("Querying for all genes");
 		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")),
@@ -157,6 +140,100 @@ public class ESGeneSearchTest {
 		assertEquals("1 field only", 1, result.getResults().get(0).keySet().size());
 		assertEquals("1 field info only", 1, result.getFields().size());
 		assertEquals("ID field only", "id", result.getFields().get(0).getName());
+	}
+
+	@Test
+	public void queryStartEq() {
+		{
+			log.info("Querying for start=99803");
+			QueryResult result = search.query(Query.build("{\"start\":99803}"),
+					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
+			assertEquals("1 result", 1, result.getResultCount());
+			Map<String, Object> gene = result.getResults().get(0);
+			assertEquals("Start correct", 99803, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
+		}
+
+		{
+			log.info("Querying for start=99802");
+			QueryResult result = search.query(Query.build("{\"start\":99802}"),
+					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
+			assertEquals("No results", 0, result.getResultCount());
+		}
+	}
+
+	@Test
+	public void queryStartGt() {
+		{
+			log.info("Querying for start>490882");
+			QueryResult result = search.query(Query.build("{\"start\":\">490882\"}"),
+					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
+			assertEquals("1 result", 1, result.getResultCount());
+			Map<String, Object> gene = result.getResults().get(0);
+			assertEquals("Start correct", 490883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
+		}
+
+		{
+			log.info("Querying for start>490883");
+			QueryResult result = search.query(Query.build("{\"start\":\">490883\"}"),
+					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
+			assertEquals("No results", 0, result.getResultCount());
+		}
+		{
+			log.info("Querying for start>=490883");
+			QueryResult result = search.query(Query.build("{\"start\":\">=490883\"}"),
+					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
+			Map<String, Object> gene = result.getResults().get(0);
+			assertEquals("Start correct", 490883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
+		}
+	}
+
+	@Test
+	public void queryStartLt() {
+		{
+			log.info("Querying for start<884");
+			QueryResult result = search.query(Query.build("{\"start\":\"<884\"}"),
+					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
+			assertEquals("1 result", 1, result.getResultCount());
+			Map<String, Object> gene = result.getResults().get(0);
+			assertEquals("Start correct", 883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
+		}
+
+		{
+			log.info("Querying for start<883");
+			QueryResult result = search.query(Query.build("{\"start\":\"<883\"}"),
+					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
+			assertEquals("No results", 0, result.getResultCount());
+		}
+		{
+			log.info("Querying for start<=883");
+			QueryResult result = search.query(Query.build("{\"start\":\"<=883\"}"),
+					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
+			Map<String, Object> gene = result.getResults().get(0);
+			assertEquals("Start correct", 883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
+		}	
+	}
+
+	@Test
+	public void queryRange() {
+		{
+			log.info("Querying for start 883-885");
+			QueryResult result = search.query(Query.build("{\"start\":\"883-885\"}"),
+					QueryOutput.build(Arrays.asList("start","end")), Collections.emptyList(), 0, 5, Collections.emptyList());
+			assertEquals("1 result", 1, result.getResultCount());
+			Map<String, Object> gene = result.getResults().get(0);
+			assertEquals("Start correct", 883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
+		}
+		{
+			log.info("Querying for start 884-885");
+			QueryResult result = search.query(Query.build("{\"start\":\"884-885\"}"),
+					QueryOutput.build(Arrays.asList("start","end")), Collections.emptyList(), 0, 5, Collections.emptyList());
+			assertEquals("No results", 0, result.getResultCount());
+		}
+	}
+
+	@Test
+	public void queryLocation() {
+		log.info("Querying for Chromosome:30000-50000");
 	}
 
 	@Test

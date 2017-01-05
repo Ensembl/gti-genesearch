@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,15 +35,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Handler to parse out queries
+ * 
  * @author dstaines
  *
  */
 public class DefaultQueryHandler implements QueryHandler {
 
-	private static final String SEQ_REGION = "seq_region_name";
-	private static final String STRAND = "strand";
-	private static final String START = "start";
-	private static final String END = "end";
+	private static final Pattern NUMBER_PATTERN = Pattern.compile("([<>]=?)?-?[0-9.]+(--?[0-9.]+)?");
 
 	@Override
 	public List<Query> parseQuery(String json) {
@@ -69,8 +68,15 @@ public class DefaultQueryHandler implements QueryHandler {
 			// if no other handler, use this one
 			Object value = query.getValue();
 			Class<? extends Object> clazz = value.getClass();
+
 			if ("location".equals(key)) {
-				queries.addAll(parseLocationQuery((Map<String, Object>) value));
+				if (List.class.isAssignableFrom(clazz)) {
+					List<String> vals = ((List<Object>) value).stream().map(o -> String.valueOf(o))
+							.collect(Collectors.<String> toList());
+					queries.add(new Query(QueryType.LOCATION, key, vals));
+				} else {
+					queries.add(new Query(QueryType.LOCATION, key, String.valueOf(value)));
+				}
 			} else if (Map.class.isAssignableFrom(clazz)) {
 				List<Query> subQs = parseQuery((Map<String, Object>) value);
 				queries.add(new Query(QueryType.NESTED, key, subQs.toArray(new Query[subQs.size()])));
@@ -79,43 +85,14 @@ public class DefaultQueryHandler implements QueryHandler {
 					List<String> vals = ((List<Object>) value).stream().map(o -> String.valueOf(o))
 							.collect(Collectors.<String> toList());
 					queries.add(new Query(QueryType.TERM, key, vals));
+				} else if (NUMBER_PATTERN.matcher(String.valueOf(value)).matches()) {
+					queries.add(new Query(QueryType.NUMBER, key, String.valueOf(value)));
 				} else {
 					queries.add(new Query(QueryType.TERM, key, String.valueOf(value)));
 				}
 			}
 		}
 		return queries;
-	}
-
-	/**
-	 * Parse a location hash
-	 * 
-	 * @param value
-	 *            hash to parse e.g. {"seq_region_name":"1", "start":"1",
-	 *            "end":"1000", "strand":"1"}
-	 * @return list of gene queries corresponding to that location
-	 */
-	protected List<Query> parseLocationQuery(Map<String, Object> value) {
-
-		List<Query> queries = new ArrayList<>(4);
-		queries.add(new Query(QueryType.TERM, SEQ_REGION, String.valueOf(value.get(SEQ_REGION))));
-
-		if (value.containsKey(START)) {
-			Long start = Long.parseLong(String.valueOf(value.get(START)));
-			queries.add(new Query(QueryType.RANGE, START, start, null));
-		}
-
-		if (value.containsKey(END)) {
-			Long end = Long.parseLong(String.valueOf(value.get(END)));
-			queries.add(new Query(QueryType.RANGE, END, null, end));
-		}
-
-		if (value.containsKey(STRAND)) {
-			queries.add(new Query(QueryType.TERM, STRAND, String.valueOf(value.get(STRAND))));
-		}
-
-		return queries;
-
 	}
 
 	/**

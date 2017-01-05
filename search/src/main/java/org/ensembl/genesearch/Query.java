@@ -39,23 +39,19 @@ public class Query {
 	}
 
 	public enum QueryType {
-		TEXT, TERM, RANGE, NESTED;
+		TEXT, TERM, NESTED, LOCATION, NUMBER;
 	}
 
 	private final String fieldName;
 	private final String[] values;
 	private final Query[] subQueries;
 	private final Query.QueryType type;
-	private final Long start;
-	private final Long end;
 
-	public Query(Query.QueryType type, String fieldName, Long start, Long end) {
+	public Query(Query.QueryType type, String fieldName) {
 		this.type = type;
 		this.fieldName = fieldName;
 		this.values = null;
 		this.subQueries = null;
-		this.start = start;
-		this.end = end;
 	}
 
 	public Query(Query.QueryType type, String fieldName, String... values) {
@@ -63,8 +59,6 @@ public class Query {
 		this.fieldName = fieldName;
 		this.values = values;
 		this.subQueries = null;
-		this.start = null;
-		this.end = null;
 	}
 
 	public Query(Query.QueryType type, String fieldName, Collection<String> valuesC) {
@@ -72,8 +66,6 @@ public class Query {
 		this.fieldName = fieldName;
 		this.values = valuesC.toArray(new String[valuesC.size()]);
 		this.subQueries = null;
-		this.start = null;
-		this.end = null;
 	}
 
 	public Query(Query.QueryType type, String fieldName, Query... subQueries) {
@@ -81,8 +73,6 @@ public class Query {
 		this.fieldName = fieldName;
 		this.values = null;
 		this.subQueries = subQueries;
-		this.start = null;
-		this.end = null;
 	}
 
 	public String getFieldName() {
@@ -101,30 +91,10 @@ public class Query {
 		return subQueries;
 	}
 
-	public Long getStart() {
-		return start;
-	}
-
-	public Long getEnd() {
-		return end;
-	}
-
 	@Override
 	public String toString() {
 		if (type == QueryType.NESTED) {
 			return StringUtils.join(Arrays.asList(this.type, this.fieldName, Arrays.asList(this.subQueries)), ":");
-		} else if (type == QueryType.RANGE) {
-			if (start != null) {
-				if (end == null) {
-					return ">=" + start;
-				} else {
-					return start + "-" + end;
-				}
-			} else if (end != null) {
-				return "<=" + end;
-			} else {
-				return "-";
-			}
 		} else {
 			return StringUtils.join(Arrays.asList(this.type, this.fieldName, Arrays.asList(this.values)), ":");
 		}
