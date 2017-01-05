@@ -16,12 +16,15 @@
 
 package org.ensembl.genesearch.impl;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.join;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -52,19 +55,20 @@ public class ESSearchBuilder {
 	private static final String LT = "<";
 	private static final String LTE = "<=";
 	private static final String ID_FIELD = "id";
-	private static final String SEQ_REGION_FIELD = "start";
+	private static final String SEQ_REGION_FIELD = "seq_region_name";
 	private static final String START_FIELD = "start";
 	private static final String END_FIELD = "end";
 	private static final String STRAND_FIELD = "strand";
 	private static final Pattern SINGLE_NUMBER = Pattern.compile("([<>]=?)?(-?[0-9.]+)");
 	private static final Pattern RANGE = Pattern.compile("(-?[0-9.]+)-(-?[0-9.]+)");
-	private static final Pattern LOCATION = Pattern.compile("([^:]+):([0-9.]+)-([0-9.]+)(:([-1]+))");
+	private static final Pattern LOCATION = Pattern.compile("([^:]+):([0-9.]+)-([0-9.]+)(:([-1]+))?");
 
 	private ESSearchBuilder() {
 	}
 
 	/**
-	 * @param type ES type
+	 * @param type
+	 *            ES type
 	 * @param geneQs
 	 * @return query builder for the supplied list of queries
 	 */
@@ -111,24 +115,25 @@ public class ESSearchBuilder {
 		if (parents.isEmpty() && ID_FIELD.equals(geneQ.getFieldName())) {
 			return processId(type, geneQ);
 		} else {
-			String path = StringUtils.join(extendPath(parents, geneQ), '.');
-			switch(geneQ.getType()) {
-				case TERM:
-					return processTerm(path, geneQ);
-				case LOCATION:
-					return processLocation(path, geneQ);
-				case NUMBER:
-					return processNumber(path, geneQ);
-				case TEXT:
-				default:
-					throw new UnsupportedOperationException("Query type "+geneQ.getType()+" not supported");
+			String path = join(extendPath(parents, geneQ), '.');
+			switch (geneQ.getType()) {
+			case TERM:
+				return processTerm(path, geneQ);
+			case LOCATION:
+				return processLocation(path, geneQ);
+			case NUMBER:
+				return processNumber(path, geneQ);
+			case TEXT:
+			default:
+				throw new UnsupportedOperationException("Query type " + geneQ.getType() + " not supported");
 			}
 		}
 	}
-	
+
 	protected static QueryBuilder processId(String type, Query geneQ) {
-		return QueryBuilders.constantScoreQuery(QueryBuilders.idsQuery(type).addIds(geneQ.getValues()));		
+		return QueryBuilders.constantScoreQuery(QueryBuilders.idsQuery(type).addIds(geneQ.getValues()));
 	}
+
 	protected static QueryBuilder processTerm(String path, Query geneQ) {
 		QueryBuilder query;
 		if (geneQ.getValues().length == 1) {
@@ -138,29 +143,28 @@ public class ESSearchBuilder {
 		}
 		return QueryBuilders.constantScoreQuery(query);
 	}
-	
 
 	protected static QueryBuilder processNumber(String path, Query geneQ) {
-		if(geneQ.getValues().length==1) {
+		if (geneQ.getValues().length == 1) {
 			return processNumber(path, geneQ.getValues()[0]);
 		} else {
-			BoolQueryBuilder qb = QueryBuilders.boolQuery();			
-			for(String value: geneQ.getValues()) {
+			BoolQueryBuilder qb = QueryBuilders.boolQuery();
+			for (String value : geneQ.getValues()) {
 				qb.should(processNumber(path, value));
 			}
 			return qb;
-		}		
+		}
 	}
-	
+
 	protected static QueryBuilder processNumber(String path, String value) {
 		Matcher m = SINGLE_NUMBER.matcher(value);
-		if(m.matches()) {
-			if(m.groupCount()==1 || StringUtils.isEmpty(m.group(1))) {
+		if (m.matches()) {
+			if (m.groupCount() == 1 || isEmpty(m.group(1))) {
 				return QueryBuilders.constantScoreQuery(QueryBuilders.termQuery(path, value));
 			} else {
 				String op = m.group(1);
 				RangeQueryBuilder rangeQ = QueryBuilders.rangeQuery(path);
-				switch(op) {
+				switch (op) {
 				case GT:
 					rangeQ.gt(m.group(2));
 					break;
@@ -174,29 +178,59 @@ public class ESSearchBuilder {
 					rangeQ.lte(m.group(2));
 					break;
 				default:
-					throw new UnsupportedOperationException("Unsupported numeric operator "+op);
+					throw new UnsupportedOperationException("Unsupported numeric operator " + op);
 				}
 				return rangeQ;
 			}
 		} else {
 			m = RANGE.matcher(value);
-			if(m.matches()) {
+			if (m.matches()) {
 				return QueryBuilders.rangeQuery(path).gte(m.group(1)).lte(m.group(2));
 			} else {
-				throw new UnsupportedOperationException("Cannot parse numeric query "+value);
+				throw new UnsupportedOperationException("Cannot parse numeric query " + value);
 			}
 		}
 	}
-	
+
 	protected static QueryBuilder processLocation(String path, Query geneQ) {
-		return QueryBuilders.constantScoreQuery(null);
+		if (geneQ.getValues().length == 1) {
+			return processLocation(path, geneQ.getValues()[0]);
+		} else {
+			BoolQueryBuilder qb = QueryBuilders.boolQuery();
+			for (String value : geneQ.getValues()) {
+				qb.should(processLocation(path, value));
+			}
+			return qb;
+		}
+	}
+
+	protected static QueryBuilder processLocation(String locPath, String q) {
+		String path = locPath.replaceAll(".?location", EMPTY);
+		Matcher m = LOCATION.matcher(q);
+		if (!m.matches()) {
+			throw new UnsupportedOperationException(q + " is not a valid location string");
+		}
+		/*
+		 * note - we need to ensure start and end both lie in the range to deal
+		 * with cross-origin genes where start>end
+		 */
+		BoolQueryBuilder qb = QueryBuilders.boolQuery()
+				.must(QueryBuilders.termQuery(prependPath(path, SEQ_REGION_FIELD), m.group(1)))
+				.must(QueryBuilders.rangeQuery(prependPath(path, START_FIELD)).from(m.group(2)).includeLower(true)
+						.to(m.group(3)).includeUpper(true))
+				.must(QueryBuilders.rangeQuery(prependPath(path, END_FIELD)).from(m.group(2)).includeLower(true)
+						.to(m.group(3)).includeUpper(true));
+		if (!isEmpty(m.group(5))) {
+			qb.must(QueryBuilders.termQuery(prependPath(path, STRAND_FIELD), m.group(5)));
+		}
+		return qb;
 	}
 
 	protected static QueryBuilder processNested(String type, List<String> parents, Query geneQ) {
 		QueryBuilder query;
 		log.trace("Nested " + geneQ.getFieldName());
 		QueryBuilder subQuery = buildQueryWithParents(type, extendPath(parents, geneQ), geneQ.getSubQueries());
-		query = QueryBuilders.nestedQuery(StringUtils.join(extendPath(parents, geneQ), '.'), subQuery);
+		query = QueryBuilders.nestedQuery(join(extendPath(parents, geneQ), '.'), subQuery);
 		return query;
 	}
 
@@ -210,14 +244,10 @@ public class ESSearchBuilder {
 	public static AbstractAggregationBuilder buildAggregation(String facet, int aggregationSize) {
 		String[] subFacets = facet.split("\\.");
 		AbstractAggregationBuilder builder = null;
-		String path = StringUtils.EMPTY;
+		String path = EMPTY;
 		for (int i = 0; i < subFacets.length; i++) {
 			String subFacet = subFacets[i];
-			if (StringUtils.isEmpty(path)) {
-				path = subFacet;
-			} else {
-				path = path + '.' + subFacet;
-			}
+			path = prependPath(path, subFacet);
 			if (i == subFacets.length - 1) {
 				TermsBuilder subBuilder = AggregationBuilders.terms(subFacet).field(path).size(aggregationSize)
 						.order(Terms.Order.compound(Terms.Order.count(false), Terms.Order.term(true)));
@@ -236,5 +266,21 @@ public class ESSearchBuilder {
 			}
 		}
 		return builder;
+	}
+
+	/**
+	 * Prepend a path to the name, if set
+	 * 
+	 * @param path
+	 *            (can be null or blank)
+	 * @param name
+	 * @return name with optional path prepended
+	 */
+	protected static String prependPath(String path, String name) {
+		if (isEmpty(path)) {
+			return name;
+		} else {
+			return path + '.' + name;
+		}
 	}
 }

@@ -210,7 +210,7 @@ public class ESGeneSearchTest {
 					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
 			Map<String, Object> gene = result.getResults().get(0);
 			assertEquals("Start correct", 883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
-		}	
+		}
 	}
 
 	@Test
@@ -218,7 +218,8 @@ public class ESGeneSearchTest {
 		{
 			log.info("Querying for start 883-885");
 			QueryResult result = search.query(Query.build("{\"start\":\"883-885\"}"),
-					QueryOutput.build(Arrays.asList("start","end")), Collections.emptyList(), 0, 5, Collections.emptyList());
+					QueryOutput.build(Arrays.asList("start", "end")), Collections.emptyList(), 0, 5,
+					Collections.emptyList());
 			assertEquals("1 result", 1, result.getResultCount());
 			Map<String, Object> gene = result.getResults().get(0);
 			assertEquals("Start correct", 883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
@@ -226,14 +227,63 @@ public class ESGeneSearchTest {
 		{
 			log.info("Querying for start 884-885");
 			QueryResult result = search.query(Query.build("{\"start\":\"884-885\"}"),
-					QueryOutput.build(Arrays.asList("start","end")), Collections.emptyList(), 0, 5, Collections.emptyList());
+					QueryOutput.build(Arrays.asList("start", "end")), Collections.emptyList(), 0, 5,
+					Collections.emptyList());
 			assertEquals("No results", 0, result.getResultCount());
 		}
 	}
 
 	@Test
 	public void queryLocation() {
-		log.info("Querying for Chromosome:30000-50000");
+		log.info("Querying for Chromosome:883-2691");
+		QueryResult result = search.query(Query.build("{\"location\":\"Chromosome:883-2691\"}"),
+				QueryOutput.build(Arrays.asList("seq_region_name", "start", "end")), Collections.emptyList(), 0, 5,
+				Collections.emptyList());
+		assertEquals("1 result", 1, result.getResultCount());
+		Map<String, Object> gene = result.getResults().get(0);
+		assertEquals("Name correct", "Chromosome", String.valueOf(gene.get("seq_region_name")));
+		assertEquals("Start correct", 883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
+		assertEquals("End correct", 2691, Integer.valueOf(String.valueOf(gene.get("end"))).intValue());
+	}
+
+	@Test
+	public void queryLocationStranded() {
+		log.info("Querying for Chromosome:883-2691:-1");
+		QueryResult result = search.query(Query.build("{\"location\":\"Chromosome:883-2691:-1\"}"),
+				QueryOutput.build(Arrays.asList("seq_region_name", "start", "end")), Collections.emptyList(), 0, 5,
+				Collections.emptyList());
+		assertEquals("0 result", 0, result.getResultCount());
+		log.info("Querying for Chromosome:883-2691:1");
+		result = search.query(Query.build("{\"location\":\"Chromosome:883-2691:1\"}"),
+				QueryOutput.build(Arrays.asList("seq_region_name", "start", "end")), Collections.emptyList(), 0, 5,
+				Collections.emptyList());
+		assertEquals("1 result", 1, result.getResultCount());
+		Map<String, Object> gene = result.getResults().get(0);
+		assertEquals("Name correct", "Chromosome", String.valueOf(gene.get("seq_region_name")));
+		assertEquals("Start correct", 883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
+		assertEquals("End correct", 2691, Integer.valueOf(String.valueOf(gene.get("end"))).intValue());
+	}
+
+	@Test
+	public void queryLocations() {
+		log.info("Querying for Chromosome:883-2691,Chromosome:2668-3189");
+		QueryResult result = search.query(
+				Query.build("{\"location\":[\"Chromosome:883-2691\",\"Chromosome:2668-3189\"]}"),
+				QueryOutput.build(Arrays.asList("seq_region_name", "start", "end")), Collections.emptyList(), 0, 5,
+				Collections.emptyList());
+		assertEquals("2 result", 2, result.getResultCount());
+		{
+			Map<String, Object> gene = result.getResults().get(0);
+			assertEquals("Name correct", "Chromosome", String.valueOf(gene.get("seq_region_name")));
+			assertEquals("Start correct", 883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
+			assertEquals("End correct", 2691, Integer.valueOf(String.valueOf(gene.get("end"))).intValue());
+		}
+		{
+			Map<String, Object> gene = result.getResults().get(1);
+			assertEquals("Name correct", "Chromosome", String.valueOf(gene.get("seq_region_name")));
+			assertEquals("Start correct", 2668, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
+			assertEquals("End correct", 3189, Integer.valueOf(String.valueOf(gene.get("end"))).intValue());
+		}
 	}
 
 	@Test

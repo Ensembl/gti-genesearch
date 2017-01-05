@@ -54,6 +54,13 @@ http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":">
 http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":"<=45000"]}
 ```
 
+To find genes in a given location or locations:
+```
+http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "location":"1:45000-96000"}
+http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "location":"1:45000-96000:-1"}
+http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "location":["1:45000-52000","1:60000-96000"]}
+```
+
 ## Controlling output
 Adding different fields:
 ```
