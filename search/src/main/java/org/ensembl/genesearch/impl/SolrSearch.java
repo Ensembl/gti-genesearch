@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.SortClause;
@@ -36,6 +37,10 @@ import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import sun.util.logging.resources.logging;
 
 /**
  * Simple {@link Search} implementation using an instance of {@link SolrClient}
@@ -47,6 +52,7 @@ public class SolrSearch implements Search {
 
 	private final SolrClient solr;
 	private final DataTypeInfo dataType;
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * Build a new search instance using the supplied client
@@ -72,6 +78,9 @@ public class SolrSearch implements Search {
 			SolrQuery q = SolrQueryBuilder.build(queries);
 			q.setFields(fieldNames.getFields().toArray(new String[] {}));
 			q.setSort(SortClause.asc("id"));
+			log.info("Executing Solr query "+q);
+			StopWatch w = new StopWatch();
+			w.start();
 			String cursorMark = CursorMarkParams.CURSOR_MARK_START;
 			boolean done = false;
 			while (!done) {
@@ -84,6 +93,7 @@ public class SolrSearch implements Search {
 				}
 				cursorMark = nextCursorMark;
 			}
+			log.info("Completed Solr query in "+w.getTime()+" ms");
 		} catch (SolrServerException | IOException e) {
 			throw new UnsupportedOperationException("Could not execute query", e);
 		}
