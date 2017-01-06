@@ -16,15 +16,24 @@
 
 package org.ensembl.genesearch.impl;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.ensembl.genesearch.Query.GT;
+import static org.ensembl.genesearch.Query.GTE;
+import static org.ensembl.genesearch.Query.LT;
+import static org.ensembl.genesearch.Query.LTE;
+import static org.ensembl.genesearch.Query.RANGE;
+import static org.ensembl.genesearch.Query.SINGLE_NUMBER;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.Query.QueryType;
 
 /**
  * Utility to generate a Solr query from a list of {@link Query} objects
@@ -34,6 +43,8 @@ import org.ensembl.genesearch.Query.QueryType;
  */
 public class SolrQueryBuilder {
 
+	private static final String WILDCARD = "*";
+	private static final String TO = " TO ";
 	private static final String ALL_Q = "*:*";
 	private static final String DELIMITER = ",";
 	private static final String ASC = "asc";
@@ -65,22 +76,98 @@ public class SolrQueryBuilder {
 	public static SolrQuery build(List<Query> queries) {
 		SolrQuery solrQ = new SolrQuery();
 		List<String> clauses = new ArrayList<>(queries.size());
-		if(queries.isEmpty()) {
+		if (queries.isEmpty()) {
 			clauses.add(ALL_Q);
 		} else {
-		for (Query q : queries) {
-			if (q.getType() != QueryType.TERM) {
-				throw new IllegalArgumentException("Solr querying support limited to TERM only");
+			for (Query q : queries) {
+				switch (q.getType()) {
+				case TERM:
+					clauses.add(termQuery(q));
+					break;
+				case NUMBER:
+					clauses.add(numberQuery(q));
+					break;
+				case LOCATION:
+				case NESTED:
+				case TEXT:
+				default:
+					throw new IllegalArgumentException("Solr querying support limited to TERM only");
+				}
 			}
-			if (q.getValues().length > 1) {
-				clauses.add(q.getFieldName() + ':' + '(' + StringUtils.join(q.getValues(), OR) + ')');
-			} else {
-				clauses.add(q.getFieldName() + ':' + q.getValues()[0]);
-			}
-		}
 		}
 		solrQ.add(QUERY_PARAM, StringUtils.join(clauses, AND));
 		return solrQ;
+	}
+
+	/**
+	 * @param q
+	 * @return solr query clause
+	 */
+	protected static String numberQuery(Query q) {
+		List<String> qs = Arrays.asList(q.getValues()).stream().map(SolrQueryBuilder::numberQuery)
+				.collect(Collectors.toList());
+		if (qs.size() > 1) {
+			return q.getFieldName() + ':' + '(' + StringUtils.join(qs, OR) + ')';
+		} else {
+			return q.getFieldName() + ':' + qs.get(0);
+		}
+	}
+
+	protected static String numberQuery(String value) {
+		Matcher m = SINGLE_NUMBER.matcher(value);
+		String start = WILDCARD;
+		String end = WILDCARD;
+		boolean exclusive = false;
+		if (m.matches()) {
+			if (m.groupCount() == 1 || isEmpty(m.group(1))) {
+				return value;
+			} else {
+				String op = m.group(1);
+				switch (op) {
+				case GT:
+					start = m.group(2);
+					exclusive = true;
+					break;
+				case GTE:
+					start = m.group(2);
+					break;
+				case LT:
+					end = m.group(2);
+					exclusive = true;
+					break;
+				case LTE:
+					end = m.group(2);
+					break;
+				default:
+					throw new UnsupportedOperationException("Unsupported numeric operator " + op);
+				}
+			}
+		} else {
+			m = RANGE.matcher(value);
+			if (m.matches()) {
+				start = m.group(1);
+				end = m.group(2);
+			} else {
+				throw new UnsupportedOperationException("Cannot parse numeric query " + value);
+			}
+		}
+		if (exclusive) {
+			return '{' + start + TO + end + '}';
+		} else {
+			return '[' + start + TO + end + ']';
+		}
+	}
+
+	/**
+	 * @param q
+	 * @return solr query clause
+	 */
+	protected static String termQuery(Query q) {
+		if (q.getValues().length > 1) {
+			return q.getFieldName() + ':' + '(' + StringUtils.join(q.getValues(), OR) + ')';
+		} else {
+			return q.getFieldName() + ':' + q.getValues()[0];
+		}
 	}
 
 	/**
