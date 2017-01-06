@@ -19,6 +19,7 @@ package org.ensembl.genesearch;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
@@ -41,6 +42,14 @@ public class Query {
 	public enum QueryType {
 		TEXT, TERM, NESTED, LOCATION, NUMBER;
 	}
+	
+	public static final String GT = ">";
+	public static final String GTE = ">=";
+	public static final String LT = "<";
+	public static final String LTE = "<=";
+	public static final Pattern SINGLE_NUMBER = Pattern.compile("([<>]=?)?(-?[0-9.]+)");
+	public static final Pattern RANGE = Pattern.compile("(-?[0-9.]+)-(-?[0-9.]+)");
+	public static final Pattern LOCATION = Pattern.compile("([^:]+):([0-9.]+)-([0-9.]+)(:([-1]+))?");
 
 	private final String fieldName;
 	private final String[] values;

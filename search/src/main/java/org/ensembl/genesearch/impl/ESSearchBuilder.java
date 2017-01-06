@@ -19,11 +19,17 @@ package org.ensembl.genesearch.impl;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.join;
+import static org.ensembl.genesearch.Query.GT;
+import static org.ensembl.genesearch.Query.GTE;
+import static org.ensembl.genesearch.Query.LOCATION;
+import static org.ensembl.genesearch.Query.LT;
+import static org.ensembl.genesearch.Query.LTE;
+import static org.ensembl.genesearch.Query.RANGE;
+import static org.ensembl.genesearch.Query.SINGLE_NUMBER;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -50,18 +56,11 @@ public class ESSearchBuilder {
 
 	private static final Logger log = LoggerFactory.getLogger(ESSearchBuilder.class);
 
-	private static final String GT = ">";
-	private static final String GTE = ">=";
-	private static final String LT = "<";
-	private static final String LTE = "<=";
 	private static final String ID_FIELD = "id";
 	private static final String SEQ_REGION_FIELD = "seq_region_name";
 	private static final String START_FIELD = "start";
 	private static final String END_FIELD = "end";
 	private static final String STRAND_FIELD = "strand";
-	private static final Pattern SINGLE_NUMBER = Pattern.compile("([<>]=?)?(-?[0-9.]+)");
-	private static final Pattern RANGE = Pattern.compile("(-?[0-9.]+)-(-?[0-9.]+)");
-	private static final Pattern LOCATION = Pattern.compile("([^:]+):([0-9.]+)-([0-9.]+)(:([-1]+))?");
 
 	private ESSearchBuilder() {
 	}
