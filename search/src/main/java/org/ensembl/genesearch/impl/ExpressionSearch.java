@@ -27,7 +27,7 @@ import org.ensembl.genesearch.Search;
 public class ExpressionSearch extends JoinMergeSearch {
 
 	public ExpressionSearch(SearchRegistry provider) {
-		super(SearchType.EXPRESSION_ANALYTICS, provider);
+		super(SearchType.EXPRESSION, provider);
 		Search geneSearch = provider.getSearch(SearchType.GENES);
 		if (geneSearch != null) {
 			joinTargets.put(SearchType.GENES, JoinStrategy.as(MergeStrategy.APPEND, "bioentityIdentifier", "id"));
@@ -36,6 +36,12 @@ public class ExpressionSearch extends JoinMergeSearch {
 		if (transcriptSearch != null) {
 			joinTargets.put(SearchType.TRANSCRIPTS, JoinStrategy.as(MergeStrategy.APPEND, "bioentityIdentifier", "id"));
 		}
+		Search experimentsSearch = provider.getSearch(SearchType.EXPRESSION_EXPERIMENTS);
+		if (experimentsSearch != null) {
+			joinTargets.put(SearchType.EXPRESSION_EXPERIMENTS,
+					JoinStrategy.as(MergeStrategy.APPEND, "experimentAccession", "experiment_accession"));
+		}
+
 	}
 
 }

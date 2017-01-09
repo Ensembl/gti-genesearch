@@ -25,7 +25,6 @@ import org.ensembl.genesearch.clients.ClientBuilder;
 import org.ensembl.genesearch.impl.DivisionAwareSequenceSearch;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.ESSearchFlatten;
-import org.ensembl.genesearch.impl.ExpressionAnalyticsSearch;
 import org.ensembl.genesearch.impl.ExpressionSearch;
 import org.ensembl.genesearch.impl.GeneSearch;
 import org.ensembl.genesearch.impl.MongoSearch;
@@ -167,6 +166,7 @@ public class EndpointSearchProvider {
 			Search solrExpressionExperimentsSearch = new SolrSearch(getSolrExperimentsClient(),
 					expressionExperimentsType);
 			
+			expressionSearch = new ExpressionSearch(registry);
 
 			registry = new SearchRegistry().registerSearch(SearchType.GENES, esGeneSearch)
 					.registerSearch(SearchType.TRANSCRIPTS, esTranscriptSearch)
@@ -174,11 +174,9 @@ public class EndpointSearchProvider {
 					.registerSearch(SearchType.GENOMES, esGenomeSearch).registerSearch(SearchType.SEQUENCES, seqSearch)
 					.registerSearch(SearchType.VARIANTS, mongoVariantSearch)
 					.registerSearch(SearchType.EXPRESSION_ANALYTICS, solrExpressionSearch)
-					.registerSearch(SearchType.EXPRESSION_EXPERIMENTS, solrExpressionExperimentsSearch);
+					.registerSearch(SearchType.EXPRESSION_EXPERIMENTS, solrExpressionExperimentsSearch)
+					.registerSearch(SearchType.EXPRESSION, expressionSearch);
 			
-			expressionSearch = new ExpressionSearch(registry);
-			registry.registerSearch(SearchType.EXPRESSION, expressionSearch);
-
 		}
 		return registry;
 	}
@@ -252,17 +250,6 @@ public class EndpointSearchProvider {
 
 	public void setExpressionSearch(Search expressionSearch) {
 		this.expressionSearch = expressionSearch;
-	}
-
-	public Search getExpressionAnalyticsSearch() {
-		if (expressionAnalyticsSearch == null) {
-			expressionAnalyticsSearch = new ExpressionAnalyticsSearch(getRegistry());
-		}
-		return expressionAnalyticsSearch;
-	}
-
-	public void setExpressionAnalyticsSearch(Search expressionAnalyticsSearch) {
-		this.expressionAnalyticsSearch = expressionAnalyticsSearch;
 	}
 
 }
