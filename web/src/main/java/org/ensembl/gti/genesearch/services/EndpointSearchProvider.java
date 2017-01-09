@@ -165,8 +165,6 @@ public class EndpointSearchProvider {
 			Search solrExpressionSearch = new SolrSearch(getSolrAnalyticsClient(), expressionType);
 			Search solrExpressionExperimentsSearch = new SolrSearch(getSolrExperimentsClient(),
 					expressionExperimentsType);
-			
-			expressionSearch = new ExpressionSearch(registry);
 
 			registry = new SearchRegistry().registerSearch(SearchType.GENES, esGeneSearch)
 					.registerSearch(SearchType.TRANSCRIPTS, esTranscriptSearch)
@@ -174,9 +172,12 @@ public class EndpointSearchProvider {
 					.registerSearch(SearchType.GENOMES, esGenomeSearch).registerSearch(SearchType.SEQUENCES, seqSearch)
 					.registerSearch(SearchType.VARIANTS, mongoVariantSearch)
 					.registerSearch(SearchType.EXPRESSION_ANALYTICS, solrExpressionSearch)
-					.registerSearch(SearchType.EXPRESSION_EXPERIMENTS, solrExpressionExperimentsSearch)
-					.registerSearch(SearchType.EXPRESSION, expressionSearch);
-			
+					.registerSearch(SearchType.EXPRESSION_EXPERIMENTS, solrExpressionExperimentsSearch);
+
+			expressionSearch = new ExpressionSearch(registry);
+
+			registry.registerSearch(SearchType.EXPRESSION, expressionSearch);
+
 		}
 		return registry;
 	}
