@@ -50,6 +50,7 @@ import sun.util.logging.resources.logging;
  */
 public class SolrSearch implements Search {
 
+	private static final int PAGESIZE = 1000;
 	private final SolrClient solr;
 	private final DataTypeInfo dataType;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -79,6 +80,7 @@ public class SolrSearch implements Search {
 			q.setFields(fieldNames.getFields().toArray(new String[] {}));
 			q.setSort(SortClause.asc("id"));
 			log.info("Executing Solr query "+q);
+			q.set(SolrQueryBuilder.ROWS_PARAM, PAGESIZE);
 			StopWatch w = new StopWatch();
 			w.start();
 			String cursorMark = CursorMarkParams.CURSOR_MARK_START;
@@ -120,9 +122,12 @@ public class SolrSearch implements Search {
 			q.add("sort", SolrQueryBuilder.parseSorts(sorts));
 		}
 		try {
+			StopWatch w = new StopWatch();
+			w.start();
 			QueryResponse response = solr.query(q);
 			List<Map<String, Object>> results = response.getResults().stream().map(this::parseResult)
 					.collect(Collectors.toList());
+			log.info("Completed Solr query in "+w.getTime()+" ms");
 			return new QueryResult(response.getResults().getNumFound(), offset, limit, getFieldInfo(output), results,
 					Collections.emptyMap());
 		} catch (SolrServerException | IOException e) {
