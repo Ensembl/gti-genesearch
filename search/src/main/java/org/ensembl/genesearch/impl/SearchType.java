@@ -27,8 +27,10 @@ import org.ensembl.genesearch.Search;
 public enum SearchType {
 
 	GENOMES("genomes", "genome"), GENES("genes", "gene"), TRANSCRIPTS("transcripts", "transcript"), TRANSLATIONS(
-			"translations", "translation"), HOMOLOGUES("homologues", "homologue"), VARIANTS("variants",
-					"variant"), SEQUENCES("sequences", "sequence"), EXPRESSION("expression", "expression");
+			"translations",
+			"translation"), HOMOLOGUES("homologues", "homologue"), VARIANTS("variants", "variant"), SEQUENCES(
+					"sequences", "sequence"), EXPRESSION("expression", "expression"), EXPRESSION_ANALYTICS("analytics",
+							"analytics"), EXPRESSION_EXPERIMENTS("experiments", "experiment");
 
 	private final String pluralName;
 	private final String singleName;
@@ -37,6 +39,7 @@ public enum SearchType {
 	private SearchType(String pluralName, String singleName) {
 		this(pluralName, singleName, Search.ID);
 	}
+
 	private SearchType(String pluralName, String singleName, String idField) {
 		this.pluralName = pluralName;
 		this.singleName = singleName;
@@ -66,5 +69,5 @@ public enum SearchType {
 	public String getId() {
 		return this.idField;
 	}
-	
+
 }
