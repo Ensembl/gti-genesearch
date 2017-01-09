@@ -172,6 +172,7 @@ public class EndpointSearchProvider {
 					.registerSearch(SearchType.HOMOLOGUES, esGeneSearch)
 					.registerSearch(SearchType.GENOMES, esGenomeSearch).registerSearch(SearchType.SEQUENCES, seqSearch)
 					.registerSearch(SearchType.VARIANTS, mongoVariantSearch)
+					.registerSearch(SearchType.EXPRESSION, getExpressionSearch())
 					.registerSearch(SearchType.EXPRESSION_ANALYTICS, solrExpressionSearch)
 					.registerSearch(SearchType.EXPRESSION_EXPERIMENTS, solrExpressionExperimentsSearch);
 		}
