@@ -40,8 +40,6 @@ import org.ensembl.genesearch.info.DataTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.util.logging.resources.logging;
-
 /**
  * Simple {@link Search} implementation using an instance of {@link SolrClient}
  * 
