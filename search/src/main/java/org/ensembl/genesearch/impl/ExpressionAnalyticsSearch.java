@@ -28,7 +28,7 @@ import org.ensembl.genesearch.Search;
 public class ExpressionAnalyticsSearch extends JoinMergeSearch {
 
 	public ExpressionAnalyticsSearch(SearchRegistry provider) {
-		super(SearchType.EXPRESSION, provider);
+		super(SearchType.EXPRESSION_ANALYTICS, provider);
 		Search experimentsSearch = provider.getSearch(SearchType.EXPRESSION_EXPERIMENTS);
 		if (experimentsSearch != null) {
 			joinTargets.put(SearchType.EXPRESSION_EXPERIMENTS,
