@@ -210,7 +210,7 @@ public abstract class JoinMergeSearch implements Search {
 			QueryOutput toOutput = null;
 			// NB: Could avoid adding into "from" here I guess
 			for (Entry<String, QueryOutput> e : output.getSubFields().entrySet()) {
-				if (e.getKey().equalsIgnoreCase(toName.get().name())) {
+				if (toName.get().is(e.getKey())) {
 					toOutput = e.getValue();
 				} else {
 					fromOutput.getSubFields().put(e.getKey(), e.getValue());
@@ -419,11 +419,10 @@ public abstract class JoinMergeSearch implements Search {
 			if (!from.key.equals(this.getIdField())) {
 				fromR.remove(from.key);
 			}
-			String key = to.name.get().name().toLowerCase();
 			if (to.joinStrategy.merge == MergeStrategy.MERGE) {
 				fromR.putAll(r);
 			} else {
-				putOrAppend(key, r, fromR);
+				putOrAppend(to.name.get().toString(), r, fromR);
 			}
 		};
 	}
