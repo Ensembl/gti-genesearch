@@ -34,22 +34,16 @@ public enum SearchType {
 
 	private final String pluralName;
 	private final String singleName;
-	private final String idField;
 
 	private SearchType(String pluralName, String singleName) {
-		this(pluralName, singleName, Search.ID);
-	}
-
-	private SearchType(String pluralName, String singleName, String idField) {
 		this.pluralName = pluralName;
 		this.singleName = singleName;
-		this.idField = idField;
 	}
 
 	public static SearchType findByName(String name) {
 		SearchType type = null;
 		for (SearchType t : SearchType.values()) {
-			if (t.name().equalsIgnoreCase(name)) {
+			if (t.is(name)) {
 				type = t;
 				break;
 			}
@@ -66,8 +60,9 @@ public enum SearchType {
 		return this.singleName;
 	}
 
-	public String getId() {
-		return this.idField;
+	public boolean is(String nom) {
+		return this.pluralName.equalsIgnoreCase(nom) || this.singleName.equalsIgnoreCase(nom)
+				|| this.name().equalsIgnoreCase(nom);
 	}
 
 }
