@@ -8,7 +8,7 @@
 		{
 			"displayName": "id",
 			"name": "id",
-			"type": "TEXT",
+			"type": "ID",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
