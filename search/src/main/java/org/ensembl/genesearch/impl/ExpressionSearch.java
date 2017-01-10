@@ -27,7 +27,7 @@ import org.ensembl.genesearch.Search;
 public class ExpressionSearch extends JoinMergeSearch {
 
 	public ExpressionSearch(SearchRegistry provider) {
-		super(SearchType.EXPRESSION, provider);
+		super(SearchType.EXPRESSION_ANALYTICS, provider);
 		Search geneSearch = provider.getSearch(SearchType.GENES);
 		if (geneSearch != null) {
 			joinTargets.put(SearchType.GENES, JoinStrategy.as(MergeStrategy.APPEND, "bioentityIdentifier", "id"));
