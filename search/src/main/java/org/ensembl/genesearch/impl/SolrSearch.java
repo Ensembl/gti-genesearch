@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +54,7 @@ public class SolrSearch implements Search {
 	private final SolrClient solr;
 	private final DataTypeInfo dataType;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Optional<FieldInfo> idField;
 
 	/**
 	 * Build a new search instance using the supplied client
@@ -63,6 +66,7 @@ public class SolrSearch implements Search {
 	public SolrSearch(SolrClient solr, DataTypeInfo dataType) {
 		this.solr = solr;
 		this.dataType = dataType;
+		idField = dataType.getIdField();
 	}
 
 	/*
@@ -74,28 +78,66 @@ public class SolrSearch implements Search {
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
 		try {
-			SolrQuery q = SolrQueryBuilder.build(queries);
-			q.setFields(fieldNames.getFields().toArray(new String[] {}));
-			q.setSort(SortClause.asc("id"));
-			log.info("Executing Solr query "+q);
-			q.set(SolrQueryBuilder.ROWS_PARAM, PAGESIZE);
 			StopWatch w = new StopWatch();
 			w.start();
-			String cursorMark = CursorMarkParams.CURSOR_MARK_START;
-			boolean done = false;
-			while (!done) {
-				q.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
-				QueryResponse response = solr.query(q);
-				String nextCursorMark = response.getNextCursorMark();
-				response.getResults().stream().map(this::parseResult).forEach(consumer);
-				if (cursorMark.equals(nextCursorMark)) {
-					done = true;
-				}
-				cursorMark = nextCursorMark;
+			SolrQuery q = SolrQueryBuilder.build(queries);
+			q.setFields(fieldNames.getFields().toArray(new String[] {}));
+			q.set(SolrQueryBuilder.ROWS_PARAM, PAGESIZE);
+			if (idField.isPresent()) {
+				paginateWithCursor(consumer, q);
+			} else {
+				paginate(consumer, q);
 			}
-			log.info("Completed Solr query in "+w.getTime()+" ms");
+			log.info("Completed Solr query in " + w.getTime() + " ms");
 		} catch (SolrServerException | IOException e) {
 			throw new UnsupportedOperationException("Could not execute query", e);
+		}
+	}
+
+	/**
+	 * @param consumer
+	 * @param q
+	 * @throws SolrServerException
+	 * @throws IOException
+	 */
+	protected void paginate(Consumer<Map<String, Object>> consumer, SolrQuery q)
+			throws SolrServerException, IOException {
+		log.debug("Using standard pagination");
+		long offset = 0;
+		while(true) {
+			q.set(SolrQueryBuilder.START_PARAM, String.valueOf(offset));
+			log.info("Executing Solr query " + q);
+			QueryResponse response = solr.query(q);
+			response.getResults().stream().map(this::parseResult).forEach(consumer);					
+			offset += PAGESIZE;
+			if(offset>response.getResults().getNumFound()) {
+				break;
+			}
+		}
+	}
+
+	/**
+	 * @param consumer
+	 * @param q
+	 * @throws SolrServerException
+	 * @throws IOException
+	 */
+	protected void paginateWithCursor(Consumer<Map<String, Object>> consumer, SolrQuery q)
+			throws SolrServerException, IOException {
+		log.debug("Using cursorMark");
+		q.setSort(SortClause.asc(idField.get().getName()));
+		log.info("Executing Solr query " + q);
+		String cursorMark = CursorMarkParams.CURSOR_MARK_START;
+		boolean done = false;
+		while (!done) {
+			q.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
+			QueryResponse response = solr.query(q);
+			String nextCursorMark = response.getNextCursorMark();
+			response.getResults().stream().map(this::parseResult).forEach(consumer);
+			if (cursorMark.equals(nextCursorMark)) {
+				done = true;
+			}
+			cursorMark = nextCursorMark;
 		}
 	}
 
@@ -125,7 +167,7 @@ public class SolrSearch implements Search {
 			QueryResponse response = solr.query(q);
 			List<Map<String, Object>> results = response.getResults().stream().map(this::parseResult)
 					.collect(Collectors.toList());
-			log.info("Completed Solr query in "+w.getTime()+" ms");
+			log.info("Completed Solr query in " + w.getTime() + " ms");
 			return new QueryResult(response.getResults().getNumFound(), offset, limit, getFieldInfo(output), results,
 					Collections.emptyMap());
 		} catch (SolrServerException | IOException e) {
