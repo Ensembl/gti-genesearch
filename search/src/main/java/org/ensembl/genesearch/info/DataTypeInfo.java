@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
@@ -138,6 +139,10 @@ public class DataTypeInfo {
 			}
 		}
 		return fields;
+	}
+
+	public Optional<FieldInfo> getIdField() {
+		return getFieldByType(FieldType.ID).stream().findFirst();
 	}
 
 }
