@@ -8,10 +8,6 @@ package org.ensembl.genesearch.info;
  */
 public class FieldInfo {
 
-	public enum FieldType {
-		GENOME, ID, LOCATION, NUMBER, OBJECT, ONTOLOGY, TEXT, STRAND;
-	}
-
 	private boolean display;
 
 	private String displayName;

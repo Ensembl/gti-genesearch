@@ -25,11 +25,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +78,7 @@ public class DivisionAwareSequenceSearch implements Search {
 
 		// expected a list of nested queries
 		for (Query q : queries) {
-			if (q.getType() != QueryType.NESTED || !ID.equals(q.getSubQueries()[0].getFieldName())) {
+			if (q.getType() != FieldType.NESTED || !ID.equals(q.getSubQueries()[0].getFieldName())) {
 				throw new IllegalArgumentException("Sequence search requires a nested query containing id query");
 			}
 			String genome = q.getFieldName();

@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
+import org.ensembl.genesearch.info.FieldType;
 
 /**
  * Generic interface for searching for and retrieving objects from a backing
@@ -88,7 +88,7 @@ public interface Search {
 	 * @return list of objects
 	 */
 	public default List<Map<String, Object>> fetchByIds(QueryOutput fields, String... ids) {
-		return fetch(Arrays.asList(new Query(QueryType.TERM, getIdField(), ids)), fields).getResults();
+		return fetch(Arrays.asList(new Query(FieldType.TERM, getIdField(), ids)), fields).getResults();
 	}
 
 	/**
@@ -145,7 +145,7 @@ public interface Search {
 	 * @param ids
 	 */
 	public default void fetchByIds(Consumer<Map<String, Object>> consumer, String... ids) {
-		fetch(consumer, Arrays.asList(new Query(QueryType.TERM, getIdField(), ids)), new QueryOutput());
+		fetch(consumer, Arrays.asList(new Query(FieldType.TERM, getIdField(), ids)), new QueryOutput());
 	}
 
 	/**

@@ -30,11 +30,11 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
+import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.output.ResultsRemodeller;
 
 /**
@@ -114,7 +114,7 @@ public class ESSearchFlatten extends ESSearch {
 		List<Query> qs = new ArrayList<>();
 		List<Query> targetQs = new ArrayList<>();
 		for (Query q : queries) {
-			if (q.getType() == QueryType.NESTED && q.getFieldName().equals(topLevel)) {
+			if (q.getType() == FieldType.NESTED && q.getFieldName().equals(topLevel)) {
 				// promote top level
 				qs.addAll(Arrays.asList(q.getSubQueries()));
 			} else {
@@ -122,7 +122,7 @@ public class ESSearchFlatten extends ESSearch {
 				targetQs.add(q);
 			}
 		}
-		qs.add(new Query(QueryType.NESTED, target, targetQs.toArray(new Query[] {})));
+		qs.add(new Query(FieldType.NESTED, target, targetQs.toArray(new Query[] {})));
 		return qs;
 	}
 

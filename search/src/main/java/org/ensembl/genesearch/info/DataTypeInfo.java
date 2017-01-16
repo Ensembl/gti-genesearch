@@ -20,12 +20,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.ensembl.genesearch.impl.SearchType;
-import org.ensembl.genesearch.info.FieldInfo.FieldType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,8 +62,20 @@ public class DataTypeInfo {
 	private SearchType name;
 	private List<FieldInfo> fieldInfo = new ArrayList<>();
 	private List<SearchType> targets = new ArrayList<>();
+	private transient Map<String, FieldInfo> fieldsByNames;
 
 	public DataTypeInfo() {
+	}
+	
+	public DataTypeInfo(SearchType name) {
+		this.name = name;
+	}
+
+	private Map<String, FieldInfo> getFieldsByName() {
+		if (fieldsByNames == null) {
+			fieldsByNames = getFieldInfo().stream().collect(Collectors.toMap(FieldInfo::getName, Function.identity()));
+		}
+		return fieldsByNames;
 	}
 
 	public SearchType getName() {
@@ -94,23 +107,23 @@ public class DataTypeInfo {
 	}
 
 	public List<FieldInfo> getFacetableFields() {
-		return getFieldInfo().stream().filter(f -> f.isFacet()).collect(Collectors.toList());
+		return getFieldInfo().stream().filter(FieldInfo::isFacet).collect(Collectors.toList());
 	}
 
 	public List<FieldInfo> getDisplayFields() {
-		return getFieldInfo().stream().filter(f -> f.isDisplay()).collect(Collectors.toList());
+		return getFieldInfo().stream().filter(FieldInfo::isDisplay).collect(Collectors.toList());
 	}
 
 	public List<FieldInfo> getSearchFields() {
-		return getFieldInfo().stream().filter(f -> f.isSearch()).collect(Collectors.toList());
+		return getFieldInfo().stream().filter(FieldInfo::isSearch).collect(Collectors.toList());
 	}
 
 	public List<FieldInfo> getSortFields() {
-		return getFieldInfo().stream().filter(f -> f.isSort()).collect(Collectors.toList());
+		return getFieldInfo().stream().filter(FieldInfo::isSort).collect(Collectors.toList());
 	}
 
 	public FieldInfo getFieldByName(String name) {
-		return getFieldInfo().stream().filter(f -> name.equalsIgnoreCase(f.getName())).findAny().orElse(null);
+		return getFieldsByName().get(name);
 	}
 
 	public List<FieldInfo> getFieldByType(FieldType type) {
@@ -141,8 +154,31 @@ public class DataTypeInfo {
 		return fields;
 	}
 
+	/**
+	 * @return field set with type ID
+	 */
 	public Optional<FieldInfo> getIdField() {
 		return getFieldByType(FieldType.ID).stream().findFirst();
 	}
 
+	/**
+	 * fluent method for building a list of fields
+	 * @param info 
+	 * @return info being worked on
+	 */
+	public DataTypeInfo addField(FieldInfo info) {
+		this.getFieldInfo().add(info);
+		return this;
+	}
+	
+	/**
+	 * fluent method for building a list of fields
+	 * @param name
+	 * @param type
+	 * @return info being worked on
+	 */
+	public DataTypeInfo addField(String name, FieldType type) {
+		return this.addField(new FieldInfo(name,type));
+	}
+	
 }

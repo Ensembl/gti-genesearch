@@ -16,7 +16,13 @@
 
 package org.ensembl.gti.genesearch.services;
 
+import java.util.List;
+import java.util.Map;
+
+import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.query.DataTypeAwareQueryHandler;
+import org.ensembl.genesearch.query.QueryHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +35,30 @@ import org.slf4j.LoggerFactory;
 public abstract class SearchBasedService {
 
 	final Logger log = LoggerFactory.getLogger(this.getClass());
+	private QueryHandler handler;
 	protected final EndpointSearchProvider provider;
 
+	/**
+	 * @param provider provider for retrieving search
+	 */
 	public SearchBasedService(EndpointSearchProvider provider) {
 		this.provider = provider;
 	}
 
+	private QueryHandler getHandler() {
+		if (handler == null) {
+			this.handler = new DataTypeAwareQueryHandler(getSearch().getDataType());
+		}
+		return handler;
+	}
+
+	/**
+	 * @return instance of {@link Search} to use for query/fetch
+	 */
 	public abstract Search getSearch();
+
+	protected List<Query> parseQuery(Map<String, Object> q) {
+		return getHandler().parseQuery(q);
+	}
 
 }

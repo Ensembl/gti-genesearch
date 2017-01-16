@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
@@ -67,7 +68,7 @@ public class TranscriptSearchTest {
 		log.info("Fetching all genes from genome and flattening to transcript");
 		QueryOutput o = QueryOutput
 				.build("[\"biotype\",\"xrefs\",\"id\",{\"genes\":[\"name\",\"description\",\"genome\"]}]");
-		List<Query> q = Query
+		List<Query> q = QueryHandlerTest
 				.build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
 		QueryResult result = search.query(q, o, Collections.emptyList(), 0, 10, Collections.emptyList());
 		List<Map<String, Object>> transcripts = result.getResults();
@@ -85,7 +86,7 @@ public class TranscriptSearchTest {
 		log.info("Fetching all genes from genome and flattening to transcript");
 		QueryOutput o = QueryOutput
 				.build("[\"biotype\",\"id\",\"xrefs\",{\"genes\":[\"name\",\"description\",\"genome\"]}]");
-		List<Query> q = Query
+		List<Query> q = QueryHandlerTest
 				.build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
 		SearchResult result = search.fetch(q, o);
 		List<Map<String, Object>> transcripts = result.getResults();
@@ -104,7 +105,7 @@ public class TranscriptSearchTest {
 		log.info("Fetching all genes from genome and flattening to transcript, faceting by genome");
 		QueryOutput o = QueryOutput
 				.build("[\"biotype\",\"xrefs\",\"id\",{\"genes\":[\"name\",\"description\",\"genome\"]}]");
-		List<Query> q = Query
+		List<Query> q = QueryHandlerTest
 				.build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
 		List<String> f = Arrays.asList("genes.genome");
 		QueryResult result = search.query(q, o, f, 0, 10, Collections.emptyList());
@@ -122,7 +123,7 @@ public class TranscriptSearchTest {
 		log.info("Fetching all genes from genome and flattening to transcript, faceting by genome");
 		QueryOutput o = QueryOutput
 				.build("[\"biotype\",\"xrefs\",\"id\",{\"genes\":[\"name\",\"description\",\"genome\"]}]");
-		List<Query> q = Query
+		List<Query> q = QueryHandlerTest
 				.build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
 		List<String> f = Arrays.asList("biotype");
 		QueryResult result = search.query(q, o, f, 0, 10, Collections.emptyList());
@@ -139,7 +140,7 @@ public class TranscriptSearchTest {
 		log.info("Fetching all genes from genome and flattening to transcript, sort by seq_region_start");
 		QueryOutput o = QueryOutput
 				.build("[\"biotype\",\"start\",\"id\",{\"genes\":[\"name\",\"description\",\"genome\",\"start\"]}]");
-		List<Query> q = Query
+		List<Query> q = QueryHandlerTest
 				.build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
 		QueryResult result = search.query(q, o, Collections.emptyList(), 0, 10, Arrays.asList("-start"));
 		List<Map<String, Object>> transcripts = result.getResults();

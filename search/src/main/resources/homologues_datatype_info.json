@@ -595,7 +595,7 @@
 			"sort": "false",
 			"displayName": "Fission Yeast Phenotype Ontology",
 			"name": "FYPO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"facet": "true",
@@ -688,7 +688,7 @@
 			"sort": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "GO",
 			"name": "GO",
 			"display": "true",
@@ -1039,7 +1039,7 @@
 			"type": "TEXT"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "PSI-MOD, Post Translational Modification Ontology",
 			"name": "MOD",
 			"display": "true",
@@ -1174,7 +1174,7 @@
 			"displayName": "PANTHER"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "PomBase Ontology ID",
 			"name": "PBO",
 			"display": "true",
@@ -1261,7 +1261,7 @@
 			"display": "true",
 			"displayName": "PHI-base accession",
 			"name": "PHI",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"displayName": "PHI.condition",
@@ -1320,7 +1320,7 @@
 		{
 			"name": "PO",
 			"displayName": "Plant Structure Ontology",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"facet": "false",
 			"display": "true",
@@ -1736,7 +1736,7 @@
 			"sort": "false",
 			"display": "true",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "Sequence Ontology",
 			"name": "SO"
 		},
@@ -2310,7 +2310,7 @@
 		{
 			"displayName": "homologues",
 			"name": "homologues",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"facet": "false",
 			"display": "true",
@@ -2409,7 +2409,7 @@
 		{
 			"displayName": "phenotypes",
 			"name": "phenotypes",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"display": "true",
 			"facet": "false",
@@ -2555,7 +2555,7 @@
 			"sort": "false",
 			"display": "true",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "transcripts",
 			"name": "transcripts"
 		},
@@ -2897,7 +2897,7 @@
 			"facet": "false",
 			"display": "true",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.GO",
 			"displayName": "GO"
 		},
@@ -3178,7 +3178,7 @@
 			"sort": "false",
 			"displayName": "PHI-base accession",
 			"name": "transcripts.PHI",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"facet": "true",
@@ -3226,7 +3226,7 @@
 			"type": "TEXT"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.PO",
 			"displayName": "Plant Structure Ontology",
 			"sort": "false",
@@ -3860,7 +3860,7 @@
 			"sort": "false",
 			"display": "true",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "transcripts.translations",
 			"name": "transcripts.translations"
 		},
@@ -3993,7 +3993,7 @@
 		{
 			"name": "transcripts.translations.FYPO",
 			"displayName": "Fission Yeast Phenotype Ontology",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"display": "true",
 			"facet": "false",
@@ -4051,7 +4051,7 @@
 			"sort": "false",
 			"displayName": "GO",
 			"name": "transcripts.translations.GO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"type": "TEXT",
@@ -4186,7 +4186,7 @@
 			"sort": "false",
 			"name": "transcripts.translations.MOD",
 			"displayName": "PSI-MOD, Post Translational Modification Ontology",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"display": "true",
@@ -4240,7 +4240,7 @@
 			"display": "true",
 			"displayName": "PomBase Ontology ID",
 			"name": "transcripts.translations.PBO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"search": "true",
@@ -4288,7 +4288,7 @@
 			"displayName": "PDBsum"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.PHI",
 			"displayName": "PHI-base accession",
 			"sort": "false",
@@ -4342,7 +4342,7 @@
 			"search": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.PO",
 			"displayName": "Plant Structure Ontology",
 			"sort": "false",
@@ -4447,7 +4447,7 @@
 			"display": "true",
 			"displayName": "Sequence Ontology",
 			"name": "transcripts.translations.SO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"type": "TEXT",
@@ -4650,7 +4650,7 @@
 		{
 			"name": "transcripts.translations.protein_features",
 			"displayName": "transcripts.translations.protein_features",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"display": "true",
 			"facet": "false",
@@ -4738,7 +4738,7 @@
 			"sort": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.xrefs",
 			"displayName": "transcripts.translations.xrefs",
 			"sort": "false",
@@ -4769,7 +4769,7 @@
 			"display": "true",
 			"sort": "false",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "transcripts.translations.xrefs.linkage_types",
 			"name": "transcripts.translations.xrefs.linkage_types"
 		},
@@ -4787,7 +4787,7 @@
 			"sort": "false",
 			"display": "true",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.xrefs.linkage_types.source",
 			"displayName": "transcripts.translations.xrefs.linkage_types.source"
 		},
@@ -4861,7 +4861,7 @@
 			"display": "true",
 			"displayName": "transcripts.xrefs",
 			"name": "transcripts.xrefs",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"facet": "true",
@@ -4884,7 +4884,7 @@
 		{
 			"name": "transcripts.xrefs.linkage_types",
 			"displayName": "transcripts.xrefs.linkage_types",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"sort": "false",
 			"facet": "false",
@@ -4906,7 +4906,7 @@
 			"sort": "false",
 			"name": "transcripts.xrefs.linkage_types.source",
 			"displayName": "transcripts.xrefs.linkage_types.source",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"search": "true",
@@ -5021,7 +5021,7 @@
 			"facet": "false",
 			"sort": "false",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "xrefs",
 			"displayName": "xrefs"
 		},
@@ -5050,7 +5050,7 @@
 			"sort": "false",
 			"displayName": "xrefs.linkage_types",
 			"name": "xrefs.linkage_types",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"displayName": "xrefs.linkage_types.evidence",
@@ -5062,7 +5062,7 @@
 			"display": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "xrefs.linkage_types.source",
 			"name": "xrefs.linkage_types.source",
 			"sort": "false",
@@ -5263,7 +5263,7 @@
 		{
 			"name": "transcripts.translations.FYPO",
 			"displayName": "Fission Yeast Phenotype Ontology",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"display": "true",
 			"facet": "false",
@@ -5321,7 +5321,7 @@
 			"sort": "false",
 			"displayName": "GO",
 			"name": "transcripts.translations.GO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"type": "TEXT",
@@ -5456,7 +5456,7 @@
 			"sort": "false",
 			"name": "transcripts.translations.MOD",
 			"displayName": "PSI-MOD, Post Translational Modification Ontology",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"display": "true",
@@ -5510,7 +5510,7 @@
 			"display": "true",
 			"displayName": "PomBase Ontology ID",
 			"name": "transcripts.translations.PBO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"search": "true",
@@ -5558,7 +5558,7 @@
 			"displayName": "PDBsum"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.PHI",
 			"displayName": "PHI-base accession",
 			"sort": "false",
@@ -5612,7 +5612,7 @@
 			"search": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.PO",
 			"displayName": "Plant Structure Ontology",
 			"sort": "false",
@@ -5717,7 +5717,7 @@
 			"display": "true",
 			"displayName": "Sequence Ontology",
 			"name": "transcripts.translations.SO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"type": "TEXT",
@@ -5920,7 +5920,7 @@
 		{
 			"name": "transcripts.translations.protein_features",
 			"displayName": "transcripts.translations.protein_features",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"display": "true",
 			"facet": "false",
@@ -6008,7 +6008,7 @@
 			"sort": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.xrefs",
 			"displayName": "transcripts.translations.xrefs",
 			"sort": "false",
@@ -6039,7 +6039,7 @@
 			"display": "true",
 			"sort": "false",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "transcripts.translations.xrefs.linkage_types",
 			"name": "transcripts.translations.xrefs.linkage_types"
 		},
@@ -6057,7 +6057,7 @@
 			"sort": "false",
 			"display": "true",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.xrefs.linkage_types.source",
 			"displayName": "transcripts.translations.xrefs.linkage_types.source"
 		},
@@ -6245,7 +6245,7 @@
 		{
 			"name": "transcripts.translations.FYPO",
 			"displayName": "Fission Yeast Phenotype Ontology",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"display": "true",
 			"facet": "false",
@@ -6303,7 +6303,7 @@
 			"sort": "false",
 			"displayName": "GO",
 			"name": "transcripts.translations.GO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"type": "TEXT",
@@ -6438,7 +6438,7 @@
 			"sort": "false",
 			"name": "transcripts.translations.MOD",
 			"displayName": "PSI-MOD, Post Translational Modification Ontology",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"display": "true",
@@ -6492,7 +6492,7 @@
 			"display": "true",
 			"displayName": "PomBase Ontology ID",
 			"name": "transcripts.translations.PBO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"search": "true",
@@ -6540,7 +6540,7 @@
 			"displayName": "PDBsum"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.PHI",
 			"displayName": "PHI-base accession",
 			"sort": "false",
@@ -6594,7 +6594,7 @@
 			"search": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.PO",
 			"displayName": "Plant Structure Ontology",
 			"sort": "false",
@@ -6699,7 +6699,7 @@
 			"display": "true",
 			"displayName": "Sequence Ontology",
 			"name": "transcripts.translations.SO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"type": "TEXT",
@@ -6902,7 +6902,7 @@
 		{
 			"name": "transcripts.translations.protein_features",
 			"displayName": "transcripts.translations.protein_features",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"display": "true",
 			"facet": "false",
@@ -6990,7 +6990,7 @@
 			"sort": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.xrefs",
 			"displayName": "transcripts.translations.xrefs",
 			"sort": "false",
@@ -7021,7 +7021,7 @@
 			"display": "true",
 			"sort": "false",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "transcripts.translations.xrefs.linkage_types",
 			"name": "transcripts.translations.xrefs.linkage_types"
 		},
@@ -7039,7 +7039,7 @@
 			"sort": "false",
 			"display": "true",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "transcripts.translations.xrefs.linkage_types.source",
 			"displayName": "transcripts.translations.xrefs.linkage_types.source"
 		},
@@ -7113,7 +7113,7 @@
 			"display": "true",
 			"displayName": "transcripts.xrefs",
 			"name": "transcripts.xrefs",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"facet": "true",
@@ -7136,7 +7136,7 @@
 		{
 			"name": "transcripts.xrefs.linkage_types",
 			"displayName": "transcripts.xrefs.linkage_types",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"sort": "false",
 			"facet": "false",
@@ -7158,7 +7158,7 @@
 			"sort": "false",
 			"name": "transcripts.xrefs.linkage_types.source",
 			"displayName": "transcripts.xrefs.linkage_types.source",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"search": "true",

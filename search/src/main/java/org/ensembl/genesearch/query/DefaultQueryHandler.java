@@ -28,7 +28,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.info.FieldType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,6 +42,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 public class DefaultQueryHandler implements QueryHandler {
+	
+	protected Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("([<>]=?)?-?[0-9.]+(--?[0-9.]+)?");
 
@@ -63,36 +67,39 @@ public class DefaultQueryHandler implements QueryHandler {
 		queryObj = mergeQueries(queryObj);
 		List<Query> queries = new ArrayList<>();
 		for (Entry<String, Object> query : queryObj.entrySet()) {
-			String key = query.getKey();
-			// possibly try another handler if we want to do something special
-			// if no other handler, use this one
-			Object value = query.getValue();
-			Class<? extends Object> clazz = value.getClass();
-
-			if ("location".equals(key)) {
-				if (List.class.isAssignableFrom(clazz)) {
-					List<String> vals = ((List<Object>) value).stream().map(o -> String.valueOf(o))
-							.collect(Collectors.<String> toList());
-					queries.add(new Query(QueryType.LOCATION, key, vals));
-				} else {
-					queries.add(new Query(QueryType.LOCATION, key, String.valueOf(value)));
-				}
-			} else if (Map.class.isAssignableFrom(clazz)) {
-				List<Query> subQs = parseQuery((Map<String, Object>) value);
-				queries.add(new Query(QueryType.NESTED, key, subQs.toArray(new Query[subQs.size()])));
+			FieldType type = getFieldType(query.getKey(), query.getValue());
+			if(type == FieldType.NESTED) {
+				List<Query> subQs = parseQuery((Map<String, Object>) query.getValue());
+				queries.add(new Query(type, query.getKey(), subQs.toArray(new Query[subQs.size()])));
+			} else if(isList(query.getValue())) {
+				List<String> vals = ((List<Object>) query.getValue()).stream().map(String::valueOf)
+						.collect(Collectors.<String> toList());
+				queries.add(new Query(type, query.getKey(), vals));
 			} else {
-				if (List.class.isAssignableFrom(clazz)) {
-					List<String> vals = ((List<Object>) value).stream().map(o -> String.valueOf(o))
-							.collect(Collectors.<String> toList());
-					queries.add(new Query(QueryType.TERM, key, vals));
-				} else if (NUMBER_PATTERN.matcher(String.valueOf(value)).matches()) {
-					queries.add(new Query(QueryType.NUMBER, key, String.valueOf(value)));
-				} else {
-					queries.add(new Query(QueryType.TERM, key, String.valueOf(value)));
-				}
+				queries.add(new Query(type, query.getKey(), String.valueOf(query.getValue())));
 			}
 		}
 		return queries;
+	}
+	
+	protected FieldType getFieldType(String key, Object value) {
+		if ("location".equals(key)) {
+			return FieldType.LOCATION;
+		} else if (Map.class.isAssignableFrom(value.getClass())) {
+			return FieldType.NESTED;
+		} else {
+			if (isList(value)) {
+				return FieldType.TERM;
+			} else if (NUMBER_PATTERN.matcher(String.valueOf(value)).matches()) {
+				return FieldType.NUMBER;
+			} else {
+				return FieldType.TERM;
+			}
+		}
+	}
+	
+	protected boolean isList(Object value) {
+		return List.class.isAssignableFrom(value.getClass());
 	}
 
 	/**

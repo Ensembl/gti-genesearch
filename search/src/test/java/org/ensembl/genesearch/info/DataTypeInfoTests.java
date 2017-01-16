@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.ensembl.genesearch.info.FieldInfo.FieldType;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.Test;
 

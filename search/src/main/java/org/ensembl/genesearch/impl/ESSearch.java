@@ -49,12 +49,12 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.sort.SortParseElement;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
+import org.ensembl.genesearch.info.FieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +116,7 @@ public class ESSearch implements Search {
 		// if we have more terms than entries in our scroll, do it piecemeal
 		if (queries.size() == 1) {
 			Query query = queries.get(0);
-			if (query.getType() == QueryType.TERM && query.getValues().length > queryScrollSize) {
+			if (query.getType() == FieldType.TERM && query.getValues().length > queryScrollSize) {
 				for (List<String> terms : ListUtils.partition(Arrays.asList(query.getValues()), queryScrollSize)) {
 					log.info("Querying " + terms.size() + "/" + query.getValues().length);
 					watch.start();

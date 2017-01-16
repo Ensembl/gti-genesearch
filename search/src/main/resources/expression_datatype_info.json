@@ -17,7 +17,7 @@
 		{
 			"displayName": "bioentityIdentifier",
 			"name": "bioentityIdentifier",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -26,7 +26,7 @@
 		{
 			"displayName": "identifierSearch",
 			"name": "identifierSearch",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -35,7 +35,7 @@
 		{
 			"displayName": "keyword_symbol",
 			"name": "keyword_symbol",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -44,7 +44,7 @@
 		{
 			"displayName": "keyword_*",
 			"name": "keyword_*",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -53,7 +53,7 @@
 		{
 			"displayName": "species",
 			"name": "species",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -62,7 +62,7 @@
 		{
 			"displayName": "kingdom",
 			"name": "kingdom",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -71,7 +71,7 @@
 		{
 			"displayName": "experimentAccession",
 			"name": "experimentAccession",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -80,7 +80,7 @@
 		{
 			"displayName": "experimentType",
 			"name": "experimentType",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -89,7 +89,7 @@
 		{
 			"displayName": "defaultQueryFactorType",
 			"name": "defaultQueryFactorType",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -98,7 +98,7 @@
 		{
 			"displayName": "conditionsSearch",
 			"name": "conditionsSearch",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -107,7 +107,7 @@
 		{
 			"displayName": "assayGroupId",
 			"name": "assayGroupId",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -125,7 +125,7 @@
 		{
 			"displayName": "contrastId",
 			"name": "contrastId",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -134,7 +134,7 @@
 		{
 			"displayName": "factors",
 			"name": "factors",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -143,7 +143,7 @@
 		{
 			"displayName": "numReplicates",
 			"name": "numReplicates",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",
@@ -179,7 +179,7 @@
 		{
 			"displayName": "regulation",
 			"name": "regulation",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"sort": "true",
 			"facet": "false",

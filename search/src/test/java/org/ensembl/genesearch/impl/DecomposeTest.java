@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.impl.JoinMergeSearch.SubSearchParams;
 import org.ensembl.genesearch.info.DataTypeInfo;
@@ -60,7 +61,7 @@ public class DecomposeTest {
 	@Test
 	public void decomposeEmpty() {
 		Pair<SubSearchParams, SubSearchParams> decomposeQueryFields = geneSearch
-				.decomposeQueryFields(Query.build(StringUtils.EMPTY), QueryOutput.build(StringUtils.EMPTY));
+				.decomposeQueryFields(QueryHandlerTest.build(StringUtils.EMPTY), QueryOutput.build(StringUtils.EMPTY));
 		SubSearchParams from = decomposeQueryFields.getLeft();
 		assertTrue("From name set", from.name.isPresent());
 		SubSearchParams to = decomposeQueryFields.getRight();
@@ -70,7 +71,7 @@ public class DecomposeTest {
 	@Test
 	public void decomposeQuerySimple() {
 		Pair<SubSearchParams, SubSearchParams> decomposeQueryFields = geneSearch.decomposeQueryFields(
-				Query.build("{\"name\":\"bob\",\"genome\":\"frank\"}"), QueryOutput.build(StringUtils.EMPTY));
+				QueryHandlerTest.build("{\"name\":\"bob\",\"genome\":\"frank\"}"), QueryOutput.build(StringUtils.EMPTY));
 		SubSearchParams from = decomposeQueryFields.getLeft();
 		assertTrue("From name set", from.name.isPresent());
 		assertTrue("Query contains name", from.queries.stream().anyMatch(f -> f.getFieldName().equals("name")));
@@ -81,7 +82,7 @@ public class DecomposeTest {
 
 	@Test
 	public void decomposeFieldSimple() {
-		List<Query> q = Query.build(StringUtils.EMPTY);
+		List<Query> q = QueryHandlerTest.build(StringUtils.EMPTY);
 		QueryOutput o = QueryOutput.build("[\"name\",\"genome\"]");
 		Pair<SubSearchParams, SubSearchParams> decomposeQueryFields = geneSearch.decomposeQueryFields(q, o);
 		SubSearchParams from = decomposeQueryFields.getLeft();
@@ -94,7 +95,7 @@ public class DecomposeTest {
 
 	@Test
 	public void decomposeQueryFieldSimple() {
-		List<Query> q = Query.build("{\"name\":\"bob\",\"genome\":\"frank\"}");
+		List<Query> q = QueryHandlerTest.build("{\"name\":\"bob\",\"genome\":\"frank\"}");
 		QueryOutput o = QueryOutput.build("[\"name\",\"genome\"]");
 		Pair<SubSearchParams, SubSearchParams> decomposeQueryFields = geneSearch.decomposeQueryFields(q, o);
 		SubSearchParams from = decomposeQueryFields.getLeft();
@@ -109,7 +110,7 @@ public class DecomposeTest {
 
 	@Test
 	public void decomposeFieldJoin() {
-		List<Query> q = Query.build(StringUtils.EMPTY);
+		List<Query> q = QueryHandlerTest.build(StringUtils.EMPTY);
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"display_name\",\"division\"]}]");
 		Pair<SubSearchParams, SubSearchParams> decomposeQueryFields = geneSearch.decomposeQueryFields(q, o);
 		SubSearchParams from = decomposeQueryFields.getLeft();
@@ -131,7 +132,7 @@ public class DecomposeTest {
 
 	@Test
 	public void decomposeQueryFieldJoin() {
-		List<Query> q = Query.build("{\"name\":\"bob\",\"genome\":\"frank\",\"genomes\":{\"display_name\":\"eric\"}}");
+		List<Query> q = QueryHandlerTest.build("{\"name\":\"bob\",\"genome\":\"frank\",\"genomes\":{\"display_name\":\"eric\"}}");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"display_name\",\"division\"]}]");
 		Pair<SubSearchParams, SubSearchParams> decomposeQueryFields = geneSearch.decomposeQueryFields(q, o);
 		SubSearchParams from = decomposeQueryFields.getLeft();

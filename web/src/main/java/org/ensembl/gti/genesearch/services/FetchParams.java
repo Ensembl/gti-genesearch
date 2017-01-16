@@ -16,6 +16,7 @@
 
 package org.ensembl.gti.genesearch.services;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -25,14 +26,13 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.Search;
-import org.ensembl.genesearch.query.DefaultQueryHandler;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -57,7 +57,7 @@ public class FetchParams {
 	private String contentType;
 	private QueryOutput fields = new QueryOutput();
 	private String fileName = "genes";
-	private List<Query> queries = Collections.emptyList();
+	private Map<String, Object> queries = Collections.emptyMap();
 	private boolean array = false;
 
 	public String getAccept() {
@@ -76,7 +76,7 @@ public class FetchParams {
 		return fileName;
 	}
 
-	public List<Query> getQueries() {
+	public Map<String, Object> getQueries() {
 		return queries;
 	}
 
@@ -106,34 +106,36 @@ public class FetchParams {
 	@DefaultValue("id,name,genome,description")
 	@JsonIgnore
 	public void setFields(String fields) {
-		if (fields.charAt(0)=='[') {
+		if (fields.charAt(0) == '[') {
 			this.fields = QueryOutput.build(fields);
 		} else {
 			this.fields = QueryOutput.build(stringToList(fields));
 		}
 	}
-	
+
 	@QueryParam("filename")
 	@DefaultValue("genes")
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
 
-	@JsonIgnore
-	public void setQueries(List<Query> queries) {
-		this.queries = queries;
-	}
-
 	@JsonProperty("query")
-	public void setQuery(Map<String, Object> query) {
-		setQueries(new DefaultQueryHandler().parseQuery(query));
+	public void setQueries(Map<String, Object> queries) {
+		this.queries = queries;
 	}
 
 	@QueryParam("query")
 	@DefaultValue("")
 	@JsonIgnore
 	public void setQuery(String query) {
-		setQueries(new DefaultQueryHandler().parseQuery(query));
+		try {
+			if (!StringUtils.isEmpty(query)) {
+				setQueries(new ObjectMapper().readValue(query, new TypeReference<Map<String, Object>>() {
+				}));
+			}
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Could not parse query " + query, e);
+		}
 	}
 
 	@Override

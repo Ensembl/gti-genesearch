@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 
 import org.apache.solr.client.solrj.SolrQuery;
-import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryHandlerTest;
 import org.junit.Test;
 
 /**
@@ -35,7 +35,7 @@ public class SolrQueryBuilderTest {
 	 */
 	@Test
 	public void testSimple() {
-		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":\"X\",\"B\":\"Y\"}"));
+		SolrQuery q = SolrQueryBuilder.build(QueryHandlerTest.build("{\"A\":\"X\",\"B\":\"Y\"}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
 		assertEquals("Checking " + qStr + " has correct syntax", "A:X AND B:Y", qStr);
 	}
@@ -45,7 +45,7 @@ public class SolrQueryBuilderTest {
 	 */
 	@Test
 	public void testIn() {
-		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":[\"X\",\"Y\",\"Z\"]}"));
+		SolrQuery q = SolrQueryBuilder.build(QueryHandlerTest.build("{\"A\":[\"X\",\"Y\",\"Z\"]}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
 		assertEquals("Checking " + qStr + " has correct IN syntax", "A:(X OR Y OR Z)", qStr);
 	}
@@ -55,7 +55,7 @@ public class SolrQueryBuilderTest {
 	 */
 	@Test
 	public void testCompound() {
-		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":[\"X\",\"Y\",\"Z\"], \"B\":\"BANANA\"}"));
+		SolrQuery q = SolrQueryBuilder.build(QueryHandlerTest.build("{\"A\":[\"X\",\"Y\",\"Z\"], \"B\":\"BANANA\"}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
 		assertEquals("Checking " + qStr + " has correct IN syntax", "A:(X OR Y OR Z) AND B:BANANA", qStr);
 	}
@@ -101,7 +101,7 @@ public class SolrQueryBuilderTest {
 	 */
 	@Test
 	public void testEq() {
-		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":\"0.5\"}"));
+		SolrQuery q = SolrQueryBuilder.build(QueryHandlerTest.build("{\"A\":\"0.5\"}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
 		assertEquals("Eq syntax correct",qStr,"A:0.5");
 
@@ -112,7 +112,7 @@ public class SolrQueryBuilderTest {
 	 */
 	@Test
 	public void testGt() {
-		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":\">0.5\"}"));
+		SolrQuery q = SolrQueryBuilder.build(QueryHandlerTest.build("{\"A\":\">0.5\"}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
 		assertEquals("Gt syntax correct",qStr,"A:{0.5 TO *}");
 	}
@@ -122,7 +122,7 @@ public class SolrQueryBuilderTest {
 	 */
 	@Test
 	public void testGte() {
-		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":\">=0.5\"}"));
+		SolrQuery q = SolrQueryBuilder.build(QueryHandlerTest.build("{\"A\":\">=0.5\"}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
 		assertEquals("Gt syntax correct",qStr,"A:[0.5 TO *]");
 	}
@@ -131,7 +131,7 @@ public class SolrQueryBuilderTest {
 	 */
 	@Test
 	public void testLt() {
-		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":\"<0.5\"}"));
+		SolrQuery q = SolrQueryBuilder.build(QueryHandlerTest.build("{\"A\":\"<0.5\"}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
 		assertEquals("Lt syntax correct",qStr,"A:{* TO 0.5}");
 	}
@@ -141,7 +141,7 @@ public class SolrQueryBuilderTest {
 	 */
 	@Test
 	public void testLte() {
-		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":\"<=0.5\"}"));
+		SolrQuery q = SolrQueryBuilder.build(QueryHandlerTest.build("{\"A\":\"<=0.5\"}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
 		assertEquals("Lt syntax correct",qStr,"A:[* TO 0.5]");
 	}
@@ -151,7 +151,7 @@ public class SolrQueryBuilderTest {
 	 */
 	@Test
 	public void testRange() {
-		SolrQuery q = SolrQueryBuilder.build(Query.build("{\"A\":\"1-10\"}"));
+		SolrQuery q = SolrQueryBuilder.build(QueryHandlerTest.build("{\"A\":\"1-10\"}"));
 		String qStr = q.get(SolrQueryBuilder.QUERY_PARAM);
 		assertEquals("Range syntax correct",qStr,"A:[1 TO 10]");
 	}

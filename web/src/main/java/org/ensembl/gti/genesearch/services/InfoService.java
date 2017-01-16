@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
-import org.ensembl.genesearch.info.FieldInfo.FieldType;
+import org.ensembl.genesearch.info.FieldType;
 import org.glassfish.jersey.server.JSONP;
 
 @Produces({ MediaType.APPLICATION_JSON, Application.APPLICATION_X_JAVASCRIPT })

@@ -16,6 +16,14 @@
 
 package org.ensembl.genesearch.impl;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.ensembl.genesearch.Query.GT;
+import static org.ensembl.genesearch.Query.GTE;
+import static org.ensembl.genesearch.Query.LT;
+import static org.ensembl.genesearch.Query.LTE;
+import static org.ensembl.genesearch.Query.RANGE;
+import static org.ensembl.genesearch.Query.SINGLE_NUMBER;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +31,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.ensembl.genesearch.Query;
 
@@ -52,39 +59,14 @@ public class MongoSearchBuilder {
 		for (Query q : queries) {
 			switch (q.getType()) {
 			case NESTED:
-				Matcher m = LIST_PATTERN.matcher(q.getFieldName());
-				if (m.matches()) {
-					// need to merge the existing elems
-					String k = m.group(1);
-					Document elemMatch = (Document) doc.get(k);
-					if (elemMatch == null) {
-						elemMatch = new Document(ELEM_MATCH, buildQuery(Arrays.asList(q.getSubQueries())));
-						doc.append(k, elemMatch);
-					} else {
-						Document subElem = (Document) elemMatch.get(ELEM_MATCH);
-						for (String subK : buildQuery(Arrays.asList(q.getSubQueries())).keySet()) {
-							elemMatch.append(subK, subElem.get(subK));
-						}
-					}
-				} else {
-					Document subQ = buildQuery(Arrays.asList(q.getSubQueries()));
-					for (String k : subQ.keySet()) {
-						String newK = q.getFieldName() + "." + k;
-							appendOrAdd(doc, newK, subQ.get(k));
-					}
-				}
+				processNested(q, doc);
 				break;
+			case NUMBER:
+				processNumber(q, doc);
+				break;
+			case TEXT:
 			case TERM:
-				if (q.getValues().length == 1) {
-					String val = q.getValues()[0];
-					if (StringUtils.isNumeric(val)) {
-						doc.append(q.getFieldName(), Double.valueOf(val));
-					} else {
-						doc.append(q.getFieldName(), val);
-					}
-				} else {
-					doc.append(q.getFieldName(), new Document("$in", Arrays.asList(q.getValues())));
-				}
+				processTerm(q, doc);
 				break;
 			default:
 				throw new UnsupportedOperationException("No support for type " + q.getType());
@@ -93,13 +75,91 @@ public class MongoSearchBuilder {
 		return doc;
 	}
 
+	/**
+	 * @param q
+	 * @param doc
+	 */
+	protected static void processTerm(Query q, Document doc) {
+		if (q.getValues().length == 1) {
+			String val = q.getValues()[0];
+			doc.append(q.getFieldName(), val);
+		} else {
+			doc.append(q.getFieldName(), new Document("$in", Arrays.asList(q.getValues())));
+		}
+	}
+
+	/**
+	 * @param q
+	 * @param doc
+	 */
+	protected static void processNested(Query q, Document doc) {
+		Matcher m = LIST_PATTERN.matcher(q.getFieldName());
+		if (m.matches()) {
+			// need to merge the existing elems
+			String k = m.group(1);
+			Document elemMatch = (Document) doc.get(k);
+			if (elemMatch == null) {
+				elemMatch = new Document(ELEM_MATCH, buildQuery(Arrays.asList(q.getSubQueries())));
+				doc.append(k, elemMatch);
+			} else {
+				Document subElem = (Document) elemMatch.get(ELEM_MATCH);
+				for (String subK : buildQuery(Arrays.asList(q.getSubQueries())).keySet()) {
+					elemMatch.append(subK, subElem.get(subK));
+				}
+			}
+		} else {
+			Document subQ = buildQuery(Arrays.asList(q.getSubQueries()));
+			for (String k : subQ.keySet()) {
+				String newK = q.getFieldName() + "." + k;
+				appendOrAdd(doc, newK, subQ.get(k));
+			}
+		}
+	}
+
+	protected static void processNumber(Query q, Document doc) {
+		String value = q.getValues()[0];
+		Matcher m = SINGLE_NUMBER.matcher(value);
+		if (m.matches()) {
+			if (m.groupCount() == 1 || isEmpty(m.group(1))) {
+				// EQ
+				doc.append(q.getFieldName(), Double.valueOf(value));
+			} else {
+				String op = m.group(1);
+				switch (op) {
+				case GT:
+					doc.append(q.getFieldName(), new Document("$gt", Double.valueOf(m.group(2))));
+					break;
+				case GTE:
+					doc.append(q.getFieldName(), new Document("$gte", Double.valueOf(m.group(2))));
+					break;
+				case LT:
+					doc.append(q.getFieldName(), new Document("$lt", Double.valueOf(m.group(2))));
+					break;
+				case LTE:
+					doc.append(q.getFieldName(), new Document("$lte", Double.valueOf(m.group(2))));
+					break;
+				default:
+					throw new UnsupportedOperationException("Unsupported numeric operator " + op);
+				}
+			}
+		} else {
+			m = RANGE.matcher(value);
+			if (m.matches()) {
+				doc.append(q.getFieldName(),
+						new Document().append("$gte", Double.valueOf(m.group(1))).append("$lte", Double.valueOf(m.group(2))));
+			} else {
+				throw new UnsupportedOperationException("Cannot parse numeric query " + value);
+			}
+		}
+	}
+
 	private static void appendOrAdd(Document doc, String key, Object value) {
 		if (doc.containsKey(key)) {
 			Object o = doc.get(key);
 			if (Document.class.isAssignableFrom(o.getClass())) {
-				Document valD = (Document)value;
-				for(String k: valD.keySet()) {
-					appendOrAdd((Document)o, k, valD.get(k));
+				Document valD = (Document) value;
+				for (String k : valD.keySet()) {
+					appendOrAdd((Document) o, k, valD.get(k));
 				}
 			} else if (Collection.class.isAssignableFrom(o.getClass())) {
 				((Collection) o).add(value);

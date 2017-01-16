@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
@@ -95,7 +96,7 @@ public class GeneSearchTest {
 	public void queryJoin() {
 		log.info("Querying for all genes joining to genomes");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
-		QueryResult result = geneSearch.query(Query.build("{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}"), o,
+		QueryResult result = geneSearch.query(QueryHandlerTest.build("{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}"), o,
 				Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 598, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
@@ -115,7 +116,7 @@ public class GeneSearchTest {
 	public void queryJoinQueryFrom() {
 		log.info("Querying for all genes joining to genomes");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
-		List<Query> q = Query.build("{\"id\":\"NEQ043\"}");
+		List<Query> q = QueryHandlerTest.build("{\"id\":\"NEQ043\"}");
 		QueryResult result = geneSearch.query(q, o, Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 1, result.getResultCount());
 		assertEquals("Fetched hits", 1, result.getResults().size());
@@ -135,7 +136,7 @@ public class GeneSearchTest {
 	public void queryJoinQueryTo() {
 		log.info("Querying for all genes joining to genomes");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
-		List<Query> q = Query.build("{\"id\":\"NEQ043\",\"genomes\":{\"division\":\"EnsemblBacteria\"}}");
+		List<Query> q = QueryHandlerTest.build("{\"id\":\"NEQ043\",\"genomes\":{\"division\":\"EnsemblBacteria\"}}");
 		QueryResult result = geneSearch.query(q, o, Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 1, result.getResultCount());
 		assertEquals("Fetched hits", 1, result.getResults().size());
@@ -155,7 +156,7 @@ public class GeneSearchTest {
 	public void queryJoinQueryToNone() {
 		log.info("Querying for all genes joining to genomes");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
-		List<Query> q = Query.build("{\"id\":\"NEQ043\",\"genomes\":{\"division\":\"EnsemblFruit\"}}");
+		List<Query> q = QueryHandlerTest.build("{\"id\":\"NEQ043\",\"genomes\":{\"division\":\"EnsemblFruit\"}}");
 		QueryResult result = geneSearch.query(q, o, Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 1, result.getResultCount());
 		assertEquals("Fetched hits", 1, result.getResults().size());
@@ -170,7 +171,7 @@ public class GeneSearchTest {
 	@Test
 	public void fetchSimple() {
 		log.info("Fetching for all genes");
-		SearchResult result = geneSearch.fetch(Query.build("{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}"),
+		SearchResult result = geneSearch.fetch(QueryHandlerTest.build("{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}"),
 				QueryOutput.build(Arrays.asList("id")));
 		assertEquals("Total hits", 598, result.getResults().size());
 		assertTrue("id found", result.getResults().get(0).containsKey("id"));
@@ -181,7 +182,7 @@ public class GeneSearchTest {
 	public void fetchJoin() {
 		log.info("Querying for all genes joining to genomes");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
-		SearchResult result = geneSearch.fetch(Query.build("{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}"), o);
+		SearchResult result = geneSearch.fetch(QueryHandlerTest.build("{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}"), o);
 		assertEquals("Fetched hits", 598, result.getResults().size());
 		assertTrue("id found", result.getResults().stream().anyMatch(f -> f.containsKey("id")));
 		assertTrue("description found", result.getResults().stream().anyMatch(f -> f.containsKey("description")));
@@ -198,7 +199,7 @@ public class GeneSearchTest {
 	public void fetchJoinQueryFrom() {
 		log.info("Querying for all genes joining to genomes");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
-		List<Query> q = Query.build("{\"id\":\"NEQ043\"}");
+		List<Query> q = QueryHandlerTest.build("{\"id\":\"NEQ043\"}");
 		SearchResult result = geneSearch.fetch(q, o);
 		assertEquals("Fetched hits", 1, result.getResults().size());
 		assertTrue("id found", result.getResults().stream().anyMatch(f -> f.containsKey("id")));
@@ -216,7 +217,7 @@ public class GeneSearchTest {
 	public void fetchJoinQueryTo() {
 		log.info("Querying for all genes joining to genomes");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
-		List<Query> q = Query.build("{\"id\":\"NEQ043\",\"genomes\":{\"division\":\"EnsemblBacteria\"}}");
+		List<Query> q = QueryHandlerTest.build("{\"id\":\"NEQ043\",\"genomes\":{\"division\":\"EnsemblBacteria\"}}");
 		SearchResult result = geneSearch.fetch(q, o);
 		assertEquals("Fetched hits", 1, result.getResults().size());
 		assertTrue("id found", result.getResults().stream().anyMatch(f -> f.containsKey("id")));
@@ -234,7 +235,7 @@ public class GeneSearchTest {
 	public void fetchJoinQueryToNone() {
 		log.info("Querying for all genes joining to genomes");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"name\",\"division\"]}]");
-		List<Query> q = Query.build("{\"id\":\"NEQ043\",\"genomes\":{\"division\":\"EnsemblFruit\"}}");
+		List<Query> q = QueryHandlerTest.build("{\"id\":\"NEQ043\",\"genomes\":{\"division\":\"EnsemblFruit\"}}");
 		SearchResult result = geneSearch.fetch(q, o);
 		assertEquals("Fetched hits", 1, result.getResults().size());
 		assertTrue("id found", result.getResults().stream().anyMatch(f -> f.containsKey("id")));
@@ -249,7 +250,7 @@ public class GeneSearchTest {
 		log.info("Querying for all genes joining to genomes");
 		QueryOutput o = QueryOutput
 				.build("[\"name\",\"description\",{\"homologues\":[\"name\",\"genome\",\"seq_region_name\"]}]");
-		List<Query> q = Query.build("{\"id\":\"NEQ519\"}");
+		List<Query> q = QueryHandlerTest.build("{\"id\":\"NEQ519\"}");
 		QueryResult result = geneSearch.query(q, o, Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 1, result.getResultCount());
 		assertEquals("Fetched hits", 1, result.getResults().size());
@@ -270,7 +271,7 @@ public class GeneSearchTest {
 	public void queryInnerJoinGenomes() {
 		log.info("Querying for all genes inner join to genomes (should be N. equitans only)");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"division\"]}]");
-		List<Query> q = Query.build("{\"biotype\":\"protein_coding\", \"genomes\":{\"inner\":\"1\"}}");
+		List<Query> q = QueryHandlerTest.build("{\"biotype\":\"protein_coding\", \"genomes\":{\"inner\":\"1\"}}");
 		QueryResult result = geneSearch.query(q, o, Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 536, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
@@ -282,7 +283,7 @@ public class GeneSearchTest {
 	public void queryInnerJoinGenomesEmpty() {
 		log.info("Querying for all genes inner join to genomes from EnsemblBanana (should be empty)");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"division\"]}]");
-		List<Query> q = Query
+		List<Query> q = QueryHandlerTest
 				.build("{\"biotype\":\"protein_coding\", \"genomes\":{\"inner\":\"1\", \"division\":\"banana\"}}");
 		QueryResult result = geneSearch.query(q, o, Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 0, result.getResultCount());
@@ -294,7 +295,7 @@ public class GeneSearchTest {
 	public void fetchInnerJoinGenomes() {
 		log.info("Querying for all genes inner join to genomes (should be N. equitans only)");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"division\"]}]");
-		List<Query> q = Query.build("{\"biotype\":\"protein_coding\", \"genomes\":{\"inner\":\"1\"}}");
+		List<Query> q = QueryHandlerTest.build("{\"biotype\":\"protein_coding\", \"genomes\":{\"inner\":\"1\"}}");
 		SearchResult result = geneSearch.fetch(q, o);
 		assertEquals("Fetched hits", 536, result.getResults().size());
 		assertTrue("genomes found", result.getResults().stream().allMatch(g -> g.containsKey("genomes")));
@@ -304,7 +305,7 @@ public class GeneSearchTest {
 	public void fetchInnerJoinGenomesEmpty() {
 		log.info("Querying for all genes inner join to genomes from EnsemblBanana (should be empty)");
 		QueryOutput o = QueryOutput.build("[\"name\",\"description\",{\"genomes\":[\"division\"]}]");
-		List<Query> q = Query
+		List<Query> q = QueryHandlerTest
 				.build("{\"biotype\":\"protein_coding\", \"genomes\":{\"inner\":\"1\", \"division\":\"banana\"}}");
 		SearchResult result = geneSearch.fetch(q, o);
 		assertEquals("Fetched hits", 0, result.getResults().size());

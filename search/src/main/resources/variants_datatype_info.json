@@ -6,7 +6,7 @@
 	],
 	"fieldInfo": [
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Variant ID",
 			"name": "_id",
 			"sort": "false",
@@ -17,7 +17,7 @@
 		{
 			"displayName": "Sequence Region",
 			"name": "chr",
-			"type": "TEXT",
+			"type": "TERM",
 			"search": "true",
 			"facet": "false",
 			"sort": "false",
@@ -51,7 +51,7 @@
 			"search": "true"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "IDs",
 			"name": "ids",
 			"sort": "false",
@@ -60,7 +60,7 @@
 			"search": "true"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Variant type",
 			"name": "type",
 			"sort": "false",
@@ -69,7 +69,7 @@
 			"search": "true"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Reference allele",
 			"name": "ref",
 			"sort": "false",
@@ -78,7 +78,7 @@
 			"search": "false"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Alternative allele",
 			"name": "alt",
 			"sort": "false",
@@ -87,7 +87,7 @@
 			"search": "false"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "HGVS type",
 			"name": "hgvs.type",
 			"sort": "false",
@@ -96,7 +96,7 @@
 			"search": "true"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "HGVS name",
 			"name": "hgvs.name",
 			"sort": "false",
@@ -105,7 +105,7 @@
 			"search": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "Annotation",
 			"name": "annot",
 			"sort": "false",
@@ -114,7 +114,7 @@
 			"search": "false"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Associated gene name",
 			"name": "annot.ct.gn",
 			"sort": "false",
@@ -123,7 +123,7 @@
 			"search": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "Associated gene",
 			"name": "annot.ct",
 			"sort": "false",
@@ -132,7 +132,7 @@
 			"search": "false"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Associated gene ID",
 			"name": "annot.ct.ensg",
 			"sort": "false",
@@ -141,7 +141,7 @@
 			"search": "true"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Associated transcript ID",
 			"name": "annot.ct.enst",
 			"sort": "false",
@@ -150,7 +150,7 @@
 			"search": "true"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Codon change",
 			"name": "annot.ct.codon",
 			"sort": "false",
@@ -159,7 +159,7 @@
 			"search": "false"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Associated gene type",
 			"name": "annot.ct.bt",
 			"sort": "false",
@@ -168,8 +168,8 @@
 			"search": "false"
 		},
 		{
-			"type": "TEXT",
-			"displayName": "Consequence SO TEXT",
+			"type": "TERM",
+			"displayName": "Consequence SO TERM",
 			"name": "annot.ct.so",
 			"sort": "false",
 			"facet": "false",
@@ -177,7 +177,7 @@
 			"search": "true"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Consequence amino acid change",
 			"name": "annot.ct.aaChange",
 			"sort": "false",
@@ -186,7 +186,7 @@
 			"search": "false"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "Cross-references",
 			"name": "annot.xrefs",
 			"sort": "false",
@@ -195,7 +195,7 @@
 			"search": "false"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Cross-reference source",
 			"name": "annot.xrefs.src",
 			"sort": "false",
@@ -204,7 +204,7 @@
 			"search": "true"
 		},
 		{
-			"type": "TEXT",
+			"type": "TERM",
 			"displayName": "Cross-reference ID",
 			"name": "annot.xrefs.id",
 			"sort": "false",

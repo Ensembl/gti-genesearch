@@ -343,7 +343,7 @@
 			"facet": "false",
 			"display": "true",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "GO",
 			"displayName": "GO"
 		},
@@ -624,7 +624,7 @@
 			"sort": "false",
 			"displayName": "PHI-base accession",
 			"name": "PHI",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"facet": "true",
@@ -672,7 +672,7 @@
 			"type": "TEXT"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "PO",
 			"displayName": "Plant Structure Ontology",
 			"sort": "false",
@@ -1306,7 +1306,7 @@
 			"sort": "false",
 			"display": "true",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "translations",
 			"name": "translations"
 		},
@@ -1439,7 +1439,7 @@
 		{
 			"name": "translations.FYPO",
 			"displayName": "Fission Yeast Phenotype Ontology",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"display": "true",
 			"facet": "false",
@@ -1497,7 +1497,7 @@
 			"sort": "false",
 			"displayName": "GO",
 			"name": "translations.GO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"type": "TEXT",
@@ -1632,7 +1632,7 @@
 			"sort": "false",
 			"name": "translations.MOD",
 			"displayName": "PSI-MOD, Post Translational Modification Ontology",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"display": "true",
@@ -1686,7 +1686,7 @@
 			"display": "true",
 			"displayName": "PomBase Ontology ID",
 			"name": "translations.PBO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"search": "true",
@@ -1734,7 +1734,7 @@
 			"displayName": "PDBsum"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "translations.PHI",
 			"displayName": "PHI-base accession",
 			"sort": "false",
@@ -1788,7 +1788,7 @@
 			"search": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "translations.PO",
 			"displayName": "Plant Structure Ontology",
 			"sort": "false",
@@ -1893,7 +1893,7 @@
 			"display": "true",
 			"displayName": "Sequence Ontology",
 			"name": "translations.SO",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"type": "TEXT",
@@ -2096,7 +2096,7 @@
 		{
 			"name": "translations.protein_features",
 			"displayName": "translations.protein_features",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"search": "false",
 			"display": "true",
 			"facet": "false",
@@ -2184,7 +2184,7 @@
 			"sort": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "translations.xrefs",
 			"displayName": "translations.xrefs",
 			"sort": "false",
@@ -2215,7 +2215,7 @@
 			"display": "true",
 			"sort": "false",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "translations.xrefs.linkage_types",
 			"name": "translations.xrefs.linkage_types"
 		},
@@ -2233,7 +2233,7 @@
 			"sort": "false",
 			"display": "true",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "translations.xrefs.linkage_types.source",
 			"displayName": "translations.xrefs.linkage_types.source"
 		},
@@ -2281,123 +2281,6 @@
 			"type": "TEXT",
 			"name": "translations.xrefs.primary_id",
 			"displayName": "translations.xrefs.primary_id"
-		},
-		{
-			"type": "TEXT",
-			"displayName": "WormBase Transcript",
-			"name": "wormbase_transcript",
-			"facet": "true",
-			"display": "true",
-			"sort": "true",
-			"search": "true"
-		},
-		{
-			"displayName": "Wormpep ID",
-			"name": "wormpep_id",
-			"type": "TEXT",
-			"search": "true",
-			"facet": "true",
-			"sort": "true",
-			"display": "true"
-		},
-		{
-			"search": "false",
-			"facet": "false",
-			"sort": "false",
-			"display": "true",
-			"displayName": "xrefs",
-			"name": "xrefs",
-			"type": "OBJECT"
-		},
-		{
-			"facet": "true",
-			"display": "true",
-			"sort": "true",
-			"search": "true",
-			"type": "TEXT",
-			"name": "xrefs.dbname",
-			"displayName": "xrefs.dbname"
-		},
-		{
-			"search": "true",
-			"facet": "true",
-			"sort": "true",
-			"display": "true",
-			"displayName": "xrefs.display_name",
-			"name": "xrefs.display_name",
-			"type": "TEXT"
-		},
-		{
-			"name": "xrefs.linkage_types",
-			"displayName": "xrefs.linkage_types",
-			"type": "OBJECT",
-			"search": "false",
-			"sort": "false",
-			"facet": "false",
-			"display": "true"
-		},
-		{
-			"type": "TEXT",
-			"name": "xrefs.linkage_types.evidence",
-			"displayName": "xrefs.linkage_types.evidence",
-			"facet": "true",
-			"sort": "true",
-			"display": "true",
-			"search": "true"
-		},
-		{
-			"search": "false",
-			"facet": "false",
-			"display": "true",
-			"sort": "false",
-			"name": "xrefs.linkage_types.source",
-			"displayName": "xrefs.linkage_types.source",
-			"type": "OBJECT"
-		},
-		{
-			"search": "true",
-			"facet": "true",
-			"sort": "true",
-			"display": "true",
-			"name": "xrefs.linkage_types.source.dbname",
-			"displayName": "xrefs.linkage_types.source.dbname",
-			"type": "TEXT"
-		},
-		{
-			"type": "TEXT",
-			"name": "xrefs.linkage_types.source.display_id",
-			"displayName": "xrefs.linkage_types.source.display_id",
-			"sort": "true",
-			"facet": "true",
-			"display": "true",
-			"search": "true"
-		},
-		{
-			"sort": "true",
-			"facet": "true",
-			"display": "true",
-			"search": "true",
-			"type": "TEXT",
-			"displayName": "xrefs.linkage_types.source.primary_id",
-			"name": "xrefs.linkage_types.source.primary_id"
-		},
-		{
-			"facet": "true",
-			"display": "true",
-			"sort": "true",
-			"search": "true",
-			"type": "TEXT",
-			"displayName": "xrefs.parents",
-			"name": "xrefs.parents"
-		},
-		{
-			"type": "TEXT",
-			"displayName": "xrefs.primary_id",
-			"name": "xrefs.primary_id",
-			"sort": "true",
-			"facet": "true",
-			"display": "true",
-			"search": "true"
 		},
 		{
 			"search": "true",
@@ -2467,7 +2350,7 @@
 			"facet": "false",
 			"sort": "false",
 			"search": "false",
-			"type": "OBJECT",
+			"type": "NESTED",
 			"name": "xrefs",
 			"displayName": "xrefs"
 		},
@@ -2496,7 +2379,7 @@
 			"sort": "false",
 			"displayName": "xrefs.linkage_types",
 			"name": "xrefs.linkage_types",
-			"type": "OBJECT"
+			"type": "NESTED"
 		},
 		{
 			"displayName": "xrefs.linkage_types.evidence",
@@ -2508,7 +2391,7 @@
 			"display": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "xrefs.linkage_types.source",
 			"name": "xrefs.linkage_types.source",
 			"sort": "false",
@@ -2587,15 +2470,6 @@
 			"facet": "true",
 			"sort": "true",
 			"display": "true"
-		},
-		{
-			"facet": "true",
-			"display": "true",
-			"sort": "true",
-			"search": "true",
-			"type": "TEXT",
-			"name": "genes.description",
-			"displayName": "Gene description"
 		},
 		{
 			"type": "NUMBER",

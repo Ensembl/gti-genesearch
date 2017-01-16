@@ -32,10 +32,10 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.Query.QueryType;
-import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.SearchResult;
+import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldType;
 import org.junit.Test;
 
 /**
@@ -55,10 +55,10 @@ public class DivisionAwareSequenceSearchTest {
 		search.isEnsembl = new HashSet<>();
 		search.isEnsembl.add("homo_sapiens");
 		List<Query> subQ = new ArrayList<>();
-		subQ.add(new Query(QueryType.TERM, "id", ids));
-		subQ.add(new Query(QueryType.TERM, "species", "homo_sapiens"));
+		subQ.add(new Query(FieldType.TERM, "id", ids));
+		subQ.add(new Query(FieldType.TERM, "species", "homo_sapiens"));
 		subQ.addAll(Arrays.asList(qs));
-		return Arrays.asList(new Query(QueryType.NESTED, "homo_sapiens", subQ.toArray(new Query[] {})));
+		return Arrays.asList(new Query(FieldType.NESTED, "homo_sapiens", subQ.toArray(new Query[] {})));
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class DivisionAwareSequenceSearchTest {
 	@Test
 	public void testChangeType() throws IOException {
 		String id = "ENSG00000139618";
-		List<Query> queries = buildQuery(Arrays.asList(id), new Query(QueryType.TERM, "type", "protein"));
+		List<Query> queries = buildQuery(Arrays.asList(id), new Query(FieldType.TERM, "type", "protein"));
 		SearchResult result =  search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		assertTrue("Checking more than one sequence", seqs.size() > 1);
@@ -158,8 +158,8 @@ public class DivisionAwareSequenceSearchTest {
 		String origSeq = seqs.get(0).get("seq").toString();
 		assertFalse("Original sequence found", StringUtils.isEmpty(origSeq));
 
-		queries = buildQuery(Arrays.asList(id), new Query(QueryType.TERM, "expand_5prime", "100"),
-				new Query(QueryType.TERM, "expand_3prime", "100"));
+		queries = buildQuery(Arrays.asList(id), new Query(FieldType.TERM, "expand_5prime", "100"),
+				new Query(FieldType.TERM, "expand_3prime", "100"));
 
 		result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		seqs = result.getResults();

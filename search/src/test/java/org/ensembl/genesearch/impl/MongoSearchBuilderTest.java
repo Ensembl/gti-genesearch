@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.bson.Document;
 import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryHandlerTest;
 import org.junit.Test;
 
 /**
@@ -34,14 +35,14 @@ public class MongoSearchBuilderTest {
 
 	@Test
 	public void testSimple() {
-		List<Query> q = Query.build("{\"chr\":\"Chr1\"}");
+		List<Query> q = QueryHandlerTest.build("{\"chr\":\"Chr1\"}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		assertEquals("chr:Chr1 found", "Chr1", doc.get("chr"));
 	}
 
 	@Test
 	public void testSimpleList() {
-		List<Query> q = Query.build("{\"chr\":\"Chr1\",\"fruit\":\"banana\"}");
+		List<Query> q = QueryHandlerTest.build("{\"chr\":\"Chr1\",\"fruit\":\"banana\"}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		assertEquals("chr:Chr1 found", "Chr1", doc.get("chr"));
 		assertEquals("fruit:banana found", "banana", doc.get("fruit"));
@@ -49,7 +50,7 @@ public class MongoSearchBuilderTest {
 
 	@Test
 	public void testNested() {
-		List<Query> q = Query.build("{\"A\":{\"B\":\"C\"}}");
+		List<Query> q = QueryHandlerTest.build("{\"A\":{\"B\":\"C\"}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		System.out.println(doc.toJson());
 		Object subDoc = doc.get("A.B");
@@ -59,7 +60,7 @@ public class MongoSearchBuilderTest {
 
 	@Test
 	public void testNestedArray() {
-		List<Query> q = Query.build("{\"A-list\":{\"B\":\"C\"}}");
+		List<Query> q = QueryHandlerTest.build("{\"A-list\":{\"B\":\"C\"}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		System.out.println(doc.toJson());
 		Object subDoc = doc.get("A");
@@ -73,7 +74,7 @@ public class MongoSearchBuilderTest {
 
 	@Test
 	public void testNestedArrayDouble() {
-		List<Query> q = Query.build("{\"A-list\":{\"B\":\"C\",\"D\":\"E\"}}");
+		List<Query> q = QueryHandlerTest.build("{\"A-list\":{\"B\":\"C\",\"D\":\"E\"}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		System.out.println(doc.toJson());
 		Object subDoc = doc.get("A");
@@ -88,7 +89,7 @@ public class MongoSearchBuilderTest {
 
 	@Test
 	public void testNestedSubArray() {
-		List<Query> q = Query.build("{\"top\":{\"A-list\":{\"B\":\"C\"}}}");
+		List<Query> q = QueryHandlerTest.build("{\"top\":{\"A-list\":{\"B\":\"C\"}}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		System.out.println(doc.toJson());
 		Object subDoc = doc.get("top.A");
@@ -102,7 +103,7 @@ public class MongoSearchBuilderTest {
 
 	@Test
 	public void testNestedSubArrayDouble() {
-		List<Query> q = Query.build("{\"top\":{\"A-list\":{\"B\":\"C\"},\"X-list\":{\"Y\":\"Z\"}}}");
+		List<Query> q = QueryHandlerTest.build("{\"top\":{\"A-list\":{\"B\":\"C\"},\"X-list\":{\"Y\":\"Z\"}}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		System.out.println(doc.toJson());
 		{
@@ -128,15 +129,15 @@ public class MongoSearchBuilderTest {
 	
 	@Test
 	public void testNums() {
-		List<Query> q = Query.build("{\"so\":1234}");
+		List<Query> q = QueryHandlerTest.build("{\"so\":1234}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		assertTrue("so is a number",Number.class.isAssignableFrom(doc.get("so").getClass()));
 	}
 	
 	@Test
 	public void testMerge() {
-		List<Query> q = Query.build("{\"a\":\"x\"}");
-		List<Query> q2 = Query.build("{\"b\":\"y\"}");
+		List<Query> q = QueryHandlerTest.build("{\"a\":\"x\"}");
+		List<Query> q2 = QueryHandlerTest.build("{\"b\":\"y\"}");
 		q.addAll(q2);
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		assertEquals("a set","x",doc.get("a"));
@@ -145,8 +146,8 @@ public class MongoSearchBuilderTest {
 	
 	@Test
 	public void testMergeNested() {
-		List<Query> q = Query.build("{\"annot\":{\"ct-list\":{\"ensg\":\"x\"}}}");
-		List<Query> q2 = Query.build("{\"annot\":{\"ct-list\":{\"so\":\"y\"}}}");
+		List<Query> q = QueryHandlerTest.build("{\"annot\":{\"ct-list\":{\"ensg\":\"x\"}}}");
+		List<Query> q2 = QueryHandlerTest.build("{\"annot\":{\"ct-list\":{\"so\":\"y\"}}}");
 		q.addAll(q2);
 		Document doc = MongoSearchBuilder.buildQuery(q);
 		Object subDoc = doc.get("annot.ct");

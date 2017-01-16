@@ -18,10 +18,10 @@ package org.ensembl.genesearch;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
 
@@ -33,16 +33,6 @@ import org.ensembl.genesearch.query.QueryHandler;
  */
 public class Query {
 
-	private static final QueryHandler handler = new DefaultQueryHandler();
-
-	public static final List<Query> build(String json) {
-		return handler.parseQuery(json);
-	}
-
-	public enum QueryType {
-		TEXT, TERM, NESTED, LOCATION, NUMBER;
-	}
-	
 	public static final String GT = ">";
 	public static final String GTE = ">=";
 	public static final String LT = "<";
@@ -54,30 +44,30 @@ public class Query {
 	private final String fieldName;
 	private final String[] values;
 	private final Query[] subQueries;
-	private final Query.QueryType type;
+	private final FieldType type;
 
-	public Query(Query.QueryType type, String fieldName) {
+	public Query(FieldType type, String fieldName) {
 		this.type = type;
 		this.fieldName = fieldName;
 		this.values = null;
 		this.subQueries = null;
 	}
 
-	public Query(Query.QueryType type, String fieldName, String... values) {
+	public Query(FieldType type, String fieldName, String... values) {
 		this.type = type;
 		this.fieldName = fieldName;
 		this.values = values;
 		this.subQueries = null;
 	}
 
-	public Query(Query.QueryType type, String fieldName, Collection<String> valuesC) {
+	public Query(FieldType type, String fieldName, Collection<String> valuesC) {
 		this.type = type;
 		this.fieldName = fieldName;
 		this.values = valuesC.toArray(new String[valuesC.size()]);
 		this.subQueries = null;
 	}
 
-	public Query(Query.QueryType type, String fieldName, Query... subQueries) {
+	public Query(FieldType type, String fieldName, Query... subQueries) {
 		this.type = type;
 		this.fieldName = fieldName;
 		this.values = null;
@@ -92,7 +82,7 @@ public class Query {
 		return values;
 	}
 
-	public Query.QueryType getType() {
+	public FieldType getType() {
 		return type;
 	}
 
@@ -102,7 +92,7 @@ public class Query {
 
 	@Override
 	public String toString() {
-		if (type == QueryType.NESTED) {
+		if (type == FieldType.NESTED) {
 			return StringUtils.join(Arrays.asList(this.type, this.fieldName, Arrays.asList(this.subQueries)), ":");
 		} else {
 			return StringUtils.join(Arrays.asList(this.type, this.fieldName, Arrays.asList(this.values)), ":");
@@ -131,9 +121,9 @@ public class Query {
 		// turn a.b.c into a:{b:{c:ids}}
 		int i = field.indexOf('.');
 		if (i != -1) {
-			return new Query(QueryType.NESTED, field.substring(0, i), expandQuery(field.substring(i + 1), values));
+			return new Query(FieldType.NESTED, field.substring(0, i), expandQuery(field.substring(i + 1), values));
 		} else {
-			return new Query(QueryType.TERM, field, values);
+			return new Query(FieldType.TERM, field, values);
 		}
 	}
 

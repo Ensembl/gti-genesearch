@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -41,7 +42,7 @@ import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.info.FieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +81,7 @@ public class ESSearchBuilder {
 		if (geneQs.length == 1) {
 			Query geneQ = geneQs[0];
 			QueryBuilder query;
-			if (geneQ.getType().equals(QueryType.NESTED)) {
+			if (geneQ.getType().equals(FieldType.NESTED)) {
 				query = processNested(type, parents, geneQ);
 			} else {
 				query = processSingle(type, parents, geneQ);
@@ -111,21 +112,23 @@ public class ESSearchBuilder {
 
 	protected static QueryBuilder processSingle(String type, List<String> parents, Query geneQ) {
 		log.trace("Single " + geneQ.getFieldName());
-		if (parents.isEmpty() && ID_FIELD.equals(geneQ.getFieldName())) {
+		String path = join(extendPath(parents, geneQ), '.');
+		switch (geneQ.getType()) {
+		case ID:
 			return processId(type, geneQ);
-		} else {
-			String path = join(extendPath(parents, geneQ), '.');
-			switch (geneQ.getType()) {
-			case TERM:
-				return processTerm(path, geneQ);
-			case LOCATION:
-				return processLocation(path, geneQ);
-			case NUMBER:
-				return processNumber(path, geneQ);
-			case TEXT:
-			default:
-				throw new UnsupportedOperationException("Query type " + geneQ.getType() + " not supported");
-			}
+		case TEXT:
+			return processText(path, geneQ);
+		case ONTOLOGY:
+		case GENOME:
+		case BOOLEAN:
+		case TERM:
+			return processTerm(path, geneQ);
+		case LOCATION:
+			return processLocation(path, geneQ);
+		case NUMBER:
+			return processNumber(path, geneQ);
+		default:
+			throw new UnsupportedOperationException("Query type " + geneQ.getType() + " not supported");
 		}
 	}
 
@@ -143,6 +146,10 @@ public class ESSearchBuilder {
 		return QueryBuilders.constantScoreQuery(query);
 	}
 
+	protected static QueryBuilder processText(String path, Query geneQ) {
+		return QueryBuilders.matchQuery(path, StringUtils.join(geneQ.getValues(), ' '));
+	}
+	
 	protected static QueryBuilder processNumber(String path, Query geneQ) {
 		if (geneQ.getValues().length == 1) {
 			return processNumber(path, geneQ.getValues()[0]);

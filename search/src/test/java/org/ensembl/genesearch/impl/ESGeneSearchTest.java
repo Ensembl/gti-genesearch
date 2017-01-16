@@ -29,11 +29,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
 import org.ensembl.genesearch.test.ESTestServer;
@@ -76,7 +77,7 @@ public class ESGeneSearchTest {
 	public void fetchGenome() {
 		log.info("Fetching all genes from genome");
 		SearchResult result = search.fetch(
-				Arrays.asList(new Query(QueryType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
+				Arrays.asList(new Query(FieldType.TERM, "genome", "nanoarchaeum_equitans_kin4_m")),
 				QueryOutput.build(Arrays.asList("_id")));
 		List<Map<String, Object>> ids = result.getResults();
 		log.info("Fetched " + ids.size() + " genes");
@@ -87,10 +88,10 @@ public class ESGeneSearchTest {
 	public void fetchHomologues() {
 		String genomeName = "escherichia_coli_str_k_12_substr_mg1655";
 		log.info("Fetching homologues to " + genomeName);
-		Query genome = new Query(QueryType.TERM, "genome", genomeName);
+		Query genome = new Query(FieldType.TERM, "genome", genomeName);
 
 		SearchResult result = search.fetch(
-				Arrays.asList(new Query[] { new Query(QueryType.NESTED, "homologues", genome) }),
+				Arrays.asList(new Query[] { new Query(FieldType.NESTED, "homologues", genome) }),
 				QueryOutput.build(Arrays.asList("_id")));
 		List<Map<String, Object>> ids = result.getResults();
 		log.info("Fetched " + ids.size() + " genes");
@@ -102,11 +103,11 @@ public class ESGeneSearchTest {
 		String genomeName = "escherichia_coli_str_k_12_substr_mg1655";
 		String orthologyType = "ortholog_one2one";
 		log.info("Fetching " + orthologyType + " homologues to " + genomeName);
-		Query orthology = new Query(QueryType.TERM, "description", orthologyType);
-		Query genome = new Query(QueryType.TERM, "genome", genomeName);
+		Query orthology = new Query(FieldType.TERM, "description", orthologyType);
+		Query genome = new Query(FieldType.TERM, "genome", genomeName);
 
 		SearchResult result = search.fetch(
-				Arrays.asList(new Query[] { new Query(QueryType.NESTED, "homologues", genome, orthology) }),
+				Arrays.asList(new Query[] { new Query(FieldType.NESTED, "homologues", genome, orthology) }),
 				QueryOutput.build(Arrays.asList("id")));
 		List<Map<String, Object>> ids = result.getResults();
 		log.info("Fetched " + ids.size() + " genes");
@@ -118,8 +119,8 @@ public class ESGeneSearchTest {
 		String id = "AAR39271";
 		log.info("Fetching genes with translation ID=" + id);
 
-		Query tIdQuery = new Query(QueryType.NESTED, "transcripts",
-				new Query(QueryType.NESTED, "translations", new Query(QueryType.TERM, "id", id)));
+		Query tIdQuery = new Query(FieldType.NESTED, "transcripts",
+				new Query(FieldType.NESTED, "translations", new Query(FieldType.TERM, "id", id)));
 
 		SearchResult result = search.fetch(Arrays.asList(new Query[] { tIdQuery }),
 				QueryOutput.build(Arrays.asList("id")));
@@ -146,7 +147,7 @@ public class ESGeneSearchTest {
 	public void queryStartEq() {
 		{
 			log.info("Querying for start=99803");
-			QueryResult result = search.query(Query.build("{\"start\":99803}"),
+			QueryResult result = search.query(QueryHandlerTest.build("{\"start\":99803}"),
 					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
 			assertEquals("1 result", 1, result.getResultCount());
 			Map<String, Object> gene = result.getResults().get(0);
@@ -155,7 +156,7 @@ public class ESGeneSearchTest {
 
 		{
 			log.info("Querying for start=99802");
-			QueryResult result = search.query(Query.build("{\"start\":99802}"),
+			QueryResult result = search.query(QueryHandlerTest.build("{\"start\":99802}"),
 					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
 			assertEquals("No results", 0, result.getResultCount());
 		}
@@ -165,7 +166,7 @@ public class ESGeneSearchTest {
 	public void queryStartGt() {
 		{
 			log.info("Querying for start>490882");
-			QueryResult result = search.query(Query.build("{\"start\":\">490882\"}"),
+			QueryResult result = search.query(QueryHandlerTest.build("{\"start\":\">490882\"}"),
 					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
 			assertEquals("1 result", 1, result.getResultCount());
 			Map<String, Object> gene = result.getResults().get(0);
@@ -174,13 +175,13 @@ public class ESGeneSearchTest {
 
 		{
 			log.info("Querying for start>490883");
-			QueryResult result = search.query(Query.build("{\"start\":\">490883\"}"),
+			QueryResult result = search.query(QueryHandlerTest.build("{\"start\":\">490883\"}"),
 					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
 			assertEquals("No results", 0, result.getResultCount());
 		}
 		{
 			log.info("Querying for start>=490883");
-			QueryResult result = search.query(Query.build("{\"start\":\">=490883\"}"),
+			QueryResult result = search.query(QueryHandlerTest.build("{\"start\":\">=490883\"}"),
 					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
 			Map<String, Object> gene = result.getResults().get(0);
 			assertEquals("Start correct", 490883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
@@ -191,7 +192,7 @@ public class ESGeneSearchTest {
 	public void queryStartLt() {
 		{
 			log.info("Querying for start<884");
-			QueryResult result = search.query(Query.build("{\"start\":\"<884\"}"),
+			QueryResult result = search.query(QueryHandlerTest.build("{\"start\":\"<884\"}"),
 					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
 			assertEquals("1 result", 1, result.getResultCount());
 			Map<String, Object> gene = result.getResults().get(0);
@@ -200,13 +201,13 @@ public class ESGeneSearchTest {
 
 		{
 			log.info("Querying for start<883");
-			QueryResult result = search.query(Query.build("{\"start\":\"<883\"}"),
+			QueryResult result = search.query(QueryHandlerTest.build("{\"start\":\"<883\"}"),
 					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
 			assertEquals("No results", 0, result.getResultCount());
 		}
 		{
 			log.info("Querying for start<=883");
-			QueryResult result = search.query(Query.build("{\"start\":\"<=883\"}"),
+			QueryResult result = search.query(QueryHandlerTest.build("{\"start\":\"<=883\"}"),
 					QueryOutput.build(Arrays.asList("start")), Collections.emptyList(), 0, 5, Collections.emptyList());
 			Map<String, Object> gene = result.getResults().get(0);
 			assertEquals("Start correct", 883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
@@ -217,7 +218,7 @@ public class ESGeneSearchTest {
 	public void queryRange() {
 		{
 			log.info("Querying for start 883-885");
-			QueryResult result = search.query(Query.build("{\"start\":\"883-885\"}"),
+			QueryResult result = search.query(QueryHandlerTest.build("{\"start\":\"883-885\"}"),
 					QueryOutput.build(Arrays.asList("start", "end")), Collections.emptyList(), 0, 5,
 					Collections.emptyList());
 			assertEquals("1 result", 1, result.getResultCount());
@@ -226,7 +227,7 @@ public class ESGeneSearchTest {
 		}
 		{
 			log.info("Querying for start 884-885");
-			QueryResult result = search.query(Query.build("{\"start\":\"884-885\"}"),
+			QueryResult result = search.query(QueryHandlerTest.build("{\"start\":\"884-885\"}"),
 					QueryOutput.build(Arrays.asList("start", "end")), Collections.emptyList(), 0, 5,
 					Collections.emptyList());
 			assertEquals("No results", 0, result.getResultCount());
@@ -236,7 +237,7 @@ public class ESGeneSearchTest {
 	@Test
 	public void queryLocation() {
 		log.info("Querying for Chromosome:883-2691");
-		QueryResult result = search.query(Query.build("{\"location\":\"Chromosome:883-2691\"}"),
+		QueryResult result = search.query(QueryHandlerTest.build("{\"location\":\"Chromosome:883-2691\"}"),
 				QueryOutput.build(Arrays.asList("seq_region_name", "start", "end")), Collections.emptyList(), 0, 5,
 				Collections.emptyList());
 		assertEquals("1 result", 1, result.getResultCount());
@@ -249,12 +250,12 @@ public class ESGeneSearchTest {
 	@Test
 	public void queryLocationStranded() {
 		log.info("Querying for Chromosome:883-2691:-1");
-		QueryResult result = search.query(Query.build("{\"location\":\"Chromosome:883-2691:-1\"}"),
+		QueryResult result = search.query(QueryHandlerTest.build("{\"location\":\"Chromosome:883-2691:-1\"}"),
 				QueryOutput.build(Arrays.asList("seq_region_name", "start", "end")), Collections.emptyList(), 0, 5,
 				Collections.emptyList());
 		assertEquals("0 result", 0, result.getResultCount());
 		log.info("Querying for Chromosome:883-2691:1");
-		result = search.query(Query.build("{\"location\":\"Chromosome:883-2691:1\"}"),
+		result = search.query(QueryHandlerTest.build("{\"location\":\"Chromosome:883-2691:1\"}"),
 				QueryOutput.build(Arrays.asList("seq_region_name", "start", "end")), Collections.emptyList(), 0, 5,
 				Collections.emptyList());
 		assertEquals("1 result", 1, result.getResultCount());
@@ -268,7 +269,7 @@ public class ESGeneSearchTest {
 	public void queryLocations() {
 		log.info("Querying for Chromosome:883-2691,Chromosome:2668-3189");
 		QueryResult result = search.query(
-				Query.build("{\"location\":[\"Chromosome:883-2691\",\"Chromosome:2668-3189\"]}"),
+				QueryHandlerTest.build("{\"location\":[\"Chromosome:883-2691\",\"Chromosome:2668-3189\"]}"),
 				QueryOutput.build(Arrays.asList("seq_region_name", "start", "end")), Collections.emptyList(), 0, 5,
 				Collections.emptyList());
 		assertEquals("2 result", 2, result.getResultCount());
@@ -368,7 +369,7 @@ public class ESGeneSearchTest {
 	@Test
 	public void querySortNestedFilterAsc() {
 		log.info("Querying for all genes sorted by transcripts.start");
-		QueryResult result = search.query(Query.build("{\"transcripts\":{\"biotype\":\"protein_coding\"}}"),
+		QueryResult result = search.query(QueryHandlerTest.build("{\"transcripts\":{\"biotype\":\"protein_coding\"}}"),
 				QueryOutput.build(Arrays.asList("id", "name", "start", "transcripts.start")), Collections.emptyList(),
 				0, 5, Arrays.asList("+transcripts.start"));
 		System.out.println(result.getResults());

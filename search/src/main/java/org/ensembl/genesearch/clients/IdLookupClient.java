@@ -32,10 +32,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
-import org.ensembl.genesearch.Query.QueryType;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,11 +79,11 @@ public class IdLookupClient {
 		Params params = new Params();
 		JCommander jc = new JCommander(params, args);
 		jc.setProgramName(IdLookupClient.class.getSimpleName());
-		if(params.help) {
+		if (params.help) {
 			jc.usage();
 			System.exit(1);
 		}
-		
+
 		Client client = ClientBuilder.buildClient(params);
 
 		if (client == null) {
@@ -93,14 +93,15 @@ public class IdLookupClient {
 
 		final Writer out = getWriter(params);
 
-		Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, DataTypeInfo.fromResource("/gene_datatype_info.json"));
+		Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
+				DataTypeInfo.fromResource("/gene_datatype_info.json"));
 
 		List<String> ids = params.queryIds;
 		if (ids == null && !isEmpty(params.queryFile)) {
 			ids = Files.lines(new File(params.queryFile).toPath()).collect(Collectors.toList());
 		}
 
-		List<Query> queries = Arrays.asList(new Query[] { new Query(QueryType.TERM, params.queryField, ids) });
+		List<Query> queries = Arrays.asList(new Query[] { new Query(FieldType.TERM, params.queryField, ids) });
 		search.fetch(row -> {
 			try {
 				out.write(StringUtils.join(row.values(), "\t"));

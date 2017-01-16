@@ -32,9 +32,8 @@ import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
-import org.ensembl.genesearch.Query.QueryType;
-import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.AfterClass;
@@ -48,7 +47,8 @@ public class ESGenomeSearchTest {
 	static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
 
 	static ESTestServer testServer = new ESTestServer();
-	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/genomes_datatype_info.json"));
+	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE,
+			DataTypeInfo.fromResource("/genomes_datatype_info.json"));
 
 	@BeforeClass
 	public static void setUp() throws IOException {
@@ -73,7 +73,7 @@ public class ESGenomeSearchTest {
 	@Test
 	public void fetchGenomeById() {
 		log.info("Fetching  genomes from genome");
-		SearchResult result = search.fetch(Arrays.asList(new Query(QueryType.TERM, "id", "homo_sapiens")),
+		SearchResult result = search.fetch(Arrays.asList(new Query(FieldType.TERM, "id", "homo_sapiens")),
 				QueryOutput.build(Arrays.asList("_id")));
 		List<Map<String, Object>> ids = result.getResults();
 		log.info("Fetched " + ids.size() + " genomes");
@@ -83,8 +83,8 @@ public class ESGenomeSearchTest {
 	@Test
 	public void querySimple() {
 		log.info("Querying for all genomes");
-		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")), Collections.emptyList(), 0, 5,
-				Collections.emptyList());
+		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")),
+				Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 5, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
 		assertEquals("Total facets", 0, result.getFacets().size());
@@ -113,23 +113,22 @@ public class ESGenomeSearchTest {
 		assertTrue("id1 found", ids.contains(id1));
 		assertTrue("id2 found", ids.contains(id2));
 	}
-	
+
 	@Test
 	public void testSelectHuman() {
 		SearchResult results = search.select("human", 0, 10);
-		assertTrue("Results found",results!=null);
-		assertEquals("2 results",2,results.getResults().size());
-		assertEquals("Human first","homo_sapiens",results.getResults().get(0).get("id"));
+		assertTrue("Results found", results != null);
+		assertEquals("2 results", 2, results.getResults().size());
+		assertEquals("Human first", "homo_sapiens", results.getResults().get(0).get("id"));
 	}
-	
+
 	@Test
 	public void testSelectEcoli() {
 		QueryResult results = search.select("escherichia", 0, 10);
-		assertTrue("Results found",results!=null);
-		assertEquals("2 results",2,results.getResultCount());
-		assertEquals("K12 first","escherichia_coli_str_k_12_substr_mg1655",results.getResults().get(0).get("id"));
+		assertTrue("Results found", results != null);
+		assertEquals("2 results", 2, results.getResultCount());
+		assertEquals("K12 first", "escherichia_coli_str_k_12_substr_mg1655", results.getResults().get(0).get("id"));
 	}
-
 
 	@AfterClass
 	public static void tearDown() {

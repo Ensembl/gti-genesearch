@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
@@ -68,7 +68,7 @@ public class MongoSearchTest {
 
 	@Test
 	public void testQuery() {
-		QueryResult result = search.query(Query.build("{\"chr\":\"Chr1\"}"), QueryOutput.build("[\"chr\",\"annot\"]"),
+		QueryResult result = search.query(QueryHandlerTest.build("{\"chr\":\"Chr1\"}"), QueryOutput.build("[\"chr\",\"annot\"]"),
 				Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Checking for result fields", 3, result.getFields().size());
 		assertEquals("Checking for correct rows", 5, result.getResults().size());
@@ -77,7 +77,7 @@ public class MongoSearchTest {
 
 	@Test
 	public void testFetch() {
-		SearchResult result = search.fetch(Query.build("{\"chr\":\"Chr1\"}"), QueryOutput.build("[\"chr\",\"annot\"]"));
+		SearchResult result = search.fetch(QueryHandlerTest.build("{\"chr\":\"Chr1\"}"), QueryOutput.build("[\"chr\",\"annot\"]"));
 		assertEquals("Checking for result fields", 3, result.getFields().size());
 		assertEquals("Checking for correct rows", 10, result.getResults().size());
 		assertTrue("Check we've only got Chr 1",
@@ -91,13 +91,13 @@ public class MongoSearchTest {
 			assertEquals("Checking for result fields", 3, r.keySet().size());
 			assertEquals("Checking for Chr1", "Chr1", r.get("chr"));
 			i.incrementAndGet();
-		}, Query.build("{\"chr\":\"Chr1\"}"), QueryOutput.build("[\"chr\",\"annot\"]"));
+		}, QueryHandlerTest.build("{\"chr\":\"Chr1\"}"), QueryOutput.build("[\"chr\",\"annot\"]"));
 		assertEquals("Checking for correct rows", 10, i.get());
 	}
 
 	@Test
 	public void testQuerySub() {
-		QueryResult result = search.query(Query.build("{\"annot\":{\"ct-list\":{\"ensg\":\"OS01G0100100\"}}}"),
+		QueryResult result = search.query(QueryHandlerTest.build("{\"annot\":{\"ct-list\":{\"ensg\":\"OS01G0100100\"}}}"),
 				QueryOutput.build("[\"chr\",\"annot\"]"), Collections.emptyList(), 0, 5, Collections.emptyList());
 		System.out.println(result.getResults());
 		assertEquals("Checking for result fields", 3, result.getFields().size());
@@ -108,7 +108,7 @@ public class MongoSearchTest {
 	@Test
 	public void testQuerySubDub() {
 		QueryResult result = search.query(
-				Query.build("{\"annot\":{\"ct-list\":{\"ensg\":\"OS01G0100100\",\"so\":1631}}}"),
+				QueryHandlerTest.build("{\"annot\":{\"ct-list\":{\"ensg\":\"OS01G0100100\",\"so\":1631}}}"),
 				QueryOutput.build("[\"chr\",\"annot\"]"), Collections.emptyList(), 0, 5, Collections.emptyList());
 		System.out.println(result.getResults());
 		assertEquals("Checking for result fields", 3, result.getFields().size());

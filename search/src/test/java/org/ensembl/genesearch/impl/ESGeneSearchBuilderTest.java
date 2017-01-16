@@ -28,7 +28,8 @@ import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.Query.QueryType;
+import org.ensembl.genesearch.QueryHandlerTest;
+import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
 import org.ensembl.genesearch.utils.DataUtils;
@@ -40,7 +41,7 @@ public class ESGeneSearchBuilderTest {
 	@Test
 	public void testId() {
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-				new Query(QueryType.TERM, "id", "DDB0231518"));
+				new Query(FieldType.TERM, "id", "DDB0231518"));
 
 		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -50,9 +51,9 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testNestedHomology() {
-		Query genome = new Query(QueryType.TERM, "genome", "dictyostelium_fasciculatum");
-		Query orthology = new Query(QueryType.TERM, "description", "ortholog_one2one");
-		Query homology = new Query(QueryType.NESTED, "homologues", genome, orthology);
+		Query genome = new Query(FieldType.TERM, "genome", "dictyostelium_fasciculatum");
+		Query orthology = new Query(FieldType.TERM, "description", "ortholog_one2one");
+		Query homology = new Query(FieldType.NESTED, "homologues", genome, orthology);
 
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, homology);
 
@@ -74,9 +75,9 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testNestedTranslationId() {
-		Query idQuery = new Query(QueryType.TERM, "id", "DDB0231518");
-		Query translationQuery = new Query(QueryType.NESTED, "translations", idQuery);
-		Query geneQuery = new Query(QueryType.NESTED, "transcripts", translationQuery);
+		Query idQuery = new Query(FieldType.TERM, "id", "DDB0231518");
+		Query translationQuery = new Query(FieldType.NESTED, "translations", idQuery);
+		Query geneQuery = new Query(FieldType.NESTED, "transcripts", translationQuery);
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, geneQuery);
 		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -111,19 +112,19 @@ public class ESGeneSearchBuilderTest {
 	public void testNumEq() {
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":123}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":123}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertObjCorrect("Simple number check", "{constant_score={filter={term={num=123}}}}", obj);
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":-123}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":-123}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertObjCorrect("Negative number check", "{constant_score={filter={term={num=-123}}}}", obj);
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":123.456}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":123.456}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertObjCorrect("Negative number check", "{constant_score={filter={term={num=123.456}}}}", obj);
 		}
@@ -133,7 +134,7 @@ public class ESGeneSearchBuilderTest {
 	public void testNumGt() {
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\">123\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\">123\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			System.out.println(obj);
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.from").contains("123"));
@@ -143,7 +144,7 @@ public class ESGeneSearchBuilderTest {
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\">-123\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\">-123\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.from").contains("-123"));
 			assertTrue("To not set", DataUtils.getObjValsForKey(obj, "range.num.to").contains("null"));
@@ -152,7 +153,7 @@ public class ESGeneSearchBuilderTest {
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\">123.456\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\">123.456\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.from").contains("123.456"));
 			assertTrue("To not set", DataUtils.getObjValsForKey(obj, "range.num.to").contains("null"));
@@ -165,7 +166,7 @@ public class ESGeneSearchBuilderTest {
 	public void testNumGte() {
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\">=123\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\">=123\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			System.out.println(obj);
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.from").contains("123"));
@@ -175,7 +176,7 @@ public class ESGeneSearchBuilderTest {
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\">=-123\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\">=-123\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.from").contains("-123"));
 			assertTrue("To not set", DataUtils.getObjValsForKey(obj, "range.num.to").contains("null"));
@@ -184,7 +185,7 @@ public class ESGeneSearchBuilderTest {
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\">=123.456\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\">=123.456\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.from").contains("123.456"));
 			assertTrue("To not set", DataUtils.getObjValsForKey(obj, "range.num.to").contains("null"));
@@ -197,7 +198,7 @@ public class ESGeneSearchBuilderTest {
 	public void testNumLt() {
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\"<123\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\"<123\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			System.out.println(obj);
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.to").contains("123"));
@@ -207,7 +208,7 @@ public class ESGeneSearchBuilderTest {
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\"<-123\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\"<-123\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.to").contains("-123"));
 			assertTrue("To not set", DataUtils.getObjValsForKey(obj, "range.num.from").contains("null"));
@@ -216,7 +217,7 @@ public class ESGeneSearchBuilderTest {
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\"<123.456\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\"<123.456\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.to").contains("123.456"));
 			assertTrue("To not set", DataUtils.getObjValsForKey(obj, "range.num.from").contains("null"));
@@ -229,7 +230,7 @@ public class ESGeneSearchBuilderTest {
 	public void testNumLte() {
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\"<=123\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\"<=123\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			System.out.println(obj);
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.to").contains("123"));
@@ -239,7 +240,7 @@ public class ESGeneSearchBuilderTest {
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\"<=-123\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\"<=-123\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.to").contains("-123"));
 			assertTrue("To not set", DataUtils.getObjValsForKey(obj, "range.num.from").contains("null"));
@@ -248,7 +249,7 @@ public class ESGeneSearchBuilderTest {
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\"<=123.456\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\"<=123.456\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.to").contains("123.456"));
 			assertTrue("To not set", DataUtils.getObjValsForKey(obj, "range.num.from").contains("null"));
@@ -261,7 +262,7 @@ public class ESGeneSearchBuilderTest {
 	public void testNumRange() {
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\"123-789\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\"123-789\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			System.out.println(obj);
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.from").contains("123"));
@@ -273,7 +274,7 @@ public class ESGeneSearchBuilderTest {
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\"-123--789\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\"-123--789\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.from").contains("-123"));
 			assertTrue("To not set", DataUtils.getObjValsForKey(obj, "range.num.to").contains("-789"));
@@ -284,7 +285,7 @@ public class ESGeneSearchBuilderTest {
 		}
 		{
 			QueryBuilder q = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-					Query.build("{\"num\":\"123.456-789.987\"}").toArray(new Query[] {}));
+					QueryHandlerTest.build("{\"num\":\"123.456-789.987\"}").toArray(new Query[] {}));
 			Map<String, Object> obj = DataUtils.jsonToMap(q.toString());
 			assertTrue("From correct", DataUtils.getObjValsForKey(obj, "range.num.from").contains("123.456"));
 			assertTrue("To not set", DataUtils.getObjValsForKey(obj, "range.num.to").contains("789.987"));
@@ -298,7 +299,7 @@ public class ESGeneSearchBuilderTest {
 	@Test
 	public void testLocation() {
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-				Query.build("{\"location\":\"DDB0231518:1-100\"}").toArray(new Query[] {}));
+				QueryHandlerTest.build("{\"location\":\"DDB0231518:1-100\"}").toArray(new Query[] {}));
 		System.out.println(builder);
 		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		assertTrue("Name correct",
@@ -323,7 +324,7 @@ public class ESGeneSearchBuilderTest {
 	@Test
 	public void testLocations() {
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-				Query.build("{\"location\":[\"DDB0231518:1-100\",\"DDB0231518:101-200\"]}").toArray(new Query[] {}));
+				QueryHandlerTest.build("{\"location\":[\"DDB0231518:1-100\",\"DDB0231518:101-200\"]}").toArray(new Query[] {}));
 		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		Map<String, Object> bool = (Map<String, Object>) obj.get("bool");
 		List<Map<String, Object>> should = (List<Map<String, Object>>) bool.get("should");
@@ -334,15 +335,13 @@ public class ESGeneSearchBuilderTest {
 
 			assertTrue("Start from correct",
 					DataUtils.getObjValsForKey(loc, "bool.must.range.start.from").contains("1"));
-			assertTrue("Start to correct",
-					DataUtils.getObjValsForKey(loc, "bool.must.range.start.to").contains("100"));
+			assertTrue("Start to correct", DataUtils.getObjValsForKey(loc, "bool.must.range.start.to").contains("100"));
 			assertTrue("Start include_lower correct",
 					DataUtils.getObjValsForKey(loc, "bool.must.range.start.include_lower").contains("true"));
 			assertTrue("Start include_upper correct",
 					DataUtils.getObjValsForKey(loc, "bool.must.range.start.include_upper").contains("true"));
 
-			assertTrue("End from correct",
-					DataUtils.getObjValsForKey(loc, "bool.must.range.end.from").contains("1"));
+			assertTrue("End from correct", DataUtils.getObjValsForKey(loc, "bool.must.range.end.from").contains("1"));
 			assertTrue("End to correct", DataUtils.getObjValsForKey(loc, "bool.must.range.end.to").contains("100"));
 			assertTrue("End include_upper correct",
 					DataUtils.getObjValsForKey(loc, "bool.must.range.end.include_upper").contains("true"));
@@ -356,15 +355,13 @@ public class ESGeneSearchBuilderTest {
 
 			assertTrue("Start from correct",
 					DataUtils.getObjValsForKey(loc, "bool.must.range.start.from").contains("101"));
-			assertTrue("Start to correct",
-					DataUtils.getObjValsForKey(loc, "bool.must.range.start.to").contains("200"));
+			assertTrue("Start to correct", DataUtils.getObjValsForKey(loc, "bool.must.range.start.to").contains("200"));
 			assertTrue("Start include_lower correct",
 					DataUtils.getObjValsForKey(loc, "bool.must.range.start.include_lower").contains("true"));
 			assertTrue("Start include_upper correct",
 					DataUtils.getObjValsForKey(loc, "bool.must.range.start.include_upper").contains("true"));
 
-			assertTrue("End from correct",
-					DataUtils.getObjValsForKey(loc, "bool.must.range.end.from").contains("101"));
+			assertTrue("End from correct", DataUtils.getObjValsForKey(loc, "bool.must.range.end.from").contains("101"));
 			assertTrue("End to correct", DataUtils.getObjValsForKey(loc, "bool.must.range.end.to").contains("200"));
 			assertTrue("End include_upper correct",
 					DataUtils.getObjValsForKey(loc, "bool.must.range.end.include_upper").contains("true"));
