@@ -57,6 +57,11 @@ public class MongoSearchBuilder {
 	public static Document buildQuery(Iterable<Query> queries) {
 		Document doc = new Document();
 		for (Query q : queries) {
+			
+			if(q.isNot()) {
+				throw new  UnsupportedOperationException("No support for NOT queries");
+			}
+			
 			switch (q.getType()) {
 			case NESTED:
 				processNested(q, doc);

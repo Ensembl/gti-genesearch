@@ -22,8 +22,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.info.FieldType;
-import org.ensembl.genesearch.query.DefaultQueryHandler;
-import org.ensembl.genesearch.query.QueryHandler;
 
 /**
  * Generic query encapsulating lists of key-value terms
@@ -45,32 +43,45 @@ public class Query {
 	private final String[] values;
 	private final Query[] subQueries;
 	private final FieldType type;
-
+	private final boolean not;
+	
 	public Query(FieldType type, String fieldName) {
-		this.type = type;
-		this.fieldName = fieldName;
-		this.values = null;
-		this.subQueries = null;
+		this(type, fieldName, false, null, null);
 	}
 
 	public Query(FieldType type, String fieldName, String... values) {
-		this.type = type;
-		this.fieldName = fieldName;
-		this.values = values;
-		this.subQueries = null;
+		this(type, fieldName, false, values, null);
 	}
 
 	public Query(FieldType type, String fieldName, Collection<String> valuesC) {
-		this.type = type;
-		this.fieldName = fieldName;
-		this.values = valuesC.toArray(new String[valuesC.size()]);
-		this.subQueries = null;
+		this(type, fieldName, false, valuesC.toArray(new String[valuesC.size()]), null);
 	}
 
 	public Query(FieldType type, String fieldName, Query... subQueries) {
+		this(type, fieldName, false, null, subQueries);
+	}
+
+	public Query(FieldType type, String fieldName, boolean not) {
+		this(type, fieldName, not, null, null);
+	}
+
+	public Query(FieldType type, String fieldName, boolean not, String... values) {
+		this(type, fieldName, not, values, null);
+	}
+
+	public Query(FieldType type, String fieldName, boolean not, Collection<String> valuesC) {
+		this(type, fieldName, not, valuesC.toArray(new String[valuesC.size()]), null);
+	}
+
+	public Query(FieldType type, String fieldName, boolean not, Query... subQueries) {
+		this(type, fieldName, not, null, subQueries);
+	}
+
+	public Query(FieldType type, String fieldName, boolean not, String[] values, Query[] subQueries) {
 		this.type = type;
+		this.not = not;
 		this.fieldName = fieldName;
-		this.values = null;
+		this.values = values;
 		this.subQueries = subQueries;
 	}
 
@@ -90,6 +101,10 @@ public class Query {
 		return subQueries;
 	}
 
+	public boolean isNot() {
+		return not;
+	}
+
 	@Override
 	public String toString() {
 		if (type == FieldType.NESTED) {
@@ -107,7 +122,7 @@ public class Query {
 	 * @return expanded query
 	 */
 	public static Query expandQuery(Query q) {
-		return expandQuery(q.getFieldName(), Arrays.asList(q.getValues()));
+		return expandQuery(q.getFieldName(), q.isNot(), Arrays.asList(q.getValues()));
 	}
 
 	/**
@@ -117,13 +132,13 @@ public class Query {
 	 * @param values
 	 * @return expanded query
 	 */
-	public static Query expandQuery(String field, Collection<String> values) {
+	public static Query expandQuery(String field, boolean not, Collection<String> values) {
 		// turn a.b.c into a:{b:{c:ids}}
 		int i = field.indexOf('.');
 		if (i != -1) {
-			return new Query(FieldType.NESTED, field.substring(0, i), expandQuery(field.substring(i + 1), values));
+			return new Query(FieldType.NESTED, field.substring(0, i), false, expandQuery(field.substring(i + 1), not, values));
 		} else {
-			return new Query(FieldType.TERM, field, values);
+			return new Query(FieldType.TERM, field, not, values);
 		}
 	}
 

@@ -55,10 +55,10 @@ public class DivisionAwareSequenceSearchTest {
 		search.isEnsembl = new HashSet<>();
 		search.isEnsembl.add("homo_sapiens");
 		List<Query> subQ = new ArrayList<>();
-		subQ.add(new Query(FieldType.TERM, "id", ids));
-		subQ.add(new Query(FieldType.TERM, "species", "homo_sapiens"));
+		subQ.add(new Query(FieldType.TERM, "id", false, ids));
+		subQ.add(new Query(FieldType.TERM, "species", false, "homo_sapiens"));
 		subQ.addAll(Arrays.asList(qs));
-		return Arrays.asList(new Query(FieldType.NESTED, "homo_sapiens", subQ.toArray(new Query[] {})));
+		return Arrays.asList(new Query(FieldType.NESTED, "homo_sapiens", false, subQ.toArray(new Query[] {})));
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class DivisionAwareSequenceSearchTest {
 	@Test
 	public void testChangeType() throws IOException {
 		String id = "ENSG00000139618";
-		List<Query> queries = buildQuery(Arrays.asList(id), new Query(FieldType.TERM, "type", "protein"));
+		List<Query> queries = buildQuery(Arrays.asList(id), new Query(FieldType.TERM, "type", false, "protein"));
 		SearchResult result =  search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		List<Map<String, Object>> seqs = result.getResults();
 		assertTrue("Checking more than one sequence", seqs.size() > 1);
@@ -158,8 +158,8 @@ public class DivisionAwareSequenceSearchTest {
 		String origSeq = seqs.get(0).get("seq").toString();
 		assertFalse("Original sequence found", StringUtils.isEmpty(origSeq));
 
-		queries = buildQuery(Arrays.asList(id), new Query(FieldType.TERM, "expand_5prime", "100"),
-				new Query(FieldType.TERM, "expand_3prime", "100"));
+		queries = buildQuery(Arrays.asList(id), new Query(FieldType.TERM, "expand_5prime", false, "100"),
+				new Query(FieldType.TERM, "expand_3prime", false, "100"));
 
 		result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
 		seqs = result.getResults();

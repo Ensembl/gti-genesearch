@@ -41,7 +41,7 @@ public class ESGeneSearchBuilderTest {
 	@Test
 	public void testId() {
 		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-				new Query(FieldType.TERM, "id", "DDB0231518"));
+				new Query(FieldType.ID, "id", "DDB0231518"));
 
 		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		System.out.println(obj);
@@ -323,8 +323,8 @@ public class ESGeneSearchBuilderTest {
 
 	@Test
 	public void testLocations() {
-		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
-				QueryHandlerTest.build("{\"location\":[\"DDB0231518:1-100\",\"DDB0231518:101-200\"]}").toArray(new Query[] {}));
+		QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE, QueryHandlerTest
+				.build("{\"location\":[\"DDB0231518:1-100\",\"DDB0231518:101-200\"]}").toArray(new Query[] {}));
 		Map<String, Object> obj = DataUtils.jsonToMap(builder.toString());
 		Map<String, Object> bool = (Map<String, Object>) obj.get("bool");
 		List<Map<String, Object>> should = (List<Map<String, Object>>) bool.get("should");
@@ -387,6 +387,16 @@ public class ESGeneSearchBuilderTest {
 		assertTrue("Uniprot_SWISSPROT set", terms.containsKey("Uniprot_SWISSPROT"));
 		List<String> uniprot = (List<String>) (terms.get("Uniprot_SWISSPROT"));
 		assertEquals("Uniprot_SWISSPROT size", 18920, uniprot.size());
+	}
+
+	@Test
+	public void testNot() {
+		{
+			QueryBuilder builder = ESSearchBuilder.buildQuery(ESSearch.GENE_ESTYPE,
+					QueryHandlerTest.build("{\"!fruit\":\"banana\"}").toArray(new Query[] {}));
+			assertTrue("End include_lower correct", DataUtils.getObjValsForKey(DataUtils.jsonToMap(builder.toString()),
+					"bool.must_not.constant_score.filter.term.fruit").contains("banana"));
+		}
 	}
 
 	protected static void assertObjCorrect(String message, String expected, Object obj) {

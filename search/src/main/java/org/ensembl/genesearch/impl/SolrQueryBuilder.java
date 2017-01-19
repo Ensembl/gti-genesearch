@@ -50,6 +50,7 @@ public class SolrQueryBuilder {
 	private static final String ASC = "asc";
 	private static final String DESC = "desc";
 	private static final String AND = " AND ";
+	private static final String NOT = " NOT ";
 	private static final String OR = " OR ";
 	/**
 	 * Parameter name for Solr query
@@ -75,27 +76,32 @@ public class SolrQueryBuilder {
 	 */
 	public static SolrQuery build(List<Query> queries) {
 		SolrQuery solrQ = new SolrQuery();
-		List<String> clauses = new ArrayList<>(queries.size());
+		StringBuilder qstr = new StringBuilder();
 		if (queries.isEmpty()) {
-			clauses.add(ALL_Q);
+			qstr.append(ALL_Q);
 		} else {
 			for (Query q : queries) {
+				String clause;
 				switch (q.getType()) {
 				case TERM:
-					clauses.add(termQuery(q));
+					clause = termQuery(q);						
 					break;
 				case NUMBER:
-					clauses.add(numberQuery(q));
+					clause= numberQuery(q);
 					break;
 				case LOCATION:
 				case NESTED:
 				case TEXT:
 				default:
-					throw new IllegalArgumentException("Solr querying support limited to TERM only");
-				}
+					throw new IllegalArgumentException("Solr querying does not support "+q.getType());
+				} 
+				if(qstr.length()>0) {
+					qstr.append(q.isNot()?NOT:AND);
+				} 
+				qstr.append(clause);
 			}
 		}
-		solrQ.add(QUERY_PARAM, StringUtils.join(clauses, AND));
+		solrQ.add(QUERY_PARAM, qstr.toString());
 		return solrQ;
 	}
 

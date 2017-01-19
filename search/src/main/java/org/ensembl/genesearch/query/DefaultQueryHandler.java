@@ -67,16 +67,24 @@ public class DefaultQueryHandler implements QueryHandler {
 		queryObj = mergeQueries(queryObj);
 		List<Query> queries = new ArrayList<>();
 		for (Entry<String, Object> query : queryObj.entrySet()) {
-			FieldType type = getFieldType(query.getKey(), query.getValue());
+			String fieldName = query.getKey();
+			boolean not;
+			if(fieldName.charAt(0) == '!') {
+				not = true;
+				fieldName = fieldName.substring(1);
+			} else {
+				not = false;
+			}
+			FieldType type = getFieldType(fieldName, query.getValue());
 			if(type == FieldType.NESTED) {
 				List<Query> subQs = parseQuery((Map<String, Object>) query.getValue());
-				queries.add(new Query(type, query.getKey(), subQs.toArray(new Query[subQs.size()])));
+				queries.add(new Query(type, fieldName, not, subQs.toArray(new Query[subQs.size()])));
 			} else if(isList(query.getValue())) {
 				List<String> vals = ((List<Object>) query.getValue()).stream().map(String::valueOf)
 						.collect(Collectors.<String> toList());
-				queries.add(new Query(type, query.getKey(), vals));
+				queries.add(new Query(type, fieldName, not, vals));
 			} else {
-				queries.add(new Query(type, query.getKey(), String.valueOf(query.getValue())));
+				queries.add(new Query(type, fieldName, not, String.valueOf(query.getValue())));
 			}
 		}
 		return queries;

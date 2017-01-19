@@ -246,6 +246,15 @@ public class ESGeneSearchTest {
 		assertEquals("Start correct", 883, Integer.valueOf(String.valueOf(gene.get("start"))).intValue());
 		assertEquals("End correct", 2691, Integer.valueOf(String.valueOf(gene.get("end"))).intValue());
 	}
+	
+	@Test
+	public void queryNot() {
+		log.info("Querying for biotype<>protein_coding");
+		QueryResult result = search.query(QueryHandlerTest.build("{\"!biotype\":\"protein_coding\"}"),
+				QueryOutput.build(Arrays.asList("biotype")), Collections.emptyList(), 0, 5,
+				Collections.emptyList());
+		assertEquals("Checking for no protein coding genes",0,result.getResults().stream().filter(r -> r.get("biotype").equals("protein_coding")).count());
+	}
 
 	@Test
 	public void queryLocationStranded() {

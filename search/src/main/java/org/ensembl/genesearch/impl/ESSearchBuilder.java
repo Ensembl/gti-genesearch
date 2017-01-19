@@ -57,7 +57,6 @@ public class ESSearchBuilder {
 
 	private static final Logger log = LoggerFactory.getLogger(ESSearchBuilder.class);
 
-	private static final String ID_FIELD = "id";
 	private static final String SEQ_REGION_FIELD = "seq_region_name";
 	private static final String START_FIELD = "start";
 	private static final String END_FIELD = "end";
@@ -113,22 +112,33 @@ public class ESSearchBuilder {
 	protected static QueryBuilder processSingle(String type, List<String> parents, Query geneQ) {
 		log.trace("Single " + geneQ.getFieldName());
 		String path = join(extendPath(parents, geneQ), '.');
+		QueryBuilder q;
 		switch (geneQ.getType()) {
 		case ID:
-			return processId(type, geneQ);
+			q = processId(type, geneQ);
+			break;
 		case TEXT:
-			return processText(path, geneQ);
+			q =  processText(path, geneQ);
+			break;
 		case ONTOLOGY:
 		case GENOME:
 		case BOOLEAN:
 		case TERM:
-			return processTerm(path, geneQ);
+			q =  processTerm(path, geneQ);
+			break;
 		case LOCATION:
-			return processLocation(path, geneQ);
+			q =  processLocation(path, geneQ);
+			break;
 		case NUMBER:
-			return processNumber(path, geneQ);
+			q =  processNumber(path, geneQ);
+			break;
 		default:
 			throw new UnsupportedOperationException("Query type " + geneQ.getType() + " not supported");
+		}
+		if(geneQ.isNot()) {
+			return QueryBuilders.boolQuery().mustNot(q);
+		} else {
+			return q;
 		}
 	}
 

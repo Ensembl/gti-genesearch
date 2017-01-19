@@ -101,7 +101,7 @@ public class IdLookupClient {
 			ids = Files.lines(new File(params.queryFile).toPath()).collect(Collectors.toList());
 		}
 
-		List<Query> queries = Arrays.asList(new Query[] { new Query(FieldType.TERM, params.queryField, ids) });
+		List<Query> queries = Arrays.asList(new Query[] { new Query(FieldType.TERM, params.queryField, false, ids) });
 		search.fetch(row -> {
 			try {
 				out.write(StringUtils.join(row.values(), "\t"));

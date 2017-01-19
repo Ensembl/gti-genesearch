@@ -47,36 +47,49 @@ public class QueryHandlerTest {
 		assertEquals("Query value size", 1, q.get(0).getValues().length);
 		assertEquals("Query value", "value", q.get(0).getValues()[0]);
 	}
+	
+
+	@Test
+	public void testNotSingle() {
+		List<Query> q = handler.parseQuery("{\"!key\":\"value\"}");
+		assertEquals("Single query", 1, q.size());
+		assertEquals("Query type", FieldType.TERM, q.get(0).getType());
+		assertEquals("Query field", "key", q.get(0).getFieldName());
+		assertEquals("Query value size", 1, q.get(0).getValues().length);
+		assertEquals("Query value", "value", q.get(0).getValues()[0]);
+		assertTrue("Query NOT", q.get(0).isNot());
+	}
+
 
 	@Test
 	public void testSimpleMultiple() {
-		List<Query> q = handler.parseQuery("{\"key\":[\"1\",\"2\"]}");
+		List<Query> q = handler.parseQuery("{\"key\":[\"one\",\"two\"]}");
 		assertEquals("Single query", 1, q.size());
 		assertEquals("Query type", FieldType.TERM, q.get(0).getType());
 		assertEquals("Query field", "key", q.get(0).getFieldName());
 		assertEquals("Query value size", 2, q.get(0).getValues().length);
-		assertEquals("Query value", "1", q.get(0).getValues()[0]);
-		assertEquals("Query value", "2", q.get(0).getValues()[1]);
+		assertEquals("Query value", "one", q.get(0).getValues()[0]);
+		assertEquals("Query value", "two", q.get(0).getValues()[1]);
 	}
 
 	@Test
 	public void testDouble() {
-		List<Query> q = handler.parseQuery("{\"key1\":\"1\",\"key2\":\"2\"}");
+		List<Query> q = handler.parseQuery("{\"key1\":\"one\",\"key2\":\"two\"}");
 		System.out.println(q);
 		assertEquals("Double query", 2, q.size());
 		assertEquals("Query type", FieldType.TERM, q.get(0).getType());
 		assertEquals("Query field", "key1", q.get(0).getFieldName());
 		assertEquals("Query value size", 1, q.get(0).getValues().length);
-		assertEquals("Query value", "1", q.get(0).getValues()[0]);
+		assertEquals("Query value", "one", q.get(0).getValues()[0]);
 		assertEquals("Query type", FieldType.TERM, q.get(1).getType());
 		assertEquals("Query field", "key2", q.get(1).getFieldName());
 		assertEquals("Query value size", 1, q.get(1).getValues().length);
-		assertEquals("Query value", "2", q.get(1).getValues()[0]);
+		assertEquals("Query value", "two", q.get(1).getValues()[0]);
 	}
 
 	@Test
 	public void testNested() {
-		List<Query> qs = handler.parseQuery("{\"key1\":{\"a\":\"1\",\"b\":\"2\"}}");
+		List<Query> qs = handler.parseQuery("{\"key1\":{\"a\":\"one\",\"b\":\"two\"}}");
 		System.out.println(qs);
 		assertEquals("Single query", 1, qs.size());
 		Query q = qs.get(0);
@@ -87,12 +100,12 @@ public class QueryHandlerTest {
 		assertEquals("Query type", FieldType.TERM, subQ1.getType());
 		assertEquals("Query field", "a", subQ1.getFieldName());
 		assertEquals("Query value size", 1, subQ1.getValues().length);
-		assertEquals("Query value", "1", subQ1.getValues()[0]);
+		assertEquals("Query value", "one", subQ1.getValues()[0]);
 		Query subQ2 = q.getSubQueries()[1];
 		assertEquals("Query type", FieldType.TERM, subQ2.getType());
 		assertEquals("Query field", "b", subQ2.getFieldName());
 		assertEquals("Query value size", 1, subQ2.getValues().length);
-		assertEquals("Query value", "2", subQ2.getValues()[0]);
+		assertEquals("Query value", "two", subQ2.getValues()[0]);
 	}
 
 	@Test
@@ -105,42 +118,42 @@ public class QueryHandlerTest {
 	@Test
 	public void testMergeQueriesSimple() {
 		Map<String, Object> map = new HashMap<>();
-		map.put("a.b", "1");
-		map.put("a.c", "2");
+		map.put("a.b", "one");
+		map.put("a.c", "two");
 		Map<String, Object> mergeQueries = DefaultQueryHandler.mergeQueries(map);
 		assertEquals("Single key", 1, mergeQueries.keySet().size());
 		assertTrue("a found", mergeQueries.containsKey("a"));
 		Object aVal = mergeQueries.get("a");
 		assertTrue("a is a map", Map.class.isAssignableFrom(aVal.getClass()));
 		assertEquals("Two keys", 2, ((Map) aVal).keySet().size());
-		assertEquals("b found", "1", ((Map) aVal).get("b"));
-		assertEquals("c found", "2", ((Map) aVal).get("c"));
+		assertEquals("b found", "one", ((Map) aVal).get("b"));
+		assertEquals("c found", "two", ((Map) aVal).get("c"));
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMergeQueriesMixed() {
 		Map<String, Object> map = new HashMap<>();
-		map.put("a.b", "1");
-		map.put("x", "3");
-		map.put("a.c", "2");
+		map.put("a.b", "one");
+		map.put("x", "three");
+		map.put("a.c", "two");
 		Map<String, Object> mergeQueries = DefaultQueryHandler.mergeQueries(map);
 		assertEquals("Two keys", 2, mergeQueries.keySet().size());
-		assertEquals("x found", "3", mergeQueries.get("x"));
+		assertEquals("x found", "three", mergeQueries.get("x"));
 		assertTrue("a found", mergeQueries.containsKey("a"));
 		Object aVal = mergeQueries.get("a");
 		assertTrue("a is a map", Map.class.isAssignableFrom(aVal.getClass()));
 		assertEquals("Two keys", 2, ((Map) aVal).keySet().size());
-		assertEquals("b found", "1", ((Map) aVal).get("b"));
-		assertEquals("c found", "2", ((Map) aVal).get("c"));
+		assertEquals("b found", "one", ((Map) aVal).get("b"));
+		assertEquals("c found", "two", ((Map) aVal).get("c"));
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMergeQueriesNested() {
 		Map<String, Object> map = new HashMap<>();
-		map.put("a.b.c", "1");
-		map.put("a.b.d", "2");
+		map.put("a.b.c", "one");
+		map.put("a.b.d", "two");
 		Map<String, Object> mergeQueries = DefaultQueryHandler.mergeQueries(map);
 		System.out.println(mergeQueries);
 		assertEquals("Single key", 1, mergeQueries.keySet().size());
@@ -151,14 +164,14 @@ public class QueryHandlerTest {
 		assertTrue("b found", ((Map) aVal).containsKey("b"));
 		Object bVal = ((Map) aVal).get("b");
 		assertEquals("Two keys", 2, ((Map) bVal).keySet().size());
-		assertEquals("b found", "1", ((Map) bVal).get("c"));
-		assertEquals("c found", "2", ((Map) bVal).get("d"));
+		assertEquals("b found", "one", ((Map) bVal).get("c"));
+		assertEquals("c found", "two", ((Map) bVal).get("d"));
 	}
 
 	@Test
 	public void testParseAndMerge() {
 		QueryHandler handler = new DefaultQueryHandler();
-		List<Query> qs = handler.parseQuery("{\"key.a\":\"1\",\"key.b\":\"2\"}");
+		List<Query> qs = handler.parseQuery("{\"key.a\":\"one\",\"key.b\":\"two\"}");
 		System.out.println(qs);
 		assertEquals("Single query", 1, qs.size());
 		Query q = qs.get(0);
@@ -169,25 +182,25 @@ public class QueryHandlerTest {
 		assertEquals("Query type", FieldType.TERM, subQ1.getType());
 		assertEquals("Query field", "a", subQ1.getFieldName());
 		assertEquals("Query value size", 1, subQ1.getValues().length);
-		assertEquals("Query value", "1", subQ1.getValues()[0]);
+		assertEquals("Query value", "one", subQ1.getValues()[0]);
 		Query subQ2 = q.getSubQueries()[1];
 		assertEquals("Query type", FieldType.TERM, subQ2.getType());
 		assertEquals("Query field", "b", subQ2.getFieldName());
 		assertEquals("Query value size", 1, subQ2.getValues().length);
-		assertEquals("Query value", "2", subQ2.getValues()[0]);
+		assertEquals("Query value", "two", subQ2.getValues()[0]);
 	}
 
 	@Test
 	public void testExpandQuery() {
-		List<String> ids = Arrays.asList("1", "2", "3");
+		List<String> ids = Arrays.asList("one", "two", "three");
 		{
-			Query q = Query.expandQuery("a", ids);
+			Query q = Query.expandQuery("a", false, ids);
 			assertEquals("a found", "a", q.getFieldName());
 			assertEquals("TERM query", FieldType.TERM, q.getType());
 			assertEquals("Correct IDs found", ids.size(), q.getValues().length);
 		}
 		{
-			Query q = Query.expandQuery("a.b", Arrays.asList("1", "2", "3"));
+			Query q = Query.expandQuery("a.b", false, Arrays.asList("one", "two", "three"));
 			assertEquals("a found", "a", q.getFieldName());
 			assertEquals("NESTED query", FieldType.NESTED, q.getType());
 			Query q2 = q.getSubQueries()[0];
@@ -196,7 +209,7 @@ public class QueryHandlerTest {
 			assertEquals("Correct IDs found", ids.size(), q2.getValues().length);
 		}
 		{
-			Query q = Query.expandQuery("a.b.c", Arrays.asList("1", "2", "3"));
+			Query q = Query.expandQuery("a.b.c", false, Arrays.asList("one", "two", "three"));
 			assertEquals("a found", "a", q.getFieldName());
 			assertEquals("NESTED query", FieldType.NESTED, q.getType());
 			Query q2 = q.getSubQueries()[0];
