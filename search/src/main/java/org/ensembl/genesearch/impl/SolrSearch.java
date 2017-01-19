@@ -223,4 +223,17 @@ public class SolrSearch implements Search {
 		return dataType;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#up()
+	 */
+	@Override
+	public boolean up() {
+		try {
+			return solr.ping().getStatus()==0;
+		} catch (SolrServerException | IOException e) {
+			log.warn("Could not ping Solr server", e);
+			return false;
+		}
+	}
+
 }

@@ -122,7 +122,7 @@ public class ESSearchFlatten extends ESSearch {
 				targetQs.add(q);
 			}
 		}
-		qs.add(new Query(FieldType.NESTED, target, targetQs.toArray(new Query[] {})));
+		qs.add(new Query(FieldType.NESTED, target, false, targetQs.toArray(new Query[] {})));
 		return qs;
 	}
 

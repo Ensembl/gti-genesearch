@@ -353,15 +353,15 @@ public abstract class JoinMergeSearch implements Search {
 				// and the IDs as the values
 				for (Entry<String, Set<String>> e : ids.entrySet()) {
 					Query[] qs = new Query[1 + to.queries.size()];
-					qs[0] = new Query(FieldType.TERM, to.key, e.getValue());
+					qs[0] = new Query(FieldType.TERM, to.key, false, e.getValue());
 					for (int i = 0; i < to.queries.size(); i++) {
 						qs[i + 1] = to.queries.get(i);
 					}
-					newQueries.add(new Query(FieldType.NESTED, e.getKey(), qs));
+					newQueries.add(new Query(FieldType.NESTED, e.getKey(), false, qs));
 				}
 			} else {
 				newQueries.addAll(to.queries);
-				newQueries.add(Query.expandQuery(to.key, ids.keySet()));
+				newQueries.add(Query.expandQuery(to.key, false, ids.keySet()));
 			}
 
 			if (to.fields.getFields().size() == 2 && to.fields.getFields().contains(COUNT)) {
@@ -523,7 +523,7 @@ public abstract class JoinMergeSearch implements Search {
 		// step 2: query b for b.n=list[a.n] and b.c=2 and retrieve b.m ->
 		// list[b.m]
 		List<Query> qs = new ArrayList<>();
-		qs.add(new Query(FieldType.TERM, to.key, fromIds.toArray(new String[] {})));
+		qs.add(new Query(FieldType.TERM, to.key, false, fromIds.toArray(new String[] {})));
 		qs.addAll(to.queries);
 		Set<String> fromJoinedIds = new HashSet<>(); // all "from" IDs found
 														// in "to"
@@ -534,7 +534,7 @@ public abstract class JoinMergeSearch implements Search {
 		// step 3: query is now n:list[b.m], b:{c.2} which can be passed
 		// directly to query
 		List<Query> newFromQ = new ArrayList<>(from.queries.size() + 1);
-		newFromQ.add(new Query(FieldType.TERM, from.key, fromJoinedIds.toArray(new String[] {})));
+		newFromQ.add(new Query(FieldType.TERM, from.key, false, fromJoinedIds.toArray(new String[] {})));
 		// we still need the original x:1 query to avoid issues with n-m queries
 		newFromQ.addAll(from.queries);
 		return new SubSearchParams(from.name, from.key, newFromQ, from.fields, from.joinStrategy);
@@ -596,5 +596,12 @@ public abstract class JoinMergeSearch implements Search {
 		}
 		return fields;
 	}
+
+	@Override
+	public boolean up() {
+		return provider.getSearch(getPrimarySearchType()).up();
+	}
+	
+	
 
 }

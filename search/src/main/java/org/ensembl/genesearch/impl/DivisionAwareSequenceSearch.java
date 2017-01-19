@@ -160,4 +160,12 @@ public class DivisionAwareSequenceSearch implements Search {
 		return eSearch.getDataType();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#up()
+	 */
+	@Override
+	public boolean up() {
+		return eSearch.up() && egSearch.up();
+	}
+
 }

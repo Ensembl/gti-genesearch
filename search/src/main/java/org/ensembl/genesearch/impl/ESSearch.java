@@ -32,6 +32,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.lucene.search.function.FieldValueFactorFunction.Modifier;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
@@ -120,7 +121,9 @@ public class ESSearch implements Search {
 				for (List<String> terms : ListUtils.partition(Arrays.asList(query.getValues()), queryScrollSize)) {
 					log.info("Querying " + terms.size() + "/" + query.getValues().length);
 					watch.start();
-					fetch(consumer, Arrays.asList(new Query(query.getType(), query.getFieldName(), terms)), output);
+					fetch(consumer,
+							Arrays.asList(new Query(query.getType(), query.getFieldName(), query.isNot(), terms)),
+							output);
 					watch.stop();
 					log.info("Queried " + terms.size() + "/" + query.getValues().length + " in " + watch.getTime()
 							+ " ms");
@@ -184,7 +187,8 @@ public class ESSearch implements Search {
 	 * Process hits using scan/scroll
 	 * 
 	 * @param consumer
-	 * @param response initial response for hit processing
+	 * @param response
+	 *            initial response for hit processing
 	 * @return current response (replaced during subsequent scrolls)
 	 */
 	protected SearchResponse consumeAllHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
@@ -542,6 +546,22 @@ public class ESSearch implements Search {
 	@Override
 	public DataTypeInfo getDataType() {
 		return dataType;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.Search#up()
+	 */
+	@Override
+	public boolean up() {
+		try {
+			return client.admin().cluster().prepareHealth().setWaitForGreenStatus()
+					.setTimeout(TimeValue.timeValueSeconds(2)).get().getStatus().equals(ClusterHealthStatus.GREEN);
+		} catch (Exception e) {
+			log.warn("Could not ping ES server", e);
+			return false;
+		}
 	}
 
 }

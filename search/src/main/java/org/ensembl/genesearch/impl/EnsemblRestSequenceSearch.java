@@ -33,6 +33,8 @@ import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.client.RestTemplate;
 
@@ -187,6 +189,31 @@ public class EnsemblRestSequenceSearch implements Search {
 	@Override
 	public DataTypeInfo getDataType() {
 		return dataType;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ensembl.genesearch.Search#up()
+	 */
+	@Override
+	public boolean up() {
+		String url = baseUrl.replace("/sequence/id", "/info/ping");
+		try {
+			ResponseEntity<Map> response = template.getForEntity(url, Map.class);
+			if (!response.getStatusCode().equals(HttpStatus.OK)) {
+				log.warn(url + " returns status " + response.getStatusCode());
+			}
+			String ping = String.valueOf(response.getBody().get("ping"));
+			if (!ping.equals("1")) {
+				log.warn(url + " returns ping " + ping);
+				return false;
+			}
+			return true;
+		} catch (Exception e) {
+			log.warn("Cannot check status from " + url, e);
+			return false;
+		}
 	}
 
 }

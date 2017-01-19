@@ -168,4 +168,18 @@ public class MongoSearch implements Search {
 		return MONGO_ID;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.Search#up()
+	 */
+	@Override
+	public boolean up() {
+		try {
+			mongoC.find();
+			return true;
+		} catch(Exception e) {
+			log.warn("Could not ping Mongo server", e);
+			return false;
+		}
+	}
+
 }

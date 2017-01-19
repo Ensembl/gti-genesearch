@@ -19,12 +19,17 @@ package org.ensembl.gti.genesearch.services;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.query.DataTypeAwareQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
+import org.glassfish.jersey.server.JSONP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.health.Health;
 
 /**
  * Base class for services dealing with SearchProviders
@@ -39,7 +44,8 @@ public abstract class SearchBasedService {
 	protected final EndpointSearchProvider provider;
 
 	/**
-	 * @param provider provider for retrieving search
+	 * @param provider
+	 *            provider for retrieving search
 	 */
 	public SearchBasedService(EndpointSearchProvider provider) {
 		this.provider = provider;
@@ -59,6 +65,17 @@ public abstract class SearchBasedService {
 
 	protected List<Query> parseQuery(Map<String, Object> q) {
 		return getHandler().parseQuery(q);
+	}
+
+	@Path("health")
+	@GET
+	@JSONP
+	public Health health() {
+		if (getSearch().up()) {
+			return Health.up().build();
+		} else {
+			return Health.down().build();
+		}
 	}
 
 }

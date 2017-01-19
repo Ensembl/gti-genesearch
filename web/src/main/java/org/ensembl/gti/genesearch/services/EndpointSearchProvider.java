@@ -60,6 +60,7 @@ public class EndpointSearchProvider {
 	protected Search transcriptSearch = null;
 	protected Search expressionSearch = null;
 	protected Search expressionAnalyticsSearch = null;
+	protected Search sequenceSearch = null;
 	protected Client client = null;
 	protected MongoCollection<Document> mongoCollection = null;
 	private SolrClient solrAnalyticsClient = null;
@@ -144,7 +145,7 @@ public class EndpointSearchProvider {
 		this.solrExperimentsClient = solrClient;
 	}
 
-	protected SearchRegistry getRegistry() {
+	public SearchRegistry getRegistry() {
 		if (registry == null) {
 			DataTypeInfo geneType = DataTypeInfo.fromResource("/genes_datatype_info.json");
 			DataTypeInfo genomeType = DataTypeInfo.fromResource("/genomes_datatype_info.json");
@@ -248,9 +249,9 @@ public class EndpointSearchProvider {
 		}
 		return expressionSearch;
 	}
-
-	public void setExpressionSearch(Search expressionSearch) {
-		this.expressionSearch = expressionSearch;
+	public Search getSequenceSearch() {
+		return getRegistry().getSearch(SearchType.SEQUENCES);
 	}
+
 
 }
