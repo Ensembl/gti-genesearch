@@ -30,7 +30,21 @@ Note that the majority of endpoints described below are implemented using the sa
 * expression
 
 ## `/api/health`
-This can be used to check if the server is running
+## `/api/{object}/health`
+These can be used to check if the server and its component searches are running properly. The response is a hash containing the key `status` which can be `UP` or `DOWN`. The top level health service hash also contains the status of each component search e.g. ```
+{
+"status": "DOWN",
+"GENOMES": "up",
+"GENES": "up",
+"TRANSCRIPTS": "up",
+"HOMOLOGUES": "up",
+"VARIANTS": "up",
+"SEQUENCES": "up",
+"EXPRESSION": "down",
+"EXPRESSION_EXPERIMENTS": "down",
+"EXPRESSION_ANALYTICS": "down"
+}
+```
 
 ## `/api/{object}/fieldinfo`
 This set of endpoints returns complete details for all datatypes (e.g. genes, sequences) and their associated fields for a specified object

@@ -12,6 +12,11 @@ To restrict to a given genome:
 http://localhost:8080/api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}
 ```
 
+To restrict to a results except in the given genome:
+```
+http://localhost:8080/api/genes/query?query={"name":"BRCA2","!genome":"homo_sapiens"}
+```
+
 To restrict to a given taxonomic lineage (40674 is Mammalia):
 ```
 http://localhost:8080/api/genes/query?query={"name":"BRCA2","lineage":"40674"}

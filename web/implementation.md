@@ -27,7 +27,7 @@ The main `Application` uses a set of services (configured in `JerseyConfig`) whi
 ** `TranscriptQueryService`
 ** `VariantQueryService`
 ** `GenomeQueryService`
-* `HealthService` - returns the status of the service. Currently limited to the main Spring Boot application and does not check component searches.
+* `HealthService` - returns the status of the service, examining each sub search in turn.
 
 The main query services are shown below:
 

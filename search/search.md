@@ -60,15 +60,16 @@ If the target is transcripts, then the following two objects would be returned:
 Note that currently result counts and offsets etc. will still indicate the number of genes.
 
 ## Query
-The `Query` object encapsulates parameters to be used when querying the `Search` interface. There are four types of `Query` possible, defined by an enum passed during construction.
+The `Query` object encapsulates parameters to be used when querying the `Search` interface. There are several types of `Query` possible, defined by an enum passed during construction.
 * `TERM` - specifies a field and an exact match for 1 or more values
 * `TEXT` - specifies a field and a sub-text match for 1 or more values
 * `NUMBER` - accepts a numeric field and optional operators e.g. 1, 1.2, -1.2, >1.2, <1.3, 1.3-1.6 etc.
 * `LOCATION` - accepts one of more specially formatted genomic location strings of the form `<name>:<start>:<end>[:<strand>]
 * `NESTED` - a field and combines multiple sub-`Query` objects to be combined with an "AND" operator
-_Note:_ This may be changed to a hierarchy of classes in due course
 
-Queries can be specified as JSON or generic Map structures, and transformed into `Query` objects by instances of `QueryHandler` of which there is currently only one instance, `DefaultQueryBuilder`.
+Queries can be specified as JSON or generic Map structures, and transformed into `Query` objects by instances of `QueryHandler`. `DefaultQueryHandler` uses the contents of query fields to determine the query type whilst `DataTypeAwareQueryHandler` uses a `DataInfo` instance to look up the type of query from a predefined list.
+
+Negation can be specified by prepending `!` to a query field e.g. `{"!genome":"homo_sapiens"}`
 
 ## QueryResult
 `QueryResult` encapsulates the first set of results, a count and any facets.
