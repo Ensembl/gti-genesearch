@@ -22,11 +22,6 @@ To restrict to a given taxonomic lineage (40674 is Mammalia):
 http://localhost:8080/api/genes/query?query={"name":"BRCA2","lineage":"40674"}
 ```
 
-To find genes from a particular location:
-```
-http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens","location":{"seq_region_name":"1","start":"45000","end":"96000"}}
-```
-
 To find genes annotated with GO terms that are the children of a given term use the GO_expanded field:
 ```
 http://localhost:8080/api/genes/query?query={"GO_expanded":"GO:0016787"}
@@ -54,9 +49,9 @@ http://localhost:8080/api/genes/query?query={"Uniprot/SWISSPROT":["P03886","P038
 
 To find genes matching with different values of a number such as a start position:
 ```
-http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":"45000-46000"]}
-http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":">45000"]}
-http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":"<=45000"]}
+http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":"45000-46000"}
+http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":">45000"}
+http://localhost:8080/api/genes/query?query={"genome":"homo_sapiens", "start":"<=45000"}
 ```
 
 To find genes in a given location or locations:
