@@ -1,7 +1,8 @@
 from locust import HttpLocust, TaskSet, task
 import random
+import tempfile
 
-urls = ["/api/genes/fetch?q={\"name\":\"BRCA2\"}", "/api/health", "/api/genes/info",
+urls = ["/api/genes/fetch?query={\"name\":\"BRCA2\"}",
         "/api/genes/fetch?query={\"name\":\"BRCA2\",\"lineage\":\"40674\"}",
         "/api/genes/fetch?query={\"GO_expanded\":\"GO:0016787\"}",
         "/api/genes/fetch?query={\"GO\":{\"evidence\":\"IMP\",\"term\":\"GO:0006302\"}}",
@@ -41,7 +42,9 @@ class UserBehavior(TaskSet):
 
     @task(1)
     def profile(self):
-        self.client.get(random.choice(urls))
+        r = self.client.get(random.choice(urls), stream=True)
+        for chunk in r.iter_content(chunk_size=4096):
+            pass
 
 class WebsiteUser(HttpLocust):
     task_set = UserBehavior
