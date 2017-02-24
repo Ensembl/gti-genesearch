@@ -46,30 +46,20 @@ These can be used to check if the server and its component searches are running 
 }
 ```
 
-## `/api/{object}/fieldinfo`
-This set of endpoints returns complete details for all datatypes (e.g. genes, sequences) and their associated fields for a specified object
-e.g.
-http://localhost:8080/api/genes/fieldinfo
-http://localhost:8080/api/genomes/fieldinfo
-
-### `GET /api/genes/fieldinfo/names`
-Returns a list of names of datatypes available in the gene search
-e.g.
-http://localhost:8080/api/genes/fieldinfo/names
-
-### `GET /api/genes/fieldinfo/{datatype}`
+### `GET /api/{object}/info/`
 Returns complete details for the specified datatype
 e.g.
 http://localhost:8080/api/genes/fieldinfo/genes
+http://localhost:8080/api/genomes/info
 
-### `GET /api/genes/fieldinfo/{datatype}/fields`
+### `GET /api/{object}/info/fields`
 Returns all fields for the specified datatype
 e.g.
-http://localhost:8080/api/genes/fieldinfo/genes/fields
+http://localhost:8080/api/genes/info/fields
 
-### `GET /api/genes/fieldinfo/{datatype}/fields?type={type}`
+### `GET /api/{object}/info/fields?type={type}`
 Returns fields for the specified datatypes that match the supplied type
-http://localhost:8080/api/genes/fieldinfo/genes/fields?type=object
+http://localhost:8080/api/genes/info/fields?type=object
 
 ## `/api/genes/query` and `/api/genomes/query`
 The `/api/genes/query` and `/api/genomes/query` endpoints allow the first n hits and a count plus facets to be returned as JSON. Both endpoints operate in the same way.
