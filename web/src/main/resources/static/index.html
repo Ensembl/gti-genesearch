@@ -137,9 +137,11 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 
 
 				<!-- local-nav -->
-<nav>
+				<nav>
 					<ul class="grid_24 nav nav-pills" id="local-nav">
-						<li class="first active"><a data-toggle="pill" href="#examples">API Examples</a></li>
+						<li class="first active"><a data-toggle="pill" href="#usage">API
+								Usage</a></li>
+						<li><a data-toggle="pill" href="#examples">API Examples</a></li>
 						<li class="last"><a data-toggle="pill" href="#aboutegs">About
 								Ensembl Gene Search</a></li>
 						<li class="functional"><a href="#" class="icon icon-static"
@@ -154,244 +156,622 @@ For optimal performance, use a custom Modernizr build: www.modernizr.com/downloa
 		<div id="content" role="main" class="grid clearfix">
 
 			<div class="tab-content">
+				<div class="tab-pane fade in active" class="show" id="usage">
+					<h3>API Usage</h3>
+					<p>
+						The service is available on
+						<code>api</code>
+						with service descriptors from <a href='api/application.wadl'><code>api/application.wadl</code></a>
+					</p>
+
+					<p>
+						The application supports GZIP compression of responses where the
+						client header has
+						<code>Accept-Encoding:gzip</code>
+						set.
+					</p>
+
+					<p>
+						Note that the majority of endpoints described below are
+						implemented using the same pattern for the following objects
+						(denoted by
+						<code>{object}</code>
+						in the URL):
+					<ul>
+						<li>genes</li>
+						<li>transcripts</li>
+						<li>sequences</li>
+						<li>genomes</li>
+						<li>variants</li>
+						<li>expression</li>
+					</ul>
+					</p>
+
+					<h4>/api/health
+					</h4>
+
+					<h4>/api/{object}/health
+					</h4>
+
+					<p>
+						These can be used to check if the server and its component
+						searches are running properly. The response is a hash containing
+						the key
+						<code>status</code>
+						which can be
+						<code>UP</code>
+						or
+						<code>DOWN</code>
+						. The top level health service hash also contains the status of
+						each component search e.g.
+						<code> { "status": "DOWN", "GENOMES": "up", "GENES": "up",
+							"TRANSCRIPTS": "up", "HOMOLOGUES": "up", "VARIANTS": "up",
+							"SEQUENCES": "up", "EXPRESSION": "down",
+							"EXPRESSION_EXPERIMENTS": "down", "EXPRESSION_ANALYTICS": "down"
+							} </code>
+					</p>
+
+					<h5>GET /api/{object}/info/
+					</h5>
+
+					<p>Returns complete details for the specified datatype e.g.
+						<a href='api/genes/info'><code>api/genes/info</code></a> <a href='api/genomes/info'><code>api/genomes/info</code></a></p>
+
+					<h5>GET /api/{object}/info/fields
+					</h5>
+
+					<p>Returns all fields for the specified datatype e.g.
+						<a href='api/genes/info/fields'><code>api/genes/info/fields</code></a></p>
+
+
+					<h4>/api/genes/query
+						and /api/genomes/query
+					</h4>
+
+					<p>
+						The
+						<code>/api/genes/query</code>
+						and
+						<code>/api/genomes/query</code>
+						endpoints allow the first n hits and a count plus facets to be
+						returned as JSON. Both endpoints operate in the same way.
+					</p>
+
+					<h5>GET</h5>
+
+					<p>
+						The
+						<code>/api/genes/query</code>
+						endpoint accepts the following arguments: -
+						<code>query</code>
+						- a JSON-formatted string e.g.
+						<code>"{"genome":"homo_sapiens","biotype":"protein_coding"}"</code>
+						-
+						<code>fields</code>
+						- a comma-separated list of fields e.g.
+						<code>genome,name,description</code>
+						.
+						<code>*</code>
+						can be used as a wildcard e.g.
+						<code>*</code>
+						to retrieve all fields -
+						<code>sort</code>
+						- a comma-separated list of fields to sort by, which can be
+						preceded by
+						<code>+</code>
+						or
+						<code>-</code>
+						to indicate ascending or descending e.g.
+						<code>+name,-start</code>
+						-
+						<code>limit</code>
+						- number of hits to return e.g. 100 -
+						<code>facets</code>
+						- a comma-separated list of fields to facet over e.g.
+						<code>facets=genome,biotype</code>
+						-
+						<code>target</code>
+						- optional name of target if genes are not required (e.g.
+						<code>transcripts</code>
+						,
+						<code>translations</code>
+						,
+						<code>homologues</code>
+						,
+						<code>sequences</code>
+						) -
+						<code>targetQuery</code>
+						- optional additional queries passed to the secondary target
+					</p>
+
+					<p>
+						<a
+							href='api/genes/query?query={"genome":"nanoarchaeum_equitans_kin4_m"}&amp;limit=5&fields=name,genome&amp;sort=+name,-start&facets=biotype'><code>api/genes/query?query={"genome":"nanoarchaeum_equitans_kin4_m"}&amp;limit=5&amp;fields=name,genome&amp;sort=+name,-start&amp;facets=biotype</code></a>
+					</p>
+
+					<p>
+						This endpoint returns a JSON-formatted response containing the
+						number of hits, the first
+						<code>limit</code>
+						hits and a list of facets e.g.
+						<code> { "resultCount": 598, "results": [ { "genome":
+							"nanoarchaeum_equitans_kin4_m", "name": "5S_rRNA", "id":
+							"EBG00001184723" }, { "genome": "nanoarchaeum_equitans_kin4_m",
+							"name": "5_8S_rRNA", "id": "EBG00001184731" } ], "facets": {
+							"biotype": { "tRNA": 38, "protein_coding": 536, "rRNA": 23,
+							"snRNA": 1 } } } </code>
+					</p>
+					
+					<h5>POST</h5>
+
+					<p>
+						This is as above, but the parameters are supplied as pure JSON:
+						<code> curl -H "Content-Type: application/json" -X POST
+							--data
+							'{"query":{"genome":"nanoarchaeum_equitans_kin4_m"},"limit":10,
+							"fields":["name","genome"],"sort":["+name","-start"]}'
+							api/genes/query </code>
+					</p>
+
+					<h4>/api/{object}/fetch
+					</h4>
+
+					<p>
+						The
+						<code>/api/genes/fetch</code>
+						and
+						<code>/api/genomes/fetch</code>
+						endpoints are intended for bulk retrieval and accepts the
+						<code>query</code>
+						,
+						<code>fields</code>
+						,
+						<code>target</code>
+						and
+						<code>targetQuery</code>
+						parameters from
+						<code>/query</code>
+						. It can be invoked via GET and POST and returns the results as a
+						JSON object, with the fields
+						<code>fields</code>
+						(array of objects representing retrieved fields) and
+						<code>results</code>
+						(array of all matched documents), with no summary or facets
+						available.
+					</p>
+
+					<p>
+						The output format is JSON by default, but can be changed by
+						setting either the
+						<code>Accept</code>
+						request header or
+						<code>accept</code>
+						parameter to:<ul>
+						<li>JSON -
+						<code>application/x-javascript</code></li>
+						<li>XML -
+						<code>application/xml</code></li>
+						<li>CSV -
+						<code>text/csv</code>
+						or
+						<code>application/vnd.ms-excel</code></li></ul>
+					</p>
+
+					<h5>GET</h5>
+
+					<p>
+						<a
+							href='api/genes/fetch?query={"genome":"nanoarchaeum_equitans_kin4_m"}&fields=name,genome&amp;sort=+name,-start'><code>api/genes/fetch?query={"genome":"nanoarchaeum_equitans_kin4_m"}&amp;fields=name,genome&amp;sort=+name,-start</code></a>
+					</p>
+
+					<h5>POST</h5>
+
+					<p>
+						<code> curl -H "Content-Type: application/json" -X POST
+							--data
+							'{"query":{"genome":"nanoarchaeum_equitans_kin4_m"},"fields":["name","genome"],"sort":["+name","-start"]}'
+							api/genes/fetch </code>
+					</p>
+
+					<h4>/api/{object}
+					</h4>
+
+					<p>
+						The
+						<code>/api/genes</code>
+						and
+						<code>/api/genomes</code>
+						endpoint are simple endpoints for retrieving complete documents
+						for genes as JSON.
+					</p>
+
+					<h5>GET (single gene or genome)</h5>
+
+					<p>
+						The gene stable ID or genome production name is supplied as a URL
+						parameter:
+						<code>api/genes/NEQ392</code>
+						<br />
+						<code>api/genomes/homo_sapiens</code>
+						<br />
+					</p>
+
+					<p>
+						In addition,
+						<code>/api/genomes/select</code>
+						is provided to allow genomes to be found by name (this is for use
+						in a lookup). For instance, to find genomes with any names
+						matching
+						<code>thermo</code>
+						(note that this uses aliases as well as assigned names):
+						<code> api/genomes/select?query=thermo </code>
+					</p>
+
+					<h5>POST (multiple genes or genomes)</h5>
+
+					<p>
+						A JSON document containing a list of gene stable IDs or genome
+						production names can be passed via POST:
+						<code> curl -H "Content-Type: application/json" -X POST
+							--data '["NEQ392","NEQ393"]' api/genes </code>
+					</p>
+
+				</div>
+
 				<div class="tab-pane fade in active" class="show" id="examples">
 					<h3>API Examples</h3>
 
-<h4><code>/query</code></h4>
+					<h4>
+						<code>/query</code>
+					</h4>
 
-<h5>Example queries</h5>
+					<h5>Example queries</h5>
 
-<p>Find all genes called BRCA2 in any genome:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2"}'>api/genes/query?query={"name":"BRCA2"}</a>
-</code></p>
+					<p>
+						Find all genes called BRCA2 in any genome: <br />
+						<code>
+							<a href='api/genes/query?query={"name":"BRCA2"}'>api/genes/query?query={"name":"BRCA2"}</a>
+						</code>
+					</p>
 
-<p>To restrict to a given genome:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}</a>
-</code></p>
+					<p>
+						To restrict to a given genome: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}</a>
+						</code>
+					</p>
 
-<p>To restrict to a results except in the given genome:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","!genome":"homo_sapiens"}'>api/genes/query?query={"name":"BRCA2","!genome":"homo_sapiens"}</a>
-</code></p>
+					<p>
+						To restrict to a results except in the given genome: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","!genome":"homo_sapiens"}'>api/genes/query?query={"name":"BRCA2","!genome":"homo_sapiens"}</a>
+						</code>
+					</p>
 
-<p>To restrict to a given taxonomic lineage (40674 is Mammalia):
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","lineage":"40674"}'>api/genes/query?query={"name":"BRCA2","lineage":"40674"}</a>
-</code></p>
+					<p>
+						To restrict to a given taxonomic lineage (40674 is Mammalia): <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","lineage":"40674"}'>api/genes/query?query={"name":"BRCA2","lineage":"40674"}</a>
+						</code>
+					</p>
 
-<p>To find genes annotated with GO terms that are the children of a given term use the GO_expanded field:
-<br/><code>
-<a href='api/genes/query?query={"GO_expanded":"GO:0016787"}'>api/genes/query?query={"GO_expanded":"GO:0016787"}</a>
-</code></p>
+					<p>
+						To find genes annotated with GO terms that are the children of a
+						given term use the GO_expanded field: <br />
+						<code>
+							<a href='api/genes/query?query={"GO_expanded":"GO:0016787"}'>api/genes/query?query={"GO_expanded":"GO:0016787"}</a>
+						</code>
+					</p>
 
-<p>To find specific GO term annotation (double-stranded break repair with mutant phenotype evidence):
-<br/><code>
-<a href='api/genes/query?query={"GO":{"evidence":"IMP","term":"GO:0006302"}}'>api/genes/query?query={"GO":{"evidence":"IMP","term":"GO:0006302"}}</a>
-</code></p>
+					<p>
+						To find specific GO term annotation (double-stranded break repair
+						with mutant phenotype evidence): <br />
+						<code>
+							<a
+								href='api/genes/query?query={"GO":{"evidence":"IMP","term":"GO:0006302"}}'>api/genes/query?query={"GO":{"evidence":"IMP","term":"GO:0006302"}}</a>
+						</code>
+					</p>
 
-<p>To find genes with a particular PHI-base annotation (reduced virulence in wheat)
-<br/><code>
-<a href='api/genes/query?query={"PHI":{"host":"4565","phenotype":"reduced virulence"}}'>api/genes/query?query={"PHI":{"host":"4565","phenotype":"reduced virulence"}}</a>
-</code></p>
+					<p>
+						To find genes with a particular PHI-base annotation (reduced
+						virulence in wheat) <br />
+						<code>
+							<a
+								href='api/genes/query?query={"PHI":{"host":"4565","phenotype":"reduced virulence"}}'>api/genes/query?query={"PHI":{"host":"4565","phenotype":"reduced
+								virulence"}}</a>
+						</code>
+					</p>
 
-<p>To find genes with a particular UniProt cross-reference:
-<br/><code>
-<a href='api/genes/query?query={"Uniprot/SWISSPROT":["P03886"]}'>api/genes/query?query={"Uniprot/SWISSPROT":["P03886"]}</a>
-</code></p>
+					<p>
+						To find genes with a particular UniProt cross-reference: <br />
+						<code>
+							<a href='api/genes/query?query={"Uniprot/SWISSPROT":["P03886"]}'>api/genes/query?query={"Uniprot/SWISSPROT":["P03886"]}</a>
+						</code>
+					</p>
 
-<p>To find genes matching any of a list of UniProt records:
-<br/><code>
-<a href='api/genes/query?query={"Uniprot/SWISSPROT":["P03886","P03891","P00395","P00403","P03928"]}'>api/genes/query?query={"Uniprot/SWISSPROT":["P03886","P03891","P00395","P00403","P03928"]}</a>
-</code></p>
+					<p>
+						To find genes matching any of a list of UniProt records: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"Uniprot/SWISSPROT":["P03886","P03891","P00395","P00403","P03928"]}'>api/genes/query?query={"Uniprot/SWISSPROT":["P03886","P03891","P00395","P00403","P03928"]}</a>
+						</code>
+					</p>
 
-<p>To find genes matching with different values of a number such as a start position:
-<br/><code>
-<a href='api/genes/query?query={"genome":"homo_sapiens", "start":"45000-46000"}'>api/genes/query?query={"genome":"homo_sapiens", "start":"45000-46000"}</a>
-<a href='api/genes/query?query={"genome":"homo_sapiens", "start":"&gt;45000"}'>api/genes/query?query={"genome":"homo_sapiens", "start":"&gt;45000"}</a>
-<a href='api/genes/query?query={"genome":"homo_sapiens", "start":"&lt;=45000"}'>api/genes/query?query={"genome":"homo_sapiens", "start":"&lt;=45000"}</a>
-</code></p>
+					<p>
+						To find genes matching with different values of a number such as a
+						start position: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"genome":"homo_sapiens", "start":"45000-46000"}'>api/genes/query?query={"genome":"homo_sapiens",
+								"start":"45000-46000"}</a> <a
+								href='api/genes/query?query={"genome":"homo_sapiens", "start":"&gt;45000"}'>api/genes/query?query={"genome":"homo_sapiens",
+								"start":"&gt;45000"}</a> <a
+								href='api/genes/query?query={"genome":"homo_sapiens", "start":"&lt;=45000"}'>api/genes/query?query={"genome":"homo_sapiens",
+								"start":"&lt;=45000"}</a>
+						</code>
+					</p>
 
-<p>To find genes in a given location or locations:
-<br/><code>
-<a href='api/genes/query?query={"genome":"homo_sapiens", "location":"1:45000-96000"}'>api/genes/query?query={"genome":"homo_sapiens", "location":"1:45000-96000"}</a>
-<a href='api/genes/query?query={"genome":"homo_sapiens", "location":"1:45000-96000:-1"}'>api/genes/query?query={"genome":"homo_sapiens", "location":"1:45000-96000:-1"}</a>
-<a href='api/genes/query?query={"genome":"homo_sapiens", "location":["1:45000-52000","1:60000-96000"]}'>api/genes/query?query={"genome":"homo_sapiens", "location":["1:45000-52000","1:60000-96000"]}</a>
-</code></p>
+					<p>
+						To find genes in a given location or locations: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"genome":"homo_sapiens", "location":"1:45000-96000"}'>api/genes/query?query={"genome":"homo_sapiens",
+								"location":"1:45000-96000"}</a> <a
+								href='api/genes/query?query={"genome":"homo_sapiens", "location":"1:45000-96000:-1"}'>api/genes/query?query={"genome":"homo_sapiens",
+								"location":"1:45000-96000:-1"}</a> <a
+								href='api/genes/query?query={"genome":"homo_sapiens", "location":["1:45000-52000","1:60000-96000"]}'>api/genes/query?query={"genome":"homo_sapiens",
+								"location":["1:45000-52000","1:60000-96000"]}</a>
+						</code>
+					</p>
 
-<h5>Controlling output</h5>
+					<h5>Controlling output</h5>
 
-<p>Adding different fields:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=genome,name,description,start,end'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=genome,name,description,start,end</a>
-</code></p>
+					<p>
+						Adding different fields: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=genome,name,description,start,end'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=genome,name,description,start,end</a>
+						</code>
+					</p>
 
-<p>Returning results as a 2D array:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&array=true&fields=genome,name,description,start,end'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;array=true&amp;fields=genome,name,description,start,end</a>
-</code></p>
+					<p>
+						Returning results as a 2D array: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&array=true&fields=genome,name,description,start,end'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;array=true&amp;fields=genome,name,description,start,end</a>
+						</code>
+					</p>
 
-<p>Adding fields from a sub-object:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=genome,name,description,start,end,transcripts.name,transcripts.biotype'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=genome,name,description,start,end,transcripts.name,transcripts.biotype</a>
-</code></p>
+					<p>
+						Adding fields from a sub-object: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=genome,name,description,start,end,transcripts.name,transcripts.biotype'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=genome,name,description,start,end,transcripts.name,transcripts.biotype</a>
+						</code>
+					</p>
 
-<p>Adding all fields:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=*'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=*</a>
-</code></p>
+					<p>
+						Adding all fields: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=*'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=*</a>
+						</code>
+					</p>
 
-<h5>Joining other data types</h5>
+					<h5>Joining other data types</h5>
 
-<p>Joining to homologues:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"homologues":["division","name"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=["name","description",{"homologues":["division","name"]}]</a>
-</code></p>
+					<p>
+						Joining to homologues: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"homologues":["division","name"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=["name","description",{"homologues":["division","name"]}]</a>
+						</code>
+					</p>
 
-<p>Joining to homologues and restricting further to just primates:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","homologues":{"lineage":"9443"}}&fields=["name","description",{"homologues":["division","name"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","homologues":{"lineage":"9443"}}&amp;fields=["name","description",{"homologues":["division","name"]}]</a>
-</code></p>
+					<p>
+						Joining to homologues and restricting further to just primates: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","homologues":{"lineage":"9443"}}&fields=["name","description",{"homologues":["division","name"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","homologues":{"lineage":"9443"}}&amp;fields=["name","description",{"homologues":["division","name"]}]</a>
+						</code>
+					</p>
 
-<p>Joining to variants:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"variants":["id","chr","start","stop"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=["name","description",{"variants":["id","chr","start","stop"]}]</a>
-</code></p>
+					<p>
+						Joining to variants: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"variants":["id","chr","start","stop"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=["name","description",{"variants":["id","chr","start","stop"]}]</a>
+						</code>
+					</p>
 
-<p>Joining to variants and showing only genes with variants:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"inner":1}}&fields=["name","description",{"variants":["id","chr","start","stop"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"inner":1}}&amp;fields=["name","description",{"variants":["id","chr","start","stop"]}]</a>
-</code></p>
+					<p>
+						Joining to variants and showing only genes with variants: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"inner":1}}&fields=["name","description",{"variants":["id","chr","start","stop"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"inner":1}}&amp;fields=["name","description",{"variants":["id","chr","start","stop"]}]</a>
+						</code>
+					</p>
 
-<p>Joining to variants and showing counts only:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"variants":["count"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=["name","description",{"variants":["count"]}]</a>
-</code></p>
+					<p>
+						Joining to variants and showing counts only: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"variants":["count"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=["name","description",{"variants":["count"]}]</a>
+						</code>
+					</p>
 
-<p>Joining to variants with given SO term:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"annot":{"ct":{"so":"1627"}}}}&fields=["name","description",{"variants":["id","chr","start","stop"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"annot":{"ct":{"so":"1627"}}}}&amp;fields=["name","description",{"variants":["id","chr","start","stop"]}]</a>
-</code></p>
+					<p>
+						Joining to variants with given SO term: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"annot":{"ct":{"so":"1627"}}}}&fields=["name","description",{"variants":["id","chr","start","stop"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens","variants":{"annot":{"ct":{"so":"1627"}}}}&amp;fields=["name","description",{"variants":["id","chr","start","stop"]}]</a>
+						</code>
+					</p>
 
-<p>Joining to expression data:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"expression":["experimentType","expressionLevel"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=["name","description",{"expression":["experimentType","expressionLevel"]}]</a>
-</code></p>
+					<p>
+						Joining to expression data: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&fields=["name","description",{"expression":["experimentType","expressionLevel"]}]'>api/genes/query?query={"name":"BRCA2","genome":"homo_sapiens"}&amp;fields=["name","description",{"expression":["experimentType","expressionLevel"]}]</a>
+						</code>
+					</p>
 
-<h5>Faceting</h5>
+					<h5>Faceting</h5>
 
-<p>To facet by genome:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2"}&facets=genome'>api/genes/query?query={"name":"BRCA2"}&amp;facets=genome</a>
-</code></p>
+					<p>
+						To facet by genome: <br />
+						<code>
+							<a href='api/genes/query?query={"name":"BRCA2"}&facets=genome'>api/genes/query?query={"name":"BRCA2"}&amp;facets=genome</a>
+						</code>
+					</p>
 
-<p>To facet by genome and biotype:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2"}&facets=genome'>api/genes/query?query={"name":"BRCA2"}&amp;facets=genome</a>
-</code></p>
+					<p>
+						To facet by genome and biotype: <br />
+						<code>
+							<a href='api/genes/query?query={"name":"BRCA2"}&facets=genome'>api/genes/query?query={"name":"BRCA2"}&amp;facets=genome</a>
+						</code>
+					</p>
 
-<h5>Sorting</h5>
+					<h5>Sorting</h5>
 
-<p>To sort by genome:
-<br/><code>
-<a href='api/genes/query?query={"GO_expanded":"GO:0006302"}&fields=genome,name,start,end&sort=genome'>api/genes/query?query={"GO_expanded":"GO:0006302"}&fields=genome,name,start,end&amp;sort=genome</a>
-</code></p>
+					<p>
+						To sort by genome: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"GO_expanded":"GO:0006302"}&fields=genome,name,start,end&sort=genome'>api/genes/query?query={"GO_expanded":"GO:0006302"}&fields=genome,name,start,end&amp;sort=genome</a>
+						</code>
+					</p>
 
-<p>To facet by genome and start:
-<br/><code>
-<a href='api/genes/query?query={"GO_expanded":"GO:0006302"}&fields=genome,name,start,end&sort=genome,start'>api/genes/query?query={"GO_expanded":"GO:0006302"}&fields=genome,name,start,end&amp;sort=genome,start</a>
-</code></p>
+					<p>
+						To facet by genome and start: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"GO_expanded":"GO:0006302"}&fields=genome,name,start,end&sort=genome,start'>api/genes/query?query={"GO_expanded":"GO:0006302"}&fields=genome,name,start,end&amp;sort=genome,start</a>
+						</code>
+					</p>
 
-<p>To facet by genome and start (descending):
-<br/><code>
-<a href='api/genes/query?query={"GO_expanded":"GO:0006302"}&fields=genome,name,start,end&sort=genome,-start'>api/genes/query?query={"GO_expanded":"GO:0006302"}&amp;fields=genome,name,start,end&amp;sort=genome,-start</a>
-</code></p>
+					<p>
+						To facet by genome and start (descending): <br />
+						<code>
+							<a
+								href='api/genes/query?query={"GO_expanded":"GO:0006302"}&fields=genome,name,start,end&sort=genome,-start'>api/genes/query?query={"GO_expanded":"GO:0006302"}&amp;fields=genome,name,start,end&amp;sort=genome,-start</a>
+						</code>
+					</p>
 
-<h5>Pagination</h5>
+					<h5>Pagination</h5>
 
-<p>To show the first 10 entries:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","lineage":"40674"}&limit=10'>api/genes/query?query={"name":"BRCA2","lineage":"40674"}&amp;limit=10</a>
-</code></p>
+					<p>
+						To show the first 10 entries: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","lineage":"40674"}&limit=10'>api/genes/query?query={"name":"BRCA2","lineage":"40674"}&amp;limit=10</a>
+						</code>
+					</p>
 
-<p>To show the next 10 entries:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2","lineage":"40674"}&limit=10&offset=10'>api/genes/query?query={"name":"BRCA2","lineage":"40674"}&amp;limit=10&amp;offset=10</a>
-</code></p>
+					<p>
+						To show the next 10 entries: <br />
+						<code>
+							<a
+								href='api/genes/query?query={"name":"BRCA2","lineage":"40674"}&limit=10&offset=10'>api/genes/query?query={"name":"BRCA2","lineage":"40674"}&amp;limit=10&amp;offset=10</a>
+						</code>
+					</p>
 
-<p>NB: Performance is poor for very deep pagination - please use <code>/fetch</code> instead!</p>
+					<p>
+						NB: Performance is poor for very deep pagination - please use
+						<code>/fetch</code>
+						instead!
+					</p>
 
-<h4><code>/fetch</code></h4>
+					<h4>
+						<code>/fetch</code>
+					</h4>
 
-<p>Retrieving all results as JSON:
-<br/><code>
-<a href='api/genes/fetch?query={"name":"BRCA2"}'>api/genes/fetch?query={"name":"BRCA2"}</a>
-</code></p>
+					<p>
+						Retrieving all results as JSON: <br />
+						<code>
+							<a href='api/genes/fetch?query={"name":"BRCA2"}'>api/genes/fetch?query={"name":"BRCA2"}</a>
+						</code>
+					</p>
 
-<p>Changing fields:
-<br/><code>
-<a href='api/genes/fetch?query={"name":"BRCA2"}&fields=genome,name,description,start,end'>api/genes/fetch?query={"name":"BRCA2"}&amp;fields=genome,name,description,start,end</a>
-</code></p>
+					<p>
+						Changing fields: <br />
+						<code>
+							<a
+								href='api/genes/fetch?query={"name":"BRCA2"}&fields=genome,name,description,start,end'>api/genes/fetch?query={"name":"BRCA2"}&amp;fields=genome,name,description,start,end</a>
+						</code>
+					</p>
 
-<p>Returning results as a 2D array:
-<br/><code>
-<a href='api/genes/fetch?query={"name":"BRCA2","genome":"homo_sapiens"}&array=true&amp;fields=genome,name,description,start,end'>api/genes/fetch?query={"name":"BRCA2","genome":"homo_sapiens"}&array=true&amp;fields=genome,name,description,start,end</a>
-</code></p>
+					<p>
+						Returning results as a 2D array: <br />
+						<code>
+							<a
+								href='api/genes/fetch?query={"name":"BRCA2","genome":"homo_sapiens"}&array=true&amp;fields=genome,name,description,start,end'>api/genes/fetch?query={"name":"BRCA2","genome":"homo_sapiens"}&array=true&amp;fields=genome,name,description,start,end</a>
+						</code>
+					</p>
 
-<p>Retrieving all fields:
-<br/><code>
-<a href='api/genes/query?query={"name":"BRCA2"}&fields=*'>api/genes/query?query={"name":"BRCA2"}&amp;fields=*</a>
-</code></p>
+					<p>
+						Retrieving all fields: <br />
+						<code>
+							<a href='api/genes/query?query={"name":"BRCA2"}&fields=*'>api/genes/query?query={"name":"BRCA2"}&amp;fields=*</a>
+						</code>
+					</p>
 
-<p>Retrieving all results as XML (or pass the <code>Accept</code> properly as a request header):
-<br/><code>
-<a href='api/genes/fetch?query={"name":"BRCA2"}&accept=application/xml'>api/genes/fetch?query={"name":"BRCA2"}&amp;accept=application/xml</a>
-</code></p>
+					<p>
+						Retrieving all results as XML (or pass the
+						<code>Accept</code>
+						properly as a request header): <br />
+						<code>
+							<a
+								href='api/genes/fetch?query={"name":"BRCA2"}&accept=application/xml'>api/genes/fetch?query={"name":"BRCA2"}&amp;accept=application/xml</a>
+						</code>
+					</p>
 
-<p>Retrieving all results as CSV (or pass the <code>Accept</code> properly as a request header):
-<br/><code>
-<a href='api/genes/fetch?query={"name":"BRCA2"}&accept=text/csv'>api/genes/fetch?query={"name":"BRCA2"}&amp;accept=text/csv</a>
-</code></p>
+					<p>
+						Retrieving all results as CSV (or pass the
+						<code>Accept</code>
+						properly as a request header): <br />
+						<code>
+							<a href='api/genes/fetch?query={"name":"BRCA2"}&accept=text/csv'>api/genes/fetch?query={"name":"BRCA2"}&amp;accept=text/csv</a>
+						</code>
+					</p>
 
-<p>Retrieving genomic sequences for all results:
-<br/><code>
-<a href='api/genes/fetch?query={"name":"BRCA2"}&fields=[{"sequences":[]}]'>api/genes/fetch?query={"name":"BRCA2"}&amp;fields=[{"sequences":[]}]</a>
-</code></p>
+					<p>
+						Retrieving genomic sequences for all results: <br />
+						<code>
+							<a
+								href='api/genes/fetch?query={"name":"BRCA2"}&fields=[{"sequences":[]}]'>api/genes/fetch?query={"name":"BRCA2"}&amp;fields=[{"sequences":[]}]</a>
+						</code>
+					</p>
 
-<p>Retrieving genomic sequences for all results with additional 100bp:
-<br/><code>
-<a href='api/genes/fetch?query={"name":"BRCA2","sequences":{"expand3_prime":"100","expand5_prime":"100}}&fields=[{"sequences":[]}]'>api/genes/fetch?query={"name":"BRCA2","sequences":{"expand3_prime":"100","expand5_prime":"100}}&amp;fields=[{"sequences":[]}]</a>
-</code></p>
+					<p>
+						Retrieving genomic sequences for all results with additional
+						100bp: <br />
+						<code>
+							<a
+								href='api/genes/fetch?query={"name":"BRCA2","sequences":{"expand3_prime":"100","expand5_prime":"100}}&fields=[{"sequences":[]}]'>api/genes/fetch?query={"name":"BRCA2","sequences":{"expand3_prime":"100","expand5_prime":"100}}&amp;fields=[{"sequences":[]}]</a>
+						</code>
+					</p>
 
-<p>Retrieving CDS sequences for all results:
-<br/><code>
-<a href='api/genes/fetch?query={"name":"BRCA2","sequences":{"type":"cds"}}&fields=[{"sequences":[]}]'>api/genes/fetch?query={"name":"BRCA2","sequences":{"type":"cds"}}&amp;fields=[{"sequences":[]}]</a>
-</code></p>
+					<p>
+						Retrieving CDS sequences for all results: <br />
+						<code>
+							<a
+								href='api/genes/fetch?query={"name":"BRCA2","sequences":{"type":"cds"}}&fields=[{"sequences":[]}]'>api/genes/fetch?query={"name":"BRCA2","sequences":{"type":"cds"}}&amp;fields=[{"sequences":[]}]</a>
+						</code>
+					</p>
 
-<p>Retrieving protein sequences for all results:
-<br/><code>
-<a href='api/genes/fetch?query={"name":"BRCA2","sequences":{"type":"protein"}}&fields=[{"sequences":[]}]'>api/genes/fetch?query={"name":"BRCA2","sequences":{"type":"protein"}}&amp;fields=[{"sequences":[]}]</a>
-</code></p>
+					<p>
+						Retrieving protein sequences for all results: <br />
+						<code>
+							<a
+								href='api/genes/fetch?query={"name":"BRCA2","sequences":{"type":"protein"}}&fields=[{"sequences":[]}]'>api/genes/fetch?query={"name":"BRCA2","sequences":{"type":"protein"}}&amp;fields=[{"sequences":[]}]</a>
+						</code>
+					</p>
 
-<h4><code>/health</code></h4>
-
-<p>Overall service status:
-<br/><code>
-<a href='api/health'>api/health</a>
-</code></p>
-
-<p>Individual service status:
-<br/><code>
-<a href='api/genes/health'>api/genes/health</a>
-</code></p>
-
-<h4>API description</h4>
-
-<p><code>wadl</code> for API:
-<br/><code>
-<a href='api/application.wadl'>api/application.wadl</a>
-</code></p>
+				</div>
 				<div class="tab-pane fade" id="aboutegs">
 					<h3>About Ensembl Gene Search</h3>
 					<p>
