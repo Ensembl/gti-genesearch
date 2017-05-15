@@ -14,6 +14,8 @@ To override, use the following command line options:
 - to override the cluster name `--es.cluster=mycluster`
 - to override the ES host `--es.host=127.0.0.1`
 - to override the ES port `--es.port=9300`
+- to enable basic security (user `user` and random password) `--security.basic.enabled=true`
+- to set the basic security password `--security.user.password=myawesomepassword`
 
 # Usage
 
