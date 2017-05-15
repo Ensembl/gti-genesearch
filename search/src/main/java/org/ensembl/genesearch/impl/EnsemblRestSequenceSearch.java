@@ -75,6 +75,7 @@ public class EnsemblRestSequenceSearch implements Search {
             if (!StringUtils.isEmpty(proxyPort)) {
                 port = Integer.valueOf(proxyPort);
             }
+            log.info("Using proxy "+proxyHost+":"+proxyPort);
             factory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, port)));
         }
         factory.setConnectTimeout(CONNECT_TIMEOUT);
