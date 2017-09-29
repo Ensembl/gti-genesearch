@@ -7,6 +7,7 @@ To build and run:
 ./gradlew clean :web:bootRepackage
 java -Xmx2g -jar web/build/libs/web-0.1.jar --es.node=false --es.host=gti-es-0 --rest.url.eg=http://rest.ensemblgenomes.org/sequence/id --rest.url.ens=http://rest.ensembl.org/sequence/id
 ```
+*Note:JDK 9 isn't currently compatible with SpringBoot. Make sure your JDK version is < 9*
 
 This will automatically connect to an elasticsearch cluster named genesearch on localhost:9300 as a transport client
 To override, use the following command line options:
