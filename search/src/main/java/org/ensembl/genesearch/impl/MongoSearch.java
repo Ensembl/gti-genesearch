@@ -124,7 +124,9 @@ public class MongoSearch implements Search {
 	private static Map<String, Object> documentToMap(Document doc) {
 		Map<String, Object> map = new HashMap<>();
 		for (Entry<String, Object> e : doc.entrySet()) {
-			map.put(e.getKey(), processObject(e.getValue()));
+		    if(e.getValue()!=null) {
+		        map.put(e.getKey(), processObject(e.getValue()));
+		    }
 		}
 		return map;
 	}
@@ -135,7 +137,9 @@ public class MongoSearch implements Search {
 		} else if (Collection.class.isAssignableFrom(o.getClass())) {
 			List<Object> os = new ArrayList<>();
 			for (Object oo : (Collection) o) {
-				os.add(processObject(oo));
+			    if(oo!=null) {
+			        os.add(processObject(oo));
+			    }
 			}
 			return os;
 		} else {
