@@ -94,7 +94,8 @@ public abstract class JoinMergeSearch implements Search {
             return new JoinStrategy(JoinType.TERM, merge, new String[] { fromKey }, new String[] { toKey }, toGroupBy);
         }
 
-        static JoinStrategy asRange(MergeStrategy merge, String seqKey, String minKey, String maxKey, String locationKey) {
+        static JoinStrategy asRange(MergeStrategy merge, String seqKey, String minKey, String maxKey,
+                String locationKey) {
             return new JoinStrategy(JoinType.RANGE, merge, new String[] { seqKey, minKey, maxKey },
                     new String[] { locationKey }, null);
         }
@@ -340,15 +341,24 @@ public abstract class JoinMergeSearch implements Search {
             SubSearchParams to) {
         // process in batches
         Search toSearch = provider.getSearch(to.name.get());
-        provider.getSearch(from.name.get()).fetch(r -> {
+        provider.getSearch(from.name.get()).fetch(fromRow -> {
             // build a new query
-            List<Query> toQueries = buildToRangeQuery(from, to, r);
+            List<Query> toQueries = buildToRangeQuery(from, to, fromRow);
             // execute and merge "to" results onto existing "from"
-            toSearch.fetch(t -> {
-                putOrAppend(to.name.get().toString(), t, r);
+            toSearch.fetch(toRow -> {
+                addRangeJoinData(from, to, fromRow, toRow);
             }, toQueries, to.fields);
-            consumer.accept(r);
+            consumer.accept(fromRow);
         }, from.queries, from.fields);
+    }
+
+    protected void addRangeJoinData(SubSearchParams from, SubSearchParams to, Map<String, Object> fromRow,
+            Map<String, Object> toRow) {
+        if (to.fields.getFields().contains(COUNT)) {
+            incrementCount(fromRow, to.name.get().toString());
+        } else {
+            mergeResults(to, from, toRow).accept(fromRow);
+        }
     }
 
     /**
@@ -484,13 +494,13 @@ public abstract class JoinMergeSearch implements Search {
             }
             if (to.joinStrategy.merge == MergeStrategy.MERGE) {
                 fromR.putAll(r);
-            } else if(to.joinStrategy.merge == MergeStrategy.APPEND) {
+            } else if (to.joinStrategy.merge == MergeStrategy.APPEND) {
                 putOrAppend(to.name.get().toString(), r, fromR);
-        } else if(to.joinStrategy.merge == MergeStrategy.APPEND_LIST) {
-            appendToList(to.name.get().toString(), r, fromR); 
-        } else {
-            throw new UnsupportedOperationException("Unsupported merge strategy "+to.joinStrategy.merge);
-        }
+            } else if (to.joinStrategy.merge == MergeStrategy.APPEND_LIST) {
+                appendToList(to.name.get().toString(), r, fromR);
+            } else {
+                throw new UnsupportedOperationException("Unsupported merge strategy " + to.joinStrategy.merge);
+            }
         };
     }
 
@@ -592,7 +602,7 @@ public abstract class JoinMergeSearch implements Search {
 
     }
 
-    private QueryResult queryWithRangeJoin(QueryOutput output, List<String> facets, int offset, int limit,
+    protected QueryResult queryWithRangeJoin(QueryOutput output, List<String> facets, int offset, int limit,
             List<String> sorts, SubSearchParams from, SubSearchParams to) {
 
         log.debug("Executing join query through primary using ranges");
@@ -606,7 +616,7 @@ public abstract class JoinMergeSearch implements Search {
             List<Query> toQueries = buildToRangeQuery(from, to, r);
             // execute and merge "to" results onto existing "from"
             toSearch.fetch(t -> {
-                mergeResults(to, from, t).accept(r);
+                addRangeJoinData(from, to, r, t);
             }, toQueries, to.fields);
         }
 

@@ -82,22 +82,22 @@ public class VariantRangeSearchTest {
 		}
 	}
 
-//	@Test
-//	public void testQueryJoinToCount() {
-//		QueryResult result = geneSearch.query(Collections.emptyList(),
-//				QueryOutput.build("\"id\",{\"variants\":[\"count\"]}"), Collections.emptyList(), 0, 10,
-//				Collections.emptyList());
-//		System.out.println(result.getResults());
-//		assertEquals("Checking for correct rows", 2, result.getResults().size());
-//		Map<String, Object> gene = result.getResults().stream().filter(g -> g.get("id").equals("EPlOSAG00000002326")).findFirst().get();
-//		assertTrue("ID found", gene.containsKey("id"));
-//		assertTrue("Variants found", gene.containsKey("variants"));
-//		Map<String,Object> variants = (Map<String, Object>) gene.get("variants");
-//		assertTrue("Count found", variants.containsKey("count"));
-//		int count = (int)variants.get("count");
-//		assertEquals("Count correct", 10, count);
-//	}
-//	
+	@Test
+	public void testQueryJoinToCount() {
+		QueryResult result = geneSearch.query(Collections.emptyList(),
+				QueryOutput.build("\"id\",{\"variants\":[\"count\"]}"), Collections.emptyList(), 0, 10,
+				Collections.emptyList());
+		System.out.println(result.getResults());
+		assertEquals("Checking for correct rows", 2, result.getResults().size());
+		Map<String, Object> gene = result.getResults().stream().filter(g -> g.get("id").equals("EPlOSAG00000002326")).findFirst().get();
+		assertTrue("ID found", gene.containsKey("id"));
+		assertTrue("Variants found", gene.containsKey("variants"));
+		Map<String,Object> variants = (Map<String, Object>) gene.get("variants");
+		assertTrue("Count found", variants.containsKey("count"));
+		int count = (int)variants.get("count");
+		assertEquals("Count correct", 1, count);
+	}
+	
 //	@Test
 //	public void testQueryJoinToInner() {
 //		QueryResult result = geneSearch.query(QueryHandlerTest.build("{\"variants\":{\"inner\":1}}"),
