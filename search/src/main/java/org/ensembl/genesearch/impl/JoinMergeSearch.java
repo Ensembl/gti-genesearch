@@ -262,13 +262,21 @@ public abstract class JoinMergeSearch implements Search {
 
         } else if (to.joinStrategy.type == JoinType.RANGE) {
 
-            fetchWithRangeJoin(consumer, from, to);
+            if (isInner(from, to)) {
+
+                fetchWithRangeJoin(consumer, innerTermJoinQuery(from, to), to);
+
+            } else {
+
+                fetchWithRangeJoin(consumer, from, to);
+
+            }
 
         } else if (to.joinStrategy.type == JoinType.TERM) {
 
             if (isInner(from, to)) {
 
-                fetchWithTermJoin(consumer, innerJoinQuery(from, to), to);
+                fetchWithTermJoin(consumer, innerTermJoinQuery(from, to), to);
 
             } else {
 
@@ -580,13 +588,21 @@ public abstract class JoinMergeSearch implements Search {
 
         } else if (to.joinStrategy.type == JoinType.RANGE) {
 
-            return queryWithRangeJoin(output, facets, offset, limit, sorts, from, to);
+            if (isInner(from, to)) {
+
+                throw new UnsupportedOperationException("Inner joins are not supported for range-based joins");
+            
+            } else {
+
+                return queryWithRangeJoin(output, facets, offset, limit, sorts, from, to);
+            
+            }
 
         } else if (to.joinStrategy.type == JoinType.TERM) {
 
             if (isInner(from, to)) {
 
-                return queryWithTermJoin(output, facets, offset, limit, sorts, innerJoinQuery(from, to), to);
+                return queryWithTermJoin(output, facets, offset, limit, sorts, innerTermJoinQuery(from, to), to);
 
             } else {
 
@@ -629,13 +645,13 @@ public abstract class JoinMergeSearch implements Search {
 
     /**
      * Method for updating "from" for just those entries in "from" that are
-     * joined in "to"
+     * joined in "to". This implementation assumes terms are used in the join
      * 
      * @param from
      * @param to
      * @return new "from" query
      */
-    private SubSearchParams innerJoinQuery(SubSearchParams from, SubSearchParams to) {
+    private SubSearchParams innerTermJoinQuery(SubSearchParams from, SubSearchParams to) {
         // example: search a: x:1, b:{c:2} where b is a separate dataset joined
         // by a.n to
 
