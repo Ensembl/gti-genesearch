@@ -120,14 +120,14 @@ public class DecomposeTest {
 				from.fields.getFields().stream().anyMatch(f -> f.equals("description")));
 		assertTrue("Fields contains description", from.fields.getFields().stream().anyMatch(f -> f.equals("genome")));
 		assertFalse("Fields contains null", from.fields.getFields().stream().anyMatch(f -> f == null));
-		assertEquals("From key is genome", "genome", from.key);
+		assertEquals("From key is genome", "genome", from.keys[0]);
 		SubSearchParams to = decomposeQueryFields.getRight();
 		assertEquals("To name set", SearchType.GENOMES.name(), to.name.get().name());
 		assertTrue("Fields contains id", to.fields.getFields().stream().anyMatch(f -> f.equals("id")));
 		assertTrue("Fields contains display_name",
 				to.fields.getFields().stream().anyMatch(f -> f.equals("display_name")));
 		assertTrue("Fields contains division", to.fields.getFields().stream().anyMatch(f -> f.equals("division")));
-		assertEquals("To key is id", "id", to.key);
+		assertEquals("To key is id", "id", to.keys[0]);
 	}
 
 	@Test
@@ -143,7 +143,7 @@ public class DecomposeTest {
 		assertTrue("Fields contains description",
 				from.fields.getFields().stream().anyMatch(f -> f.equals("description")));
 		assertFalse("Fields contains null", from.fields.getFields().stream().anyMatch(f -> f == null));
-		assertEquals("From key is genome", "genome", from.key);
+		assertEquals("From key is genome", "genome", from.keys[0]);
 		SubSearchParams to = decomposeQueryFields.getRight();
 		assertEquals("To name set", SearchType.GENOMES.name(), to.name.get().name());
 		assertTrue("Fields contains id", to.fields.getFields().stream().anyMatch(f -> f.equals("id")));
@@ -152,7 +152,7 @@ public class DecomposeTest {
 		assertTrue("Fields contains division", to.fields.getFields().stream().anyMatch(f -> f.equals("division")));
 		assertTrue("Query contains display_name",
 				to.queries.stream().anyMatch(f -> f.getFieldName().equals("display_name")));
-		assertEquals("To key is id", "id", to.key);
+		assertEquals("To key is id", "id", to.keys[0]);
 	}
 
 	@AfterClass
