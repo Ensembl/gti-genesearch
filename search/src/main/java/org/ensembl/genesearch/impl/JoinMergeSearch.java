@@ -72,7 +72,7 @@ public abstract class JoinMergeSearch implements Search {
     private static final int JOIN_LIMIT = 1000;
 
     protected static enum MergeStrategy {
-        MERGE, APPEND;
+        MERGE, APPEND, APPEND_LIST;
     }
 
     protected static enum JoinType {
@@ -94,10 +94,10 @@ public abstract class JoinMergeSearch implements Search {
             return new JoinStrategy(JoinType.TERM, merge, new String[] { fromKey }, new String[] { toKey }, toGroupBy);
         }
 
-        // static JoinStrategy asRange(String seqKey, String minKey, String
-        // maxKey) {
-        // return new JoinStrategy(JoinType.RANGE, null, );
-        // }
+        static JoinStrategy asRange(MergeStrategy merge, String seqKey, String minKey, String maxKey, String locationKey) {
+            return new JoinStrategy(JoinType.RANGE, merge, new String[] { seqKey, minKey, maxKey },
+                    new String[] { locationKey }, null);
+        }
 
         protected JoinStrategy(JoinType type, MergeStrategy merge, String[] fromKey, String[] toKey, String toGroupBy) {
             this.type = type;
@@ -352,7 +352,8 @@ public abstract class JoinMergeSearch implements Search {
     }
 
     /**
-     * Generate a new query set based on the positional information in the result
+     * Generate a new query set based on the positional information in the
+     * result
      * 
      * @param from
      * @param to
@@ -360,7 +361,7 @@ public abstract class JoinMergeSearch implements Search {
      * @return
      */
     protected List<Query> buildToRangeQuery(SubSearchParams from, SubSearchParams to, Map<String, Object> result) {
-        List<Query> qs = new ArrayList<>(to.queries.size()+1);
+        List<Query> qs = new ArrayList<>(to.queries.size() + 1);
         // 0,1,2 is seq region, min, max
         qs.add(new Query(FieldType.LOCATION, to.keys[0],
                 result.get(from.keys[0]) + ":" + result.get(from.keys[1]) + "-" + result.get(from.keys[2])));
@@ -483,9 +484,13 @@ public abstract class JoinMergeSearch implements Search {
             }
             if (to.joinStrategy.merge == MergeStrategy.MERGE) {
                 fromR.putAll(r);
-            } else {
+            } else if(to.joinStrategy.merge == MergeStrategy.APPEND) {
                 putOrAppend(to.name.get().toString(), r, fromR);
-            }
+        } else if(to.joinStrategy.merge == MergeStrategy.APPEND_LIST) {
+            appendToList(to.name.get().toString(), r, fromR); 
+        } else {
+            throw new UnsupportedOperationException("Unsupported merge strategy "+to.joinStrategy.merge);
+        }
         };
     }
 
@@ -502,14 +507,30 @@ public abstract class JoinMergeSearch implements Search {
         if (existingResults == null) {
             tgt.put(key, src);
         } else {
-            if (!List.class.isAssignableFrom(existingResults.getClass())) {
-                List<Object> resultsList = new ArrayList<>();
-                resultsList.add(existingResults);
-                tgt.put(key, resultsList);
-                existingResults = resultsList;
-            }
-            ((List) existingResults).add(src);
+            appendToList(key, src, tgt);
         }
+    }
+
+    /**
+     * Add the value to the specified list attribute, creating as required
+     * 
+     * @param key
+     * @param src
+     * @param tgt
+     */
+    protected void appendToList(String key, Map<String, Object> src, Map<String, Object> tgt) {
+        Object existingResults = tgt.get(key);
+        if (existingResults == null) {
+            existingResults = new ArrayList<>();
+            tgt.put(key, existingResults);
+        }
+        if (!List.class.isAssignableFrom(existingResults.getClass())) {
+            List<Object> resultsList = new ArrayList<>();
+            resultsList.add(existingResults);
+            tgt.put(key, resultsList);
+            existingResults = resultsList;
+        }
+        ((List) existingResults).add(src);
     }
 
     @Override
@@ -581,20 +602,19 @@ public abstract class JoinMergeSearch implements Search {
                 offset, limit, sorts);
 
         Search toSearch = provider.getSearch(to.name.get());
-        for(Map<String,Object> r: fromResults.getResults()) {
-          List<Query> toQueries = buildToRangeQuery(from, to, r);
-          // execute and merge "to" results onto existing "from"
-          toSearch.fetch(t -> {
-              putOrAppend(to.name.get().toString(), t, r);
-          }, toQueries, to.fields);            
+        for (Map<String, Object> r : fromResults.getResults()) {
+            List<Query> toQueries = buildToRangeQuery(from, to, r);
+            // execute and merge "to" results onto existing "from"
+            toSearch.fetch(t -> {
+                mergeResults(to, from, t).accept(r);
+            }, toQueries, to.fields);
         }
-        
+
         fromResults.getFields().clear();
         fromResults.getFields().addAll(this.getFieldInfo(output));
 
         return fromResults;
 
-        
     }
 
     /**

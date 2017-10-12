@@ -57,10 +57,10 @@ public class ESSearchBuilder {
 
 	private static final Logger log = LoggerFactory.getLogger(ESSearchBuilder.class);
 
-	private static final String SEQ_REGION_FIELD = "seq_region_name";
-	private static final String START_FIELD = "start";
-	private static final String END_FIELD = "end";
-	private static final String STRAND_FIELD = "strand";
+	public static final String  SEQ_REGION_FIELD = "seq_region_name";
+	public static final String START_FIELD = "start";
+	public static final String END_FIELD = "end";
+	public static final String STRAND_FIELD = "strand";
 
 	private ESSearchBuilder() {
 	}
