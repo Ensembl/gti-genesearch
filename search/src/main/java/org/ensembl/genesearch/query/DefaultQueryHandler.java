@@ -129,7 +129,7 @@ public class DefaultQueryHandler implements QueryHandler {
 				String keyStem = key.substring(0, n);
 				for (int j = i + 1; j < keys.size(); j++) {
 					String key2 = keys.get(j);
-					int m = key.indexOf('.');
+					int m = key2.indexOf('.');
 					if (m != -1) {
 						String keyStem2 = key2.substring(0, m);
 						if (keyStem.equals(keyStem2)) {

@@ -167,6 +167,19 @@ public class QueryHandlerTest {
 		assertEquals("b found", "one", ((Map) bVal).get("c"));
 		assertEquals("c found", "two", ((Map) bVal).get("d"));
 	}
+	
+	   @SuppressWarnings("rawtypes")
+	    @Test
+	    public void testMergeQueriesNestedSingle() {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("a.b.c", "one");
+	        map.put("e", "two");
+	        Map<String, Object> mergeQueries = DefaultQueryHandler.mergeQueries(map);
+	        System.out.println(mergeQueries);
+	        assertEquals("Two keys", 2, mergeQueries.keySet().size());
+	        assertTrue("a.b.c found", mergeQueries.containsKey("a.b.c"));
+            assertTrue("e found", mergeQueries.containsKey("e"));
+	    }
 
 	@Test
 	public void testParseAndMerge() {
@@ -189,6 +202,19 @@ public class QueryHandlerTest {
 		assertEquals("Query value size", 1, subQ2.getValues().length);
 		assertEquals("Query value", "two", subQ2.getValues()[0]);
 	}
+    @Test
+    public void testParseAndNoMerge() {
+        QueryHandler handler = new DefaultQueryHandler();
+        List<Query> qs = handler.parseQuery("{\"key.a\":\"one\",\"b\":\"two\"}");
+        System.out.println(qs);
+        assertEquals("Two queries", 2, qs.size());
+        Query q = qs.get(0);
+        assertEquals("Query type", FieldType.TERM, q.getType());
+        assertEquals("Query field", "key.a", q.getFieldName());
+        Query q2 = qs.get(1);
+        assertEquals("Query type", FieldType.TERM, q2.getType());
+        assertEquals("Query field", "b", q2.getFieldName());
+    }
 
 	@Test
 	public void testExpandQuery() {
