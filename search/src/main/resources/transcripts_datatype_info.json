@@ -1214,9 +1214,9 @@
 		{
 			"name": "id",
 			"displayName": "id",
-			"type": "ID",
+			"type": "TEXT",
 			"search": "true",
-			"facet": "true",
+			"facet": "false",
 			"sort": "true",
 			"display": "true"
 		},
@@ -2089,7 +2089,7 @@
 			"display": "true",
 			"sort": "true",
 			"search": "true",
-			"type": "ID",
+			"type": "TEXT",
 			"displayName": "translations.id",
 			"name": "translations.id"
 		},
@@ -2501,7 +2501,7 @@
 		{
 			"name": "genes.biotype",
 			"displayName": "Gene biotype",
-			"type": "ID",
+			"type": "TEXT",
 			"search": "true",
 			"facet": "true",
 			"display": "true",

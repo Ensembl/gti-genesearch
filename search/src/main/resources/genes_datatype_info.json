@@ -3772,7 +3772,7 @@
 		{
 			"name": "transcripts.id",
 			"displayName": "transcripts.id",
-			"type": "ID",
+			"type": "TERM",
 			"search": "true",
 			"facet": "true",
 			"sort": "true",
@@ -4647,7 +4647,7 @@
 			"display": "true",
 			"sort": "true",
 			"search": "true",
-			"type": "ID",
+			"type": "TERM",
 			"displayName": "transcripts.translations.id",
 			"name": "transcripts.translations.id"
 		},
