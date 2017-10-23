@@ -72,6 +72,8 @@ public class EVAGenomeRestSearchTest {
         assertTrue("Homo sapiens found", hsap != null);
         assertEquals("Correct assembly", "hsapiens", hsap.get("taxonomyCode"));
         assertEquals("Correct assembly", "grch37", hsap.get("assemblyCode"));
+        assertTrue("Assembly version empty", !hsap.containsKey("assemblyVersion"));
+        assertEquals("3 fields", 3, hsap.keySet().size());
     }
 
     @Test
@@ -86,5 +88,7 @@ public class EVAGenomeRestSearchTest {
         assertTrue("Homo sapiens found", hsap != null);
         assertEquals("Correct assembly", "hsapiens", hsap.get("taxonomyCode"));
         assertEquals("Correct assembly", "grch37", hsap.get("assemblyCode"));
+        assertTrue("Assembly version empty", !hsap.containsKey("assemblyVersion"));
+        assertEquals("3 fields", 3, hsap.keySet().size());
     }
 }

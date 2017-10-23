@@ -27,12 +27,14 @@ import static org.ensembl.genesearch.Query.SINGLE_NUMBER;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.regex.Matcher;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 
@@ -44,8 +46,60 @@ import org.ensembl.genesearch.QueryOutput;
  */
 public class QueryUtils {
 
+    /**
+     * Utility to strip out all fields from a nested map that are not present in
+     * the supplied output object
+     * 
+     * @param obj
+     * @param output
+     */
     public static void filterFields(Map<String, Object> obj, QueryOutput output) {
-        // TODO
+        filterFields(obj, output, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static void filterFields(Map<String, Object> obj, QueryOutput output, String path) {
+        Iterator<String> i = obj.keySet().iterator();
+        while(i.hasNext()) {            
+            String key = i.next();
+            String keyPath = key;
+            if (!StringUtils.isEmpty(path)) {
+                keyPath = path + '.' + key;
+            }
+            Object so = obj.get(key);
+            if (Map.class.isAssignableFrom(so.getClass())) {
+                Map<String, Object> mo = (Map<String, Object>) so;
+                filterFields(mo, output, keyPath);
+                if (mo.isEmpty()) {
+                    i.remove();
+                }
+            } else if (List.class.isAssignableFrom(so.getClass())) {
+
+                List<?> lo = (List<?>) so;
+                if (lo.isEmpty()) {
+                    i.remove();
+                } else if (Map.class.isAssignableFrom(lo.get(0).getClass())) {
+                    Iterator<Map<String, Object>> li = ((List<Map<String, Object>>) lo).iterator();
+                    while (li.hasNext()) {
+                        Map<String, Object> mo = li.next();
+                        filterFields(mo, output, keyPath);
+                        if (mo.isEmpty()) {
+                            li.remove();
+                        }
+                    }
+                    if (lo.isEmpty()) {
+                        i.remove();
+                    }
+                } else {
+                    if (!output.containsPath(keyPath)) {
+                        i.remove();
+                    }
+                }
+
+            } else if (!output.containsPath(keyPath)) {
+                i.remove();
+            }
+        }
     }
 
     public static BiPredicate<Map<String, Object>, List<Query>> filterResultsByQueries = new BiPredicate<Map<String, Object>, List<Query>>() {
@@ -84,7 +138,7 @@ public class QueryUtils {
                 }
                 break;
             case NESTED:
-                if(testNested(o, q)) {
+                if (testNested(o, q)) {
                     return true;
                 }
                 break;
@@ -112,11 +166,11 @@ public class QueryUtils {
                 } else if (Map.class.isAssignableFrom(os.getClass())) {
                     boolean passes = true;
                     for (Query sq : q.getSubQueries()) {
-                        if (!test((Map<String, Object>)os, sq)) {
+                        if (!test((Map<String, Object>) os, sq)) {
                             passes = false;
                         }
                     }
-                    return passes;                      
+                    return passes;
                 } else {
                     throw new UnsupportedOperationException(
                             "Cannot process nested query using object " + os.getClass());

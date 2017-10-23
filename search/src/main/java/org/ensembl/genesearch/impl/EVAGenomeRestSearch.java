@@ -22,7 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.admin.NotFoundException;
 
 /**
- * Search implementation using EVAs REST implementation for finding lists of genomes they support
+ * Search implementation using EVAs REST implementation for finding lists of
+ * genomes they support
  * 
  * @author dstaines
  *
@@ -59,19 +60,27 @@ public class EVAGenomeRestSearch implements Search {
 
     @Override
     public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
-        getGenomes().stream().filter(o -> QueryUtils.filterResultsByQueries.test(o, queries)).forEach(consumer);
+        getGenomes().stream().filter(o -> QueryUtils.filterResultsByQueries.test(o, queries)).map(o -> {
+            QueryUtils.filterFields(o, fieldNames);
+            return o;
+        }).forEach(consumer);
     }
 
     @Override
     public QueryResult query(List<Query> queries, QueryOutput fieldNames, List<String> facets, int offset, int limit,
             List<String> sorts) {
-        if(sorts!=null && !sorts.isEmpty()) {
-            throw new UnsupportedOperationException("Sorting not supported for "+getDataType().getName());
+        if (sorts != null && !sorts.isEmpty()) {
+            throw new UnsupportedOperationException("Sorting not supported for " + getDataType().getName());
         }
-        if(facets!=null && !facets.isEmpty()) {
-            throw new UnsupportedOperationException("Faceting not supported for "+getDataType().getName());
+        if (facets != null && !facets.isEmpty()) {
+            throw new UnsupportedOperationException("Faceting not supported for " + getDataType().getName());
         }
-        List<Map<String, Object>> results = getGenomes().stream().filter(o -> QueryUtils.filterResultsByQueries.test(o, queries)).skip(offset-1).limit(limit).collect(Collectors.toList());
+        List<Map<String, Object>> results = getGenomes().stream()
+                .filter(o -> QueryUtils.filterResultsByQueries.test(o, queries)).skip(offset - 1).limit(limit)
+                .map(o -> {
+                    QueryUtils.filterFields(o, fieldNames);
+                    return o;
+                }).collect(Collectors.toList());
         return new QueryResult(-1, offset, limit, getFieldInfo(fieldNames), results, null);
     }
 

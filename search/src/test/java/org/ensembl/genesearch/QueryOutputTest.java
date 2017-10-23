@@ -219,6 +219,14 @@ public class QueryOutputTest {
             assertTrue("3 found", o.containsPath("genes.3"));
             assertFalse("4 not found", o.containsPath("genes.4"));
         }
+        {
+            QueryOutput o = new QueryOutput("genes");
+            assertTrue("genes found", o.containsPath("genes"));
+            assertTrue("1 found", o.containsPath("genes.1"));
+            assertTrue("2 found", o.containsPath("genes.2"));
+            assertTrue("3 found", o.containsPath("genes.3"));
+            assertTrue("4 not found", o.containsPath("genes.4"));
+        }
     }
 
 }
