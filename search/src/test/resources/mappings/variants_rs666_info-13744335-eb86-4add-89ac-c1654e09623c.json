@@ -1,0 +1,31 @@
+{
+  "id" : "13744335-eb86-4add-89ac-c1654e09623c",
+  "name" : "variants_rs666_info",
+  "request" : {
+    "url" : "/variants/rs666/info?species=hsapiens_grch37&exclude=sourceEntries",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"time\":889,\"apiVersion\":\"v1\",\"queryOptions\":{\"metadata\":true,\"exclude\":[\"sourceEntries\"],\"include\":null,\"limit\":-1,\"skip\":-1,\"count\":false},\"response\":[{\"time\":0,\"dbTime\":889,\"numResults\":1,\"numTotalResults\":1,\"result\":[{\"chromosome\":\"17\",\"start\":64224271,\"end\":64224271,\"reference\":\"C\",\"alternate\":\"T\",\"ids\":[\"ss1359279822\",\"ss489121239\",\"ss671\",\"ss1692924351\",\"rs666\"],\"hgvs\":{\"genomic\":[\"17:g.64224271C>T\"]},\"annotation\":{\"chromosome\":\"17\",\"start\":64224271,\"end\":64224271,\"vepVersion\":\"78\",\"vepCacheVersion\":\"78\",\"consequenceTypes\":[{\"geneName\":\"APOH\",\"ensemblGeneId\":\"ENSG00000091583\",\"ensemblTranscriptId\":\"ENST00000581797\",\"strand\":\"-\",\"biotype\":\"protein_coding\",\"cDnaPosition\":75,\"aaChange\":\"-\",\"codon\":\"-\",\"soTerms\":[{\"soName\":\"5_prime_UTR_variant\",\"soAccession\":\"SO:0001623\"}]},{\"geneName\":\"APOH\",\"ensemblGeneId\":\"ENSG00000091583\",\"ensemblTranscriptId\":\"ENST00000577982\",\"strand\":\"-\",\"biotype\":\"protein_coding\",\"cDnaPosition\":271,\"cdsPosition\":108,\"aaPosition\":36,\"aaChange\":\"P\",\"codon\":\"ccG/ccA\",\"soTerms\":[{\"soName\":\"synonymous_variant\",\"soAccession\":\"SO:0001819\"}]},{\"geneName\":\"APOH\",\"ensemblGeneId\":\"ENSG00000091583\",\"ensemblTranscriptId\":\"ENST00000205948\",\"strand\":\"-\",\"biotype\":\"protein_coding\",\"cDnaPosition\":146,\"cdsPosition\":108,\"aaPosition\":36,\"aaChange\":\"P\",\"codon\":\"ccG/ccA\",\"soTerms\":[{\"soName\":\"synonymous_variant\",\"soAccession\":\"SO:0001819\"}]}],\"xrefs\":[{\"id\":\"ENST00000577982\",\"src\":\"ensemblTranscript\"},{\"id\":\"APOH\",\"src\":\"HGNC\"},{\"id\":\"ENST00000581797\",\"src\":\"ensemblTranscript\"},{\"id\":\"ENST00000205948\",\"src\":\"ensemblTranscript\"},{\"id\":\"ENSG00000091583\",\"src\":\"ensemblGene\"}]},\"length\":1,\"type\":\"SNV\"}]}]}",
+    "headers" : {
+      "Server" : "Apache-Coyote/1.1",
+      "Vary" : "Accept-Encoding",
+      "Cache-Control" : "no-cache, no-store, max-age=0, must-revalidate",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Strict-Transport-Security" : "max-age=0",
+      "Access-Control-Max-Age" : "3600",
+      "Date" : "Tue, 24 Oct 2017 13:25:03 GMT",
+      "Expires" : "0",
+      "X-XSS-Protection" : "1; mode=block",
+      "Pragma" : "no-cache",
+      "Access-Control-Allow-Origin" : "*",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "DENY",
+      "Access-Control-Allow-Headers" : "X-Requested-With, Content-Type, accept",
+      "Access-Control-Allow-Methods" : "GET, POST, OPTIONS"
+    }
+  },
+  "uuid" : "13744335-eb86-4add-89ac-c1654e09623c",
+  "persistent" : true
+}
