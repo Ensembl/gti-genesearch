@@ -213,20 +213,27 @@ public class QueryOutputTest {
         }
         {
             QueryOutput o = new QueryOutput("genes.1","genes.2","genes.3");
-            assertTrue("genes found", o.containsPath("genes"));
             assertTrue("1 found", o.containsPath("genes.1"));
             assertTrue("2 found", o.containsPath("genes.2"));
             assertTrue("3 found", o.containsPath("genes.3"));
             assertFalse("4 not found", o.containsPath("genes.4"));
         }
-        {
-            QueryOutput o = new QueryOutput("genes");
-            assertTrue("genes found", o.containsPath("genes"));
-            assertTrue("1 found", o.containsPath("genes.1"));
-            assertTrue("2 found", o.containsPath("genes.2"));
-            assertTrue("3 found", o.containsPath("genes.3"));
-            assertTrue("4 not found", o.containsPath("genes.4"));
-        }
     }
 
+    @Test
+    public void testContainsPathChildren() {
+        {
+            QueryOutput o = new QueryOutput("genes.1","genes.2","genes.3");
+            assertTrue("genes kids found", o.containsPathChildren("genes"));
+            assertFalse("genes.2 kids not found", o.containsPathChildren("genes.2"));
+        }
+        {
+            String testStr = "[\"variations\", {\"genes\":[\"1\",\"2\",\"3\",{\"xrefs\":[\"a\",\"b\"]}]}]";
+            QueryOutput o = QueryOutput.build(testStr);
+            assertTrue("genes kids found", o.containsPathChildren("genes"));
+            assertTrue("genes.xrefs kids found", o.containsPathChildren("genes.xrefs"));
+            assertFalse("genes.3 kids not found", o.containsPathChildren("genes.3"));
+            assertFalse("variations kids not found", o.containsPathChildren("variations"));
+        }
+    }
 }

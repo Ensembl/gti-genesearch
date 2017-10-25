@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ensembl.genesearch.utils.QueryUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -128,7 +129,35 @@ public class QueryOutput {
                 int loc = path.indexOf('.');
                 if (loc != -1) {
                     QueryOutput subField = getSubFields().get(path.substring(0, loc));
-                    if (subField != null && subField.containsPath(path.substring(loc+1))) {
+                    if (subField != null && subField.containsPath(path.substring(loc + 1))) {
+                        contains = true;
+                    }
+                }
+            }
+        }
+        return contains;
+    }
+
+    /**
+     * Utility method to find if QueryOutput contains any children of a
+     * specified field. Used by {@link QueryUtils} to decide whether to filter
+     * out a whole field
+     * 
+     * @param path
+     * @return
+     */
+    public boolean containsPathChildren(String path) {
+        boolean contains = false;
+        if (containsPath(path)) {
+            if (getFields().stream().anyMatch(s -> s.startsWith(path + '.'))) {
+                contains = true;
+            } else if (!getSubFields().isEmpty()) {
+                int loc = path.indexOf('.');
+                if (getSubFields().containsKey(path)) {
+                    contains = true;
+                } else if (loc != -1) {
+                    QueryOutput subField = getSubFields().get(path.substring(0, loc));
+                    if (subField != null && subField.containsPathChildren(path.substring(loc + 1))) {
                         contains = true;
                     }
                 }
