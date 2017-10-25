@@ -115,7 +115,10 @@ public class ESSearchBuilder {
 		QueryBuilder q;
 		switch (geneQ.getType()) {
 		case ID:
-			q = processId(type, geneQ);
+		    if(parents.isEmpty())
+		        q = processId(type, geneQ); 
+		    else
+	            q = processTerm(type, geneQ); 
 			break;
 		case TEXT:
 			q =  processText(path, geneQ);
