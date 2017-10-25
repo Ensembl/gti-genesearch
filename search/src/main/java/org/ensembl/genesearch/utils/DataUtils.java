@@ -37,72 +37,78 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 public class DataUtils {
-	
-	/**
-	 * Find values for a given key in a data structure
-	 * @param r
-	 * @param key
-	 * @return set of values
-	 */
-	public static Set<String> getObjValsForKey(Map<String, Object> r, String key) {
-		return getObjsForKey(r, key).keySet();
-	}
 
-	/**
-	 * Find all data for a given key, keyed by the value of that key. Used to invert a map by value
-	 * 
-	 * @param r
-	 * @param key
-	 * @return map containing data
-	 */
-	public static Map<String, Map<String, Object>> getObjsForKey(Map<String, Object> r, String key) {
-		Map<String, Map<String, Object>> keys = new HashMap<>();
-		getObjsForKey(r, key, keys);
-		return keys;
-	}
+    /**
+     * Find values for a given key in a data structure
+     * 
+     * @param r
+     * @param key
+     * @return set of values
+     */
+    public static Set<String> getObjValsForKey(Map<String, Object> r, String key) {
+        return getObjsForKey(r, key).keySet();
+    }
 
-	protected static void getObjsForKey(Map<String, Object> r, String key, Map<String, Map<String, Object>> keys) {
-		int i = key.indexOf('.');
-		if (i != -1) {
-			String stem = key.substring(0, i);
-			String tail = key.substring(i + 1);
-			Object subObj = r.get(stem);
-			if (subObj != null) {
-				if (Map.class.isAssignableFrom(subObj.getClass())) {
-					getObjsForKey((Map) subObj, tail, keys);
-				} else if (List.class.isAssignableFrom(subObj.getClass())) {
-					for (Object o : (List) subObj) {
-						getObjsForKey((Map) o, tail, keys);
-					}
-				} else {
-					throw new IllegalArgumentException("Cannot find map for key " + stem);
-				}
-			}
-		} else {
-			String k = String.valueOf(r.get(key));
-			keys.put(k, r);
-		}
-	}
+    /**
+     * Find all data for a given key, keyed by the value of that key. Used to
+     * invert a map by value
+     * 
+     * @param r
+     * @param key
+     * @return map containing data
+     */
+    public static Map<String, Map<String, Object>> getObjsForKey(Map<String, Object> r, String key) {
+        Map<String, Map<String, Object>> keys = new HashMap<>();
+        getObjsForKey(r, key, keys);
+        return keys;
+    }
 
-	/**
-	 * Transform a JSON string into a hash map
-	 * @param json
-	 * @return string-obj map representation of JSON
-	 */
-	public static Map<String, Object> jsonToMap(String json) {
-		try {
-			return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {
-			});
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    protected static void getObjsForKey(Map<String, Object> r, String key, Map<String, Map<String, Object>> keys) {
+        int i = key.indexOf('.');
+        if (i != -1) {
+            String stem = key.substring(0, i);
+            String tail = key.substring(i + 1);
+            Object subObj = r.get(stem);
+            if (subObj != null) {
+                if (Map.class.isAssignableFrom(subObj.getClass())) {
+                    getObjsForKey((Map) subObj, tail, keys);
+                } else if (List.class.isAssignableFrom(subObj.getClass())) {
+                    for (Object o : (List) subObj) {
+                        getObjsForKey((Map) o, tail, keys);
+                    }
+                } else {
+                    throw new IllegalArgumentException("Cannot find map for key " + stem);
+                }
+            }
+        } else {
+            Object obj = r.get(key);
+            if (obj != null) {
+                keys.put(String.valueOf(obj), r);
+            }
+        }
+    }
 
-	public static String readGzipResource(String name) throws IOException {
-		return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)),Charset.defaultCharset());
-	}
+    /**
+     * Transform a JSON string into a hash map
+     * 
+     * @param json
+     * @return string-obj map representation of JSON
+     */
+    public static Map<String, Object> jsonToMap(String json) {
+        try {
+            return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public static String readResource(String name) throws IOException {
-		return IOUtils.toString(ESTestServer.class.getResourceAsStream(name),Charset.defaultCharset());
-	}
+    public static String readGzipResource(String name) throws IOException {
+        return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)),
+                Charset.defaultCharset());
+    }
+
+    public static String readResource(String name) throws IOException {
+        return IOUtils.toString(ESTestServer.class.getResourceAsStream(name), Charset.defaultCharset());
+    }
 }
