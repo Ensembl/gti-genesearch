@@ -6,13 +6,10 @@ import java.util.Map;
 
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
-import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.utils.DataUtils;
-
-import com.github.tomakehurst.wiremock.admin.NotFoundException;
 
 /**
  * Utility class used by {@link EVAVariantRestSearch} to translate a standard
@@ -43,7 +40,7 @@ public class EVAGenomeFinder {
         if (evaName == null) {
             Map<String, Object> eGenome = ensemblGenomeSearch.fetchById(genomeName);
             if (eGenome == null) {
-                throw new NotFoundException("Could not find details for genome " + genomeName);
+                throw new IllegalArgumentException("Could not find details for genome " + genomeName);
             }
             // use the INSDC accession as the only universal linker
             String accession = DataUtils.getObjValsForKey(eGenome, "assembly.accession").iterator().next();

@@ -21,12 +21,12 @@ import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.utils.QueryUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.admin.NotFoundException;
 
 /**
  * Search implementation using EVAs REST implementation
@@ -62,7 +62,7 @@ public class EVAVariantRestSearch implements Search {
     private static String addFilters(String baseUri, List<Query> queries, Set<String> filterFields) {
         final StringBuilder sb = new StringBuilder(baseUri);
         queries.stream().filter(q -> filterFields.contains(q.getFieldName()))
-                .forEach(q -> sb.append("&" + q.getFieldName() + "=" + StringUtils.join(q.getValues(),',')));
+                .forEach(q -> sb.append("&" + q.getFieldName() + "=" + StringUtils.join(q.getValues(), ',')));
         return sb.toString();
     }
 
@@ -117,9 +117,12 @@ public class EVAVariantRestSearch implements Search {
     private JsonNode getResponse(String uri) {
         try {
             ResponseEntity<String> response = new RestTemplate().getForEntity(uri, String.class);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                throw new RestSearchException(uri, response.getBody(), response.getStatusCode());
+            }
             return mapper.readTree(response.getBody()).at("/response");
         } catch (IOException e) {
-            throw new NotFoundException("Could not retrieve response from " + uri, e);
+            throw new RestSearchException("Could not handle response", uri, e);
         }
     }
 

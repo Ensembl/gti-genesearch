@@ -14,12 +14,12 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.utils.QueryUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.admin.NotFoundException;
 
 /**
  * Search implementation using EVAs REST implementation for finding lists of
@@ -43,16 +43,18 @@ public class EVAGenomeRestSearch implements Search {
 
     protected List<Map<String, Object>> getGenomes() {
         if (genomes == null) {
+            String uri = baseUri + "/" + SPECIES_PATH;
             try {
-                ResponseEntity<String> response = new RestTemplate().getForEntity(baseUri + "/" + SPECIES_PATH,
-                        String.class);
-
+                ResponseEntity<String> response = new RestTemplate().getForEntity(uri, String.class);
+                if (response.getStatusCode() != HttpStatus.OK) {
+                    throw new RestSearchException(uri, response.getBody(), response.getStatusCode());
+                }
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode at = mapper.readTree(response.getBody()).at("/response").get(0).get("result");
-                genomes = StreamSupport.stream(at.spliterator(), false).map(n -> mapper.convertValue(n, Map.class))
+                genomes = StreamSupport.stream(at.spliterator(), false).map(n -> (Map<String,Object>)mapper.convertValue(n, Map.class))
                         .collect(Collectors.toList());
             } catch (IOException e) {
-                throw new NotFoundException("Could not retrieve genomes from " + baseUri, e);
+                throw new RestSearchException("Could not handle response", uri, e);
             }
         }
         return genomes;
