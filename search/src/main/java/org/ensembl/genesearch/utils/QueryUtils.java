@@ -53,21 +53,24 @@ public class QueryUtils {
      * @param obj
      * @param output
      */
-    public static void filterFields(Map<String, Object> obj, QueryOutput output) {
-        filterFields(obj, output, null);
+    public static Map<String, Object> filterFields(Map<String, Object> obj, QueryOutput output) {
+        return filterFields(obj, output, null);
     }
 
     @SuppressWarnings("unchecked")
-    protected static void filterFields(Map<String, Object> obj, QueryOutput output, String path) {
+    protected static Map<String, Object> filterFields(Map<String, Object> obj, QueryOutput output, String path) {
+        if (output == null) {
+            return obj;
+        }
         Iterator<String> i = obj.keySet().iterator();
-        while(i.hasNext()) {            
+        while (i.hasNext()) {
             String key = i.next();
             String keyPath = key;
             if (!StringUtils.isEmpty(path)) {
                 keyPath = path + '.' + key;
             }
             Object so = obj.get(key);
-            if (Map.class.isAssignableFrom(so.getClass())) {
+            if (Map.class.isAssignableFrom(so.getClass()) && output.containsPathChildren(keyPath)) {
                 Map<String, Object> mo = (Map<String, Object>) so;
                 filterFields(mo, output, keyPath);
                 if (mo.isEmpty()) {
@@ -79,12 +82,14 @@ public class QueryUtils {
                 if (lo.isEmpty()) {
                     i.remove();
                 } else if (Map.class.isAssignableFrom(lo.get(0).getClass())) {
-                    Iterator<Map<String, Object>> li = ((List<Map<String, Object>>) lo).iterator();
-                    while (li.hasNext()) {
-                        Map<String, Object> mo = li.next();
-                        filterFields(mo, output, keyPath);
-                        if (mo.isEmpty()) {
-                            li.remove();
+                    if (output.containsPathChildren(keyPath)) {
+                        Iterator<Map<String, Object>> li = ((List<Map<String, Object>>) lo).iterator();
+                        while (li.hasNext()) {
+                            Map<String, Object> mo = li.next();
+                            filterFields(mo, output, keyPath);
+                            if (mo.isEmpty()) {
+                                li.remove();
+                            }
                         }
                     }
                     if (lo.isEmpty()) {
@@ -100,6 +105,7 @@ public class QueryUtils {
                 i.remove();
             }
         }
+        return obj;
     }
 
     public static BiPredicate<Map<String, Object>, List<Query>> filterResultsByQueries = new BiPredicate<Map<String, Object>, List<Query>>() {

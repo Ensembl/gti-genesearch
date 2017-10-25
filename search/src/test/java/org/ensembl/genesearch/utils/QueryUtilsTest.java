@@ -68,7 +68,7 @@ public class QueryUtilsTest {
             Assert.assertFalse("A not found", o.containsKey("A"));
             Assert.assertTrue("B.1 found", !DataUtils.getObjValsForKey(o, "B.1").isEmpty());
             Assert.assertTrue("B.2 found", !DataUtils.getObjValsForKey(o, "B.2").isEmpty());
-            Assert.assertFalse("B.3 not found", DataUtils.getObjValsForKey(o, "B.3").isEmpty());
+            Assert.assertTrue("B.3 not found", DataUtils.getObjValsForKey(o, "B.3").isEmpty());
         }
         {
             Map<String, Object> o = new ObjectMapper()
@@ -79,7 +79,40 @@ public class QueryUtilsTest {
             Assert.assertFalse("A not found", o.containsKey("A"));
             Assert.assertTrue("B.1 found", !DataUtils.getObjValsForKey(o, "B.1").isEmpty());
             Assert.assertTrue("B.2 found", !DataUtils.getObjValsForKey(o, "B.2").isEmpty());
-            Assert.assertFalse("B.3 not found", DataUtils.getObjValsForKey(o, "B.3").isEmpty());
+            Assert.assertTrue("B.3 not found", DataUtils.getObjValsForKey(o, "B.3").isEmpty());
+        }
+        {
+            Map<String, Object> o = new ObjectMapper()
+                    .readValue("{\"A\":\"str\", \"B\":[{\"1\":\"a\",\"2\":\"b\",\"3\":\"c\"}]}", Map.class);
+            QueryOutput output = QueryOutput.build("[\"B.1\",\"B.2\"]");
+            QueryUtils.filterFields(o, output);
+            Assert.assertTrue("B found", o.containsKey("B"));
+            Assert.assertFalse("A not found", o.containsKey("A"));
+            Assert.assertTrue("B.1 found", !DataUtils.getObjValsForKey(o, "B.1").isEmpty());
+            Assert.assertTrue("B.2 found", !DataUtils.getObjValsForKey(o, "B.2").isEmpty());
+            Assert.assertTrue("B.3 not found", DataUtils.getObjValsForKey(o, "B.3").isEmpty());
+        }
+        {
+            Map<String, Object> o = new ObjectMapper()
+                    .readValue("{\"A\":\"str\", \"B\":[{\"1\":\"a\",\"2\":\"b\",\"3\":\"c\"}]}", Map.class);
+            QueryOutput output = QueryOutput.build("{\"B\":[\"1\",\"2\"]}");
+            QueryUtils.filterFields(o, output);
+            Assert.assertTrue("B found", o.containsKey("B"));
+            Assert.assertFalse("A not found", o.containsKey("A"));
+            Assert.assertTrue("B.1 found", !DataUtils.getObjValsForKey(o, "B.1").isEmpty());
+            Assert.assertTrue("B.2 found", !DataUtils.getObjValsForKey(o, "B.2").isEmpty());
+            Assert.assertTrue("B.3 not found", DataUtils.getObjValsForKey(o, "B.3").isEmpty());
+        }
+        {
+            Map<String, Object> o = new ObjectMapper()
+                    .readValue("{\"A\":\"str\", \"B\":{\"1\":\"a\",\"2\":\"b\",\"3\":\"c\"}}", Map.class);
+            QueryOutput output = QueryOutput.build("[\"B\"]");
+            QueryUtils.filterFields(o, output);
+            Assert.assertTrue("B found", o.containsKey("B"));
+            Assert.assertFalse("A not found", o.containsKey("A"));
+            Assert.assertTrue("B.1 found", !DataUtils.getObjValsForKey(o, "B.1").isEmpty());
+            Assert.assertTrue("B.2 found", !DataUtils.getObjValsForKey(o, "B.2").isEmpty());
+            Assert.assertTrue("B.3 found", !DataUtils.getObjValsForKey(o, "B.3").isEmpty());
         }
     }
 
