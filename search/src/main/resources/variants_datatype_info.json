@@ -75,7 +75,7 @@
 			"sort": "false",
 			"facet": "false",
 			"display": "true",
-			"search": "false"
+			"search": "true"
 		},
 		{
 			"type": "TERM",
@@ -84,7 +84,7 @@
 			"sort": "false",
 			"facet": "false",
 			"display": "true",
-			"search": "false"
+			"search": "true"
 		},
 		{
 			"type": "TERM",
