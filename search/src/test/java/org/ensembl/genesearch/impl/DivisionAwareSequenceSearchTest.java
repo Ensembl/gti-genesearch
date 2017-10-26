@@ -36,7 +36,12 @@ import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
 /**
  * Basic tests for REST-based sequence retrieval mechanism
@@ -45,11 +50,23 @@ import org.junit.Test;
  *
  */
 public class DivisionAwareSequenceSearchTest {
-
+    
+//    @ClassRule
+//    public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
+    
 	static DataTypeInfo sequenceInfo = DataTypeInfo.fromResource("/sequences_datatype_info.json");
-	private final static DivisionAwareSequenceSearch search = new DivisionAwareSequenceSearch(null,
-			new EnsemblRestSequenceSearch("http://rest.ensembl.org/sequence/id", sequenceInfo),
-			new EnsemblRestSequenceSearch("http://rest.ensemblgenomes.org/sequence/id", sequenceInfo));
+	private static DivisionAwareSequenceSearch search;
+    
+    @BeforeClass
+    public static void setUp() {
+//        search = new DivisionAwareSequenceSearch(null,
+//                new EnsemblRestSequenceSearch(wireMockRule.url(StringUtils.EMPTY)+"/sequence/id", sequenceInfo),
+//                new EnsemblRestSequenceSearch(wireMockRule.url(StringUtils.EMPTY)+"/sequence/id", sequenceInfo));
+      search = new DivisionAwareSequenceSearch(null,
+      new EnsemblRestSequenceSearch("http://localhost:8888/sequence/id", sequenceInfo),
+      new EnsemblRestSequenceSearch("http://localhost:8888/sequence/id", sequenceInfo));
+    }
+	
 
 	public List<Query> buildQuery(List<String> ids, Query... qs) {
 		search.isEnsembl = new HashSet<>();
