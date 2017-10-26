@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
@@ -45,87 +46,92 @@ import com.google.common.io.Files;
  */
 public class ESTestServer {
 
-	private final Node node;
-	private final Client client;
-	private final File dataDir;
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Node node;
+    private final Client client;
+    private final File dataDir;
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public ESTestServer() {
-		dataDir = Files.createTempDir();
-		dataDir.deleteOnExit();
-		log.info("Starting test server");
-		node = new NodeBuilder()
-				.settings(Settings.settingsBuilder().put("http.enabled", false).put("path.home", dataDir.getPath()))
-				.local(true).node();
-		client = node.client();
+    public ESTestServer() {
+        dataDir = Files.createTempDir();
+        dataDir.deleteOnExit();
+        log.info("Starting test server");
+        node = new NodeBuilder()
+                .settings(Settings.settingsBuilder().put("http.enabled", false).put("path.home", dataDir.getPath()))
+                .local(true).node();
+        client = node.client();
 
-		try {
-			log.info("Reading mapping");
-			// slurp the mapping file into memory
-			String geneMapping = DataUtils.readResource("/" + ESSearch.GENE_ESTYPE + "_mapping.json");
-			String genomeMapping = DataUtils.readResource("/" + ESSearch.GENOME_ESTYPE + "_mapping.json");
-			log.info("Creating index");
+        try {
+            log.info("Reading mapping");
+            // slurp the mapping file into memory
+            String geneMapping = DataUtils.readResource("/" + ESSearch.GENE_ESTYPE + "_mapping.json");
+            String genomeMapping = DataUtils.readResource("/" + ESSearch.GENOME_ESTYPE + "_mapping.json");
+            if (client.admin().indices().prepareExists(ESSearch.GENES_INDEX).execute().actionGet().isExists()) {
+                log.info("Deleting index");
+                client.admin().indices().delete(new DeleteIndexRequest(ESSearch.GENES_INDEX)).actionGet();
+            }
+            log.info("Creating index");
+            // create an index with mapping
+            client.admin().indices().prepareCreate(ESSearch.GENES_INDEX)
+                    .setSettings(Settings.builder().put("index.number_of_shards", 4).put("index.number_of_replicas", 0))
+                    .addMapping(ESSearch.GENE_ESTYPE, geneMapping).addMapping(ESSearch.GENOME_ESTYPE, genomeMapping)
+                    .get();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-			// create an index with mapping
-			client.admin().indices().prepareCreate(ESSearch.GENES_INDEX)
-					.setSettings(Settings.builder().put("index.number_of_shards", 4).put("index.number_of_replicas", 0))
-					.addMapping(ESSearch.GENE_ESTYPE, geneMapping).addMapping(ESSearch.GENOME_ESTYPE, genomeMapping).get();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+    }
 
-	}
+    public Client getClient() {
+        return client;
+    }
 
-	public Client getClient() {
-		return client;
-	}
+    private final ObjectMapper mapper = new ObjectMapper();
 
-	private final ObjectMapper mapper = new ObjectMapper();
+    public void indexTestDocs(String json, String type) {
+        try {
 
-	public void indexTestDocs(String json, String type) {
-		try {
+            log.info("Indexing ");
 
-			log.info("Indexing ");
+            int n = 0;
+            if (type.equals("gene")) {
+                Map<String, Object> genome = mapper.readValue(json, new TypeReference<Map<String, Object>>() {
+                });
+                for (Map<String, Object> doc : (List<Map<String, Object>>) genome.get("genes")) {
+                    indexTestDoc(doc, type);
+                    n++;
+                }
+            } else if (type.equals("genome")) {
+                List<Map<String, Object>> genomes = mapper.readValue(json,
+                        new TypeReference<List<Map<String, Object>>>() {
+                        });
+                for (Map<String, Object> genome : genomes) {
+                    indexTestDoc(genome, type);
+                    n++;
+                }
+            } else {
+                throw new RuntimeException("Don't know how to index " + type);
+            }
+            // wait for indices to be built
+            client.admin().indices().refresh(new RefreshRequest(ESSearch.GENES_INDEX)).actionGet();
+            log.info("Indexed " + n + " documents");
+            return;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+        }
+    }
 
-			int n = 0;
-			if (type.equals("gene")) {
-				Map<String, Object> genome = mapper.readValue(json, new TypeReference<Map<String, Object>>() {
-				});
-				for (Map<String, Object> doc : (List<Map<String, Object>>) genome.get("genes")) {
-					indexTestDoc(doc, type);
-					n++;
-				}
-			} else if (type.equals("genome")) {
-				List<Map<String, Object>> genomes = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {
-				});
-				for (Map<String, Object> genome : genomes) {
-					indexTestDoc(genome, type);
-					n++;
-				}
-			} else {
-				throw new RuntimeException("Don't know how to index " + type);
-			}
-			// wait for indices to be built
-			client.admin().indices().refresh(new RefreshRequest(ESSearch.GENES_INDEX)).actionGet();
-			log.info("Indexed " + n + " documents");
-			return;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-		}
-	}
+    protected void indexTestDoc(Map<String, Object> doc, String type) throws JsonProcessingException {
+        String id = String.valueOf(doc.get("id"));
+        doc.put("_id", id);
 
-	protected void indexTestDoc(Map<String, Object> doc, String type) throws JsonProcessingException {
-		String id = String.valueOf(doc.get("id"));
-		doc.put("_id", id);
+        client.prepareIndex(ESSearch.GENES_INDEX, type).setId(id).setSource(mapper.writeValueAsString(doc)).execute()
+                .actionGet();
+    }
 
-		client.prepareIndex(ESSearch.GENES_INDEX, type).setId(id).setSource(mapper.writeValueAsString(doc)).execute()
-				.actionGet();
-	}
-
-	public void disconnect() {
-		client.close();
-		node.close();
-	}
+    public void disconnect() {
+        client.close();
+        node.close();
+    }
 
 }
