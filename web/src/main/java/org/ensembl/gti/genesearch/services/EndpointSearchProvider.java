@@ -74,7 +74,9 @@ public class EndpointSearchProvider {
 	private int port;
 	@Value("${es.node}")
 	private boolean node;
-	@Value("${rest.url.ens}")
+    @Value("${es.index}")
+    private String index = ESSearch.GENES_INDEX;
+    @Value("${rest.url.ens}")
 	private String ensRestUrl;
 	@Value("${rest.url.eg}")
 	private String egRestUrl;
@@ -155,12 +157,12 @@ public class EndpointSearchProvider {
 			DataTypeInfo expressionType = DataTypeInfo.fromResource("/expression_datatype_info.json");
 			DataTypeInfo expressionExperimentsType = DataTypeInfo
 					.fromResource("/expression_experiments_datatype_info.json");
-			Search esGenomeSearch = new ESSearch(getESClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE,
+			Search esGenomeSearch = new ESSearch(getESClient(), index, ESSearch.GENOME_ESTYPE,
 					genomeType);
-			Search esGeneSearch = new ESSearch(getESClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneType);
+			Search esGeneSearch = new ESSearch(getESClient(), index, ESSearch.GENE_ESTYPE, geneType);
 			Search seqSearch = new DivisionAwareSequenceSearch(esGenomeSearch, seqType, getEnsRestUrl(),
 					getEgRestUrl());
-			Search esTranscriptSearch = new ESSearchFlatten(getESClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
+			Search esTranscriptSearch = new ESSearchFlatten(getESClient(), index, ESSearch.GENE_ESTYPE,
 					"transcripts", "genes", transcriptType);
 			Search mongoVariantSearch = new MongoSearch(getMongoCollection(), variantType);
 			Search solrExpressionSearch = new SolrSearch(getSolrAnalyticsClient(), expressionType);
