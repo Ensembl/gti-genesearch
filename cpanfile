@@ -1,0 +1,1 @@
+requires 'Search::Elasticsearch';
