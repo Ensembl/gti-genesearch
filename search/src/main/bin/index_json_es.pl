@@ -44,7 +44,9 @@ else {
 my $logger = get_logger();
 
 $logger->info("Connecting to ES instance on $opts->{es_url}");
-my $es = Search::Elasticsearch->new(nodes=>[$opts->{es_url}]);
+my $es = Search::Elasticsearch->new(
+				    client => "2_0::Direct", 
+				    nodes=>[$opts->{es_url}]);
 
 {
   my $bulk = $es->bulk_helper(
