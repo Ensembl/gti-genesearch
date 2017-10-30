@@ -25,10 +25,14 @@ use Pod::Usage;
 use File::Slurp;
 
 my $opts = {};
-GetOptions ($opts, 'verbose', 'file:s@', 'es_url:s');
+GetOptions ($opts, 'verbose', 'genes_file:s@', 'genome_file:s@', 'es_url:s','index:s');
 
 if(!$opts->{es_url}) {
     pod2usage("ElasticSearch URL not specified");
+}
+
+if(!$opts->{index}) {
+    pod2usage("Index name not specified");
 }
 
 if ( $opts->{verbose} ) {
@@ -41,20 +45,43 @@ my $logger = get_logger();
 
 $logger->info("Connecting to ES instance on $opts->{es_url}");
 my $es = Search::Elasticsearch->new(nodes=>[$opts->{es_url}]);
-my $bulk = $es->bulk_helper(
-    index   => 'genes',
-    type    => 'gene'
-);
 
-for my $file (@{$opts->{file}}) {
+{
+  my $bulk = $es->bulk_helper(
+                              index   => $opts->{index},
+                              type    => 'genome'
+                             );
+  
+  for my $file (@{$opts->{genome_file}}) {
+    $logger->info("Loading from $file");
+    my $genome = from_json(read_file($file));
+    $logger->debug("Loading $genome->{id}");
+    $bulk->index({id=>$genome->{id}, source=>$genome});
+    $logger->info("Completed loading genome from $file");
+  }
+  $bulk->flush();
+}
+
+
+{
+  my $bulk = $es->bulk_helper(
+                              index   => $opts->{index},
+                              type    => 'gene'
+                             );
+  
+  for my $file (@{$opts->{genes_file}}) {
     $logger->info("Loading from $file");
     my $n = 0;
     my $genes = from_json(read_file($file));
     for my $gene (@$genes) {
-        $n++;
-        $logger->debug("Loading $gene->{id}");
-        $bulk->index({id=>$gene->{id}, source=>$gene});
+      $n++;
+      $logger->debug("Loading $gene->{id}");
+      $bulk->index({id=>$gene->{id}, source=>$gene});
     }
     $logger->info("Completed loading $n entries from $file");
+  }
+  $bulk->flush();
 }
-$bulk->flush();
+
+
+
