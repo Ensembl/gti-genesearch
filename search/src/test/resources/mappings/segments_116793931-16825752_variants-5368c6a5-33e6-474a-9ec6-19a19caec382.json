@@ -1,0 +1,31 @@
+{
+  "id" : "5368c6a5-33e6-474a-9ec6-19a19caec382",
+  "name" : "segments_116793931-16825752_variants",
+  "request" : {
+    "url" : "/segments/1:16793931-16825752/variants?species=hsapiens_grch37&limit=1000&skip=0&exclude=sourceEntries",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"time\":9538,\"apiVersion\":\"v1\",\"queryOptions\":{\"metadata\":true,\"exclude\":[\"sourceEntries\"],\"include\":null,\"limit\":1000,\"skip\":-1,\"count\":false},\"response\":[{\"time\":0,\"dbTime\":9538,\"numResults\":0,\"numTotalResults\":0,\"result\":[]}]}",
+    "headers" : {
+      "Server" : "Apache-Coyote/1.1",
+      "Vary" : "Accept-Encoding",
+      "Cache-Control" : "no-cache, no-store, max-age=0, must-revalidate",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Strict-Transport-Security" : "max-age=0",
+      "Access-Control-Max-Age" : "3600",
+      "Date" : "Tue, 31 Oct 2017 13:48:42 GMT",
+      "Expires" : "0",
+      "X-XSS-Protection" : "1; mode=block",
+      "Pragma" : "no-cache",
+      "Access-Control-Allow-Origin" : "*",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "DENY",
+      "Access-Control-Allow-Headers" : "X-Requested-With, Content-Type, accept",
+      "Access-Control-Allow-Methods" : "GET, POST, OPTIONS"
+    }
+  },
+  "uuid" : "5368c6a5-33e6-474a-9ec6-19a19caec382",
+  "persistent" : true
+}
