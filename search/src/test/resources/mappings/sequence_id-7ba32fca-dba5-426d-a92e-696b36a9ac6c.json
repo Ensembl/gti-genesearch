@@ -1,0 +1,30 @@
+{
+  "id" : "7ba32fca-dba5-426d-a92e-696b36a9ac6c",
+  "name" : "sequence_id",
+  "request" : {
+    "url" : "/sequence/id?species=homo_sapiens",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"ids\":[\"ENSP00000486012\"]}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : false
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "[{\"desc\":null,\"query\":\"ENSP00000486012\",\"id\":\"ENSP00000486012\",\"seq\":\"MTMGDKKSPTRPKRQAKPAADEGFWDCSVCTFRNSAEAFKCSICDVRKGTSTRKPRINSQLVAQQVAQQYATPPPPKKEKKEKVEKQDKEKPEKDKEISPSVTKKNTNKKTKPKSDILKDPPSEANSIQSANATTKTSETNHTSRPRLKNVDRSTAQQLAVTVGNVTVIITDFKEKTRSSSTSSSTVTSSAGSEQQNQSSSGSESTDKGSSRSSTPKGDMSAVNDESF\",\"molecule\":\"protein\"}]",
+    "headers" : {
+      "Vary" : "Content-Type",
+      "Content-Type" : "application/json",
+      "X-Runtime" : "0.563570",
+      "X-RateLimit-Limit" : "55000",
+      "X-RateLimit-Reset" : "599",
+      "X-RateLimit-Period" : "3600",
+      "X-RateLimit-Remaining" : "54997",
+      "Date" : "Tue, 31 Oct 2017 15:50:01 GMT",
+      "Connection" : "keep-alive"
+    }
+  },
+  "uuid" : "7ba32fca-dba5-426d-a92e-696b36a9ac6c",
+  "persistent" : true
+}

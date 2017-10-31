@@ -7,7 +7,7 @@
     "bodyPatterns" : [ {
       "equalToJson" : "{\"ids\":[\"ENST00000628983\"]}",
       "ignoreArrayOrder" : true,
-      "ignoreExtraElements" : true
+      "ignoreExtraElements" : false
     } ]
   },
   "response" : {
