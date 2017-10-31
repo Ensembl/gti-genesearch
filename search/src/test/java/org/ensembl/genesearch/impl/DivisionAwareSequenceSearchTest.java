@@ -51,20 +51,17 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
  */
 public class DivisionAwareSequenceSearchTest {
     
-//    @ClassRule
-//    public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
+    @ClassRule
+    public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
     
 	static DataTypeInfo sequenceInfo = DataTypeInfo.fromResource("/sequences_datatype_info.json");
 	private static DivisionAwareSequenceSearch search;
     
     @BeforeClass
     public static void setUp() {
-//        search = new DivisionAwareSequenceSearch(null,
-//                new EnsemblRestSequenceSearch(wireMockRule.url(StringUtils.EMPTY)+"/sequence/id", sequenceInfo),
-//                new EnsemblRestSequenceSearch(wireMockRule.url(StringUtils.EMPTY)+"/sequence/id", sequenceInfo));
-      search = new DivisionAwareSequenceSearch(null,
-      new EnsemblRestSequenceSearch("http://localhost:8888/sequence/id", sequenceInfo),
-      new EnsemblRestSequenceSearch("http://localhost:8888/sequence/id", sequenceInfo));
+        search = new DivisionAwareSequenceSearch(null,
+                new EnsemblRestSequenceSearch(wireMockRule.url(StringUtils.EMPTY)+"sequence/id", sequenceInfo),
+                new EnsemblRestSequenceSearch(wireMockRule.url(StringUtils.EMPTY)+"sequence/id", sequenceInfo));
     }
 	
 

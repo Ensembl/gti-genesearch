@@ -49,18 +49,16 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
  */
 public class EnsemblRestSequenceSearchTest {
 
-//    @ClassRule
-//    public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
+    @ClassRule
+    public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
     
     static DataTypeInfo sequenceInfo = DataTypeInfo.fromResource("/sequences_datatype_info.json");
     private static EnsemblRestSequenceSearch search;
     
     @BeforeClass
     public static void setUp() {
-//        search = new EnsemblRestSequenceSearch(
-//            wireMockRule.url(StringUtils.EMPTY)+"/sequence/id", sequenceInfo);
-      search = new EnsemblRestSequenceSearch(
-      "http://localhost:8888/sequence/id", sequenceInfo);
+        search = new EnsemblRestSequenceSearch(
+            wireMockRule.url(StringUtils.EMPTY)+"/sequence/id", sequenceInfo);
     }
     
     @Test
