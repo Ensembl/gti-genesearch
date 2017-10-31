@@ -57,7 +57,8 @@ public class ESSearchBuilder {
 
 	private static final Logger log = LoggerFactory.getLogger(ESSearchBuilder.class);
 
-	public static final String  SEQ_REGION_FIELD = "seq_region_name";
+	public static final String SEQ_REGION_FIELD = "seq_region_name";
+    public static final String GENOME_FIELD = "genome";
 	public static final String START_FIELD = "start";
 	public static final String END_FIELD = "end";
 	public static final String STRAND_FIELD = "strand";

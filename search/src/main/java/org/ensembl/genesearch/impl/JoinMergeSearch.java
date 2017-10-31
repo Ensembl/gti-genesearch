@@ -100,6 +100,12 @@ public abstract class JoinMergeSearch implements Search {
                     new String[] { locationKey }, null);
         }
 
+        static JoinStrategy asGenomeRange(MergeStrategy merge, String genomeKey, String seqKey, String minKey,
+                String maxKey, String toGenomeKey, String locationKey) {
+            return new JoinStrategy(JoinType.RANGE, merge, new String[] { genomeKey, seqKey, minKey, maxKey },
+                    new String[] { toGenomeKey, locationKey }, null);
+        }
+
         protected JoinStrategy(JoinType type, MergeStrategy merge, String[] fromKey, String[] toKey, String toGroupBy) {
             this.type = type;
             this.merge = merge;
@@ -379,10 +385,17 @@ public abstract class JoinMergeSearch implements Search {
      * @return
      */
     protected List<Query> buildToRangeQuery(SubSearchParams from, SubSearchParams to, Map<String, Object> result) {
-        List<Query> qs = new ArrayList<>(to.queries.size() + 1);
-        // 0,1,2 is seq region, min, max
-        qs.add(new Query(FieldType.LOCATION, to.keys[0],
-                result.get(from.keys[0]) + ":" + result.get(from.keys[1]) + "-" + result.get(from.keys[2])));
+
+        int n = 0;
+        List<Query> qs = new ArrayList<>(to.queries.size() + 2);
+        if (from.keys.length == 4) {
+            // 0 is genome
+            qs.add(new Query(FieldType.TERM, to.keys[n], String.valueOf(result.get(from.keys[n]))));
+            n++;
+        }
+        // 1,2,3 is seq region, min, max
+        qs.add(new Query(FieldType.LOCATION, to.keys[n],
+                result.get(from.keys[n]) + ":" + result.get(from.keys[n + 1]) + "-" + result.get(from.keys[n + 2])));
         qs.addAll(to.queries);
         return qs;
     }
@@ -591,11 +604,11 @@ public abstract class JoinMergeSearch implements Search {
             if (isInner(from, to)) {
 
                 throw new UnsupportedOperationException("Inner joins are not supported for range-based joins");
-            
+
             } else {
 
                 return queryWithRangeJoin(output, facets, offset, limit, sorts, from, to);
-            
+
             }
 
         } else if (to.joinStrategy.type == JoinType.TERM) {

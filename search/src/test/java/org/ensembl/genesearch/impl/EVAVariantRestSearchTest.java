@@ -35,11 +35,11 @@ public class EVAVariantRestSearchTest {
     @BeforeClass
     public static void setUp() throws IOException {
 
+        ESTestServer testServer = new ESTestServer();
         // index a sample of JSON for use in search genomes
         log.info("Reading documents");
         String json = DataUtils.readGzipResource("/eva_genomes.json.gz");
-        log.info("Creating test index");
-        ESTestServer testServer = new ESTestServer();
+        log.info("Creating test index for genomes");
         testServer.indexTestDocs(json, ESSearch.GENOME_ESTYPE);
         ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX,
                 ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/genomes_datatype_info.json"));
@@ -89,7 +89,7 @@ public class EVAVariantRestSearchTest {
                         new Query(FieldType.TERM, "alternate", "A"),
                         new Query(FieldType.TERM, EVAVariantRestSearch.GENOME_FIELD, "homo_sapiens")),
                 QueryOutput.build("[\"ids\"]"), Collections.emptyList(), 1, 50, Collections.emptyList());
-        Assert.assertEquals("11 results found",11, res.getResults().size());
+        Assert.assertEquals("11 results found", 11, res.getResults().size());
     }
 
     @Test
@@ -117,18 +117,23 @@ public class EVAVariantRestSearchTest {
         QueryResult res = search.query(
                 Arrays.asList(new Query(FieldType.TERM, EVAVariantRestSearch.ID_FIELD, "rs666"),
                         new Query(FieldType.TERM, EVAVariantRestSearch.GENOME_FIELD, "homo_sapiens")),
-                QueryOutput.build("[\"ids\",\"alternate\",\"hgvs\",{\"annotation\":[\"consequenceTypes\",{\"xrefs\":[\"src\"]}]}]"), Collections.emptyList(), 1, 10, Collections.emptyList());
+                QueryOutput
+                        .build("[\"ids\",\"alternate\",\"hgvs\",{\"annotation\":[\"consequenceTypes\",{\"xrefs\":[\"src\"]}]}]"),
+                Collections.emptyList(), 1, 10, Collections.emptyList());
         Assert.assertEquals("1 result found", 1, res.getResults().size());
-        Map<String,Object> v = res.getResults().get(0);
-        Assert.assertFalse("ids found",DataUtils.getObjValsForKey(v, "ids").isEmpty());
-        Assert.assertFalse("alternate found",DataUtils.getObjValsForKey(v, "alternate").isEmpty());
-        Assert.assertTrue("reference not found",DataUtils.getObjValsForKey(v, "reference").isEmpty());
-        Assert.assertFalse("hgvs.genomic found",DataUtils.getObjValsForKey(v, "hgvs.genomic").isEmpty());
-        Assert.assertFalse("annotation.consequenceTypes found",DataUtils.getObjValsForKey(v, "annotation.consequenceTypes").isEmpty());
-        Assert.assertTrue("annotation.chromosome found",DataUtils.getObjValsForKey(v, "annotation.chromosome").isEmpty());
-        Assert.assertFalse("annotation.xrefs.src found",DataUtils.getObjValsForKey(v, "annotation.xrefs.src").isEmpty());
-        Assert.assertTrue("annotation.xrefs.id not found",DataUtils.getObjValsForKey(v, "annotation.xrefs.id").isEmpty());
+        Map<String, Object> v = res.getResults().get(0);
+        Assert.assertFalse("ids found", DataUtils.getObjValsForKey(v, "ids").isEmpty());
+        Assert.assertFalse("alternate found", DataUtils.getObjValsForKey(v, "alternate").isEmpty());
+        Assert.assertTrue("reference not found", DataUtils.getObjValsForKey(v, "reference").isEmpty());
+        Assert.assertFalse("hgvs.genomic found", DataUtils.getObjValsForKey(v, "hgvs.genomic").isEmpty());
+        Assert.assertFalse("annotation.consequenceTypes found",
+                DataUtils.getObjValsForKey(v, "annotation.consequenceTypes").isEmpty());
+        Assert.assertTrue("annotation.chromosome found",
+                DataUtils.getObjValsForKey(v, "annotation.chromosome").isEmpty());
+        Assert.assertFalse("annotation.xrefs.src found",
+                DataUtils.getObjValsForKey(v, "annotation.xrefs.src").isEmpty());
+        Assert.assertTrue("annotation.xrefs.id not found",
+                DataUtils.getObjValsForKey(v, "annotation.xrefs.id").isEmpty());
     }
 
-    
 }

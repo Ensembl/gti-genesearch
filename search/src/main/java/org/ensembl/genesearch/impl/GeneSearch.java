@@ -26,28 +26,35 @@ import org.ensembl.genesearch.Search;
  */
 public class GeneSearch extends JoinMergeSearch {
 
-	public GeneSearch(SearchRegistry provider) {
-		super(SearchType.GENES, provider);
-		Search homologSearch = provider.getSearch(SearchType.HOMOLOGUES);
-		if (homologSearch != null) {
-			joinTargets.put(SearchType.HOMOLOGUES, JoinStrategy.as(MergeStrategy.MERGE, "homologues.stable_id", "id"));
-		}
-		Search seqSearch = provider.getSearch(SearchType.SEQUENCES);
-		if (seqSearch != null) {
-			joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.MERGE, "id", "id", "genome"));
-		}
-		Search genomeSearch = provider.getSearch(SearchType.GENOMES);
-		if (genomeSearch != null) {
-			joinTargets.put(SearchType.GENOMES, JoinStrategy.as(MergeStrategy.APPEND, "genome", "id"));
-		}
-		Search variantSearch = provider.getSearch(SearchType.VARIANTS);
-		if (variantSearch != null) {
-			joinTargets.put(SearchType.VARIANTS, JoinStrategy.as(MergeStrategy.APPEND, "id", "annot.xrefs.id"));
-		}
-		Search expressionSearch = provider.getSearch(SearchType.EXPRESSION);
-		if (expressionSearch != null) {
-			joinTargets.put(SearchType.EXPRESSION, JoinStrategy.as(MergeStrategy.APPEND, "id", "bioentityIdentifier"));
-		}
-	}
+    public GeneSearch(SearchRegistry provider) {
+        super(SearchType.GENES, provider);
+        Search homologSearch = provider.getSearch(SearchType.HOMOLOGUES);
+        if (homologSearch != null) {
+            joinTargets.put(SearchType.HOMOLOGUES, JoinStrategy.as(MergeStrategy.MERGE, "homologues.stable_id", "id"));
+        }
+        Search seqSearch = provider.getSearch(SearchType.SEQUENCES);
+        if (seqSearch != null) {
+            joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.MERGE, "id", "id", "genome"));
+        }
+        Search genomeSearch = provider.getSearch(SearchType.GENOMES);
+        if (genomeSearch != null) {
+            joinTargets.put(SearchType.GENOMES, JoinStrategy.as(MergeStrategy.APPEND, "genome", "id"));
+        }
+        Search variantSearch = provider.getSearch(SearchType.VARIANTS);
+        if (variantSearch != null) {
+            if (MongoSearch.class.isAssignableFrom(variantSearch.getClass())) {
+                joinTargets.put(SearchType.VARIANTS, JoinStrategy.as(MergeStrategy.APPEND, "id", "annot.xrefs.id"));
+            } else {
+                joinTargets.put(SearchType.VARIANTS,
+                        JoinStrategy.asGenomeRange(MergeStrategy.APPEND, ESSearchBuilder.GENOME_FIELD,
+                                ESSearchBuilder.SEQ_REGION_FIELD, ESSearchBuilder.START_FIELD,
+                                ESSearchBuilder.END_FIELD, EVAVariantRestSearch.GENOME_FIELD, EVAVariantRestSearch.LOCATION_FIELD));
+            }
+        }
+        Search expressionSearch = provider.getSearch(SearchType.EXPRESSION);
+        if (expressionSearch != null) {
+            joinTargets.put(SearchType.EXPRESSION, JoinStrategy.as(MergeStrategy.APPEND, "id", "bioentityIdentifier"));
+        }
+    }
 
 }
