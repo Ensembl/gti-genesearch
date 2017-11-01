@@ -21,6 +21,8 @@ import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.utils.QueryUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -52,6 +54,7 @@ public class EVAVariantRestSearch implements Search {
     private final EVAGenomeFinder finder;
     private final ObjectMapper mapper = new ObjectMapper();
     private int batchSize = 1000;
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public EVAVariantRestSearch(String baseUri, DataTypeInfo info, EVAGenomeFinder finder) {
         this.baseUri = baseUri;
@@ -72,6 +75,9 @@ public class EVAVariantRestSearch implements Search {
             throw new UnsupportedOperationException("Query must contain " + GENOME_FIELD + " with one value");
         }
         String genomeName = finder.getEVAGenomeName(genome.get().getValues()[0]);
+        if (StringUtils.isEmpty(genomeName)) {
+            return StringUtils.EMPTY;
+        }
         Optional<Query> id = queries.stream().filter(q -> q.getFieldName().equals(ID_FIELD)).findFirst();
         Optional<Query> location = queries.stream().filter(q -> q.getFieldName().equals(LOCATION_FIELD)).findFirst();
         if (id.isPresent()) {
@@ -158,7 +164,12 @@ public class EVAVariantRestSearch implements Search {
         int resultCnt = 0;
         List<Query> postQueries = getPostQueries(queries);
         do {
-            JsonNode response = getResponse(getUrl(queries, fieldNames, offset, getBatchSize())).get(0);
+            String url = getUrl(queries, fieldNames, offset, getBatchSize());
+            if (url.isEmpty()) {
+                log.debug("Queries "+queries+" did not contain a genome known by EVA");
+                break;
+            }
+            JsonNode response = getResponse(url).get(0);
             if (resultCnt == 0) {
                 resultCnt = Integer.parseUnsignedInt(response.get("numTotalResults").asText());
             }
@@ -170,12 +181,17 @@ public class EVAVariantRestSearch implements Search {
     @Override
     public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
             List<String> sorts) {
-        JsonNode response = getResponse(getUrl(queries, output, offset, limit)).get(0);
-        List<Query> postQueries = getPostQueries(queries);
+        String url = getUrl(queries, output, offset, limit);
         List<Map<String, Object>> results = new ArrayList<>();
+        if(url.isEmpty()) {
+           log.debug("Queries "+queries+" did not contain a genome known by EVA");
+        } else {
+        JsonNode response = getResponse(url).get(0);        
+        List<Query> postQueries = getPostQueries(queries);
         processResponse(v -> {
             results.add(v);
         }, output, postQueries, response);
+        }
         return new QueryResult(-1, offset, limit, getFieldInfo(output), results, Collections.emptyMap());
     }
 
