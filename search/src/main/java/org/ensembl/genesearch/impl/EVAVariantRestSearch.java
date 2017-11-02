@@ -53,7 +53,7 @@ public class EVAVariantRestSearch implements Search {
     private final String baseUri;
     private final EVAGenomeFinder finder;
     private final ObjectMapper mapper = new ObjectMapper();
-    private int batchSize = 1000;
+    private int batchSize = 10000;
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public EVAVariantRestSearch(String baseUri, DataTypeInfo info, EVAGenomeFinder finder) {
@@ -122,10 +122,12 @@ public class EVAVariantRestSearch implements Search {
 
     private JsonNode getResponse(String uri) {
         try {
+            log.info("Querying " + uri);
             ResponseEntity<String> response = new RestTemplate().getForEntity(uri, String.class);
             if (response.getStatusCode() != HttpStatus.OK) {
                 throw new RestSearchException(uri, response.getBody(), response.getStatusCode());
             }
+            log.info("Response retrieved");
             return mapper.readTree(response.getBody()).at("/response");
         } catch (IOException e) {
             throw new RestSearchException("Could not handle response", uri, e);
@@ -166,14 +168,16 @@ public class EVAVariantRestSearch implements Search {
         do {
             String url = getUrl(queries, fieldNames, offset, getBatchSize());
             if (url.isEmpty()) {
-                log.debug("Queries "+queries+" did not contain a genome known by EVA");
+                log.debug("Queries " + queries + " did not contain a genome known by EVA");
                 break;
             }
+            log.info("Executing fetch");
             JsonNode response = getResponse(url).get(0);
             if (resultCnt == 0) {
                 resultCnt = Integer.parseUnsignedInt(response.get("numTotalResults").asText());
             }
             processResponse(consumer, fieldNames, postQueries, response);
+            log.info("Fetch executed");
             offset += getBatchSize();
         } while (resultCnt > 0 && offset <= resultCnt);
     }
@@ -183,14 +187,17 @@ public class EVAVariantRestSearch implements Search {
             List<String> sorts) {
         String url = getUrl(queries, output, offset, limit);
         List<Map<String, Object>> results = new ArrayList<>();
-        if(url.isEmpty()) {
-           log.debug("Queries "+queries+" did not contain a genome known by EVA");
+        if (url.isEmpty()) {
+            log.debug("Queries " + queries + " did not contain a genome known by EVA");
         } else {
-        JsonNode response = getResponse(url).get(0);        
-        List<Query> postQueries = getPostQueries(queries);
-        processResponse(v -> {
-            results.add(v);
-        }, output, postQueries, response);
+            log.info("Executing query");
+            JsonNode response = getResponse(url).get(0);
+            log.info("Processing query");
+            List<Query> postQueries = getPostQueries(queries);
+            processResponse(v -> {
+                results.add(v);
+            }, output, postQueries, response);
+            log.info(results.size()+" results retrieved");
         }
         return new QueryResult(-1, offset, limit, getFieldInfo(output), results, Collections.emptyMap());
     }

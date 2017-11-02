@@ -17,7 +17,12 @@ import org.glassfish.jersey.server.JSONP;
 @Produces({ MediaType.APPLICATION_JSON, Application.APPLICATION_X_JAVASCRIPT })
 public abstract class InfoService extends SearchBasedService {
 
-	public InfoService(EndpointSearchProvider provider) {
+    public static final String SEARCH = "search";
+    public static final String DISPLAY = "display";
+    public static final String SORT = "sort";
+    public static final String FACET = "facet";
+
+    public InfoService(EndpointSearchProvider provider) {
 		super(provider);
 	}
 
@@ -35,16 +40,16 @@ public abstract class InfoService extends SearchBasedService {
 		DataTypeInfo dataType = getDataType();
 		if (!StringUtils.isEmpty(type)) {
 			switch (type.toLowerCase()) {
-			case "facet":
+			case FACET:
 				return dataType.getFacetableFields();
 
-			case "sort":
+			case SORT:
 				return dataType.getSortFields();
 
-			case "display":
+			case DISPLAY:
 				return dataType.getDisplayFields();
 
-			case "search":
+			case SEARCH:
 				return dataType.getSearchFields();
 
 			default:
