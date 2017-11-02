@@ -137,18 +137,21 @@ public class EVAVariantRestSearch implements Search {
     @SuppressWarnings("unchecked")
     protected void processResponse(Consumer<Map<String, Object>> consumer, QueryOutput fieldNames,
             List<Query> postQueries, JsonNode response) {
-        // turn iterator to iterable
-        Iterable<JsonNode> iterableI = () -> response.get("result").elements();
+        JsonNode results = response.get("result");
+        if (results != null && results.size() > 0) {
+            // turn iterator to iterable
+            Iterable<JsonNode> iterableI = () -> results.elements();
 
-        // do the following:
-        /// turn nodes into maps
-        /// filter out using the post queries
-        /// filter the content of the objects
-        /// pass each object to the consumer
-        StreamSupport.stream(iterableI.spliterator(), false)
-                .map(v -> (Map<String, Object>) mapper.convertValue(v, Map.class))
-                .filter(v -> QueryUtils.filterResultsByQueries.test(v, postQueries))
-                .map(v -> QueryUtils.filterFields(v, fieldNames)).forEach(consumer);
+            // do the following:
+            /// turn nodes into maps
+            /// filter out using the post queries
+            /// filter the content of the objects
+            /// pass each object to the consumer
+            StreamSupport.stream(iterableI.spliterator(), false)
+                    .map(v -> (Map<String, Object>) mapper.convertValue(v, Map.class))
+                    .filter(v -> QueryUtils.filterResultsByQueries.test(v, postQueries))
+                    .map(v -> QueryUtils.filterFields(v, fieldNames)).forEach(consumer);
+        }
     }
 
     protected List<Query> getPostQueries(List<Query> queries) {
@@ -197,7 +200,7 @@ public class EVAVariantRestSearch implements Search {
             processResponse(v -> {
                 results.add(v);
             }, output, postQueries, response);
-            log.info(results.size()+" results retrieved");
+            log.info(results.size() + " results retrieved");
         }
         return new QueryResult(-1, offset, limit, getFieldInfo(output), results, Collections.emptyMap());
     }
