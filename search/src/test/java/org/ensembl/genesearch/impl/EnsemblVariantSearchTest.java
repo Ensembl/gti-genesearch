@@ -3,7 +3,6 @@ package org.ensembl.genesearch.impl;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
@@ -12,7 +11,6 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
-import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
