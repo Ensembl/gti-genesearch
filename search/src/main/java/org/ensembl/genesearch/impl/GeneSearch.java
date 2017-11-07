@@ -44,11 +44,21 @@ public class GeneSearch extends JoinMergeSearch {
         if (variantSearch != null) {
             if (MongoSearch.class.isAssignableFrom(variantSearch.getClass())) {
                 joinTargets.put(SearchType.VARIANTS, JoinStrategy.as(MergeStrategy.APPEND, "id", "annot.xrefs.id"));
-            } else {
+            } else if (EVAVariantRestSearch.class.isAssignableFrom(variantSearch.getClass())) {
                 joinTargets.put(SearchType.VARIANTS,
                         JoinStrategy.asGenomeRange(MergeStrategy.APPEND, ESSearchBuilder.GENOME_FIELD,
                                 ESSearchBuilder.SEQ_REGION_FIELD, ESSearchBuilder.START_FIELD,
-                                ESSearchBuilder.END_FIELD, EVAVariantRestSearch.GENOME_FIELD, EVAVariantRestSearch.LOCATION_FIELD));
+                                ESSearchBuilder.END_FIELD, EVAVariantRestSearch.GENOME_FIELD,
+                                EVAVariantRestSearch.LOCATION_FIELD));
+            } else if (EnsemblVariantSearch.class.isAssignableFrom(variantSearch.getClass())) {
+                joinTargets.put(SearchType.VARIANTS,
+                        JoinStrategy.asGenomeRange(MergeStrategy.APPEND, ESSearchBuilder.GENOME_FIELD,
+                                ESSearchBuilder.SEQ_REGION_FIELD, ESSearchBuilder.START_FIELD,
+                                ESSearchBuilder.END_FIELD, EnsemblVariantSearch.GENOME_FIELD,
+                                EnsemblVariantSearch.LOCATION_FIELD));
+            } else {
+                throw new UnsupportedOperationException(
+                        "Cannot use variant search of type " + variantSearch.getClass());
             }
         }
         Search expressionSearch = provider.getSearch(SearchType.EXPRESSION);
