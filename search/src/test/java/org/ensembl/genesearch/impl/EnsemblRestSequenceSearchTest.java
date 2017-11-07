@@ -58,7 +58,7 @@ public class EnsemblRestSequenceSearchTest {
     @BeforeClass
     public static void setUp() {
         search = new EnsemblRestSequenceSearch(
-            wireMockRule.url(StringUtils.EMPTY)+"/sequence/id", sequenceInfo);
+            wireMockRule.url(StringUtils.EMPTY), sequenceInfo);
     }
     
     @Test

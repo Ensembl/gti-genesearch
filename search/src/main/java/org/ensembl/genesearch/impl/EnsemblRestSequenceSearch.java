@@ -48,13 +48,15 @@ import org.springframework.web.client.RestTemplate;
  *
  */
 public class EnsemblRestSequenceSearch implements Search {
-
+    
     private static final int CONNECT_TIMEOUT = 5000;
 
     public final static List<String> VALID_ARGS = Arrays.asList("type", "expand_5prime", "expand_3prime", "type",
             "format", "species");
 
     public final static int DEFAULT_BATCH_SIZE = 50;
+    
+    public final static String SEQUENCE_ID = "/sequence/id";
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -138,9 +140,9 @@ public class EnsemblRestSequenceSearch implements Search {
                 .filter(q -> VALID_ARGS.contains(q.getFieldName()) && q.getValues().length == 1)
                 .map(q -> q.getFieldName() + "=" + q.getValues()[0]).collect(Collectors.toList());
         if (!params.isEmpty()) {
-            return baseUrl + "?" + StringUtils.join(params, '&');
+            return baseUrl + SEQUENCE_ID + "?" + StringUtils.join(params, '&');
         } else {
-            return baseUrl;
+            return baseUrl + SEQUENCE_ID;
         }
     }
 
