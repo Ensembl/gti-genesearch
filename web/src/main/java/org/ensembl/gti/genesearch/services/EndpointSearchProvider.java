@@ -28,8 +28,10 @@ import org.ensembl.genesearch.impl.ESSearchFlatten;
 import org.ensembl.genesearch.impl.EVAGenomeFinder;
 import org.ensembl.genesearch.impl.EVAGenomeRestSearch;
 import org.ensembl.genesearch.impl.EVAVariantRestSearch;
+import org.ensembl.genesearch.impl.EnsemblVariantSearch;
 import org.ensembl.genesearch.impl.ExpressionSearch;
 import org.ensembl.genesearch.impl.GeneSearch;
+import org.ensembl.genesearch.impl.MongoSearch;
 import org.ensembl.genesearch.impl.SearchRegistry;
 import org.ensembl.genesearch.impl.SearchType;
 import org.ensembl.genesearch.impl.SolrSearch;
@@ -72,28 +74,30 @@ public class EndpointSearchProvider {
     private String hostName;
     @Value("${es.cluster}")
     private String clusterName;
-    @Value("${es.port}")
+    @Value("${es.port:9300}")
     private int port;
     @Value("${es.node}")
     private boolean node;
-    @Value("${es.index}")
+    @Value("${es.index:genes}")
     private String index = ESSearch.GENES_INDEX;
     @Value("${rest.url.ens}")
     private String ensRestUrl;
     @Value("${rest.url.eg}")
     private String egRestUrl;
-    @Value("${mongo.url}")
+    @Value("${mongo.url:}")
     private String mongoUrl;
-    @Value("${mongo.database}")
+    @Value("${mongo.database:}")
     private String mongoDatabaseName;
-    @Value("${mongo.collection}")
+    @Value("${mongo.collection:}")
     private String mongoCollectionName;
-    @Value("${solr.expression.url}")
+    @Value("${solr.expression.url:}")
     private String solrAnalyticsUrl;
-    @Value("${solr.experiments.url}")
+    @Value("${solr.experiments.url:}")
     private String solrExperimentsUrl;
-    @Value("${eva.rest.url}")
+    @Value("${eva.rest.url:}")
     private String evaRestUrl;
+    @Value("${variation_search:ensembl}")
+    private String variationSearch = "ensembl";
 
     public EndpointSearchProvider() {
     }
@@ -153,38 +157,59 @@ public class EndpointSearchProvider {
 
     public SearchRegistry getRegistry() {
         if (registry == null) {
+
+            registry = new SearchRegistry();
+
+            // Elastic based searches
             DataTypeInfo geneType = DataTypeInfo.fromResource("/genes_datatype_info.json");
             DataTypeInfo genomeType = DataTypeInfo.fromResource("/genomes_datatype_info.json");
             DataTypeInfo transcriptType = DataTypeInfo.fromResource("/transcripts_datatype_info.json");
-            DataTypeInfo seqType = DataTypeInfo.fromResource("/sequences_datatype_info.json");
 
             Search esGenomeSearch = new ESSearch(getESClient(), index, ESSearch.GENOME_ESTYPE, genomeType);
             Search esGeneSearch = new ESSearch(getESClient(), index, ESSearch.GENE_ESTYPE, geneType);
-            Search seqSearch = new DivisionAwareSequenceSearch(esGenomeSearch, seqType, getEnsRestUrl(),
-                    getEgRestUrl());
             Search esTranscriptSearch = new ESSearchFlatten(getESClient(), index, ESSearch.GENE_ESTYPE, "transcripts",
                     "genes", transcriptType);
 
-            DataTypeInfo evaGenomeType = DataTypeInfo.fromResource("/evagenomes_datatype_info.json");
-            DataTypeInfo variantType = DataTypeInfo.fromResource("/evavariants_datatype_info.json");
-            Search evaGenomesSearch = new EVAGenomeRestSearch(evaRestUrl, evaGenomeType);
-            Search variantSearch = new EVAVariantRestSearch(evaRestUrl, variantType,
-                    new EVAGenomeFinder(evaGenomesSearch, esGenomeSearch));
+            registry.registerSearch(SearchType.GENES, esGeneSearch)
+                    .registerSearch(SearchType.TRANSCRIPTS, esTranscriptSearch)
+                    .registerSearch(SearchType.HOMOLOGUES, esGeneSearch)
+                    .registerSearch(SearchType.GENOMES, esGenomeSearch);
+
+            // Ensembl REST searches
+            DataTypeInfo seqType = DataTypeInfo.fromResource("/sequences_datatype_info.json");
+            Search seqSearch = new DivisionAwareSequenceSearch(esGenomeSearch, seqType, getEnsRestUrl(),
+                    getEgRestUrl());
+            registry.registerSearch(SearchType.SEQUENCES, seqSearch);
+
+            if ("ensembl".equalsIgnoreCase(variationSearch)) {
+                DataTypeInfo variantType = DataTypeInfo.fromResource("/variants_datatype_info.json");
+                Search variantSearch = new EnsemblVariantSearch(ensRestUrl, variantType);
+                registry.registerSearch(SearchType.VARIANTS, variantSearch);
+            } else if ("eva".equalsIgnoreCase(variationSearch)) {
+                DataTypeInfo evaGenomeType = DataTypeInfo.fromResource("/evagenomes_datatype_info.json");
+                DataTypeInfo variantType = DataTypeInfo.fromResource("/evavariants_datatype_info.json");
+                Search evaGenomesSearch = new EVAGenomeRestSearch(evaRestUrl, evaGenomeType);
+                Search variantSearch = new EVAVariantRestSearch(evaRestUrl, variantType,
+                        new EVAGenomeFinder(evaGenomesSearch, esGenomeSearch));
+                registry.registerSearch(SearchType.VARIANTS, variantSearch);
+            } else if ("eva_mongo".equalsIgnoreCase(variationSearch)) {
+                DataTypeInfo variantType = DataTypeInfo.fromResource("/evamongovariants_datatype_info.json");
+                Search mongoVariantSearch = new MongoSearch(getMongoCollection(), variantType);
+                registry.registerSearch(SearchType.VARIANTS, variantSearch);
+            } else {
+                throw new IllegalArgumentException("Unknown variation_search type " + variationSearch);
+            }
 
             DataTypeInfo expressionType = DataTypeInfo.fromResource("/expression_datatype_info.json");
             DataTypeInfo expressionExperimentsType = DataTypeInfo
                     .fromResource("/expression_experiments_datatype_info.json");
+
             Search solrExpressionSearch = new SolrSearch(getSolrAnalyticsClient(), expressionType);
             Search solrExpressionExperimentsSearch = new SolrSearch(getSolrExperimentsClient(),
                     expressionExperimentsType);
 
-            registry = new SearchRegistry().registerSearch(SearchType.GENES, esGeneSearch)
-                    .registerSearch(SearchType.TRANSCRIPTS, esTranscriptSearch)
-                    .registerSearch(SearchType.HOMOLOGUES, esGeneSearch)
-                    .registerSearch(SearchType.GENOMES, esGenomeSearch).registerSearch(SearchType.SEQUENCES, seqSearch)
-                    .registerSearch(SearchType.VARIANTS, variantSearch)
-                    .registerSearch(SearchType.EXPRESSION_ANALYTICS, solrExpressionSearch)
-                    .registerSearch(SearchType.EXPRESSION_EXPERIMENTS, solrExpressionExperimentsSearch);
+            registry.registerSearch(SearchType.EXPRESSION_ANALYTICS, solrExpressionSearch);
+            registry.registerSearch(SearchType.EXPRESSION_EXPERIMENTS, solrExpressionExperimentsSearch);
 
             expressionSearch = new ExpressionSearch(registry);
 
