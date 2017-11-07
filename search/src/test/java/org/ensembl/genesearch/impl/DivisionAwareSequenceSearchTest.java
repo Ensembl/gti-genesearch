@@ -60,8 +60,8 @@ public class DivisionAwareSequenceSearchTest {
     @BeforeClass
     public static void setUp() {
         search = new DivisionAwareSequenceSearch(null,
-                new EnsemblRestSequenceSearch(wireMockRule.url(StringUtils.EMPTY)+"sequence/id", sequenceInfo),
-                new EnsemblRestSequenceSearch(wireMockRule.url(StringUtils.EMPTY)+"sequence/id", sequenceInfo));
+                new EnsemblRestSequenceSearch(wireMockRule.url(StringUtils.EMPTY), sequenceInfo),
+                new EnsemblRestSequenceSearch(wireMockRule.url(StringUtils.EMPTY), sequenceInfo));
     }
 	
 
