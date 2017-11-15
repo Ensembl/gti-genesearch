@@ -16,32 +16,19 @@
 
 dir=$(dirname $0)
 url=$1
-n=$2
+type=$2
+n=$3
 if [ -z "$n" ]; then
     n=8
 fi
-echo "Setting up $url"
+
+echo "Setting up $url $type"
+
+
 # delete the old index
 echo "Deleting old index"
-curl -XDELETE "${url}/" 
+curl -XDELETE "${url}/$type" 
 echo
 # create a new index
 echo "Creating index"
-sed -e "s/SHARDN/$n/" ${dir}/../resources/settings.json | curl -XPUT -d @- "${url}/"
-echo
-
-
-## genome mapping - ignore for now
-echo "Loading genome mapping"
-curl -XPUT -d @${dir}/../resources/genome_mapping.json "${url}/_mapping/genome"
-
-# gene mapping
-echo "Loading gene mapping"
-curl -XPUT -d @${dir}/../resources/gene_mapping.json "${url}/_mapping/gene" 
-echo
-
-# variant mapping
-echo "Loading variant mapping"
-curl -XPUT -d @${dir}/../resources/variants_mapping.json "${url}/_mapping/variant" 
-echo
-
+sed -e "s/SHARDN/$n/" ${dir}/../resources/${type}_index.json | curl -XPUT -d @- "${url}/${type}"
