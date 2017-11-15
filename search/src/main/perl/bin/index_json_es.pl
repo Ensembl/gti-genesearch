@@ -25,12 +25,13 @@ use Pod::Usage;
 use Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer;
 
 my $opts = {};
-GetOptions ($opts, 'verbose', 'file:s@', 'es_url:s');
+GetOptions ($opts, 'verbose', 'file:s@', 'es_url:s', 'type:s', 'id:s');
 
 if(!$opts->{es_url}) {
     pod2usage("ElasticSearch URL not specified");
 }
-
+croak "Type not specified" unless defined $opts->{type};
+croak "File not specified" unless defined $opts->{file};
 if ( $opts->{verbose} ) {
   Log::Log4perl->easy_init($DEBUG);
 }
@@ -39,7 +40,10 @@ else {
 }
 my $logger = get_logger();
 my $indexer = Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer->new(url => $opts->{es_url});
+$opts->{id} ||= 'id';
+
 for my $file (@{$opts->{file}}) {
     $logger->info("Indexing $file");
-    $indexer->index_file($file);
+    my $array = $opts->{type} eq 'genome'?0:1;
+    $indexer->index_file($file, $opts->{type}, $opts->{id}, $array);
 }

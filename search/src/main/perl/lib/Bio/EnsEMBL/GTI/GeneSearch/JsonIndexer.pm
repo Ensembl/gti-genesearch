@@ -31,11 +31,13 @@ use JSON;
 use Carp;
 use Data::Dumper;
 
+use Bio::EnsEMBL::Production::Search::JSONReformatter qw/process_json_file/;
+
 has 'url'         => ( is => 'ro', isa => 'Str', required => 1 );
 has 'index'       => ( is => 'ro', isa => 'Str', default  => 'genes' );
 has 'gene_type'   => ( is => 'ro', isa => 'Str', default  => 'gene' );
 has 'genome_type' => ( is => 'ro', isa => 'Str', default  => 'genome' );
-has 'bulk' => ( is => 'rw', isa => 'Search::Elasticsearch::Bulk' );
+has 'bulk' => ( is => 'rw', isa => 'Search::Elasticsearch::Client::2_0::Bulk' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 300 );
 
 sub BUILD {
@@ -43,7 +45,8 @@ sub BUILD {
 
   $self->log()->info( "Connecting to " . $self->url() );
   $self->{es} =
-    Search::Elasticsearch->new( nodes           => [ $self->url() ],
+    Search::Elasticsearch->new( client          => "2_0::Direct",
+                                nodes           => [ $self->url() ],
                                 request_timeout => $self->timeout() );
   my $bulk = $self->{es}->bulk_helper(
     index    => $self->index(),
@@ -63,30 +66,52 @@ sub search {
 
 sub handle_error {
   my ( $self, $action, $response, $i ) = @_;
-  croak "Failed to execute $action $i due to " .
-    $response->{error}->{type} . " error: " .
-    $response->{error}->{reason};
+  croak "Failed to execute $action $i due to " . $response->{error}->{type} .
+    " error: " . $response->{error}->{reason};
   return;
 }
 
 sub index_file {
-  my ( $self, $file ) = @_;
-  $self->log()->info("Loading from $file");
-  my $n      = 0;
-  my $genome = from_json( read_file($file) );
-  $genome->{name} = $genome->{id};
+  my ( $self, $file, $type, $id_field, $array ) = @_;
+  if ( $array == 1 ) {
+    $self->index_file_array( $file, $type, $id_field );
+  }
+  else {
+    $self->index_file_single( $file, $type, $id_field );
+  }
+  return;
+}
 
-  eval {
-    for my $gene ( @{ $genome->{genes} } )
-    {
+sub index_file_single {
+  my ( $self, $file, $type, $id_field ) = @_;
+  $self->log()->info("Loading from $file");
+  $self->index_document( from_json( read_file($file) ), $type, $id_field );
+  $self->bulk()->flush();
+  return;
+}
+
+sub index_file_array {
+  my ( $self, $file, $type, $id_field ) = @_;
+  $self->log()->info("Loading array from $file");
+  my $n = 0;
+  process_json_file(
+    $file,
+    sub {
+      my $doc = shift;
+      $self->index_document( $doc, $type, $id_field );
       $n++;
-      $gene->{genome} = $genome->{id};
-      $self->log()->debug("Loading $gene->{id}");
-      $self->bulk()->index( { id     => $gene->{id},
-                              source => $gene,
-                              , type => $self->gene_type() } );
-    }
-    $self->bulk()->flush();
+      return;
+    } );
+  $self->bulk()->flush();
+  $self->log()->info("Loaded $n $type documents from $file");
+  return;
+}
+
+sub index_document {
+  my ( $self, $doc, $type, $id ) = @_;
+  eval {
+    $self->bulk()
+      ->index( { id => $doc->{$id}, source => $doc, type => $type } );
   };
   if ($@) {
     my $msg;
@@ -98,48 +123,8 @@ sub index_file {
       $msg = "Indexing failed: " . $@;
     }
     $self->log()->error($msg);
-    croak "Indexing $file failed: $msg";
+    croak "Indexing failed: $msg";
   }
-  $self->log()->info("Completed loading $n entries from $file");
-  $self->log()->info("Indexing genome");
-  delete $genome->{genes};
-  $self->bulk()->index( { id     => $genome->{id},
-                          source => $genome,
-                          type   => $self->genome_type() } );
-  $self->bulk()->flush();
-  $self->log()->info("Completed indexing genome");
-  return;
-} ## end sub index_file
-
-sub fetch_genes {
-  my ( $self, $gene_ids ) = @_;
-
-  # retrieve gene documents matching the provided genes
-  my $transcript_docs = {};
-  my $gene_docs       = [];
-  my $result = $self->{es}->mget( index => $self->index(),
-                                  type  => $self->gene_type(),
-                                  body  => { ids => $gene_ids } );
-
-  # create an ID to transcript hash
-  for my $gene_doc ( @{ $result->{docs} } ) {
-    push @$gene_docs, $gene_doc->{_source};
-  }
-
-  return $gene_docs;
-}
-
-sub index_genes {
-  my ( $self, $gene_docs ) = @_;
-  # reindex
-  for my $gene ( @{$gene_docs} ) {
-    $self->bulk()->index( { index  => $self->index(),
-                            type   => $self->gene_type(),
-                            id     => $gene->{id},
-                            source => $gene } );
-  }
-  $self->bulk()->flush();
   return;
 }
-
 1;
