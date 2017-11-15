@@ -1,7 +1,7 @@
 {
 	"variant": {
 		"_all": {
-			"enabled": true
+			"enabled": false
 		},
 		"dynamic": "false",
 		"properties": {
@@ -41,7 +41,7 @@
 				}
 			},
 			"minor_allele_count": {
-				"type": "int"
+				"type": "integer"
 			},
 			"minor_allele_freq": {
 				"type": "float"
@@ -183,6 +183,13 @@
 					"enabled": false
 				}
 			},
+			"clinical_significance": {
+				"type": "string",
+				"index": "not_analyzed",
+				"norms": {
+					"enabled": false
+				}
+			},
 			"locations": {
 				"properties": {
 					"seq_region_name": {
@@ -200,13 +207,13 @@
 						}
 					},
 					"start": {
-						"type": "int"
+						"type": "integer"
 					},
 					"end": {
-						"type": "int"
+						"type": "integer"
 					},
 					"strand": {
-						"type": "int"
+						"type": "integer"
 					},
 					"annotations": {
 						"properties": {
@@ -258,14 +265,7 @@
 							"polyphen_score": {
 								"type": "float"
 							},
-							"clinical_significance": {
-								"type": "string",
-								"index": "not_analyzed",
-								"norms": {
-									"enabled": false
-								}
-							},
-							"consqeuences": {
+							"consequences": {
 								"properties": {
 									"so_accession": {
 										"type": "string",
