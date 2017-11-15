@@ -17,18 +17,23 @@
 dir=$(dirname $0)
 url=$1
 type=$2
-n=$3
+name=$3
+n=$4
 if [ -z "$n" ]; then
     n=8
 fi
 
-echo "Setting up $url $type"
+if [ -z "$url" ] || [ -z "$type" ] || [ -z "$name" ]; then
+    echo "Usage: $0 <url> <type> <name> [shardN]" 1>&2 
+    exit 1
+fi
 
+echo "Setting up $url $type $name"
 
 # delete the old index
 echo "Deleting old index"
-curl -XDELETE "${url}/$type" 
+curl -XDELETE "${url}/$name" 
 echo
 # create a new index
 echo "Creating index"
-sed -e "s/SHARDN/$n/" ${dir}/../resources/${type}_index.json | curl -XPUT -d @- "${url}/${type}"
+sed -e "s/SHARDN/$n/" ${dir}/../resources/${type}_index.json | curl -XPUT -d @- "${url}/${name}"
