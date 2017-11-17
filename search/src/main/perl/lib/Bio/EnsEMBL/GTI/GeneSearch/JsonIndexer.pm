@@ -53,6 +53,10 @@ sub BUILD {
     on_error => sub {
       my ( $action, $response, $i ) = @_;
       $self->handle_error( $action, $response, $i );
+    },
+    on_conflict => sub {
+      my ( $action, $response, $i ) = @_;
+      # we don't care
     } );
   $self->bulk($bulk);
   $self->log()->info( "Connected to " . $self->url() );
@@ -72,9 +76,9 @@ sub handle_error {
 }
 
 sub index_file {
-  my ( $self, $file, $type, $id_field, $array ) = @_;
+  my ( $self, $file, $type, $id_field, $array, $offset, $limit ) = @_;
   if ( $array == 1 ) {
-    $self->index_file_array( $file, $type, $id_field );
+    $self->index_file_array( $file, $type, $id_field, $offset, $limit );
   }
   else {
     $self->index_file_single( $file, $type, $id_field );
@@ -91,19 +95,27 @@ sub index_file_single {
 }
 
 sub index_file_array {
-  my ( $self, $file, $type, $id_field ) = @_;
+  my ( $self, $file, $type, $id_field, $offset, $limit ) = @_;
   $self->log()->info("Loading array from $file");
+      if(defined $offset && defined $limit) {
+  $self->log()->info("Offset=$offset, limit=$limit");
+      }
   my $n = 0;
+  my $m = 0;
   process_json_file(
     $file,
     sub {
       my $doc = shift;
-      $self->index_document( $doc, $type, $id_field );
       $n++;
+      if(defined $offset && defined $limit) {
+        return if($n<$offset+1 || $n>($offset+$limit));
+      }
+      $m++;
+      $self->index_document( $doc, $type, $id_field );
       return;
     } );
   $self->bulk()->flush();
-  $self->log()->info("Loaded $n $type documents from $file");
+  $self->log()->info("Loaded $m/$n $type documents from $file");
   return;
 }
 
@@ -111,7 +123,7 @@ sub index_document {
   my ( $self, $doc, $type, $id ) = @_;
   eval {
     $self->bulk()
-      ->index( { id => $doc->{$id}, source => $doc, type => $type } );
+      ->create( { id => $doc->{$id}, source => $doc, type => $type } );
   };
   if ($@) {
     my $msg;
