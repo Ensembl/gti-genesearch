@@ -61,7 +61,7 @@ public class ESTestServer {
         client = node.client();
         createIndex(ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         createIndex(ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
-
+        createIndex(ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
     }
 
     protected void createIndex(String index, String type) {

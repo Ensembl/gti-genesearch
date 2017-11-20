@@ -1,313 +1,327 @@
 {
-    "settings": {
-        "number_of_shards": "SHARDN",
-        "number_of_replicas": 0,
-        "analysis": {
-            "analyzer": {
-                "string_lowercase": {
-                    "tokenizer": "keyword",
-                    "filter": "lowercase"
-                }
-            }
-        }
-    },
-    "mappings": {
-        "variant": {
-            "_all": {
-                "enabled": false
-            },
-            "dynamic": "false",
-            "properties": {
-                "source": {
-                    "properties": {
-                        "name": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
-                        },
-                        "version": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
-                        }
-                    }
-                },
-                "somatic": {
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "string",
-                    "index": "not_analyzed",
-                    "norms": {
+	"settings": {
+		"number_of_shards": "SHARDN",
+		"number_of_replicas": 0,
+		"analysis": {
+			"analyzer": {
+				"string_lowercase": {
+					"tokenizer": "keyword",
+					"filter": "lowercase"
+				}
+			}
+		}
+	},
+	"mappings": {
+		"variant": {
+			"_all": {
+				"enabled": false
+			},
+			"dynamic": "false",
+			"properties": {
+				"source": {
+					"type": "nested",
+					"properties": {
+						"name": {
+							"type": "string",
+							"index": "not_analyzed",
+							"norms": {
+								"enabled": false
+							}
+						},
+						"version": {
+							"type": "string",
+							"index": "not_analyzed",
+							"norms": {
+								"enabled": false
+							}
+						}
+					}
+				},
+				"somatic": {
+					"type": "boolean"
+				},
+				"id": {
+					"type": "string",
+					"index": "not_analyzed",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"class": {
+					"type": "string",
+					"index": "not_analyzed",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"minor_allele_count": {
+					"type": "integer"
+				},
+				"minor_allele_freq": {
+					"type": "float"
+				},
+				"minor_allele": {
+					"type": "string",
+					"index": "not_analyzed",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"gwas": {
+					"type": "string",
+					"index": "not_analyzed",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"phenotypes": {
+					"type": "nested",
+					"properties": {
+						"name": {
+							"type": "string",
+							"index": "not_analyzed",
+							"norms": {
+								"enabled": false
+							}
+						},
+						"description": {
+							"type": "string"
+						},
+						"ontology_name": {
+							"type": "string",
+							"index": "not_analyzed",
+							"norms": {
+								"enabled": false
+							}
+						},
+						"ontology_accession": {
+							"type": "string",
+							"index": "not_analyzed",
+							"norms": {
+								"enabled": false
+							}
+						},
+						"parents": {
+							"type": "string",
+							"index": "not_analyzed",
+							"norms": {
+								"enabled": false
+							}
+						},
+						"ontology_term": {
+							"type": "string",
+							"index": "not_analyzed",
+							"norms": {
+								"enabled": false
+							}
+						},
+						"study": {
+							"type": "nested",
+							"properties": {
+								"name": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								},
+								"description": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								}
+							}
+						},
+						"source": {
+							"type": "nested",
+							"properties": {
+								"name": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								},
+								"version": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								}
+							}
+						}
+					}
+				},
+				"hgvs": {
+					"type": "string",
+					"index": "not_analyzed",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"sets": {
+					"type": "string",
+					"index": "not_analyzed",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"citations": {
+					"type": "nested",
+					"properties": {
+						"pubmed_id": {
+							"type": "string",
+							"index": "not_analyzed",
+							"norms": {
+								"enabled": false
+							}
+						},
+						"title": {
+							"type": "string"
+						}
+					}
+				},
+				"gene_names": {
+					"type": "string",
+					"index": "not_analyzed",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"failures": {
+					"type": "string",
+					"index": "not_analyzed",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"clinical_significance": {
+					"type": "string",
+					"index": "not_analyzed",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"locations": {
+					"type": "nested",
+					"properties": {
+						"seq_region_name": {
+							"type": "string",
+							"index": "not_analyzed",
+							"norms": {
+								"enabled": false
+							}
+						},
+						"allele_string": {
+							"type": "string",
+							"index": "not_analyzed",
+							"norms": {
+								"enabled": false
+							}
+						},
+						"start": {
+							"type": "integer"
+						},
+						"end": {
+							"type": "integer"
+						},
+						"strand": {
+							"type": "integer"
+						},
+						"annotations": {
+							"type": "nested",
+							"properties": {
+								"hgvs_transcript": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								},
+								"stable_id": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								},
+								"hgvs_protein": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								},
+								"hgvs_genomic": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								},
+								"sift": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								},
+								"polyphen": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								},
+								"sift_score": {
+									"type": "float"
+								},
+								"polyphen_score": {
+									"type": "float"
+								},
+                "consequence_terms": {
+                      "type": "string",
+                      "index": "not_analyzed",
+                      "norms": {
                         "enabled": false
-                    }
+                      }
                 },
-                "class": {
-                    "type": "string",
-                    "index": "not_analyzed",
-                    "norms": {
-                        "enabled": false
-                    }
-                },
-                "minor_allele_count": {
-                    "type": "integer"
-                },
-                "minor_allele_freq": {
-                    "type": "float"
-                },
-                "minor_allele": {
-                    "type": "string",
-                    "index": "not_analyzed",
-                    "norms": {
-                        "enabled": false
-                    }
-                },
-                "gwas": {
-                    "type": "string",
-                    "index": "not_analyzed",
-                    "norms": {
-                        "enabled": false
-                    }
-                },
-                "phenotypes": {
-                    "properties": {
-                        "name": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
-                        },
-                        "description": {
-                            "type": "string"
-                        },
-                        "ontology_name": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
-                        },
-                        "ontology_accession": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
-                        },
-                        "parents": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
-                        },
-                        "ontology_term": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
-                        },
-                        "study": {
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "index": "not_analyzed",
-                                    "norms": {
-                                        "enabled": false
-                                    }
-                                },
-                                "description": {
-                                    "type": "string"
-                                },
-                                "type": {
-                                    "type": "string",
-                                    "index": "not_analyzed",
-                                    "norms": {
-                                        "enabled": false
-                                    }
-                                }
-                            }
-                        },
-                        "source": {
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "index": "not_analyzed",
-                                    "norms": {
-                                        "enabled": false
-                                    }
-                                },
-                                "version": {
-                                    "type": "string",
-                                    "index": "not_analyzed",
-                                    "norms": {
-                                        "enabled": false
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "hgvs": {
-                    "type": "string",
-                    "index": "not_analyzed",
-                    "norms": {
-                        "enabled": false
-                    }
-                },
-                "sets": {
-                    "type": "string",
-                    "index": "not_analyzed",
-                    "norms": {
-                        "enabled": false
-                    }
-                },
-                "citations": {
-                    "properties": {
-                        "pubmed_id": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
-                        },
-                        "title": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "gene_names": {
-                    "type": "string",
-                    "index": "not_analyzed",
-                    "norms": {
-                        "enabled": false
-                    }
-                },
-                "failures": {
-                    "type": "string",
-                    "index": "not_analyzed",
-                    "norms": {
-                        "enabled": false
-                    }
-                },
-                "clinical_significance": {
-                    "type": "string",
-                    "index": "not_analyzed",
-                    "norms": {
-                        "enabled": false
-                    }
-                },
-                "locations": {
-                    "properties": {
-                        "seq_region_name": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
-                        },
-                        "allele_string": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
-                        },
-                        "start": {
-                            "type": "integer"
-                        },
-                        "end": {
-                            "type": "integer"
-                        },
-                        "strand": {
-                            "type": "integer"
-                        },
-                        "annotations": {
-                            "properties": {
-                                "hgvs_transcript": {
-                                    "type": "string",
-                                    "index": "not_analyzed",
-                                    "norms": {
-                                        "enabled": false
-                                    }
-                                },
-                                "stable_id": {
-                                    "type": "string",
-                                    "index": "not_analyzed",
-                                    "norms": {
-                                        "enabled": false
-                                    }
-                                },
-                                "hgvs_protein": {
-                                    "type": "string",
-                                    "index": "not_analyzed",
-                                    "norms": {
-                                        "enabled": false
-                                    }
-                                },
-                                "hgvs_genomic": {
-                                    "type": "string",
-                                    "index": "not_analyzed",
-                                    "norms": {
-                                        "enabled": false
-                                    }
-                                },
-                                "sift": {
-                                    "type": "string",
-                                    "index": "not_analyzed",
-                                    "norms": {
-                                        "enabled": false
-                                    }
-                                },
-                                "polyphen": {
-                                    "type": "string",
-                                    "index": "not_analyzed",
-                                    "norms": {
-                                        "enabled": false
-                                    }
-                                },
-                                "sift_score": {
-                                    "type": "float"
-                                },
-                                "polyphen_score": {
-                                    "type": "float"
-                                },
-                                "consequences": {
-                                    "properties": {
-                                        "so_accession": {
-                                            "type": "string",
-                                            "index": "not_analyzed",
-                                            "norms": {
-                                                "enabled": false
-                                            }
-                                        },
-                                        "parents": {
-                                            "type": "string",
-                                            "index": "not_analyzed",
-                                            "norms": {
-                                                "enabled": false
-                                            }
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "index": "not_analyzed",
-                                            "norms": {
-                                                "enabled": false
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+								"consequences": {
+									"properties": {
+										"so_accession": {
+											"type": "string",
+											"index": "not_analyzed",
+											"norms": {
+												"enabled": false
+											}
+										},
+										"parents": {
+											"type": "string",
+											"index": "not_analyzed",
+											"norms": {
+												"enabled": false
+											}
+										},
+										"name": {
+											"type": "string",
+											"index": "not_analyzed",
+											"norms": {
+												"enabled": false
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

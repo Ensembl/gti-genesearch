@@ -78,8 +78,10 @@ public class ESSearch implements Search {
 	private static final int DEFAULT_AGGREGATION_SIZE = 10;
 	public static final String GENES_INDEX = "genes";
     public static final String GENOMES_INDEX = "genomes";
+    public static final String VARIANTS_INDEX = "variants";
 	public static final String GENE_ESTYPE = "gene";
 	public static final String GENOME_ESTYPE = "genome";
+    public static final String VARIANT_ESTYPE = "variant";
 	private final Client client;
 	private final String index;
 	private final String type;
