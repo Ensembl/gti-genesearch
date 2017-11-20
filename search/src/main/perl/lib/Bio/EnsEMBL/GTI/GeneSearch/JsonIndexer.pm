@@ -50,6 +50,7 @@ sub BUILD {
                                 request_timeout => $self->timeout() );
   my $bulk = $self->{es}->bulk_helper(
     index    => $self->index(),
+    timeout  => $self->timeout().'s',
     on_error => sub {
       my ( $action, $response, $i ) = @_;
       $self->handle_error( $action, $response, $i );
