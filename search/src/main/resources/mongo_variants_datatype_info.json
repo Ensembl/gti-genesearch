@@ -1,0 +1,196 @@
+{
+    "name": "variants",
+    "targets": [
+        "genes",
+        "transcripts"
+    ],
+    "fieldInfo": [
+        {
+            "type": "TERM",
+            "displayName": "Variant ID",
+            "name": "_id",
+            "sort": "false",
+            "facet": "false",
+            "display": "true"
+        },
+        {
+            "displayName": "Sequence Region",
+            "name": "chr",
+            "type": "TERM",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "NUMBER",
+            "displayName": "Length",
+            "name": "len",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "TERM",
+            "displayName": "IDs",
+            "name": "ids",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Variant type",
+            "name": "type",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Reference allele",
+            "name": "ref",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Alternative allele",
+            "name": "alt",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "TERM",
+            "displayName": "HGVS type",
+            "name": "hgvs.type",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "TERM",
+            "displayName": "HGVS name",
+            "name": "hgvs.name",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "NESTED",
+            "displayName": "Annotation",
+            "name": "annot",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "false"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Associated gene name",
+            "name": "annot.ct.gn",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "NESTED",
+            "displayName": "Associated gene",
+            "name": "annot.ct",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "false"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Associated gene ID",
+            "name": "annot.ct.ensg",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Associated transcript ID",
+            "name": "annot.ct.enst",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Codon change",
+            "name": "annot.ct.codon",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "false"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Associated gene type",
+            "name": "annot.ct.bt",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "false"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Consequence SO TERM",
+            "name": "annot.ct.so",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Consequence amino acid change",
+            "name": "annot.ct.aaChange",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "false"
+        },
+        {
+            "type": "NESTED",
+            "displayName": "Cross-references",
+            "name": "annot.xrefs",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "false"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Cross-reference source",
+            "name": "annot.xrefs.src",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        },
+        {
+            "type": "TERM",
+            "displayName": "Cross-reference ID",
+            "name": "annot.xrefs.id",
+            "sort": "false",
+            "facet": "false",
+            "display": "true",
+            "search": "true"
+        }
+    ]
+}
