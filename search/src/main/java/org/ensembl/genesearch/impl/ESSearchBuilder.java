@@ -225,7 +225,7 @@ public class ESSearchBuilder {
 	}
 
 	protected static QueryBuilder processLocation(String locPath, String q) {
-		String path = locPath.replaceAll(".?location", EMPTY);
+		String path = locPath.replaceAll(".?location$", EMPTY);
 		Matcher m = LOCATION.matcher(q);
 		if (!m.matches()) {
 			throw new UnsupportedOperationException(q + " is not a valid location string");
