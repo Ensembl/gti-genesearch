@@ -57,10 +57,9 @@ public class TranscriptSearchTest {
 	@BeforeClass
 	public static void setUp() throws IOException {
 		// index a sample of JSON
-		log.info("Reading documents");
-		String json = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
 		log.info("Creating test index");
-		testServer.indexTestDocs(json, ESSearch.GENE_ESTYPE);
+		testServer.indexTestDocs(DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz"), ESSearch.GENES_INDEX,ESSearch.GENE_ESTYPE);
+        testServer.indexTestDocs(DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genome.json.gz"), ESSearch.GENOMES_INDEX,ESSearch.GENOME_ESTYPE);
 	}
 
 	@Test

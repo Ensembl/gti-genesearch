@@ -24,7 +24,7 @@ public class EVAGenomeFinderTest {
     static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
 
     static ESTestServer testServer = new ESTestServer();
-    static ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX,
+    static ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
             ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/genomes_datatype_info.json"));
     static EVAGenomeFinder finder;
 
@@ -34,7 +34,7 @@ public class EVAGenomeFinderTest {
         log.info("Reading documents");
         String json = DataUtils.readGzipResource("/eva_genomes.json.gz");
         log.info("Creating test index");
-        testServer.indexTestDocs(json, ESSearch.GENOME_ESTYPE);
+        testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         finder = new EVAGenomeFinder(new EVAGenomeRestSearch(wireMockRule.url(StringUtils.EMPTY),
                 DataTypeInfo.fromResource("/evagenomes_datatype_info.json")), ensemblGenomeSearch);
     }

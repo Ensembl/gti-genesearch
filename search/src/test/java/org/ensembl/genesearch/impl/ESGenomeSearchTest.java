@@ -47,7 +47,7 @@ public class ESGenomeSearchTest {
 	static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
 
 	static ESTestServer testServer = new ESTestServer();
-	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE,
+	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE,
 			DataTypeInfo.fromResource("/genomes_datatype_info.json"));
 
 	@BeforeClass
@@ -56,7 +56,7 @@ public class ESGenomeSearchTest {
 		log.info("Reading documents");
 		String json = DataUtils.readGzipResource("/genomes.json.gz");
 		log.info("Creating test index");
-		testServer.indexTestDocs(json, ESSearch.GENOME_ESTYPE);
+		testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class ESGenomeSearchTest {
 		SearchResult results = search.select("human", 0, 10);
 		assertTrue("Results found", results != null);
 		assertEquals("2 results", 2, results.getResults().size());
-		assertEquals("Human first", "homo_sapiens", results.getResults().get(0).get("id"));
+		assertTrue("Human found", results.getResults().stream().anyMatch(r -> r.get("id").equals("homo_sapiens")));
 	}
 
 	@Test

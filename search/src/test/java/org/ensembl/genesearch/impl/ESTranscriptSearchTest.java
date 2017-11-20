@@ -53,9 +53,9 @@ public class ESTranscriptSearchTest {
 	public static void setUp() throws IOException {
 		// index a sample of JSON
 		log.info("Reading documents");
-		String json = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
+		String json = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
 		log.info("Creating test index");
-		testServer.indexTestDocs(json, ESSearch.GENE_ESTYPE);
+		testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
 	}
 
 	@Test

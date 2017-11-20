@@ -62,7 +62,7 @@ public class VariantRangeSearchTest {
 		String variantJson = DataUtils.readGzipResource("/variants.json.gz");
 		mongoTestServer.indexData(variantJson);
 		String geneData = DataUtils.readGzipResource("/rice_genes.json.gz");
-		testServer.indexTestDocs(geneData, ESSearch.GENE_ESTYPE);
+		testServer.indexTestDocs(geneData, ESSearch.GENES_INDEX,ESSearch.GENE_ESTYPE);
 	}
 
 

@@ -47,7 +47,7 @@ public class MongoSearchTest {
 
 	static MongoTestServer testServer = new MongoTestServer();
 	static MongoSearch search = new MongoSearch(testServer.getCollection(),
-			DataTypeInfo.fromResource("/variants_datatype_info.json"));
+			DataTypeInfo.fromResource("/mongo_variants_datatype_info.json"));
 
 	@BeforeClass
 	public static void setUp() throws IOException {

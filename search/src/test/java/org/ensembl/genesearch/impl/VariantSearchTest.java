@@ -50,7 +50,7 @@ public class VariantSearchTest {
 			geneInfo);
 
 	static MongoTestServer mongoTestServer = new MongoTestServer();
-	static DataTypeInfo variantInfo = DataTypeInfo.fromResource("/variants_datatype_info.json");
+	static DataTypeInfo variantInfo = DataTypeInfo.fromResource("/mongo_variants_datatype_info.json");
 	static Search mSearch = new MongoSearch(mongoTestServer.getCollection(), variantInfo);
 
 	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.VARIANTS, mSearch)
@@ -65,7 +65,7 @@ public class VariantSearchTest {
 		String variantJson = DataUtils.readGzipResource("/variants.json.gz");
 		mongoTestServer.indexData(variantJson);
 		String geneData = DataUtils.readGzipResource("/rice_genes.json.gz");
-		testServer.indexTestDocs(geneData, ESSearch.GENE_ESTYPE);
+		testServer.indexTestDocs(geneData, ESSearch.GENES_INDEX,ESSearch.GENE_ESTYPE);
 	}
 
 	@Test

@@ -41,14 +41,14 @@ public class EVAVariantGeneSearchTest {
         {
             String json = DataUtils.readGzipResource("/eva_genomes.json.gz");
             log.info("Creating test index for genomes");
-            testServer.indexTestDocs(json, ESSearch.GENOME_ESTYPE);
+            testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         }
         {
             String json = DataUtils.readGzipResource("/eva_genes.json.gz");
             log.info("Creating test index for genomes");
-            testServer.indexTestDocs(json, ESSearch.GENE_ESTYPE);
+            testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         }
-        ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX,
+        ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
                 ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/genomes_datatype_info.json"));
 
         ESSearch ensemblGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,

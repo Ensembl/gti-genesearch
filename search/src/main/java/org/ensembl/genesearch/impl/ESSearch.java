@@ -77,6 +77,7 @@ public class ESSearch implements Search {
 	public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
 	private static final int DEFAULT_AGGREGATION_SIZE = 10;
 	public static final String GENES_INDEX = "genes";
+    public static final String GENOMES_INDEX = "genomes";
 	public static final String GENE_ESTYPE = "gene";
 	public static final String GENOME_ESTYPE = "genome";
 	private final Client client;

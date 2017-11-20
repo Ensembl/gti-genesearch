@@ -41,7 +41,7 @@ public abstract class RestBasedSearch implements Search {
 
     @Override
     public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
-        int offset = 1;
+        int offset = 0;
         int resultCnt = 0;
         List<Query> postQueries = getPostQueries(queries);
         do {
@@ -52,12 +52,12 @@ public abstract class RestBasedSearch implements Search {
             log.info("Executing fetch");
             JsonNode response = getResponse(url);
             if (resultCnt == 0) {
-                resultCnt = Integer.parseUnsignedInt(response.get("numTotalResults").asText());
+                resultCnt = Integer.parseUnsignedInt(response.get("response").get(0).get("numTotalResults").asText());
             }
             processResponse(consumer, fieldNames, postQueries, response);
             log.info("Fetch executed");
             offset += getBatchSize();
-        } while (resultCnt > 0 && offset <= resultCnt);
+        } while (resultCnt > 0 && offset < resultCnt);
     }
 
     public abstract int getBatchSize();

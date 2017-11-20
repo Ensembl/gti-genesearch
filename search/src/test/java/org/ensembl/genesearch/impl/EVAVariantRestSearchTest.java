@@ -40,8 +40,8 @@ public class EVAVariantRestSearchTest {
         log.info("Reading documents");
         String json = DataUtils.readGzipResource("/eva_genomes.json.gz");
         log.info("Creating test index for genomes");
-        testServer.indexTestDocs(json, ESSearch.GENOME_ESTYPE);
-        ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX,
+        testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
+        ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
                 ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/genomes_datatype_info.json"));
 
         // build a finder using the test ES server and a wiremock REST
@@ -59,7 +59,7 @@ public class EVAVariantRestSearchTest {
         QueryResult res = search.query(
                 Arrays.asList(new Query(FieldType.TERM, EVAVariantRestSearch.ID_FIELD, "rs666"),
                         new Query(FieldType.TERM, EVAVariantRestSearch.GENOME_FIELD, "homo_sapiens")),
-                QueryOutput.build("[\"ids\"]"), Collections.emptyList(), 1, 10, Collections.emptyList());
+                QueryOutput.build("[\"ids\"]"), Collections.emptyList(), 0, 10, Collections.emptyList());
         Assert.assertEquals("1 result found", 1, res.getResults().size());
     }
 
@@ -68,7 +68,7 @@ public class EVAVariantRestSearchTest {
         QueryResult res = search.query(
                 Arrays.asList(new Query(FieldType.TERM, EVAVariantRestSearch.LOCATION_FIELD, "11:128446-129000"),
                         new Query(FieldType.TERM, EVAVariantRestSearch.GENOME_FIELD, "homo_sapiens")),
-                QueryOutput.build("[\"ids\"]"), Collections.emptyList(), 1, 50, Collections.emptyList());
+                QueryOutput.build("[\"ids\"]"), Collections.emptyList(), 0, 50, Collections.emptyList());
         Assert.assertEquals("34 results found", 34, res.getResults().size());
     }
 
@@ -78,7 +78,7 @@ public class EVAVariantRestSearchTest {
                 Arrays.asList(new Query(FieldType.TERM, EVAVariantRestSearch.LOCATION_FIELD, "11:128446-129000"),
                         new Query(FieldType.TERM, "annot-ct", "SO:0001782"),
                         new Query(FieldType.TERM, EVAVariantRestSearch.GENOME_FIELD, "homo_sapiens")),
-                QueryOutput.build("[\"ids\"]"), Collections.emptyList(), 1, 50, Collections.emptyList());
+                QueryOutput.build("[\"ids\"]"), Collections.emptyList(), 0, 50, Collections.emptyList());
         Assert.assertEquals("4 results found", 4, res.getResults().size());
     }
 
@@ -88,7 +88,7 @@ public class EVAVariantRestSearchTest {
                 Arrays.asList(new Query(FieldType.TERM, EVAVariantRestSearch.LOCATION_FIELD, "11:128446-129000"),
                         new Query(FieldType.TERM, "alternate", "A"),
                         new Query(FieldType.TERM, EVAVariantRestSearch.GENOME_FIELD, "homo_sapiens")),
-                QueryOutput.build("[\"ids\"]"), Collections.emptyList(), 1, 50, Collections.emptyList());
+                QueryOutput.build("[\"ids\"]"), Collections.emptyList(), 0, 50, Collections.emptyList());
         Assert.assertEquals("11 results found", 11, res.getResults().size());
     }
 
@@ -119,7 +119,7 @@ public class EVAVariantRestSearchTest {
                         new Query(FieldType.TERM, EVAVariantRestSearch.GENOME_FIELD, "homo_sapiens")),
                 QueryOutput
                         .build("[\"ids\",\"alternate\",\"hgvs\",{\"annotation\":[\"consequenceTypes\",{\"xrefs\":[\"src\"]}]}]"),
-                Collections.emptyList(), 1, 10, Collections.emptyList());
+                Collections.emptyList(), 0, 10, Collections.emptyList());
         Assert.assertEquals("1 result found", 1, res.getResults().size());
         Map<String, Object> v = res.getResults().get(0);
         Assert.assertFalse("ids found", DataUtils.getObjValsForKey(v, "ids").isEmpty());

@@ -44,6 +44,9 @@ public class GeneSearch extends JoinMergeSearch {
         if (variantSearch != null) {
             if (MongoSearch.class.isAssignableFrom(variantSearch.getClass())) {
                 joinTargets.put(SearchType.VARIANTS, JoinStrategy.as(MergeStrategy.APPEND, "id", "annot.xrefs.id"));
+            } else if (ESSearch.class.isAssignableFrom(variantSearch.getClass())) {
+                joinTargets.put(SearchType.VARIANTS,
+                        JoinStrategy.as(MergeStrategy.APPEND, "transcripts.id", "locations.annotations.stable_id"));
             } else if (EVAVariantRestSearch.class.isAssignableFrom(variantSearch.getClass())) {
                 joinTargets.put(SearchType.VARIANTS,
                         JoinStrategy.asGenomeRange(MergeStrategy.APPEND, ESSearchBuilder.GENOME_FIELD,

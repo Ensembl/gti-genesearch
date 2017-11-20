@@ -101,8 +101,7 @@ public class EVAVariantRestSearch extends RestBasedSearch {
 
     @Override
     protected JsonNode getResults(JsonNode response) {
-        JsonNode results = response.at("/response").get("result");
-        return results.get(0);
+        return response.at("/response").get(0).get("result");
     }
 
     @Override

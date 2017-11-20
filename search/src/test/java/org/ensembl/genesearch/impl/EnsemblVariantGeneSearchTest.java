@@ -41,7 +41,7 @@ public class EnsemblVariantGeneSearchTest {
         {
             String json = DataUtils.readGzipResource("/eva_genes.json.gz");
             log.info("Creating test index for genes");
-            testServer.indexTestDocs(json, ESSearch.GENE_ESTYPE);
+            testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         }
         ESSearch ensemblGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
                 DataTypeInfo.fromResource("/genes_datatype_info.json"));
