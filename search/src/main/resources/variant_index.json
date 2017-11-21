@@ -18,6 +18,20 @@
 			},
 			"dynamic": "false",
 			"properties": {
+				"genome": {
+					"type": "string",
+					"index": "not_analyzed",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"lineage": {
+          "type": "string",
+          "index": "not_analyzed",
+          "norms": {
+            "enabled": false
+          }
+        },
 				"source": {
 					"type": "nested",
 					"properties": {
@@ -285,14 +299,15 @@
 								"polyphen_score": {
 									"type": "float"
 								},
-                "consequence_terms": {
-                      "type": "string",
-                      "index": "not_analyzed",
-                      "norms": {
-                        "enabled": false
-                      }
-                },
+								"consequence_terms": {
+									"type": "string",
+									"index": "not_analyzed",
+									"norms": {
+										"enabled": false
+									}
+								},
 								"consequences": {
+                  "type": "nested",
 									"properties": {
 										"so_accession": {
 											"type": "string",
