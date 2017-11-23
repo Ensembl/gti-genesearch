@@ -1,0 +1,30 @@
+{
+  "id" : "63fb1bdd-7589-4cbb-b1ee-8bb528eb3e90",
+  "name" : "sequence_id",
+  "request" : {
+    "url" : "/sequence/id?multiple_sequences=1",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"ids\":[\"ENSP00000486012\"]}",
+      "ignoreArrayOrder" : false,
+      "ignoreExtraElements" : false
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "[{\"desc\":null,\"query\":\"ENSP00000486012\",\"id\":\"ENSP00000486012\",\"seq\":\"MTMGDKKSPTRPKRQAKPAADEGFWDCSVCTFRNSAEAFKCSICDVRKGTSTRKPRINSQLVAQQVAQQYATPPPPKKEKKEKVEKQDKEKPEKDKEISPSVTKKNTNKKTKPKSDILKDPPSEANSIQSANATTKTSETNHTSRPRLKNVDRSTAQQLAVTVGNVTVIITDFKEKTRSSSTSSSTVTSSAGSEQQNQSSSGSESTDKGSSRSSTPKGDMSAVNDESF\",\"molecule\":\"protein\"}]",
+    "headers" : {
+      "Vary" : "Content-Type",
+      "Content-Type" : "application/json",
+      "X-Runtime" : "0.105621",
+      "X-RateLimit-Limit" : "55000",
+      "X-RateLimit-Reset" : "2243",
+      "X-RateLimit-Period" : "3600",
+      "X-RateLimit-Remaining" : "54997",
+      "Date" : "Thu, 23 Nov 2017 12:22:37 GMT",
+      "Connection" : "keep-alive"
+    }
+  },
+  "uuid" : "63fb1bdd-7589-4cbb-b1ee-8bb528eb3e90",
+  "persistent" : true
+}

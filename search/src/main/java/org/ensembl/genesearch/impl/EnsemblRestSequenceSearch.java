@@ -139,6 +139,7 @@ public class EnsemblRestSequenceSearch implements Search {
         List<String> params = queries.stream()
                 .filter(q -> VALID_ARGS.contains(q.getFieldName()) && q.getValues().length == 1)
                 .map(q -> q.getFieldName() + "=" + q.getValues()[0]).collect(Collectors.toList());
+        params.add("multiple_sequences=1");
         if (!params.isEmpty()) {
             return baseUrl + SEQUENCE_ID + "?" + StringUtils.join(params, '&');
         } else {
