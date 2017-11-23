@@ -127,6 +127,7 @@ public class DefaultQueryHandler implements QueryHandler {
 			int n = key.indexOf('.');
 			if (n != -1) {
 				String keyStem = key.substring(0, n);
+				boolean merged = false;
 				for (int j = i + 1; j < keys.size(); j++) {
 					String key2 = keys.get(j);
 					int m = key2.indexOf('.');
@@ -144,8 +145,21 @@ public class DefaultQueryHandler implements QueryHandler {
 							key = keyStem;
 							// remove second value
 							keys.remove(j);
+							merged = true;
 						}
 					}
+				}
+				if(!merged) {
+				    // we still want to change single queries to use nested notation
+                    // change value to be a map
+                    Map<String, Object> newVal = new HashMap<>();
+                    // put values in with remainder of stem
+                    newVal.put(key.substring(n + 1), val);
+                    // recurse to deal with nesting
+                    val = mergeQueries(newVal);
+                    // change key
+                    key = keyStem;
+                    merged = true;
 				}
 			}
 			output.put(key, val);
