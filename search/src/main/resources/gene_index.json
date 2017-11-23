@@ -228,11 +228,7 @@
                     "type": "string"
                 },
                 "name": {
-                    "type": "string",
-                    "index": "not_analyzed",
-                    "norms": {
-                        "enabled": false
-                    }
+                    "type": "string"
                 },
                 "BROAD_G_zeae": {
                     "type": "string",
@@ -3144,11 +3140,7 @@
                             "index": "not_analyzed"
                         },
                         "name": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                            "norms": {
-                                "enabled": false
-                            }
+                            "type": "string"
                         },
                         "KEGG": {
                             "norms": {
