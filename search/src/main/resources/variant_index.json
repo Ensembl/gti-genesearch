@@ -203,10 +203,7 @@
 				},
 				"gene_names": {
 					"type": "string",
-					"index": "not_analyzed",
-					"norms": {
-						"enabled": false
-					}
+					"analyzer": "string_lowercase"
 				},
 				"failures": {
 					"type": "string",
