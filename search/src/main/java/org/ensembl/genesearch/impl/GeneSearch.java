@@ -34,7 +34,7 @@ public class GeneSearch extends JoinMergeSearch {
         }
         Search seqSearch = provider.getSearch(SearchType.SEQUENCES);
         if (seqSearch != null) {
-            joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.MERGE, "id", "id", "genome"));
+            joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.APPEND, "id", "query", "genome"));
         }
         Search genomeSearch = provider.getSearch(SearchType.GENOMES);
         if (genomeSearch != null) {

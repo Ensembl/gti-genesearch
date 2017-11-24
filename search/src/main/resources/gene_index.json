@@ -541,7 +541,7 @@
                             "index": "not_analyzed",
                             "type": "string"
                         },
-                        "description": {
+                        "orthology_type": {
                             "norms": {
                                 "enabled": false
                             },
