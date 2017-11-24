@@ -78,8 +78,12 @@ public class EndpointSearchProvider {
     private int port;
     @Value("${es.node}")
     private boolean node;
-    @Value("${es.index:genes}")
-    private String index = ESSearch.GENES_INDEX;
+    @Value("${es.genes.index:genes}")
+    private String genesIndex = ESSearch.GENES_INDEX;
+    @Value("${es.genomes.index:genomes}")
+    private String genomesIndex = ESSearch.GENOMES_INDEX;
+    @Value("${es.variants.index:genes}")
+    private String variantsIndex = ESSearch.VARIANTS_INDEX;
     @Value("${rest.url.ens}")
     private String ensRestUrl;
     @Value("${rest.url.eg}")
@@ -96,8 +100,8 @@ public class EndpointSearchProvider {
     private String solrExperimentsUrl;
     @Value("${eva.rest.url:}")
     private String evaRestUrl;
-    @Value("${variation_search:ensembl}")
-    private String variationSearch = "ensembl";
+    @Value("${variation_search:elastic}")
+    private String variationSearch = "elastic";
 
     public EndpointSearchProvider() {
     }
@@ -165,9 +169,9 @@ public class EndpointSearchProvider {
             DataTypeInfo genomeType = DataTypeInfo.fromResource("/genomes_datatype_info.json");
             DataTypeInfo transcriptType = DataTypeInfo.fromResource("/transcripts_datatype_info.json");
 
-            Search esGenomeSearch = new ESSearch(getESClient(), index, ESSearch.GENOME_ESTYPE, genomeType);
-            Search esGeneSearch = new ESSearch(getESClient(), index, ESSearch.GENE_ESTYPE, geneType);
-            Search esTranscriptSearch = new ESSearchFlatten(getESClient(), index, ESSearch.GENE_ESTYPE, "transcripts",
+            Search esGenomeSearch = new ESSearch(getESClient(), genomesIndex, ESSearch.GENOME_ESTYPE, genomeType);
+            Search esGeneSearch = new ESSearch(getESClient(), genesIndex, ESSearch.GENE_ESTYPE, geneType);
+            Search esTranscriptSearch = new ESSearchFlatten(getESClient(), genesIndex, ESSearch.GENE_ESTYPE, "transcripts",
                     "genes", transcriptType);
 
             registry.registerSearch(SearchType.GENES, esGeneSearch)
@@ -181,7 +185,11 @@ public class EndpointSearchProvider {
                     getEgRestUrl());
             registry.registerSearch(SearchType.SEQUENCES, seqSearch);
 
-            if ("ensembl".equalsIgnoreCase(variationSearch)) {
+            if ("elastic".equalsIgnoreCase(variationSearch)) {
+                DataTypeInfo variantType = DataTypeInfo.fromResource("/es_variants_datatype_info.json");
+                Search variantSearch = new ESSearch(getESClient(), variantsIndex, ESSearch.VARIANT_ESTYPE, variantType);
+                registry.registerSearch(SearchType.VARIANTS, variantSearch);                
+            } else if ("ensembl".equalsIgnoreCase(variationSearch)) {
                 DataTypeInfo variantType = DataTypeInfo.fromResource("/variants_datatype_info.json");
                 Search variantSearch = new EnsemblVariantSearch(ensRestUrl, variantType);
                 registry.registerSearch(SearchType.VARIANTS, variantSearch);
