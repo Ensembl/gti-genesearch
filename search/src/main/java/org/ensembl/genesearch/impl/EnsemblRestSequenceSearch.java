@@ -49,6 +49,11 @@ import org.springframework.web.client.RestTemplate;
  */
 public class EnsemblRestSequenceSearch implements Search {
     
+    /**
+     * Magic field which contains the query ID to which the sequences belong. Vital for joining
+     */
+    public static final String QUERY = "query";
+
     private static final int CONNECT_TIMEOUT = 5000;
 
     public final static List<String> VALID_ARGS = Arrays.asList("type", "expand_5prime", "expand_3prime", "type",
@@ -154,7 +159,7 @@ public class EnsemblRestSequenceSearch implements Search {
      * @return IDs as list
      */
     protected List<String> getIds(List<Query> queries) {
-        return queries.stream().filter(q -> q.getFieldName().equals(getIdField()))
+        return queries.stream().filter(q -> q.getFieldName().equals(getIdField()) || q.getFieldName().equals(QUERY))
                 .flatMap(q -> Arrays.asList(q.getValues()).stream()).collect(Collectors.toList());
     }
 

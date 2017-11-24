@@ -419,7 +419,8 @@ public abstract class JoinMergeSearch implements Search {
                 // where we're grouping IDs togther (e.g. sequences by genome)
                 // we need to retrieve or create a set to add IDs to for that
                 // genome
-                String groupValue = e.getValue().get(toParams.joinStrategy.toGroupBy.get()).toString();
+                String key = toParams.joinStrategy.toGroupBy.get();
+                String groupValue = e.getValue().get(key).toString();
                 Set<String> s = ids.get(groupValue);
                 if (s == null) {
                     s = new HashSet<>();

@@ -78,8 +78,8 @@ public class DivisionAwareSequenceSearch implements Search {
 
 		// expected a list of nested queries
 		for (Query q : queries) {
-			if (q.getType() != FieldType.NESTED || !ID.equals(q.getSubQueries()[0].getFieldName())) {
-				throw new IllegalArgumentException("Sequence search requires a nested query containing id query");
+			if (q.getType() != FieldType.NESTED || (!ID.equals(q.getSubQueries()[0].getFieldName()) && !"query".equals(q.getSubQueries()[0].getFieldName()))) {
+				throw new IllegalArgumentException("Sequence search requires a nested query containing id/query query");
 			}
 			String genome = q.getFieldName();
 			if (isEnsembl(genome)) {
