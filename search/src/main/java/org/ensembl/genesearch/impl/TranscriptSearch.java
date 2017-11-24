@@ -33,7 +33,7 @@ public class TranscriptSearch extends JoinMergeSearch {
 		super(SearchType.TRANSCRIPTS, provider);
 		Search seqSearch = provider.getSearch(SearchType.SEQUENCES);
 		if (seqSearch != null) {
-			joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.MERGE, "id", "id", "genes.genome"));
+			joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.APPEND, "id", "query", "genes.genome"));
 		}
 		Search variantSearch = provider.getSearch(SearchType.VARIANTS);
 		if (variantSearch != null) {
