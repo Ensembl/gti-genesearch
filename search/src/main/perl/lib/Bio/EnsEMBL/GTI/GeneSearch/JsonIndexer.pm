@@ -34,9 +34,7 @@ use Data::Dumper;
 use Bio::EnsEMBL::Production::Search::JSONReformatter qw/process_json_file/;
 
 has 'url'         => ( is => 'ro', isa => 'Str', required => 1 );
-has 'index'       => ( is => 'ro', isa => 'Str', default  => 'genes' );
-has 'gene_type'   => ( is => 'ro', isa => 'Str', default  => 'gene' );
-has 'genome_type' => ( is => 'ro', isa => 'Str', default  => 'genome' );
+has 'index'       => ( is => 'ro', isa => 'Str', required => 1 );
 has 'bulk' => ( is => 'rw', isa => 'Search::Elasticsearch::Client::2_0::Bulk' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 300 );
 
