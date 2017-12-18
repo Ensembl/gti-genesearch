@@ -38,7 +38,7 @@
 			"search": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "Donor",
 			"name": "donor",
 			"sort": "false",
@@ -65,7 +65,7 @@
 			"search": "true"
 		},
 		{
-			"type": "OBJECT",
+			"type": "NESTED",
 			"displayName": "Donor disease",
 			"name": "donor.diseases",
 			"sort": "false",
