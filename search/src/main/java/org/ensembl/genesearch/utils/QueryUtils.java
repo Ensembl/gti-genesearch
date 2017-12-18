@@ -70,13 +70,13 @@ public class QueryUtils {
                 keyPath = path + '.' + key;
             }
             Object so = obj.get(key);
-            if (Map.class.isAssignableFrom(so.getClass()) && output.containsPathChildren(keyPath)) {
+            if (so!=null && Map.class.isAssignableFrom(so.getClass()) && output.containsPathChildren(keyPath)) {
                 Map<String, Object> mo = (Map<String, Object>) so;
                 filterFields(mo, output, keyPath);
                 if (mo.isEmpty()) {
                     i.remove();
                 }
-            } else if (List.class.isAssignableFrom(so.getClass())) {
+            } else if (so!=null && List.class.isAssignableFrom(so.getClass())) {
 
                 List<?> lo = (List<?>) so;
                 if (lo.isEmpty()) {
@@ -91,9 +91,11 @@ public class QueryUtils {
                                 li.remove();
                             }
                         }
-                    }
-                    if (lo.isEmpty()) {
-                        i.remove();
+                        if (lo.isEmpty()) {
+                            i.remove();
+                        }
+                    } else {
+                    		i.remove();
                     }
                 } else {
                     if (!output.containsPath(keyPath)) {

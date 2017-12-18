@@ -114,6 +114,17 @@ public class QueryUtilsTest {
             Assert.assertTrue("B.2 found", !DataUtils.getObjValsForKey(o, "B.2").isEmpty());
             Assert.assertTrue("B.3 found", !DataUtils.getObjValsForKey(o, "B.3").isEmpty());
         }
+        {
+            Map<String, Object> o = new ObjectMapper()
+                    .readValue("{\"A\":[\"str\"], \"B\":{\"1\":\"a\",\"2\":\"b\",\"3\":\"c\"}}", Map.class);
+            QueryOutput output = QueryOutput.build("[\"B\"]");
+            QueryUtils.filterFields(o, output);
+            Assert.assertTrue("B found", o.containsKey("B"));
+            Assert.assertFalse("A not found", o.containsKey("A"));
+            Assert.assertTrue("B.1 found", !DataUtils.getObjValsForKey(o, "B.1").isEmpty());
+            Assert.assertTrue("B.2 found", !DataUtils.getObjValsForKey(o, "B.2").isEmpty());
+            Assert.assertTrue("B.3 found", !DataUtils.getObjValsForKey(o, "B.3").isEmpty());
+        }
     }
 
     @Test
