@@ -92,11 +92,12 @@ public class EndpointTests {
 		esTestServer = new ESTestServer();
 		// index a sample of JSON
 		log.info("Reading documents");
-		String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m.json.gz");
+		String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
+		log.info("Creating test index");
 		String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
 		log.info("Creating test index");
-		esTestServer.indexTestDocs(geneJson, ESSearch.GENE_ESTYPE);
-		esTestServer.indexTestDocs(genomeJson, ESSearch.GENOME_ESTYPE);
+		esTestServer.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+		esTestServer.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
 		String variantJson = DataUtils.readGzipResource("/variants.json.gz");
 		mongoTestServer = new MongoTestServer();
 		mongoTestServer.indexData(variantJson);
