@@ -62,7 +62,7 @@ public class HtsGetClient {
 			
 			Optional<String> colsLine = reader.lines().filter(VcfUtils.isColsLine()).findFirst();
 			if(!colsLine.isPresent()) {
-				throw new RuntimeException("No column header line returned by "+url);
+					throw new RuntimeException("No column header line returned by "+url);
 			}
 			String[] genotypes = VcfUtils.getGenotypes(colsLine.get());
 			reader.lines().map(l -> VcfUtils.vcfLineToMap(l, genotypes)).forEach(consumer);
