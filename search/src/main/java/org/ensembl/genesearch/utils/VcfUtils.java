@@ -11,7 +11,32 @@ import java.util.regex.Pattern;
 
 public class VcfUtils {
 
-	public static String[] FIXED_FIELDS = { "CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER" };
+	public final static Map<String,String> INFO_NAMES = new HashMap<>();
+	static {
+		INFO_NAMES.put("AA", "ancestralAllele");
+		INFO_NAMES.put("AC", "alleleCount");
+		INFO_NAMES.put("AF", "alleleFreq");
+		INFO_NAMES.put("AN", "alleleN");
+		INFO_NAMES.put("BQ", "baseQ");
+		INFO_NAMES.put("CIGAR", "cigar");
+		INFO_NAMES.put("DB", "dbSNP");
+		INFO_NAMES.put("DP", "depth");
+		INFO_NAMES.put("END", "end");
+		INFO_NAMES.put("H2", "hapmap2");
+		INFO_NAMES.put("H3", "hapmap3");
+		INFO_NAMES.put("MQ", "mappingQ");
+		INFO_NAMES.put("MQ0", "zeroMappingQ");
+		INFO_NAMES.put("NS", "sampleN");
+		INFO_NAMES.put("SB", "strandBias");
+		INFO_NAMES.put("SOMATIC", "somatic");
+		INFO_NAMES.put("VALIDATED", "validated");
+		INFO_NAMES.put("1000G", "1000genomes");
+		INFO_NAMES.put("GT", "genotype");
+		INFO_NAMES.put("GQ", "genotypeQ");
+		INFO_NAMES.put("HQ", "haplotypeQ");
+	}
+	
+	public final static String[] FIXED_FIELDS = { "seq_region_name", "start", "id", "ref_allele", "alt_allele", "quality", "filter" };
 
 	public static String[] getGenotypes(String columnHeader) {
 		String[] cols = columnHeader.split("\t");
