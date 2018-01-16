@@ -54,6 +54,9 @@ public class EGAClient {
 
 		@Parameter(names = "-url", description = "htsget url")
 		private String url = null;
+
+		@Parameter(names = "-ega_url", description = "EGA url")
+		private String egaUrl = null;
 		
 		@Parameter(names = "-query", description = "JSON query string")
 		private String query = "{}";
@@ -80,7 +83,7 @@ public class EGAClient {
 		JCommander jc = new JCommander(params, args);
 		jc.setProgramName(EGAClient.class.getSimpleName());
 
-		Search search = new HtsGetVariantSearch(new DataTypeInfo(), params.url);
+		Search search = new HtsGetVariantSearch(new DataTypeInfo(), params.url, params.egaUrl);
 
 		List<Query> queries = new DefaultQueryHandler().parseQuery(params.query);
 		QueryOutput fieldNames = QueryOutput.build(params.resultFields);

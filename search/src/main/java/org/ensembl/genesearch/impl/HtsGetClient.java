@@ -1,8 +1,5 @@
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -29,52 +26,34 @@ import htsjdk.samtools.util.BufferedLineReader;
 
 public class HtsGetClient {
 
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-
 	protected final static String TICKET_URL = "/data/tickets/variants/{file}?format=VCF&referenceName={referenceName}&start={start}&end={end}";
+
+	protected final static String DATASETS_URL = "/access/v2/datasets?session={session}";
+	protected final static String FILES_URL = "/access/v2/datasets/{dataset}/files?session={session}";
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	protected final RestTemplate restTemplate;
 
 	protected final String baseUrl;
+	protected final String egaBaseUrl;
 
-	public HtsGetClient(String baseUrl) {
+	public HtsGetClient(String baseUrl, String egaBaseUrl) {
 		this.baseUrl = baseUrl;
+		this.egaBaseUrl = egaBaseUrl;
 		restTemplate = new RestTemplate();
 		restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 	}
 
-	public void getVariants(String accession, String seqRegionName, long start, long end, String token,
-			Consumer<Map<String, Object>> consumer) {
-		log.info(String.format("Retrieving variants from %s %s:%d-:%d", accession, seqRegionName, start, end));
-		log.debug("Finding URLs");
-		List<String> urls = getUrls(accession, seqRegionName, start, end, token);
-		HttpEntity<String> entity = getHeaders(token);
-		for (String url : urls) {
-			log.info("Retrieving data from "+url);
-			ResponseEntity<Resource> result = restTemplate.exchange(url, HttpMethod.GET, entity,
-					Resource.class);
-			if(result.getStatusCode()!=HttpStatus.OK) {
-				throw new RuntimeException(url+" retrieved with code "+result.getStatusCode());
-			}
-			BufferedLineReader reader = null;
-			try {
-			reader = new BufferedLineReader(result.getBody().getInputStream());
-			
-			Optional<String> colsLine = reader.lines().filter(VcfUtils.isColsLine()).findFirst();
-			if(!colsLine.isPresent()) {
-					throw new RuntimeException("No column header line returned by "+url);
-			}
-			String[] genotypes = VcfUtils.getGenotypes(colsLine.get());
-			reader.lines().map(l -> VcfUtils.vcfLineToMap(l, genotypes)).forEach(consumer);
-			reader.lines().forEach(System.out::println);
-			} catch (IOException e) {
-				throw new RuntimeException("Could not read from result",e);
-			} finally {
-				IOUtils.closeQuietly(reader);
-			}
-			
-		}
-		log.info("Completed retrieval");
+	private HttpEntity<String> getHeaders(String token) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + token);
+		HttpEntity<String> entity = new HttpEntity<String>(headers);
+		return entity;
+	}
+	
+	protected List<String> getDatasets(String session) {
+		ResponseEntity<JsonNode> result = restTemplate.getForEntity(egaBaseUrl + DATASETS_URL, JsonNode.class, session);
+		return null;	
 	}
 
 	protected List<String> getUrls(String accession, String seqRegionName, long start, long end, String token) {
@@ -91,11 +70,60 @@ public class HtsGetClient {
 
 	}
 
-	private HttpEntity<String> getHeaders(String token) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer " + token);
-		HttpEntity<String> entity = new HttpEntity<String>(headers);
-		return entity;
+	public void getVariants(String seqRegionName, long start, long end, String token, String session,
+			Consumer<Map<String, Object>> consumer) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void getVariantsForDatasets(String[] datasets, String seqRegionName, long start, long end, String token,
+			String session, Consumer<Map<String, Object>> consumer) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void getVariantsForFile(String accession, String seqRegionName, long start, long end, String token,
+			Consumer<Map<String, Object>> consumer) {
+		log.info(String.format("Retrieving variants from %s %s:%d-:%d", accession, seqRegionName, start, end));
+		log.debug("Finding URLs");
+		List<String> urls = getUrls(accession, seqRegionName, start, end, token);
+		HttpEntity<String> entity = getHeaders(token);
+		for (String url : urls) {
+			log.info("Retrieving data from " + url);
+			ResponseEntity<Resource> result = restTemplate.exchange(url, HttpMethod.GET, entity, Resource.class);
+			if (result.getStatusCode() != HttpStatus.OK) {
+				throw new RuntimeException(url + " retrieved with code " + result.getStatusCode());
+			}
+			BufferedLineReader reader = null;
+			try {
+				reader = new BufferedLineReader(result.getBody().getInputStream());
+
+				Optional<String> colsLine = reader.lines().filter(VcfUtils.isColsLine()).findFirst();
+				if (!colsLine.isPresent()) {
+					throw new RuntimeException("No column header line returned by " + url);
+				}
+				String[] genotypes = VcfUtils.getGenotypes(colsLine.get());
+				reader.lines().map(l -> VcfUtils.vcfLineToMap(l, genotypes)).forEach(consumer);
+				reader.lines().forEach(System.out::println);
+			} catch (IOException e) {
+				throw new RuntimeException("Could not read from result", e);
+			} finally {
+				IOUtils.closeQuietly(reader);
+			}
+
+		}
+		log.info("Completed retrieval");
+	}
+
+	public void getVariantsForFiles(String[] accessions, String seqRegionName, long start, long end, String token,
+			Consumer<Map<String, Object>> consumer) {
+		for (String file : accessions) {
+			log.info("Retrieving variants for file " + file);
+			getVariantsForFile(file, seqRegionName, start, end, token, consumer);
+		}
+	}
+	
+	public final static void main(String[] args) {
+		 HtsGetClient client = new HtsGetClient("","https://ega.ebi.ac.uk/ega/rest");
+		 client.getDatasets("e74f416b-99aa-483b-8420-5f349ced0076");
 	}
 
 }

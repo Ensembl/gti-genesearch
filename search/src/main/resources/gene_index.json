@@ -1117,6 +1117,20 @@
                         "enabled": false
                     }
                 },
+                "analysis": {
+                    "index": "not_analyzed",
+                    "type": "string",
+                    "norms": {
+                        "enabled": false
+                    }
+                },
+                "source": {
+                    "index": "not_analyzed",
+                    "type": "string",
+                    "norms": {
+                        "enabled": false
+                    }
+                },
                 "CGNC": {
                     "type": "string",
                     "index": "not_analyzed",
