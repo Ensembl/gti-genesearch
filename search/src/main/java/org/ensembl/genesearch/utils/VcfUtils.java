@@ -5,13 +5,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import htsjdk.samtools.util.BufferedLineReader;
-import wiremock.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class VcfUtils {
 
@@ -46,8 +47,8 @@ public class VcfUtils {
 
         public void addFormat(String line) {
             Matcher m = INFO_HEADER_PATTERN.matcher(line);
-            if (!m.matches()) {
-                throw new IllegalArgumentException("Not an INFO line: " + line);
+            if(!m.matches()) {
+                throw new IllegalArgumentException("Not an INFO line: "+line);
             }
             boolean isSingle = m.group(2).equals("1");
             ColumnFormat format = isSingle ? ColumnFormat.STRING : ColumnFormat.STRING_LIST;
@@ -153,7 +154,6 @@ public class VcfUtils {
         return vcfLineToMap(line, new VcfFormat());
     }
 
-    
     private static final Pattern INFO_HEADER_PATTERN = Pattern
             .compile("##INFO=<ID=([^,]+),Number=([^,]+),Type=([^,]+),Description=.*>");
     private static final Pattern INFO_PATTERN = Pattern.compile("([^=]+)=(.*)");
