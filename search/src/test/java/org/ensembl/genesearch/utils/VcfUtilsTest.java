@@ -3,24 +3,37 @@ package org.ensembl.genesearch.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.ensembl.genesearch.utils.VcfUtils.ColumnFormat;
+import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
 import org.junit.Test;
 
 import htsjdk.samtools.util.BufferedLineReader;
 
 public class VcfUtilsTest {
 
-	@Test
+    @Test
 	public void testSpec() throws IOException {
 		BufferedLineReader vcfR = new BufferedLineReader(this.getClass().getResourceAsStream("/spec_sample.vcf"));
-		Optional<String> colsLine = vcfR.lines().filter(VcfUtils.isColsLine()).findFirst();
-		assertTrue("Cols line found", colsLine.isPresent());
-		List<Map<String, Object>> variants = vcfR.lines().map(VcfUtils::vcfLineToMap).collect(Collectors.toList());
+		VcfFormat format = VcfFormat.readFormat(vcfR);
+		//##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
+        assertEquals("Checking NS", ColumnFormat.INTEGER, format.getFormat("NS"));
+        //##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+        assertEquals("Checking DP", ColumnFormat.INTEGER, format.getFormat("DP"));
+		//##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency">
+        assertEquals("Checking AF", ColumnFormat.FLOAT_LIST, format.getFormat("AF"));
+        //##INFO=<ID=AA,Number=1,Type=String,Description="Ancestral Allele">
+        assertEquals("Checking AA", ColumnFormat.STRING, format.getFormat("AA"));
+		//##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP membership, build 129">
+        assertEquals("Checking DB", ColumnFormat.FLAG, format.getFormat("DB"));
+		//##INFO=<ID=H2,Number=0,Type=Flag,Description="HapMap2 membership">
+        assertEquals("Checking H2", ColumnFormat.FLAG, format.getFormat("H2"));
+        List<Map<String, Object>> variants = vcfR.lines().map(VcfUtils::vcfLineToMap).collect(Collectors.toList());
 		assertEquals("Variants found", 5, variants.size());		
 		Optional<Map<String, Object>> oSnp = variants.stream().filter(v -> "rs6040355".equals(v.get("id"))).findFirst();
 		assertTrue("Variant found", oSnp.isPresent());
@@ -41,14 +54,13 @@ public class VcfUtilsTest {
 		assertFalse("No genotypes", snp.containsKey("genotypes"));
 	}
 
-	@Test
+    @Test
 	public void testSpecGenotype() throws IOException {
 		BufferedLineReader vcfR = new BufferedLineReader(this.getClass().getResourceAsStream("/spec_sample.vcf"));
-		Optional<String> colsLine = vcfR.lines().filter(VcfUtils.isColsLine()).findFirst();
-		assertTrue("Cols line found", colsLine.isPresent());
-		String[] genotypes = VcfUtils.getGenotypes(colsLine.get());
+        VcfFormat format = VcfFormat.readFormat(vcfR);
+		String[] genotypes = format.getGenotypes();
 		assertEquals("Genotypes found", 3, genotypes.length);
-		List<Map<String, Object>> variants = vcfR.lines().map(l -> VcfUtils.vcfLineToMap(l, genotypes)).collect(Collectors.toList());
+		List<Map<String, Object>> variants = vcfR.lines().map(l -> VcfUtils.vcfLineToMap(l, format)).collect(Collectors.toList());
 		assertEquals("Variants found", 5, variants.size());		
 		Optional<Map<String, Object>> oSnp = variants.stream().filter(v -> "rs6040355".equals(v.get("id"))).findFirst();
 		assertTrue("Variant found", oSnp.isPresent());
@@ -60,9 +72,9 @@ public class VcfUtilsTest {
 		assertEquals("ALT", "G,T", snp.get("alt_allele"));
 		assertEquals("QUAL", "67", snp.get("quality"));
 		assertEquals("FILTER", "PASS", snp.get("filter"));
-		assertEquals("NS", "2", snp.get("NS"));
-		assertEquals("DP", "10", snp.get("DP"));
-		assertEquals("AF", "0.333,0.667", snp.get("AF"));
+		assertEquals("NS", 2, snp.get("NS"));
+		assertEquals("DP", 10, snp.get("DP"));
+		assertEquals("AF", 2, ((List)snp.get("AF")).size());
 		assertEquals("AA", "T", snp.get("AA"));
 		assertEquals("DB", true, snp.get("DB"));
 		assertTrue("Genotypes", snp.containsKey("genotypes"));
