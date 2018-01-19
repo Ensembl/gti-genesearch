@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.ensembl.genesearch.utils.VcfUtils;
+import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -95,13 +96,8 @@ public class HtsGetClient {
 			BufferedLineReader reader = null;
 			try {
 				reader = new BufferedLineReader(result.getBody().getInputStream());
-
-				Optional<String> colsLine = reader.lines().filter(VcfUtils.isColsLine()).findFirst();
-				if (!colsLine.isPresent()) {
-					throw new RuntimeException("No column header line returned by " + url);
-				}
-				String[] genotypes = VcfUtils.getGenotypes(colsLine.get());
-				reader.lines().map(l -> VcfUtils.vcfLineToMap(l, genotypes)).forEach(consumer);
+				VcfFormat format = VcfFormat.readFormat(reader);
+				reader.lines().map(l -> VcfUtils.vcfLineToMap(l, format)).forEach(consumer);
 				reader.lines().forEach(System.out::println);
 			} catch (IOException e) {
 				throw new RuntimeException("Could not read from result", e);
