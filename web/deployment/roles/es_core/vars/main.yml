@@ -1,0 +1,6 @@
+es_dir : "{{ base_dir }}/es"
+es_logs : "{{ base_dir }}/es_logs"
+es_data : "{{ base_dir }}/es_data"
+es_url : https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.3/elasticsearch-2.3.3.tar.gz
+es_pid_file : ./es.pid
+es_cluster : genesearch

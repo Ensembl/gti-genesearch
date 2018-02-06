@@ -1,0 +1,15 @@
+---
+- name: Install config file
+  vars:
+    es_hosts: "{{ groups['es-data'] }}"
+  template:
+    src: elasticsearch.yml.j2
+    dest: "{{ es_dir }}/config/elasticsearch.yml"
+    mode: 0700
+- name: Install head plugin
+  shell: "./bin/plugin install mobz/elasticsearch-head"
+  args:
+    chdir: "{{ es_dir }}"
+    creates: "{{ es_dir }}/plugins/head/LICENCE"
+  notify:
+    - start es

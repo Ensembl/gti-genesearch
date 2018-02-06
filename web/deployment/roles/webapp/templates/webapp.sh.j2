@@ -1,0 +1,39 @@
+#!/bin/bash --
+
+JAVA_HOME={{ java_dir }}
+export PATH=$JAVA_HOME/bin:$PATH
+
+cd {{ web_dir }}
+PID_FILE={{ web_pid_file }}
+
+function stop_web {
+    if [ -e "$PID_FILE" ]; then
+	echo "Stopping web (pid file $PID_FILE)" 1>&2
+	kill -SIGTERM $(cat $PID_FILE)
+	rm -f $PID_FILE
+    else
+	echo "Web not running" 1>&2
+    fi  
+}
+function start_web {
+    if [ -e "$PID_FILE" ]; then
+	echo "Web still running (pid file $PID_FILE)" 1>&2
+	exit 2
+    fi
+    java {{ java_opts }} -jar {{ web_dir }}/{{jar_name}} >& webapp.log &
+    PID=$!
+    echo $PID > $PID_FILE
+}
+action=$1
+if [ "$action" == "start" ]; then
+    start_web
+elif [ "$action" == "stop" ]; then
+    stop_web
+elif [ "$action" == "restart" ]; then
+    stop_web
+    start_web
+else
+    echo "Usage: $0 start|stop|restart" 1>&2
+    exit 1
+fi
+

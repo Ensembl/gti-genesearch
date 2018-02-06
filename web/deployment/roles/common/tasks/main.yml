@@ -1,0 +1,23 @@
+---
+- name: Create base directory
+  file:
+    path: "{{ base_dir }}"
+    state: directory
+    recurse: yes
+- name: Download Java
+  local_action:
+    module: command curl -L -C - -b "oraclelicense=accept-securebackup-cookie" "{{ java_url }}" -o java.tar.gz
+    args:
+      warn: "false"
+      creates: "java.tar.gz"
+- name: Create Java directory
+  file:
+    path: "{{ java_dir }}"
+    state: directory
+    recurse: yes
+- name: Unpack Java
+  unarchive:
+    src: ./java.tar.gz
+    dest: "{{ java_dir }}"
+    extra_opts: ['--strip-components=1']
+    creates: "{{ java_dir }}/bin/java"

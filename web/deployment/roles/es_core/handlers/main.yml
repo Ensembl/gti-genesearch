@@ -1,0 +1,7 @@
+---
+- name: start es
+  shell: "{{ es_dir }}/elastic.sh start"
+- name: stop es
+  shell: "{{ es_dir }}/elastic.sh stop"
+- name: restart es
+  shell: "{{ es_dir }}/elastic.sh restart"

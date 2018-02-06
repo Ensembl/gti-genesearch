@@ -1,0 +1,4 @@
+base_dir : /data/test
+es_head : gti-es-0
+masters : "gti-es-0"
+min_masters : 5
