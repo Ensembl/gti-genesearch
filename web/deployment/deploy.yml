@@ -5,6 +5,7 @@
     - vars.yml
   roles:
     - common
+    - java
     - es_core
     - es_data
 - hosts: es-head
@@ -13,12 +14,14 @@
     - vars.yml
   roles:
     - common
+    - java
     - es_core
     - es_head
 - hosts: web-head
   remote_user : ensprod
-  vars:
+  vars_files:
     - vars.yml
   roles:
     - common
+    - java
     - webapp

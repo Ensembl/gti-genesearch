@@ -1,4 +1,21 @@
+# location of ES & Java
 base_dir : /data/test
+# git tag to use (must match gradle version)
+webapp_version: 0.1
+# RAM for head node
+java_opts : "-Xmx2g"
+# solr credentials
+solr_expression_url : TODO
+solr_experiments_url : TODO
+# nominate head node (no data)
 es_head : gti-es-0
-masters : "gti-es-0"
+# should be total_nodes/2+1
 min_masters : 5
+
+# common vars needed by common handlers - do not change
+es_dir : "{{ base_dir }}/es"
+es_pid_file : ./es.pid
+web_dir : "{{ base_dir }}/web"
+web_pid_file : ./web.pid
+# list of hosts that make up the ES cluster
+es_hosts: "{{ groups['es-head'] + groups['es-data'] }}"   

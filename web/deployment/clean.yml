@@ -4,4 +4,6 @@
   vars_files:
     - vars.yml
   roles:
+    - common
+    - kill_java
     - clean

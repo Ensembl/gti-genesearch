@@ -1,0 +1,4 @@
+---
+-  debug: msg="Shutdown ES"
+   notify: stop es
+   changed_when: true
