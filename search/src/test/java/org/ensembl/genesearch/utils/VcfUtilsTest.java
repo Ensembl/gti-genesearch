@@ -13,6 +13,9 @@ import org.ensembl.genesearch.utils.VcfUtils.ColumnFormat;
 import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import htsjdk.samtools.util.BufferedLineReader;
 
 public class VcfUtilsTest {
@@ -39,18 +42,18 @@ public class VcfUtilsTest {
 		assertTrue("Variant found", oSnp.isPresent());
 		//20	1110696	rs6040355	A	G,T	67	PASS	NS=2;DP=10;AF=0.333,0.667;AA=T;DB	GT:GQ:DP:HQ	1|2:21:6:23,27	2|1:2:0:18,2	2/2:35:4:1,1
 		Map<String, Object> snp = oSnp.get();
-		assertEquals("ID", "rs6040355", snp.get("id"));
-		assertEquals("CHROM", "20", snp.get("seq_region_name"));
-		assertEquals("POS", "1110696", snp.get("start"));
-		assertEquals("REF", "A", snp.get("ref_allele"));
-		assertEquals("ALT", "G,T", snp.get("alt_allele"));
-		assertEquals("QUAL", "67", snp.get("quality"));
-		assertEquals("FILTER", "PASS", snp.get("filter"));
-		assertEquals("NS", "2", snp.get("NS"));
-		assertEquals("DP", "10", snp.get("DP"));
-		assertEquals("AF", "0.333,0.667", snp.get("AF"));
-		assertEquals("AA", "T", snp.get("AA"));
-		assertEquals("DB", true, snp.get("DB"));
+        assertEquals("ID", "rs6040355", snp.get("id"));
+        assertEquals("CHROM", "20", snp.get("seq_region_name"));
+        assertEquals("POS", "1110696", snp.get("start"));
+        assertEquals("REF", "A", snp.get("ref_allele"));
+        assertEquals("ALT", "G,T", snp.get("alt_allele"));
+        assertEquals("QUAL", "67", snp.get("quality"));
+        assertEquals("FILTER", "PASS", snp.get("filter"));
+        assertEquals("NS", "2", snp.get("sample_n"));
+        assertEquals("DP", "10", snp.get("depth"));
+        assertEquals("AF", "0.333,0.667", snp.get("allele_freq"));
+        assertEquals("AA", "T", snp.get("ancestral_allele"));
+        assertEquals("DB", true, snp.get("dbsnp"));
 		assertFalse("No genotypes", snp.containsKey("genotypes"));
 	}
 
@@ -72,22 +75,22 @@ public class VcfUtilsTest {
 		assertEquals("ALT", "G,T", snp.get("alt_allele"));
 		assertEquals("QUAL", "67", snp.get("quality"));
 		assertEquals("FILTER", "PASS", snp.get("filter"));
-		assertEquals("NS", 2, snp.get("NS"));
-		assertEquals("DP", 10, snp.get("DP"));
-		assertEquals("AF", 2, ((List)snp.get("AF")).size());
-		assertEquals("AA", "T", snp.get("AA"));
-		assertEquals("DB", true, snp.get("DB"));
+		assertEquals("NS", 2, snp.get("sample_n"));
+		assertEquals("DP", 10, snp.get("depth"));
+		assertEquals("AF", 2, ((List)snp.get("allele_freq")).size());
+		assertEquals("AA", "T", snp.get("ancestral_allele"));
+		assertEquals("DB", true, snp.get("dbsnp"));
 		assertTrue("Genotypes", snp.containsKey("genotypes"));
 		List<Map<String,Object>> snpGenotypes = (List<Map<String, Object>>) snp.get("genotypes");
 		assertEquals("Genotypes found", 3, snpGenotypes.size());
 		Map<String,Object> genotype = snpGenotypes.get(0);
 		assertEquals("Genotype attributes", 5, genotype.keySet().size());
-		assertEquals("GENOTYPE_ID", "NA00001", genotype.get("GENOTYPE_ID"));
+		assertEquals("id", "NA00001", genotype.get("id"));
 		// 1|2:21:6:23,27
-		assertEquals("GT", "1|2", genotype.get("GT"));
-		assertEquals("GQ", "21", genotype.get("GQ"));
-		assertEquals("DP", "6", genotype.get("DP"));
-		assertEquals("HQ", "23,27", genotype.get("HQ"));
+		assertEquals("GT", "1|2", genotype.get("genotype"));
+		assertEquals("GQ", "21", genotype.get("genotype_q"));
+		assertEquals("DP", "6", genotype.get("depth"));
+		assertEquals("HQ", "23,27", genotype.get("haplotype_q"));
 	}
 	
     @Test
@@ -97,6 +100,22 @@ public class VcfUtilsTest {
         List<Map<String, Object>> variants = vcfR.lines().map(l -> VcfUtils.vcfLineToMap(l, format)).collect(Collectors.toList());
         assertEquals("Variants found", 1, variants.size());     
         Optional<Map<String, Object>> oSnp = variants.stream().filter(v -> "rs75377686".equals(v.get("id"))).findFirst();
+        assertTrue(List.class.isAssignableFrom(oSnp.get().get("consequences").getClass()));
     }
     
+    @Test
+    public void testVEPGT() {
+        BufferedLineReader vcfR = new BufferedLineReader(this.getClass().getResourceAsStream("/spec_sample_vep.vcf"));
+        VcfFormat format = VcfFormat.readFormat(vcfR);
+        List<Map<String, Object>> variants = vcfR.lines().map(l -> VcfUtils.vcfLineToMap(l, format)).collect(Collectors.toList());
+        assertEquals("Variants found", 5, variants.size());     
+        Optional<Map<String, Object>> oSnp = variants.stream().filter(v -> "rs6040355".equals(v.get("id"))).findFirst();
+        assertTrue(List.class.isAssignableFrom(oSnp.get().get("consequences").getClass()));
+        try {
+            System.out.println(new ObjectMapper().writeValueAsString(variants));
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }
