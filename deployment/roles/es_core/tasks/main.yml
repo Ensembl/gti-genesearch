@@ -21,3 +21,8 @@
     src: elastic.sh.j2
     dest: "{{ es_dir }}/elastic.sh"
     mode: 0700
+- name: Install head plugin
+  shell: "./bin/plugin install mobz/elasticsearch-head"
+  args:
+    chdir: "{{ es_dir }}"
+    creates: "{{ es_dir }}/plugins/head/LICENCE"

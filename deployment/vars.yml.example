@@ -1,5 +1,21 @@
 # location of ES & Java
-base_dir : /data/test
+base_dir : /data/search
+
+## ES
+es_logs : "{{ base_dir }}/es_logs"
+es_data : "{{ base_dir }}/es_data"
+es_cluster : genesearch
+es_dir : "{{ base_dir }}/es"
+es_pid_file : ./es.pid
+# list of hosts that make up the ES cluster
+es_hosts: "{{ groups['es-head'] + groups['es-data'] }}"   
+# should be total_nodes/2+1
+min_masters : 5
+es_heap : 16g
+
+## WEBAPP
+web_dir : "{{ base_dir }}/web"
+web_pid_file : ./web.pid
 # git tag to use (must match gradle version)
 webapp_version: 0.1
 # RAM for head node
@@ -7,15 +23,7 @@ java_opts : "-Xmx2g"
 # solr credentials
 solr_expression_url : TODO
 solr_experiments_url : TODO
-# nominate head node (no data)
+# ES node to contact
 es_head : gti-es-0
-# should be total_nodes/2+1
-min_masters : 5
-es_heap : 16g
-# common vars needed by common handlers - do not change
-es_dir : "{{ base_dir }}/es"
-es_pid_file : ./es.pid
-web_dir : "{{ base_dir }}/web"
-web_pid_file : ./web.pid
-# list of hosts that make up the ES cluster
-es_hosts: "{{ groups['es-head'] + groups['es-data'] }}"   
+
+

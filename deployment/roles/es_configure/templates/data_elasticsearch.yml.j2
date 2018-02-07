@@ -1,15 +1,14 @@
 cluster.name: {{ es_cluster }}
 node.name: ${HOSTNAME}
-path.data: {{ es_logs }}
-path.logs: {{ es_data }}
+path.data: {{ es_data }}
+path.logs: {{ es_logs }}
 network.host: ${HOSTNAME}
 discovery.zen.ping.multicast.enabled: false
 discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
 discovery.zen.minimum_master_nodes: {{ min_masters }}
 node.max_local_storage_nodes: 1
-http.cors.enabled: true
-http.cors.allow-origin: "*"
-node.data: false
-node.master: false
-thread_pool.bulk.queue_size: 300
 bootstrap.system_call_filter: false
+# Bulk pool
+threadpool.bulk.type: fixed
+threadpool.bulk.size: 60
+threadpool.bulk.queue_size: 300

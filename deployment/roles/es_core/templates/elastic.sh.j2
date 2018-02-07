@@ -20,13 +20,7 @@ function start_es {
 	echo "ES still running (pid file $PID_FILE)" 1>&2
 	exit 2
     fi
-    nohup ./bin/elasticsearch >& {{ es_logs }}/es_start.log &
-    PID=$!
-    if ! ps $PID > /dev/null; then
-	echo "Cannot start Elasticsearch" 1>&2
-	exit 3
-    fi
-    echo $PID > $PID_FILE
+    nohup ./bin/elasticsearch -d -p $PID_FILE
 }
 action=$1
 if [ "$action" == "start" ]; then

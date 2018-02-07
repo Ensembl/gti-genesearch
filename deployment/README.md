@@ -9,6 +9,11 @@ To roll out ES and web across the hosts in `hosts`:
 ansible-playbook deploy.yml -i hosts  
 ```
 
+To reconfigure and restart ES and web on the hosts in `hosts`:
+```
+ansible-playbook restart.yml -i hosts  
+```
+
 To stop ES and web on the hosts in `hosts`:
 ```
 ansible-playbook stop.yml -i hosts  

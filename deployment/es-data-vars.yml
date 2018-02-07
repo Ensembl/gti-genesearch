@@ -1,0 +1,3 @@
+es_template: data_elasticsearch.yml.j2
+es_node_data: true
+es_node_master: true

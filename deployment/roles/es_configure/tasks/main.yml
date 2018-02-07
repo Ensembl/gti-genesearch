@@ -1,8 +1,9 @@
 ---
 - name: Install config file
   template:
-    src: elasticsearch.yml.j2
+    src: "{{ es_template }}"
     dest: "{{ es_dir }}/config/elasticsearch.yml"
     mode: 0700
-  notify:
-    - start es
+- name: Trigger ES restart
+  command: /bin/true
+  notify: restart es
