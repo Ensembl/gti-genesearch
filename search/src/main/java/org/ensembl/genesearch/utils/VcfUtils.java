@@ -16,6 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class VcfUtils {
 
+    private static final String GENOTYPES = "genotypes";
+    private static final String CONSEQUENCES = "CSQ";
+
     public static enum ColumnFormat {
         INTEGER, STRING, FLOAT, INTEGER_LIST, STRING_LIST, FLOAT_LIST, FLAG;
     }
@@ -65,9 +68,10 @@ public class VcfUtils {
             formats.put(m.group(1), format);
         }
 
-        public Map<String, Object> csqToMap(String value) {
-            Map<String, Object> csq = new HashMap<>();
+        public List<Map<String, Object>> csqToMap(String value) {
+            List<Map<String,Object>> csqs = new ArrayList<>();
             for (String csqStr : value.split(",")) {
+                Map<String, Object> csq = new HashMap<>();
                 int n = 0;
                 for (String val : csqStr.split("\\|")) {
                     String col = CSQ_FIELDS[n++];
@@ -75,13 +79,14 @@ public class VcfUtils {
                         csq.put(col, val);
                     }
                 }
+                csqs.add(csq);
             }
-            return csq;
+            return csqs;
         }
 
         public Object valueToObj(String column, String value) {
 
-            if ("CSQ".equals(column)) {
+            if (CONSEQUENCES.equals(column)) {
                 return csqToMap(value);
             }
 
@@ -123,27 +128,28 @@ public class VcfUtils {
 
     public final static Map<String, String> INFO_NAMES = new HashMap<>();
     static {
-        INFO_NAMES.put("AA", "ancestralAllele");
-        INFO_NAMES.put("AC", "alleleCount");
-        INFO_NAMES.put("AF", "alleleFreq");
-        INFO_NAMES.put("AN", "alleleN");
-        INFO_NAMES.put("BQ", "baseQ");
+        INFO_NAMES.put("AA", "ancestral_allele");
+        INFO_NAMES.put("AC", "allele_count");
+        INFO_NAMES.put("AF", "allele_freq");
+        INFO_NAMES.put("AN", "allele_n");
+        INFO_NAMES.put("BQ", "base_q");
         INFO_NAMES.put("CIGAR", "cigar");
-        INFO_NAMES.put("DB", "dbSNP");
+        INFO_NAMES.put("DB", "dbsnp");
         INFO_NAMES.put("DP", "depth");
         INFO_NAMES.put("END", "end");
         INFO_NAMES.put("H2", "hapmap2");
         INFO_NAMES.put("H3", "hapmap3");
-        INFO_NAMES.put("MQ", "mappingQ");
-        INFO_NAMES.put("MQ0", "zeroMappingQ");
-        INFO_NAMES.put("NS", "sampleN");
-        INFO_NAMES.put("SB", "strandBias");
+        INFO_NAMES.put("MQ", "mapping_q");
+        INFO_NAMES.put("MQ0", "zero_mapping_q");
+        INFO_NAMES.put("NS", "sample_n");
+        INFO_NAMES.put("SB", "strand_nias");
         INFO_NAMES.put("SOMATIC", "somatic");
         INFO_NAMES.put("VALIDATED", "validated");
         INFO_NAMES.put("1000G", "1000genomes");
         INFO_NAMES.put("GT", "genotype");
-        INFO_NAMES.put("GQ", "genotypeQ");
-        INFO_NAMES.put("HQ", "haplotypeQ");
+        INFO_NAMES.put("GQ", "genotype_q");
+        INFO_NAMES.put("HQ", "haplotype_q");
+        INFO_NAMES.put("CSQ", "consequences");
     }
 
     public final static String[] FIXED_FIELDS = { "seq_region_name", "start", "id", "ref_allele", "alt_allele",
@@ -181,26 +187,26 @@ public class VcfUtils {
         for (String infoStr : cols[7].split(";")) {
             Matcher m = INFO_PATTERN.matcher(infoStr);
             if (m.matches()) {
-                map.put(m.group(1), format.valueToObj(m.group(1), m.group(2)));
+                map.put(INFO_NAMES.getOrDefault(m.group(1),m.group(1)), format.valueToObj(m.group(1), m.group(2)));
             } else {
-                map.put(infoStr, true);
+                map.put(INFO_NAMES.getOrDefault(infoStr,infoStr), true);
             }
         }
         if (format.getGenotypes() != null && format.getGenotypes().length>0) {
             // get format names
-            String[] gFormat = cols[8].split(":");
+            List<String> gFormat = Arrays.asList(cols[8].split(":")).stream().map(f -> INFO_NAMES.getOrDefault(f, f)).collect(Collectors.toList());
             // add phenotypes to list
             List<Map<String, Object>> genotypeObjs = new ArrayList<>(format.getGenotypes().length);
             for (int n = 9; n < cols.length; n++) {
-                Map<String, Object> genotype = new HashMap<>(gFormat.length + 1);
-                genotype.put("GENOTYPE_ID", format.getGenotypes()[n - 9]);
+                Map<String, Object> genotype = new HashMap<>(gFormat.size() + 1);
+                genotype.put("id", format.getGenotypes()[n - 9]);
                 String[] genotypeVals = cols[n].split(":");
-                for (int m = 0; m < gFormat.length; m++) {
-                    genotype.put(gFormat[m], genotypeVals[m]);
+                for (int m = 0; m < gFormat.size(); m++) {
+                    genotype.put(gFormat.get(m), genotypeVals[m]);
                 }
                 genotypeObjs.add(genotype);
             }
-            map.put("genotypes", genotypeObjs);
+            map.put(GENOTYPES, genotypeObjs);
         }
         return map;
     }
