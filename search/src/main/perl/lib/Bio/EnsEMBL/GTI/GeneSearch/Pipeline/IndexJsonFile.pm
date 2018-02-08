@@ -41,7 +41,7 @@ sub run {
   my $array = $self->param_required('is_array');
   $self->log()->info("Indexing $file as $type");
   $self->log()->debug("id=$id, array=$array");
-  $self->hive_dbc()->disconnect_if_idle() if defined $self->hive_dbc();
+  $self->dbc()->disconnect_if_idle() if defined $self->dbc();
   $indexer->index_file($file, $type, $id, $array);
   $self->log()->info("Completed indexing $file as $type");
   return;

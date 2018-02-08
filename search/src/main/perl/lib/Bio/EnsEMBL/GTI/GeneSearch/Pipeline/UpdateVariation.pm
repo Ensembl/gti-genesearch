@@ -21,72 +21,29 @@ package Bio::EnsEMBL::GTI::GeneSearch::Pipeline::UpdateVariation;
 use warnings;
 use strict;
 
-use base ('Bio::EnsEMBL::Hive::Process');
-use Bio::EnsEMBL::Production::Pipeline::JSON::JsonRemodeller;
-use Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer;
-use Bio::EnsEMBL::Registry;
+use base ('Bio::EnsEMBL::Production::Pipeline::Common::Base');
+use Bio::EnsEMBL::GTI::GeneSearch::VariantAppender;
 use Data::Dumper;
-use Log::Log4perl qw(:easy);
-
-Log::Log4perl->easy_init($INFO);
-
-sub fetch_input {
-  my ($self) = @_;
-  $self->{indexer} =
-    Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer->new(
-                                 url => $self->param_required("es_url"),
-                                 index => $self->param_required('index')
-    );
-
-  # species
-  $self->{variation_dba} =
-    Bio::EnsEMBL::Registry->get_DBAdaptor(
-                                       $self->param_required("species"),
-                                       "variation" );
-  # use streaming to make retrieving the result faster
-  $self->{variation_dba}->dbc()->db_handle()->{mysql_use_result} = 1;
-
-  # gene IDs
-  $self->{gene_ids} = $self->param_required("gene_ids");
-  print Dumper( $self->{gene_ids} );
-  $self->{logger} = get_logger();
-
-  return;
-}
-
-sub log {
-  my ($self) = @_;
-  return $self->{logger};
-}
 
 sub run {
   my $self = shift @_;
-
-  # retrieve gene documents matching the provided genes
-  my $result =
-    $self->{indexer}->search()->mget(
-                 index => $self->param_required('index'),
-                 type  => 'gene',
-                 body => { ids => $self->{gene_ids}, _source => "true" }
+  
+    my $indexer =
+    Bio::EnsEMBL::GTI::GeneSearch::VariantAppender->new(
+                                 url => $self->param_required("es_url"),
+                                 index => $self->param_required('index'),
+                                 variant_index => $self->param_required('variant_index')
     );
 
-  # create an ID to transcript hash
-  my @gene_docs =
-    map { $_->{_source} } grep { $_->{found} } @{ $result->{docs} };
-  $self->log()
-    ->info( "Retrieved " . scalar @gene_docs . " genes for update" );
+  # gene IDs
+  my $gene_ids = $self->param_required("gene_ids");
 
-  my $remodeller =
-    Bio::EnsEMBL::Production::Pipeline::JSON::JsonRemodeller->new(
-                             -variation_dba => $self->{variation_dba} );
-
-  my $updated_genes = $remodeller->add_variation( \@gene_docs );
-  $self->log()->info( "Updated " . scalar @$updated_genes . " genes" );
-
-  $self->{indexer}->index_genes($updated_genes);
-  $self->log()
-    ->info( "Finished indexing " . scalar @$updated_genes . " genes" );
-
+for my $id (@$gene_ids) {
+    $self->log()->info("Updating gene $id");
+    $indexer->add_variation_to_gene($id);  
+}
+$indexer->bulk()->flush();
+ 
   return;
 
 } ## end sub run
