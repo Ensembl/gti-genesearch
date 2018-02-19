@@ -29,7 +29,7 @@ use Carp;
 has 'url'         => ( is => 'ro', isa => 'Str', required => 1 );
 has 'index'       => ( is => 'ro', isa => 'Str', required => 1 );
 has 'bulk' => ( is => 'rw', isa => 'Search::Elasticsearch::Client::2_0::Bulk' );
-has 'timeout' => ( is => 'rw', isa => 'Int', default => 300 );
+has 'timeout' => ( is => 'rw', isa => 'Int', default => 3600 );
 
 sub BUILD {
   my ($self) = @_;
