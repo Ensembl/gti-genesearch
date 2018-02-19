@@ -16,5 +16,9 @@
 
 dir=$(dirname $0)
 url=$1
-echo "Setting up $url"
-curl -XPUT -d '{"index" : {"number_of_replicas" : 1}}' "${url}/_mapping/gene" 
+n=$2
+if [ -z "$n" ]; then
+    n=1
+fi
+echo "Setting up $n replicas for $url"
+curl -XPUT -d "{\"index\" : {\"number_of_replicas\" : $n}}" "${url}/_settings" 
