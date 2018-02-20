@@ -84,10 +84,10 @@ public class HtsGetVariantSearch implements Search {
 	@Override
 	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
 		// extract URI arguments
-		HtsGetArgs args = HtsGetArgs.build(queries);
+		HtsGetArgs args = queryToArgs(queries);
 		Consumer<Map<String, Object>> fetchConsumer = v -> {
 			if (QueryUtils.filterResultsByQueries.test(v, args.queries)) {
-				consumer.accept(QueryUtils.filterFields(v, fieldNames));
+				consumer.accept(QueryUtils.filterFields(decorateVariant(v), fieldNames));
 			}
 		};
 		if (args.files != null && args.files.length > 0) {
@@ -98,6 +98,11 @@ public class HtsGetVariantSearch implements Search {
 		} else {
 			client.getVariants(args.seqRegionName, args.start, args.end, args.token, args.session, consumer);
 		}
+	}
+
+	protected HtsGetArgs queryToArgs(List<Query> queries) {
+		HtsGetArgs args = HtsGetArgs.build(queries);
+		return args;
 	}
 
 	@Override
@@ -111,12 +116,12 @@ public class HtsGetVariantSearch implements Search {
 		List<Map<String, Object>> results = new ArrayList<>();
 		AtomicInteger n = new AtomicInteger();
 		// extract URI arguments
-		HtsGetArgs args = HtsGetArgs.build(queries);
+		HtsGetArgs args = queryToArgs(queries);
 		Consumer<Map<String, Object>> consumer = v -> {
 			if (QueryUtils.filterResultsByQueries.test(v, args.queries)) {
 				int i = n.incrementAndGet();
 				if (i > offset && i < offset + limit) {
-					results.add(QueryUtils.filterFields(v, output));
+					results.add(QueryUtils.filterFields(decorateVariant(v), output));
 				}
 			}
 		};
@@ -139,6 +144,11 @@ public class HtsGetVariantSearch implements Search {
 	@Override
 	public boolean up() {
 		return true;
+	}
+	
+	protected Map<String,Object> decorateVariant(Map<String,Object> v) {
+		// base method, do nothing
+		return v;
 	}
 
 }
