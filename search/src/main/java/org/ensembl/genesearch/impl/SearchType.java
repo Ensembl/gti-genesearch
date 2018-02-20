@@ -30,8 +30,8 @@ public enum SearchType {
 			"translations", "translation"), HOMOLOGUES("homologues", "homologue"), VARIANTS("variants",
 					"variant"), SEQUENCES("sequences", "sequence"), EXPRESSION("expression",
 							"expression"), EXPRESSION_EXPERIMENTS("experiments",
-									"experiment"), EXPRESSION_ANALYTICS("analytics", "analytics");
-
+									"experiment"), EXPRESSION_ANALYTICS("analytics", "analytics"), CELL_LINES("cell_lines","cell_line");
+	
 	private final String pluralName;
 	private final String singleName;
 

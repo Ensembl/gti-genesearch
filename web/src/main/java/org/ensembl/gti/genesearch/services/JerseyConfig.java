@@ -55,6 +55,10 @@ public class JerseyConfig extends ResourceConfig {
 		register(ExpressionFetchService.class);
 		register(ExpressionService.class);
 		register(ExpressionInfoService.class);
+		register(CellLineQueryService.class);
+		register(CellLineFetchService.class);
+		register(CellLineService.class);		
+		register(CellLineInfoService.class);
 		register(JacksonFeature.class);
 		register(InfoService.class);
 		register(CORSFilter.class);

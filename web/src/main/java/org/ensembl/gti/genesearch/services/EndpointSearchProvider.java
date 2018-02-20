@@ -22,6 +22,7 @@ import org.bson.Document;
 import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.clients.ClientBuilder;
+import org.ensembl.genesearch.impl.CellLineSearch;
 import org.ensembl.genesearch.impl.DivisionAwareSequenceSearch;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.ESSearchFlatten;
@@ -66,6 +67,7 @@ public class EndpointSearchProvider {
     protected Search expressionAnalyticsSearch = null;
     protected Search sequenceSearch = null;
     protected Client client = null;
+	protected Search cellLineSearch = null;
     protected MongoCollection<Document> mongoCollection = null;
     private SolrClient solrAnalyticsClient = null;
     private SolrClient solrExperimentsClient = null;
@@ -103,6 +105,13 @@ public class EndpointSearchProvider {
     @Value("${variation_search:elastic}")
     private String variationSearch = "elastic";
 
+    @Value("${ebisc.rest.url}")
+    private String ebiscUrl;
+    @Value("${ebisc.rest.username}")
+    private String ebiscUser;
+    @Value("${ebisc.rest.api_token}")
+    private String ebiscToken;
+    
     public EndpointSearchProvider() {
     }
 
@@ -222,6 +231,11 @@ public class EndpointSearchProvider {
             expressionSearch = new ExpressionSearch(registry);
 
             registry.registerSearch(SearchType.EXPRESSION, expressionSearch);
+            
+            // EBiSC cell line metadata
+            DataTypeInfo cellLineType = DataTypeInfo.fromResource("/celllines_datatype_info.json");
+            cellLineSearch = new CellLineSearch(cellLineType, ebiscUrl, ebiscUser, ebiscToken);
+            registry.registerSearch(SearchType.CELL_LINES, cellLineSearch);
 
         }
         return registry;
@@ -297,5 +311,10 @@ public class EndpointSearchProvider {
     public Search getSequenceSearch() {
         return getRegistry().getSearch(SearchType.SEQUENCES);
     }
+    
+    public Search getCellLineSearch() {
+        return getRegistry().getSearch(SearchType.CELL_LINES);
+    }
+
 
 }
