@@ -1,0 +1,5 @@
+---
+- name: Clean base dir
+  file:
+    state: absent
+    path: "{{ base_dir }}/"

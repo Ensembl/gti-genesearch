@@ -1,0 +1,16 @@
+---
+- hosts: es-data:es-head
+  remote_user : ensprod  
+  vars_files:
+    - vars.yml
+  roles:
+    - common
+    - stop_es
+- hosts: web-head
+  remote_user : ensprod
+  vars_files:
+    - vars.yml
+  roles:
+    - common
+    - stop_web
+

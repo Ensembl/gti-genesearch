@@ -1,0 +1,14 @@
+cluster.name: {{ es_cluster }}
+node.name: ${HOSTNAME}
+path.data: {{ es_data }}
+path.logs: {{ es_logs }}
+network.host: ${HOSTNAME}
+discovery.zen.ping.multicast.enabled: false
+discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
+discovery.zen.minimum_master_nodes: {{ min_masters }}
+node.max_local_storage_nodes: 1
+bootstrap.system_call_filter: false
+# Bulk pool
+threadpool.bulk.type: fixed
+threadpool.bulk.size: 60
+threadpool.bulk.queue_size: 300

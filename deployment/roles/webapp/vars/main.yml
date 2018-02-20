@@ -1,0 +1,3 @@
+git_repo : ssh://git@github.com/Ensembl/gti-genesearch.git
+jar_name : "web-{{ webapp_version }}.jar"
+
