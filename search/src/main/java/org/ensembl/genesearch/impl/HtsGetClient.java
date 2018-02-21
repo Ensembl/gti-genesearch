@@ -3,11 +3,11 @@ package org.ensembl.genesearch.impl;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.utils.VcfUtils;
 import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
 import org.slf4j.Logger;
@@ -53,12 +53,15 @@ public class HtsGetClient {
 	}
 	
 	protected List<String> getDatasets(String session) {
-		ResponseEntity<JsonNode> result = restTemplate.getForEntity(egaBaseUrl + DATASETS_URL, JsonNode.class, session);
-		return null;	
+		throw new UnsupportedOperationException();
 	}
 
 	protected List<String> getUrls(String accession, String seqRegionName, long start, long end, String token) {
 
+		if(StringUtils.isEmpty(token)) {
+			throw new IllegalArgumentException("Token for htsget must be supplied");
+		}
+		
 		HttpEntity<String> entity = getHeaders(token);
 
 		ResponseEntity<JsonNode> result = restTemplate.exchange(baseUrl + TICKET_URL, HttpMethod.GET, entity,
@@ -115,11 +118,6 @@ public class HtsGetClient {
 			log.info("Retrieving variants for file " + file);
 			getVariantsForFile(file, seqRegionName, start, end, token, consumer);
 		}
-	}
-	
-	public final static void main(String[] args) {
-		 HtsGetClient client = new HtsGetClient("","https://ega.ebi.ac.uk/ega/rest");
-		 client.getDatasets("e74f416b-99aa-483b-8420-5f349ced0076");
 	}
 
 }
