@@ -32,12 +32,10 @@ public class QueryUtilsTest {
         o.put("colour", "red");
         o.put("ripeness", "ripe");
         QueryOutput output = new QueryOutput("fruit", "colour");
-        System.out.println(o);
         QueryUtils.filterFields(o, output);
         Assert.assertTrue("Fruit found", o.containsKey("fruit"));
         Assert.assertTrue("Colour found", o.containsKey("colour"));
         Assert.assertFalse("Ripeness found", o.containsKey("ripeness"));
-        System.out.println(o);
     }
 
     @SuppressWarnings("unchecked")
@@ -125,8 +123,25 @@ public class QueryUtilsTest {
             Assert.assertTrue("B.2 found", !DataUtils.getObjValsForKey(o, "B.2").isEmpty());
             Assert.assertTrue("B.3 found", !DataUtils.getObjValsForKey(o, "B.3").isEmpty());
         }
+        {
+            Map<String, Object> o = new ObjectMapper()
+                    .readValue("{\"A\":[\"str\"], \"B\":[\"1\",\"2\",\"3\"]}", Map.class);
+            QueryOutput output = QueryOutput.build("[\"B\"]");
+            QueryUtils.filterFields(o, output);
+            Assert.assertFalse("A not found", o.containsKey("A"));
+            Assert.assertTrue("B found", o.containsKey("B"));
+            Assert.assertEquals("B has 3 elems", 3, ((List)o.get("B")).size());
+        }
+        {
+            Map<String, Object> o = new ObjectMapper()
+                    .readValue("{\"A\":[\"str\"], \"B\":[{\"1\":\"a\",\"2\":\"b\",\"3\":\"c\"},{\"1\":\"x\",\"2\":\"y\",\"3\":\"z\"}]}", Map.class);
+            QueryOutput output = QueryOutput.build("[\"B\"]");
+            QueryUtils.filterFields(o, output);
+            Assert.assertFalse("A not found", o.containsKey("A"));
+            Assert.assertTrue("B found", o.containsKey("B"));
+        }
     }
-
+    
     @Test
     public void testStringMatchers() {
         List<String> vals = Arrays.asList("banana", "mango", "apple", "pineapple");

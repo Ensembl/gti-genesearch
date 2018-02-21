@@ -94,7 +94,7 @@ public class QueryUtils {
                         if (lo.isEmpty()) {
                             i.remove();
                         }
-                    } else {
+                    } else if(!output.containsPath(keyPath)) {
                     		i.remove();
                     }
                 } else {
