@@ -41,7 +41,7 @@ public class EbiscEndpointProvider extends EndpointSearchProvider {
         DataTypeInfo cellLineType = DataTypeInfo.fromResource("/celllines_datatype_info.json");
         cellLineSearch = new CellLineSearch(cellLineType, ebiscUrl, ebiscUser, ebiscToken);
         reg.registerSearch(SearchType.CELL_LINES, cellLineSearch);
-        // TODO HTSget API
+        // HTSget API
         DataTypeInfo variantInfo = DataTypeInfo.fromResource("/ebisc_datatype_info.json");
         variantSearch = new HtsGetSingleFileVariantSearch(variantInfo, egaUrl, egaAccession);
         reg.registerSearch(SearchType.VARIANTS, variantSearch);
