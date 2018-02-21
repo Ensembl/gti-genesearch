@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
@@ -102,6 +103,9 @@ public class HtsGetVariantSearch implements Search {
 
 	protected HtsGetArgs queryToArgs(List<Query> queries) {
 		HtsGetArgs args = HtsGetArgs.build(queries);
+		if(StringUtils.isEmpty(args.token)) {
+			throw new IllegalArgumentException("Access token not set");
+		}
 		return args;
 	}
 
