@@ -2,6 +2,15 @@
 	"name": "variants",
 	"fieldInfo": [
 		{
+			"type": "LOCATION",
+			"name": "location",
+			"displayName": "Genomic location",
+			"sort": "false",
+			"facet": "false",
+			"display": "false",
+			"search": "true"
+		},
+		{
 			"type": "NUMBER",
 			"name": "zero_mapping_q",
 			"displayName": "zero_mapping_q",
