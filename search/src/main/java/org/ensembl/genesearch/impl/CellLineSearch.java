@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -25,6 +26,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CellLineSearch implements Search {
+
+	private static final String CELL_LINE_NAME = "name";
 
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -119,5 +122,9 @@ public class CellLineSearch implements Search {
 	@Override
 	public boolean up() {
 		return true;
+	}
+	
+	public Optional<Map<String,Object>> getCellLine(String name) {
+		return getCellLines().stream().filter(c->name.equals(c.get(CELL_LINE_NAME))).findFirst();
 	}
 }

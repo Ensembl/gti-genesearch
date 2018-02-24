@@ -257,5 +257,7 @@ public class EndpointSearchProvider {
     public Search getCellLineSearch() {
         return getRegistry().getSearch(SearchType.CELL_LINES);
     }
-
+    public void setCellLineSearch(Search cellLineSearch) {
+        this.cellLineSearch = cellLineSearch;
+    }
 }

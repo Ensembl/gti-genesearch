@@ -16,8 +16,6 @@
 
 package org.ensembl.genesearch.impl;
 
-import org.ensembl.genesearch.Search;
-
 /**
  * Enum of target types currently supported by search
  * 
