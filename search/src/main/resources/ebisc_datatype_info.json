@@ -282,15 +282,6 @@
 		},
 		{
 			"type": "TERM",
-			"name": "seq_region_name",
-			"displayName": "Sequence region name",
-			"sort": "false",
-			"facet": "false",
-			"display": "true",
-			"search": "true"
-		},
-		{
-			"type": "TERM",
 			"name": "alt_allele",
 			"displayName": "Alternative allele",
 			"sort": "false",
