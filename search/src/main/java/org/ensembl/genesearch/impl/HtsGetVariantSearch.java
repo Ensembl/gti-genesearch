@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
@@ -26,6 +28,7 @@ public class HtsGetVariantSearch implements Search {
 		public static final String SEQ_REGION_NAME = "seq_region_name";
 		public static final String FILES = "files";
 		public static final String DATASETS = "datasets";
+		public static final String LOCATION = "location";
 
 		public static HtsGetArgs build(List<Query> qs) {
 			HtsGetArgs args = new HtsGetArgs();
@@ -39,6 +42,9 @@ public class HtsGetVariantSearch implements Search {
 					break;
 				case SEQ_REGION_NAME:
 					args.seqRegionName = q.getValues()[0];
+					break;
+				case LOCATION:
+					args.setLocation(q.getValues()[0]);
 					break;
 				case START:
 					args.start = Long.parseLong(q.getValues()[0]);
@@ -70,6 +76,21 @@ public class HtsGetVariantSearch implements Search {
 
 		List<Query> queries = new ArrayList<>();
 
+		Pattern p = Pattern.compile("([^:]+):([0-9]+)(-([0-9]+))?");
+		protected void setLocation(String location) {
+			Matcher m = p.matcher(location);
+			if(m.matches()) {
+				seqRegionName = m.group(1);
+				start = Integer.parseInt(m.group(2));
+				if(m.groupCount()==4) {
+					end = Integer.parseInt(m.group(4));
+				}
+			} else {
+				throw new IllegalArgumentException("Could not parse location string "+location);
+			}
+	
+		}
+		
 		protected HtsGetArgs() {
 		}
 	}
