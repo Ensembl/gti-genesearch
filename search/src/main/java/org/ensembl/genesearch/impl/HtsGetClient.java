@@ -66,6 +66,14 @@ public class HtsGetClient {
 
 		ResponseEntity<JsonNode> result = restTemplate.exchange(baseUrl + TICKET_URL, HttpMethod.GET, entity,
 				JsonNode.class, accession, seqRegionName, start, end);
+		
+		if(result.getStatusCode()!=HttpStatus.OK) {
+			throw new RuntimeException("Could not connect to variant server:"+result.getBody());
+		}
+		
+		if(result.getBody() == null) {
+			throw new RuntimeException("Could not connect to variant server - check your authentication token!");
+		}
 
 		List<String> urls = result.getBody().findValue("htsget").findValues("urls").stream()
 				.map(u -> u.findValue("url").asText()).collect(Collectors.toList());
