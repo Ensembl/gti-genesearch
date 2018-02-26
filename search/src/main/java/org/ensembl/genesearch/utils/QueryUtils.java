@@ -59,7 +59,9 @@ public class QueryUtils {
 
     @SuppressWarnings("unchecked")
     protected static Map<String, Object> filterFields(Map<String, Object> obj, QueryOutput output, String path) {
-        if (output == null) {
+    	    // if no output, or output is wild, don't filter.
+    	    // wild filtering only applies to top level
+        if (output == null || (StringUtils.isEmpty(path) && output.isWild())) {
             return obj;
         }
         Iterator<String> i = obj.keySet().iterator();

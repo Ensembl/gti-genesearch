@@ -38,7 +38,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class QueryOutput {
 
-    private static final char MAP_START = '{';
+    private static final String WILD = "*";
+	private static final char MAP_START = '{';
     private static final char MAP_END = '}';
     private static final char ARRAY_START = '[';
     private static final char ARRAY_END = ']';
@@ -117,7 +118,19 @@ public class QueryOutput {
             throw new RuntimeException(e);
         }
     }
+    
+    /**
+     * @return true if fields contains top level '*'
+     */
+    public boolean isWild() {
+    		return getFields().stream().anyMatch(s -> s.equals(WILD));
+    }
 
+    /**
+     * Utility method to find if one of the fields match the supplied path
+     * @param path
+     * @return true if path matched
+     */
     public boolean containsPath(String path) {
         boolean contains = false;
         if (getFields().stream().anyMatch(s -> s.startsWith(path))) {
