@@ -37,6 +37,20 @@ public class QueryUtilsTest {
         Assert.assertTrue("Colour found", o.containsKey("colour"));
         Assert.assertFalse("Ripeness found", o.containsKey("ripeness"));
     }
+    
+    @Test
+    public void testFilterFieldsWild() {
+        Map<String, Object> o = new HashMap<>();
+        o.put("fruit", "apple");
+        o.put("colour", "red");
+        o.put("ripeness", "ripe");
+        QueryOutput output = new QueryOutput("*");
+        QueryUtils.filterFields(o, output);
+        Assert.assertTrue("Fruit found", o.containsKey("fruit"));
+        Assert.assertTrue("Colour found", o.containsKey("colour"));
+        Assert.assertTrue("Ripeness found", o.containsKey("ripeness"));
+    }
+
 
     @SuppressWarnings("unchecked")
     @Test
