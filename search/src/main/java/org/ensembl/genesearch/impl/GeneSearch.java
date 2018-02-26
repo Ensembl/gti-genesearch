@@ -59,6 +59,12 @@ public class GeneSearch extends JoinMergeSearch {
                                 ESSearchBuilder.SEQ_REGION_FIELD, ESSearchBuilder.START_FIELD,
                                 ESSearchBuilder.END_FIELD, EnsemblVariantSearch.GENOME_FIELD,
                                 EnsemblVariantSearch.LOCATION_FIELD));
+            } else if (HtsGetVariantSearch.class.isAssignableFrom(variantSearch.getClass())) {
+                joinTargets.put(SearchType.VARIANTS,
+                        JoinStrategy.asRange(MergeStrategy.APPEND, 
+                                ESSearchBuilder.SEQ_REGION_FIELD, ESSearchBuilder.START_FIELD,
+                                ESSearchBuilder.END_FIELD, 
+                                HtsGetVariantSearch.HtsGetArgs.LOCATION));
             } else {
                 throw new UnsupportedOperationException(
                         "Cannot use variant search of type " + variantSearch.getClass());
