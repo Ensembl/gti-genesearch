@@ -1,6 +1,9 @@
 package org.ensembl.genesearch.impl;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,10 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import wiremock.org.apache.commons.lang3.StringUtils;
 
 public class CellLineSearch implements Search {
 
@@ -59,7 +65,8 @@ public class CellLineSearch implements Search {
 			cellLines = new ArrayList<>();
 			do {
 				try {
-					ResponseEntity<String> response = new RestTemplate()
+
+					ResponseEntity<String> response = getTemplate()
 							.getForEntity(uri + "&offset=" + offset + "&limit=" + limit, String.class);
 					if (response.getStatusCode() != HttpStatus.OK) {
 						throw new RestSearchException(uri, response.getBody(), response.getStatusCode());
@@ -85,6 +92,19 @@ public class CellLineSearch implements Search {
 			log.info(cellLines.size() + " cell lines retrieved");
 		}
 		return cellLines;
+	}
+
+	protected RestTemplate getTemplate() {
+		String proxyHost = System.getProperty("https.proxyHost");
+		if (!StringUtils.isEmpty(proxyHost)) {
+			int proxyPort = Integer.parseInt(System.getProperty("https.proxyPort", "80"));
+			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+			Proxy proxy = new Proxy(Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+			requestFactory.setProxy(proxy);
+			return new RestTemplate(requestFactory);
+		} else {
+			return new RestTemplate();
+		}
 	}
 
 	@Override
@@ -123,8 +143,8 @@ public class CellLineSearch implements Search {
 	public boolean up() {
 		return true;
 	}
-	
-	public Optional<Map<String,Object>> getCellLine(String name) {
-		return getCellLines().stream().filter(c->name.equals(c.get(CELL_LINE_NAME))).findFirst();
+
+	public Optional<Map<String, Object>> getCellLine(String name) {
+		return getCellLines().stream().filter(c -> name.equals(c.get(CELL_LINE_NAME))).findFirst();
 	}
 }
