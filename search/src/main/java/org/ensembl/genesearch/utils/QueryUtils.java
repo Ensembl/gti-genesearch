@@ -196,7 +196,7 @@ public class QueryUtils {
     }
 
     public static boolean numberMatch(Collection<String> vals, String qv) {
-        return vals.stream().map(BigDecimal::new).anyMatch(v -> numberMatch(v, qv));
+        return vals.stream().filter(v -> !StringUtils.isEmpty(v)).map(BigDecimal::new).anyMatch(v -> numberMatch(v, qv));
     }
 
     public static boolean numberMatch(BigDecimal value, String query) {
