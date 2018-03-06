@@ -1,24 +1,24 @@
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.utils.VcfUtils;
 import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,6 +42,9 @@ public class HtsGetClient {
 		this.baseUrl = baseUrl;
 		this.egaBaseUrl = egaBaseUrl;
 		restTemplate = new RestTemplate();
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setBufferRequestBody(false);
+		restTemplate.setRequestFactory(requestFactory);
 		restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 	}
 
@@ -51,27 +54,27 @@ public class HtsGetClient {
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		return entity;
 	}
-	
+
 	protected List<String> getDatasets(String session) {
 		throw new UnsupportedOperationException();
 	}
 
 	protected List<String> getUrls(String accession, String seqRegionName, long start, long end, String token) {
 
-		if(StringUtils.isEmpty(token)) {
+		if (StringUtils.isEmpty(token)) {
 			throw new IllegalArgumentException("Token for htsget must be supplied");
 		}
-		
+
 		HttpEntity<String> entity = getHeaders(token);
 
 		ResponseEntity<JsonNode> result = restTemplate.exchange(baseUrl + TICKET_URL, HttpMethod.GET, entity,
 				JsonNode.class, accession, seqRegionName, start, end);
-		
-		if(result.getStatusCode()!=HttpStatus.OK) {
-			throw new RuntimeException("Could not connect to variant server:"+result.getBody());
+
+		if (result.getStatusCode() != HttpStatus.OK) {
+			throw new RuntimeException("Could not connect to variant server:" + result.getBody());
 		}
-		
-		if(result.getBody() == null) {
+
+		if (result.getBody() == null) {
 			throw new RuntimeException("Could not connect to variant server - check your authentication token!");
 		}
 
@@ -97,24 +100,17 @@ public class HtsGetClient {
 		log.info(String.format("Retrieving variants from %s %s:%d-:%d", accession, seqRegionName, start, end));
 		log.debug("Finding URLs");
 		List<String> urls = getUrls(accession, seqRegionName, start, end, token);
-		HttpEntity<String> entity = getHeaders(token);
 		for (String url : urls) {
 			log.info("Retrieving data from " + url);
-			ResponseEntity<Resource> result = restTemplate.exchange(url, HttpMethod.GET, entity, Resource.class);
-			if (result.getStatusCode() != HttpStatus.OK) {
-				throw new RuntimeException(url + " retrieved with code " + result.getStatusCode());
-			}
-			BufferedLineReader reader = null;
-			try {
-				reader = new BufferedLineReader(result.getBody().getInputStream());
+			RequestCallback requestCallback = request -> request.getHeaders().add("Authorization", "Bearer " + token);
+			ResponseExtractor<Void> responseExtractor = response -> {
+				BufferedLineReader reader = new BufferedLineReader(response.getBody());
 				VcfFormat format = VcfFormat.readFormat(reader);
 				reader.lines().map(l -> VcfUtils.vcfLineToMap(l, format)).forEach(consumer);
-				reader.lines().forEach(System.out::println);
-			} catch (IOException e) {
-				throw new RuntimeException("Could not read from result", e);
-			} finally {
-				IOUtils.closeQuietly(reader);
-			}
+				reader.close();
+				return null;
+			};
+			restTemplate.execute(url, HttpMethod.GET, requestCallback, responseExtractor);
 
 		}
 		log.info("Completed retrieval");
