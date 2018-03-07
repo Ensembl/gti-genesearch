@@ -16,9 +16,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class VcfUtils {
 
-    private static final String GENOTYPES = "genotypes";
+	private static final String GENOTYPE_HEADER = "genotype";
+	private static final String ZYGOSITY = "heterozygosity";
+	private static final String GENOTYPES = "genotypes";
     private static final String CONSEQUENCES = "CSQ";
-
+    
     public static enum ColumnFormat {
         INTEGER, STRING, FLOAT, INTEGER_LIST, STRING_LIST, FLOAT_LIST, FLAG;
     }
@@ -166,7 +168,8 @@ public class VcfUtils {
     private static final Pattern INFO_PATTERN = Pattern.compile("([^=]+)=(.*)");
     private static final Pattern COLS_PATTERN = Pattern.compile("^#CHROM.+");
     private static final Pattern META_PATTERN = Pattern.compile("^##[^#]+");
-
+    private static final Pattern GENOTYPE_PATTERN = Pattern.compile("([0-9]+)[|/]([0-9]+)");
+    
     public static Predicate<String> isInfoHeaderLine() {
         return line -> line.startsWith("##INFO");
     }
@@ -205,8 +208,19 @@ public class VcfUtils {
                 for (int m = 0; m < gFormat.size(); m++) {
                     genotype.put(gFormat.get(m), genotypeVals[m]);
                 }
+                Object gt = genotype.get(GENOTYPE_HEADER);
+                if(gt!=null) {
+                		Matcher m = GENOTYPE_PATTERN.matcher(String.valueOf(gt));
+                		if(m.matches()) {
+                			if(m.group(1).equals(m.group(2))) {
+                				genotype.put(ZYGOSITY,false);                				
+                			} else {
+                				genotype.put(ZYGOSITY,true);
+                			}
+                		}
+                }
                 genotypeObjs.add(genotype);
-            }
+            }            
             map.put(GENOTYPES, genotypeObjs);
         }
         return map;
