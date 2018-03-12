@@ -1,15 +1,9 @@
-- name: "Check out git"
-  local_action:
-    module: git
-    repo: "{{ git_repo }}"  
-    version: "{{ webapp_version }}"  
-    dest: ./checkout
 - name: "Build webapp jar"
   local_action:
-    module: command gradle :web:bootRepackage
+    module: command ./gradlew :web:bootRepackage
     args:
-      chdir: ./checkout
-      creates: "./checkout/web/build/libs/{{ jar_name }}"
+      chdir: ../
+      creates: "../web/build/libs/{{ jar_name }}"
 - name: Create web directory
   file:
     path: "{{ web_dir }}"
@@ -17,12 +11,16 @@
     recurse: yes
 - name: "Copy webapp jar"
   copy:
-    src: "./checkout/web/build/libs/{{ jar_name }}"
+    src: "../web/build/libs/{{ jar_name }}"
     dest: "{{ web_dir }}/{{ jar_name }}"
 - name: "Copy webapp config"
   template:
     src: "application.properties.j2"
     dest: "{{ web_dir }}/application.properties"
+- name: "Copy keystore"
+  copy:
+    src: "{{ keystore_name }}"
+    dest: "{{ web_dir }}/{{ keystore_name }}"
 - name: "Copy webapp script"
   template:
     src: "webapp.sh.j2"

@@ -1,6 +1,6 @@
 ---
 - hosts: es-data
-  remote_user : ensprod  
+  remote_user : "{{ remote_user }}"
   vars_files:
     - vars.yml
     - es-data-vars.yml
@@ -9,8 +9,10 @@
     - java
     - es_core
     - es_configure
+  environment:
+    http_proxy: "{{ cache_proxy }}"
 - hosts: es-head
-  remote_user : ensprod  
+  remote_user : "{{ remote_user }}"
   vars_files:
     - vars.yml
     - es-head-vars.yml
@@ -19,11 +21,15 @@
     - java
     - es_core
     - es_configure
+  environment:
+    http_proxy: "{{ cache_proxy }}"
 - hosts: web-head
-  remote_user : ensprod
+  remote_user : "{{ remote_user }}"
   vars_files:
     - vars.yml
   roles:
     - common
     - java
     - webapp
+  environment:
+    http_proxy: "{{ cache_proxy }}"

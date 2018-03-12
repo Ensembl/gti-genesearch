@@ -22,7 +22,7 @@
     dest: "{{ es_dir }}/elastic.sh"
     mode: 0700
 - name: Install head plugin
-  shell: "./bin/plugin install mobz/elasticsearch-head"
+  shell: "./bin/plugin install mobz/elasticsearch-head -DproxyPort={{ proxy_port }} -DproxyHost={{ proxy_host }}"
   args:
     chdir: "{{ es_dir }}"
     creates: "{{ es_dir }}/plugins/head/LICENCE"
