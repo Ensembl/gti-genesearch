@@ -78,7 +78,11 @@ public class VcfUtils {
                 for (String val : csqStr.split("\\|")) {
                     String col = CSQ_FIELDS[n++];
                     if (!StringUtils.isEmpty(val)) {
-                        csq.put(col, val);
+                    		if(CONSEQUENCE.equals(col)) {
+                    			csq.put(col, Arrays.asList(val.split("&")));
+                    		} else {
+                    			csq.put(col, val);
+                    		}
                     }
                 }
                 csqs.add(csq);
@@ -156,6 +160,7 @@ public class VcfUtils {
 
     public final static String[] FIXED_FIELDS = { "seq_region_name", "start", "id", "ref_allele", "alt_allele",
             "quality", "filter" };
+    public final static String CONSEQUENCE = "Consequence";
     public final static String[] CSQ_FIELDS = 
     		"Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen".split("\\|");
 

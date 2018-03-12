@@ -10,12 +10,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.lucene.search.CachingWrapperQuery;
 import org.ensembl.genesearch.utils.VcfUtils.ColumnFormat;
 import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import htsjdk.samtools.util.BufferedLineReader;
 
@@ -128,7 +126,7 @@ public class VcfUtilsTest {
 		VcfFormat format = VcfFormat.readFormat(vcfR);
 		List<Map<String, Object>> variants = vcfR.lines().map(l -> VcfUtils.vcfLineToMap(l, format))
 				.collect(Collectors.toList());
-		assertEquals("Variants found", 1, variants.size());
+		assertEquals("Variants found", 2, variants.size());
 		Optional<Map<String, Object>> oSnp = variants.stream().filter(v -> "rs75377686".equals(v.get("id")))
 				.findFirst();
 		assertTrue(List.class.isAssignableFrom(oSnp.get().get("consequences").getClass()));
@@ -140,14 +138,35 @@ public class VcfUtilsTest {
 		VcfFormat format = VcfFormat.readFormat(vcfR);
 		List<Map<String, Object>> variants = vcfR.lines().map(l -> VcfUtils.vcfLineToMap(l, format))
 				.collect(Collectors.toList());
-		assertEquals("Variants found", 5, variants.size());
-		Optional<Map<String, Object>> oSnp = variants.stream().filter(v -> "rs6040355".equals(v.get("id"))).findFirst();
-		assertTrue(List.class.isAssignableFrom(oSnp.get().get("consequences").getClass()));
-		try {
-			System.out.println(new ObjectMapper().writeValueAsString(variants));
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		assertEquals("Variants found", 6, variants.size());
+		{
+			Optional<Map<String, Object>> oSnp = variants.stream().filter(v -> "rs6040355".equals(v.get("id")))
+					.findFirst();
+			assertTrue("SNP found", oSnp.isPresent());
+			Object csqs = oSnp.get().get("consequences");
+			assertTrue(List.class.isAssignableFrom(csqs.getClass()));
+			Optional<Map<String, Object>> csq =  ((List)csqs).stream().findFirst();
+			assertTrue("CSQ found", csq.isPresent());
+			Object o = csq.get().get("Consequence");
+			assertTrue(List.class.isAssignableFrom(o.getClass()));
+			List<String> csqTypes = (List)o;
+			assertEquals(1, csqTypes.size());
+			assertTrue(csqTypes.contains("missense_variant"));
+		}
+		{
+			Optional<Map<String, Object>> oSnp = variants.stream().filter(v -> "microsat2".equals(v.get("id")))
+					.findFirst();
+			assertTrue("SNP found", oSnp.isPresent());
+			Object csqs = oSnp.get().get("consequences");
+			assertTrue(List.class.isAssignableFrom(csqs.getClass()));
+			Optional<Map<String, Object>> csq =  ((List)csqs).stream().findFirst();
+			assertTrue("CSQ found", csq.isPresent());
+			Object o = csq.get().get("Consequence");
+			assertTrue(List.class.isAssignableFrom(o.getClass()));
+			List<String> csqTypes = (List)o;
+			assertEquals(2, csqTypes.size());
+			assertTrue(csqTypes.contains("missense_variant"));
+			assertTrue(csqTypes.contains("banana"));
 		}
 	}
 }
