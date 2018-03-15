@@ -125,12 +125,13 @@ public class HtsGetVariantSearch implements Search {
 	}
 
 	protected Optional<Map<String, Object>> queryAndFilter(HtsGetArgs args, Map<String, Object> v) {
-		Optional<Map<String,Object>> v2 = Optional.empty();
+		Optional<Map<String,Object>> v2 = Optional.of(v);
 		for(Query q: args.queries) {
 			v2 = QueryUtils.queryAndFilter(v, q);
 			if(v2.isPresent()) {
 				v = v2.get();
 			} else {
+				v2 = Optional.empty();
 				break;
 			}
 		}
