@@ -1,5 +1,8 @@
 # location of ES & Java
 base_dir : /data/search
+proxy_host : TODO
+proxy_port : TODO
+http_proxy : "http://{{ proxy_host }}:{{ proxy_port }}"
 
 ## ES
 es_logs : "{{ base_dir }}/es_logs"
@@ -16,14 +19,25 @@ es_heap : 16g
 ## WEBAPP
 web_dir : "{{ base_dir }}/web"
 web_pid_file : ./web.pid
+webapp_port : 8080
 # git tag to use (must match gradle version)
 webapp_version: 0.1
 # RAM for head node
-java_opts : "-Xmx2g"
+java_opts : "-Xmx2g -Dhttps.proxyHost={{ proxy_host }} -Dhttps.proxyPort={{ proxy_port }}"
 # solr credentials
 solr_expression_url : TODO
 solr_experiments_url : TODO
 # ES node to contact
-es_head : gti-es-0
-
+es_head : 127.0.0.1
+# ebisc details
+ebisc_user : TODO
+ebisc_token : TODO
+ebisc_accession : TODO
+ega_url : TODO
+# ssl
+keystore_name : keystore.p12
+key_alias : TODO
+key_password : TODO
+# active profile
+profile : default
 
