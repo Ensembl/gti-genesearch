@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -108,8 +109,9 @@ public class HtsGetVariantSearch implements Search {
 		// extract URI arguments
 		HtsGetArgs args = queryToArgs(queries);
 		Consumer<Map<String, Object>> fetchConsumer = v -> {
-			if (QueryUtils.filterResultsByQueries.test(v, args.queries)) {
-				consumer.accept(QueryUtils.filterFields(decorateVariant(v), fieldNames));
+			Optional<Map<String, Object>> v2 = queryAndFilter(args, v);
+			if (v2.isPresent()) {
+				consumer.accept(QueryUtils.filterFields(decorateVariant(v2.get()), fieldNames));
 			}
 		};
 		if (args.files != null && args.files.length > 0) {
@@ -120,6 +122,19 @@ public class HtsGetVariantSearch implements Search {
 		} else {
 			client.getVariants(args.seqRegionName, args.start, args.end, args.token, args.session, consumer);
 		}
+	}
+
+	protected Optional<Map<String, Object>> queryAndFilter(HtsGetArgs args, Map<String, Object> v) {
+		Optional<Map<String,Object>> v2 = Optional.empty();
+		for(Query q: args.queries) {
+			v2 = QueryUtils.queryAndFilter(v, q);
+			if(v2.isPresent()) {
+				v = v2.get();
+			} else {
+				break;
+			}
+		}
+		return v2;
 	}
 
 	protected HtsGetArgs queryToArgs(List<Query> queries) {
@@ -143,7 +158,8 @@ public class HtsGetVariantSearch implements Search {
 		// extract URI arguments
 		HtsGetArgs args = queryToArgs(queries);
 		Consumer<Map<String, Object>> consumer = v -> {
-			if (QueryUtils.filterResultsByQueries.test(v, args.queries)) {
+			Optional<Map<String, Object>> v2 = queryAndFilter(args, v);
+			if(v2.isPresent()) {
 				int i = n.incrementAndGet();
 				if (i > offset && i < offset + limit) {
 					results.add(QueryUtils.filterFields(decorateVariant(v), output));

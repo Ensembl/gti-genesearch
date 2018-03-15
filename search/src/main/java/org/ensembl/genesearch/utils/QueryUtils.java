@@ -30,13 +30,16 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
+import org.ensembl.genesearch.info.FieldType;
 
 /**
  * Utilities for performing server side query operations
@@ -229,6 +232,50 @@ public class QueryUtils {
                 throw new UnsupportedOperationException("Cannot parse numeric query " + value);
             }
         }
+    }
+    
+    /**
+     * Hybrid method that both queries a nested object for matches and filters out sub-documents that do not match.
+     * This is used by htsget based searches where we want to just return genotypes that match.
+     * @param obj
+     * @param query
+     * @return filtered object, if empty no match was found
+     */
+    public static Optional<Map<String,Object>> queryAndFilter(Map<String,Object> obj, Query query) {
+    		Object field = obj.get(query.getFieldName());
+    		// basic check, do we have the field in this object
+    		if(field == null) {
+    			return Optional.empty();
+    		}
+    		if(query.getType() == FieldType.NESTED) {
+    			if(List.class.isAssignableFrom(field.getClass())) {
+    				List<Map<String,Object>> filteredObjs = (List<Map<String,Object>>) field;
+    				for(Query q: query.getSubQueries()) {
+    					filteredObjs = filteredObjs.stream().map(o -> queryAndFilter(o, q)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+    				}
+    				if(filteredObjs.isEmpty()) {
+    					return Optional.empty();
+    				} else {
+    					obj.put(query.getFieldName(), filteredObjs);
+    					return Optional.of(obj);
+    				}
+    			} else {
+    				for(Query q: query.getSubQueries()) {
+    					if(!queryAndFilter((Map<String, Object>) field, q).isPresent()) {
+    						// no match, so return empty
+    						return Optional.empty();
+    					}
+    				}
+    				// all matches passed, return
+    				return Optional.of(obj);
+    			}    				
+    		} else if(filterResultsByQuery.test(obj, query)) {
+    			// standard field, use normal test
+    			return Optional.of(obj);
+    		} else {
+    			// no matches
+    			return Optional.empty();
+    		}
     }
 
 }
