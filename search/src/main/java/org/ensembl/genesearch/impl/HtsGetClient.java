@@ -29,9 +29,7 @@ import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -60,22 +58,23 @@ public class HtsGetClient {
 		restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
 			private final ObjectMapper mapper = new ObjectMapper();
-			private final  TypeReference<Map<String, Object>> typeRef 
-			  = new TypeReference<Map<String, Object>>() {};
-		private Map<String,Object> parseBody(ClientHttpResponse response) throws IOException {
-			return mapper.readValue(IOUtils.toString(response.getBody(), Charset.defaultCharset()), typeRef);
-		}
+			private final TypeReference<Map<String, Object>> typeRef = new TypeReference<Map<String, Object>>() {
+			};
+
+			private Map<String, Object> parseBody(ClientHttpResponse response) throws IOException {
+				return mapper.readValue(IOUtils.toString(response.getBody(), Charset.defaultCharset()), typeRef);
+			}
+
 			@Override
 			public void handleError(ClientHttpResponse response) throws IOException {
-				log.error(response.toString());
+				Map<String, Object> body = parseBody(response);
+				log.error(response.getStatusCode() + "=>" + body.toString());
 				HttpStatus statusCode = response.getStatusCode();
 				switch (statusCode.series()) {
 				case CLIENT_ERROR:
-					throw new HttpClientErrorException(statusCode,							
-							String.valueOf(parseBody(response).get("message")));
+					throw new HttpClientErrorException(statusCode, String.valueOf(body.get("message")));
 				case SERVER_ERROR:
-					throw new HttpServerErrorException(statusCode, String.valueOf(parseBody(response).get("message"))
-							);
+					throw new HttpServerErrorException(statusCode, String.valueOf(body.get("message")));
 
 				default:
 					throw new RestClientException("Unknown status code [" + statusCode + "]");
