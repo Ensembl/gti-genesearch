@@ -1,10 +1,13 @@
 package org.ensembl.genesearch.impl;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.utils.VcfUtils;
 import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
@@ -15,13 +18,22 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import htsjdk.samtools.util.BufferedLineReader;
 
@@ -46,6 +58,30 @@ public class HtsGetClient {
 		requestFactory.setBufferRequestBody(false);
 		restTemplate.setRequestFactory(requestFactory);
 		restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+			private final ObjectMapper mapper = new ObjectMapper();
+			private final  TypeReference<Map<String, Object>> typeRef 
+			  = new TypeReference<Map<String, Object>>() {};
+		private Map<String,Object> parseBody(ClientHttpResponse response) throws IOException {
+			return mapper.readValue(IOUtils.toString(response.getBody(), Charset.defaultCharset()), typeRef);
+		}
+			@Override
+			public void handleError(ClientHttpResponse response) throws IOException {
+				log.error(response.toString());
+				HttpStatus statusCode = response.getStatusCode();
+				switch (statusCode.series()) {
+				case CLIENT_ERROR:
+					throw new HttpClientErrorException(statusCode,							
+							String.valueOf(parseBody(response).get("message")));
+				case SERVER_ERROR:
+					throw new HttpServerErrorException(statusCode, String.valueOf(parseBody(response).get("message"))
+							);
+
+				default:
+					throw new RestClientException("Unknown status code [" + statusCode + "]");
+				}
+			}
+		});
 	}
 
 	private HttpEntity<String> getHeaders(String token) {
