@@ -1,10 +1,6 @@
-# Implementation notes
+# REST interface
 
-The web interface is implemented as a REST interface and a Javascript client. The REST interface is designed to support both the web interface and programmatic access.
-
-## REST interface
-
-The REST interface is implemented as Jersey REST services running within a Spring Boot application. 
+The REST interface is designed to support both the web interface and programmatic access and is implemented as Jersey REST services running within a Spring Boot application. 
 
 The main `Application` uses a set of services (configured in `JerseyConfig`) which implement the GET and POST methods of the API. These can be grouped by base class:
 * `QueryService` - query for objects by query, supporting faceting and sorting. Intended for use by a Javascript web interface. Implementations are:
@@ -34,10 +30,6 @@ The main query services are shown below:
 ![Service Diagram](service_diagram.png)
 
 The abstract service implementations are responsible for processing data into JSON, XML and CSV using generic approaches. The concrete implementations mainly provide an appropriate `Search` instance for accessing genes or genomes as appropriate (provided via `SearchProvider`) - however, the ObjectService implementations need to construct the XML documents specifically for each type.
-
-## Web interface
-
-The web interface is implemented using jQuery and styled with the EBI Bootstrap template. It is currently a prototype and will be significantly extended.
 
 # Copyright and Licensing
 Copyright 1999-2016 EMBL-European Bioinformatics Institute
