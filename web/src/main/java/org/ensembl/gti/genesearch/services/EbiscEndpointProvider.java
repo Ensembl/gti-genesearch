@@ -19,15 +19,15 @@ import org.springframework.stereotype.Component;
 @Profile("ebisc")
 public class EbiscEndpointProvider extends EndpointSearchProvider {
 
-    @Value("${ebisc.rest.url}")
+    @Value("${ebisc.rest.url:}")
     private String ebiscUrl;
-    @Value("${ebisc.rest.username}")
+    @Value("${ebisc.rest.username:}")
     private String ebiscUser;
-    @Value("${ebisc.rest.api_token}")
+    @Value("${ebisc.rest.api_token:}")
     private String ebiscToken;
-    @Value("${ebisc.ega.url}")
+    @Value("${ebisc.ega.url:}")
     private String egaUrl;
-    @Value("${ebisc.ega.accession}")
+    @Value("${ebisc.ega.accession:}")
     private String egaAccession;
 
     public EbiscEndpointProvider() {
@@ -41,7 +41,7 @@ public class EbiscEndpointProvider extends EndpointSearchProvider {
         DataTypeInfo cellLineType = DataTypeInfo.fromResource("/celllines_datatype_info.json");
         cellLineSearch = new CellLineSearch(cellLineType, ebiscUrl, ebiscUser, ebiscToken);
         reg.registerSearch(SearchType.CELL_LINES, cellLineSearch);
-        // TODO HTSget API
+        // HTSget API
         DataTypeInfo variantInfo = DataTypeInfo.fromResource("/ebisc_datatype_info.json");
         variantSearch = new HtsGetSingleFileVariantSearch(variantInfo, egaUrl, egaAccession);
         reg.registerSearch(SearchType.VARIANTS, variantSearch);

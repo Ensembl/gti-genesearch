@@ -5,6 +5,8 @@ import org.ensembl.genesearch.impl.EnsemblVariantSearch;
 import org.ensembl.genesearch.impl.SearchRegistry;
 import org.ensembl.genesearch.impl.SearchType;
 import org.ensembl.genesearch.info.DataTypeInfo;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation using Ensembl variation stored in Elasticsearch
@@ -12,6 +14,8 @@ import org.ensembl.genesearch.info.DataTypeInfo;
  * @author dstaines
  *
  */
+@Component
+@Profile("ensembl_rest")
 public class EnsemblRESTVariationEndpointProvider extends EndpointSearchProvider {
 
     public EnsemblRESTVariationEndpointProvider() {

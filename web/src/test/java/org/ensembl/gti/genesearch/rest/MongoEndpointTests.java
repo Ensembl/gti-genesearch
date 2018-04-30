@@ -59,8 +59,8 @@ import com.mongodb.client.MongoCollection;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
 @WebIntegrationTest({"spring.profiles.active=eva_mongo"})
-@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 @ActiveProfiles("eva_mongo")
+@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 public class MongoEndpointTests {
 
     private static final String API_BASE = "http://localhost:8080/api";

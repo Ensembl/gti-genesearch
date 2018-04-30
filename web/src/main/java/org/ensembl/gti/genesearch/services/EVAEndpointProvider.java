@@ -8,6 +8,8 @@ import org.ensembl.genesearch.impl.SearchRegistry;
 import org.ensembl.genesearch.impl.SearchType;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation using EVA variation stored in REST
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Value;
  * @author dstaines
  *
  */
+@Component
+@Profile("eva_rest")
 public class EVAEndpointProvider extends EndpointSearchProvider {
 
     @Value("${eva.rest.url:}")
