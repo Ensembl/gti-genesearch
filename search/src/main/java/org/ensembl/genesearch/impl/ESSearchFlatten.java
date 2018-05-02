@@ -39,203 +39,261 @@ import org.ensembl.genesearch.output.ResultsRemodeller;
 
 /**
  * Extension of {@link ESSearch} which flattens results to a desired level using
- * {@link ResultsRemodeller}
+ * {@link ResultsRemodeller}. This is used for scenarios such as wanting to turn
+ * a list of genes (which have transcripts as children) into a list of
+ * transcripts. Note that a side-effect of flattening is that the result count
+ * will still reflect the parent, so 2 genes with 2 transcripts each will still
+ * give a count of 2 even when flattened to 4 transcripts.
  * 
  * @author dstaines
  *
  */
 public class ESSearchFlatten extends ESSearch {
 
-	/**
-	 * target to flatten to e.g. transcripts
-	 */
-	final String target;
+    /**
+     * target to flatten to e.g. transcripts
+     */
+    final String target;
 
-	/**
-	 * Name to use for "top-level" elements e.g. "genes"
-	 */
-	final String topLevel;
+    /**
+     * Name to use for "top-level" elements e.g. "genes"
+     */
+    final String topLevel;
 
-	/**
-	 * @param client
-	 * @param index
-	 * @param type
-	 * @param target
-	 *            e.g. transcripts
-	 */
-	public ESSearchFlatten(Client client, String index, String type, String target, String topLevel,
-			DataTypeInfo info) {
-		super(client, index, type, info);
-		this.target = target;
-		this.topLevel = topLevel;
-	}
+    /**
+     * @param client
+     *            Elastic client
+     * @param index
+     *            name of Elastic index
+     * @param type
+     *            name of Elastic object type
+     * @param target
+     *            sub-document key to flatten to  e.g. transcripts
+     */
+    public ESSearchFlatten(Client client, String index, String type, String target, String topLevel,
+            DataTypeInfo info) {
+        super(client, index, type, info);
+        this.target = target;
+        this.topLevel = topLevel;
+    }
 
-	/**
-	 * @param client
-	 * @param index
-	 * @param type
-	 * @param target
-	 *            e.g. transcripts
-	 * @param scrollSize
-	 * @param scrollTimeout
-	 */
-	public ESSearchFlatten(Client client, String index, String type, String target, String topLevel, DataTypeInfo info,
-			int scrollSize, int scrollTimeout) {
-		super(client, index, type, info, scrollSize, scrollTimeout);
-		this.target = target;
-		this.topLevel = topLevel;
-	}
+    /**
+     * @param client
+     *            Elastic client
+     * @param index
+     *            name of Elastic index
+     * @param type
+     *            name of Elastic object type
+     * @param target
+     *            sub-document key to flatten to  e.g. transcripts
+     * @param scrollSize
+     *            size to use during scan/scroll
+     * @param scrollTimeout
+     *            timeout in seconds for a scan/scroll
+     */
+    public ESSearchFlatten(Client client, String index, String type, String target, String topLevel, DataTypeInfo info,
+            int scrollSize, int scrollTimeout) {
+        super(client, index, type, info, scrollSize, scrollTimeout);
+        this.target = target;
+        this.topLevel = topLevel;
+    }
 
-	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput output) {
-		super.fetch(consumer, transformQueries(queries), transformOutput(output));
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.ensembl.genesearch.impl.ESSearch#fetch(java.util.function.Consumer,
+     * java.util.List, org.ensembl.genesearch.QueryOutput)
+     */
+    @Override
+    public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput output) {
+        super.fetch(consumer, transformQueries(queries), transformOutput(output));
+    }
 
-	@Override
-	public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
-			List<String> sorts) {
-		return super.query(transformQueries(queries), transformOutput(output), transformFields(facets), offset, limit,
-				transformFields(sorts));
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.impl.ESSearch#query(java.util.List,
+     * org.ensembl.genesearch.QueryOutput, java.util.List, int, int,
+     * java.util.List)
+     */
+    @Override
+    public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
+            List<String> sorts) {
+        return super.query(transformQueries(queries), transformOutput(output), transformFields(facets), offset, limit,
+                transformFields(sorts));
+    }
 
-	@Override
-	protected Map<String, Map<String, Long>> processAggregations(SearchResponse response) {
-		return super.processAggregations(response).entrySet().stream()
-				.collect(Collectors.toMap(e -> reverseTransformField(e.getKey()), Map.Entry::getValue));
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.impl.ESSearch#processAggregations(org.
+     * elasticsearch.action.search.SearchResponse)
+     */
+    @Override
+    protected Map<String, Map<String, Long>> processAggregations(SearchResponse response) {
+        return super.processAggregations(response).entrySet().stream()
+                .collect(Collectors.toMap(e -> reverseTransformField(e.getKey()), Map.Entry::getValue));
+    }
 
-	/**
-	 * Transform the queries into the correct form
-	 * 
-	 * @param queries
-	 * @return transformed queries
-	 */
-	protected List<Query> transformQueries(List<Query> queries) {
-		List<Query> qs = new ArrayList<>();
-		List<Query> targetQs = new ArrayList<>();
-		for (Query q : queries) {
-			if (q.getType() == FieldType.NESTED && q.getFieldName().equals(topLevel)) {
-				// promote top level
-				qs.addAll(Arrays.asList(q.getSubQueries()));
-			} else {
-				// collapse others into same form
-				targetQs.add(q);
-			}
-		}
-		qs.add(new Query(FieldType.NESTED, target, false, targetQs.toArray(new Query[] {})));
-		return qs;
-	}
+    /**
+     * Transform the queries into the correct form
+     * 
+     * @param queries
+     * @return transformed queries
+     */
+    protected List<Query> transformQueries(List<Query> queries) {
+        List<Query> qs = new ArrayList<>();
+        List<Query> targetQs = new ArrayList<>();
+        for (Query q : queries) {
+            if (q.getType() == FieldType.NESTED && q.getFieldName().equals(topLevel)) {
+                // promote top level
+                qs.addAll(Arrays.asList(q.getSubQueries()));
+            } else {
+                // collapse others into same form
+                targetQs.add(q);
+            }
+        }
+        qs.add(new Query(FieldType.NESTED, target, false, targetQs.toArray(new Query[] {})));
+        return qs;
+    }
 
-	/**
-	 * Transform the required output to the correct level
-	 * 
-	 * @param output
-	 * @return transformed output
-	 */
-	protected QueryOutput transformOutput(QueryOutput output) {
+    /**
+     * Transform the required output to the correct level
+     * 
+     * @param output
+     * @return transformed output
+     */
+    protected QueryOutput transformOutput(QueryOutput output) {
 
-		QueryOutput o = new QueryOutput();
-		// add required prefix to toplevel e.g. id -> transcripts.id
-		for(String f: output.getFields()) {
-			// turn genes.genome into genes:[genome]
-			if(f.startsWith(topLevel+".")) {
-				o.getFields().add(f.replaceFirst(topLevel+".", StringUtils.EMPTY));
-			} else {
-				o.getFields().add(target + '.' + f);
-			}
-		}
-		// append ID if not present
-		String idStr = target + ".id";
-		if (output.getFields().stream().anyMatch(f -> f.equals(idStr))) {
-			output.getFields().add(idStr);
-		}
-		// promote top level element e.g. genes:[id] -> id
-		for (Entry<String, QueryOutput> e : output.getSubFields().entrySet()) {
-			if (e.getKey().equals(topLevel)) {
-				o.getFields().addAll(e.getValue().getFields());
-				o.getSubFields().putAll(e.getValue().getSubFields());
-			} else {
-				o.getSubFields().put(e.getKey(), e.getValue());
-			}
-		}
-		return o;
-	}
+        QueryOutput o = new QueryOutput();
+        // add required prefix to toplevel e.g. id -> transcripts.id
+        for (String f : output.getFields()) {
+            // turn genes.genome into genes:[genome]
+            if (f.startsWith(topLevel + ".")) {
+                o.getFields().add(f.replaceFirst(topLevel + ".", StringUtils.EMPTY));
+            } else {
+                o.getFields().add(target + '.' + f);
+            }
+        }
+        // append ID if not present
+        String idStr = target + ".id";
+        if (output.getFields().stream().anyMatch(f -> f.equals(idStr))) {
+            output.getFields().add(idStr);
+        }
+        // promote top level element e.g. genes:[id] -> id
+        for (Entry<String, QueryOutput> e : output.getSubFields().entrySet()) {
+            if (e.getKey().equals(topLevel)) {
+                o.getFields().addAll(e.getValue().getFields());
+                o.getSubFields().putAll(e.getValue().getSubFields());
+            } else {
+                o.getSubFields().put(e.getKey(), e.getValue());
+            }
+        }
+        return o;
+    }
 
-	/**
-	 * Transform the required fields to the correct level (use for sorts and
-	 * facets)
-	 * 
-	 * @param fields
-	 * @return transformed fields
-	 */
-	protected List<String> transformFields(List<String> fields) {
-		return fields.stream().map(this::transformField).collect(Collectors.toList());
-	}
+    /**
+     * Transform the required fields to the correct level (use for sorts and
+     * facets)
+     * 
+     * @param fields
+     * @return transformed fields
+     */
+    protected List<String> transformFields(List<String> fields) {
+        return fields.stream().map(this::transformField).collect(Collectors.toList());
+    }
 
-	protected String reverseTransformField(String field) {
-		if (field.startsWith(target + '.')) {
-			return field.substring(field.indexOf('.') + 1);
-		} else {
-			return topLevel + '.' + field;
-		}
-	}
+    /**
+     * @param field
+     * @return
+     */
+    protected String reverseTransformField(String field) {
+        if (field.startsWith(target + '.')) {
+            return field.substring(field.indexOf('.') + 1);
+        } else {
+            return topLevel + '.' + field;
+        }
+    }
 
-	protected String transformField(String field) {
-		char prefix = field.charAt(0);
-		if (prefix == '+' || prefix == '-') {
-			field = field.substring(1);
-		}
-		if (field.startsWith(topLevel + '.')) {
-			field = field.substring(field.indexOf('.') + 1);
-		} else {
-			field = target + '.' + field;
-		}
-		if (prefix == '+' || prefix == '-') {
-			field = prefix + field;
-		}
-		return field;
-	}
+    /**
+     * @param field
+     * @return
+     */
+    protected String transformField(String field) {
+        char prefix = field.charAt(0);
+        if (prefix == '+' || prefix == '-') {
+            field = field.substring(1);
+        }
+        if (field.startsWith(topLevel + '.')) {
+            field = field.substring(field.indexOf('.') + 1);
+        } else {
+            field = target + '.' + field;
+        }
+        if (prefix == '+' || prefix == '-') {
+            field = prefix + field;
+        }
+        return field;
+    }
 
-	@Override
-	protected void consumeHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
-		SearchHit[] hits = response.getHits().getHits();
-		StopWatch watch = new StopWatch();
-		log.debug("Processing " + hits.length + " hits");
-		watch.start();
-		for (SearchHit hit : hits) {
-			for (Map<String, Object> o : ResultsRemodeller.flatten(hitToMap(hit), target, topLevel)) {
-				consumer.accept(o);
-			}
-		}
-		watch.stop();
-		log.debug("Completed processing " + hits.length + " hits in " + watch.getTime() + " ms");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.impl.ESSearch#consumeHits(java.util.function.
+     * Consumer, org.elasticsearch.action.search.SearchResponse)
+     */
+    @Override
+    protected void consumeHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
+        SearchHit[] hits = response.getHits().getHits();
+        StopWatch watch = new StopWatch();
+        log.debug("Processing " + hits.length + " hits");
+        watch.start();
+        for (SearchHit hit : hits) {
+            for (Map<String, Object> o : ResultsRemodeller.flatten(hitToMap(hit), target, topLevel)) {
+                consumer.accept(o);
+            }
+        }
+        watch.stop();
+        log.debug("Completed processing " + hits.length + " hits in " + watch.getTime() + " ms");
+    }
 
-	@Override
-	protected List<Map<String, Object>> processResults(SearchResponse response) {
-		return Arrays.stream(response.getHits().getHits())
-				.map(hit -> ResultsRemodeller.flatten(hitToMap(hit), target, topLevel)).flatMap(l -> l.stream())
-				.collect(Collectors.toList());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.ensembl.genesearch.impl.ESSearch#processResults(org.elasticsearch.
+     * action.search.SearchResponse)
+     */
+    @Override
+    protected List<Map<String, Object>> processResults(SearchResponse response) {
+        return Arrays.stream(response.getHits().getHits())
+                .map(hit -> ResultsRemodeller.flatten(hitToMap(hit), target, topLevel)).flatMap(l -> l.stream())
+                .collect(Collectors.toList());
+    }
 
-	@Override
-	public List<FieldInfo> getFieldInfo(QueryOutput output) {
-		List<FieldInfo> fields = new ArrayList<>();
-		for (String field : output.getFields()) {
-			if(field.startsWith(target+".")) {
-				field = reverseTransformField(field);
-			} else {
-				field = topLevel+"."+field;
-			}
-			for (FieldInfo f : getDataType().getInfoForFieldName(field)) {
-				if (!fields.contains(f)) {
-					fields.add(f);
-				}
-			}
-		}
-		return fields;
-	}
-	
-	
-	
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.ensembl.genesearch.impl.ESSearch#getFieldInfo(org.ensembl.genesearch.
+     * QueryOutput)
+     */
+    @Override
+    public List<FieldInfo> getFieldInfo(QueryOutput output) {
+        List<FieldInfo> fields = new ArrayList<>();
+        for (String field : output.getFields()) {
+            if (field.startsWith(target + ".")) {
+                field = reverseTransformField(field);
+            } else {
+                field = topLevel + "." + field;
+            }
+            for (FieldInfo f : getDataType().getInfoForFieldName(field)) {
+                if (!fields.contains(f)) {
+                    fields.add(f);
+                }
+            }
+        }
+        return fields;
+    }
+
 }

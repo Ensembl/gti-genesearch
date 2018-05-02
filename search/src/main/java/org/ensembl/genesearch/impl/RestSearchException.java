@@ -2,6 +2,13 @@ package org.ensembl.genesearch.impl;
 
 import org.springframework.http.HttpStatus;
 
+/**
+ * Unchecked wrapper exception to wrap problems with {@link RestBasedSearch}.
+ * Also provides URI and status code in structured form.
+ * 
+ * @author dstaines
+ *
+ */
 public class RestSearchException extends RuntimeException {
 
     private final String uri;

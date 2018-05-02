@@ -37,9 +37,12 @@ import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
+import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.info.FieldType;
 
 /**
- * Utilities for performing server side query operations
+ * Utilities for performing server side query operations on {@link Query}
+ * objects. Generally used for post-retrieval filtering etc.
  * 
  * @author dstaines
  *
@@ -48,7 +51,9 @@ public class QueryUtils {
 
     /**
      * Utility to strip out all fields from a nested map that are not present in
-     * the supplied output object
+     * the supplied output object. Typically used to run post-retrival filtering
+     * in {@link Search} implementations where the backing datastore does not
+     * support field selection
      * 
      * @param obj
      * @param output
@@ -70,13 +75,13 @@ public class QueryUtils {
                 keyPath = path + '.' + key;
             }
             Object so = obj.get(key);
-            if (so!=null && Map.class.isAssignableFrom(so.getClass()) && output.containsPathChildren(keyPath)) {
+            if (so != null && Map.class.isAssignableFrom(so.getClass()) && output.containsPathChildren(keyPath)) {
                 Map<String, Object> mo = (Map<String, Object>) so;
                 filterFields(mo, output, keyPath);
                 if (mo.isEmpty()) {
                     i.remove();
                 }
-            } else if (so!=null && List.class.isAssignableFrom(so.getClass())) {
+            } else if (so != null && List.class.isAssignableFrom(so.getClass())) {
 
                 List<?> lo = (List<?>) so;
                 if (lo.isEmpty()) {
@@ -94,8 +99,8 @@ public class QueryUtils {
                         if (lo.isEmpty()) {
                             i.remove();
                         }
-                    } else if(!output.containsPath(keyPath)) {
-                    		i.remove();
+                    } else if (!output.containsPath(keyPath)) {
+                        i.remove();
                     }
                 } else {
                     if (!output.containsPath(keyPath)) {
@@ -110,6 +115,9 @@ public class QueryUtils {
         return obj;
     }
 
+    /**
+     * Predicate used to filter a stream of results based on a set of queries.
+     */
     public static BiPredicate<Map<String, Object>, List<Query>> filterResultsByQueries = new BiPredicate<Map<String, Object>, List<Query>>() {
 
         @Override
@@ -125,6 +133,10 @@ public class QueryUtils {
         }
     };
 
+    /**
+     * Predicate used to filter a stream of results based on a single query.
+     * Limited support for different {@link FieldType}s.
+     */
     public static BiPredicate<Map<String, Object>, Query> filterResultsByQuery = new BiPredicate<Map<String, Object>, Query>() {
         @Override
         public boolean test(Map<String, Object> o, Query q) {
@@ -189,14 +201,38 @@ public class QueryUtils {
 
     };
 
+    /**
+     * Helper utility to determine if a list of strings contains a given string
+     * 
+     * @param vals
+     * @param qv
+     * @return true if qv found in vals
+     */
     public static boolean containsMatch(Collection<String> vals, String qv) {
         return vals.stream().anyMatch(v -> v.contains(qv));
     }
 
+    /**
+     * Helper utility to determine if a list of strings (treated as numbers)
+     * matches a given numeric query (encoded as a string). Supports range and
+     * other numeric queries.
+     * 
+     * @param vals
+     * @param qv
+     * @return
+     */
     public static boolean numberMatch(Collection<String> vals, String qv) {
         return vals.stream().map(BigDecimal::new).anyMatch(v -> numberMatch(v, qv));
     }
 
+    /**
+     * Helper utility to determine if a decimal number matches a given numeric
+     * query
+     * 
+     * @param vals
+     * @param qv
+     * @return
+     */
     public static boolean numberMatch(BigDecimal value, String query) {
         Matcher m = SINGLE_NUMBER.matcher(query);
         if (m.matches()) {

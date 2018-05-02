@@ -12,11 +12,20 @@ import java.util.stream.Collectors;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
+import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.utils.QueryUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+/**
+ * REST-based {@link Search} using the Ensembl REST API to retrieve variants.
+ * The REST API is limited to querying by ID, genome or location. All other
+ * fields are applied as post-retrieval filters. fetch only supports locations.
+ * 
+ * @author dstaines
+ *
+ */
 public class EnsemblVariantSearch extends RestBasedSearch {
 
     protected final static String GENOME_FIELD = "genome";
@@ -33,18 +42,32 @@ public class EnsemblVariantSearch extends RestBasedSearch {
         this.baseUri = baseUri;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.Search#select(java.lang.String, int, int)
+     */
     @Override
     public QueryResult select(String name, int offset, int limit) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.Search#up()
+     */
     @Override
     public boolean up() {
-        // TODO Auto-generated method stub
+        // could also use ping here
         return true;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.impl.RestBasedSearch#getBatchSize()
+     */
     @Override
     public int getBatchSize() {
         return 100000;
@@ -57,9 +80,17 @@ public class EnsemblVariantSearch extends RestBasedSearch {
      * org.ensembl.genesearch.QueryOutput, java.util.List, int, int,
      * java.util.List)
      */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.impl.RestBasedSearch#query(java.util.List,
+     * org.ensembl.genesearch.QueryOutput, java.util.List, int, int,
+     * java.util.List)
+     */
     @Override
     public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
             List<String> sorts) {
+        
         // we override this method to allow the imposition of offset/limit at
         // the stream level
         if (facets != null && !facets.isEmpty()) {
@@ -87,6 +118,13 @@ public class EnsemblVariantSearch extends RestBasedSearch {
         return new QueryResult(-1, offset, limit, getFieldInfo(output), results, Collections.emptyMap());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.ensembl.genesearch.impl.RestBasedSearch#fetch(java.util.function.
+     * Consumer, java.util.List, org.ensembl.genesearch.QueryOutput)
+     */
     @Override
     public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
         // location based fetch only
@@ -121,19 +159,33 @@ public class EnsemblVariantSearch extends RestBasedSearch {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.ensembl.genesearch.impl.RestBasedSearch#getPostQueries(java.util.
+     * List)
+     */
     @Override
     protected List<Query> getPostQueries(List<Query> queries) {
+        // all queries apart from ID, genome and location are applied in post
         List<Query> postQueries = queries.stream().filter(q -> !ID_FIELD.equals(q.getFieldName())
                 && !GENOME_FIELD.equals(q.getFieldName()) && !LOCATION_FIELD.equals(q.getFieldName()))
                 .collect(Collectors.toList());
         return postQueries;
     }
 
+    /* (non-Javadoc)
+     * @see org.ensembl.genesearch.impl.RestBasedSearch#getResults(com.fasterxml.jackson.databind.JsonNode)
+     */
     @Override
     protected JsonNode getResults(JsonNode response) {
         return response;
     }
 
+    /* (non-Javadoc)
+     * @see org.ensembl.genesearch.impl.RestBasedSearch#getUrl(java.util.List, org.ensembl.genesearch.QueryOutput, int, int)
+     */
     @Override
     protected String getUrl(List<Query> queries, QueryOutput fieldNames, int offset, int limit) {
         Optional<Query> genome = queries.stream().filter(q -> q.getFieldName().equals(GENOME_FIELD)).findFirst();

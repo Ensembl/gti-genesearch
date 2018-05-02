@@ -31,9 +31,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class SearchResult {
 
+    // mapper used for export as JSON
+    private final transient ObjectMapper mapper = new ObjectMapper();
+
+    protected final List<FieldInfo> fields;
 	protected final List<Map<String, Object>> results;
-	private final transient ObjectMapper mapper = new ObjectMapper();
-	protected final List<FieldInfo> fields;
 
 	public SearchResult(List<FieldInfo> fields, List<Map<String, Object>> results) {
 		this.fields = fields;

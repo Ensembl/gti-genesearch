@@ -17,6 +17,7 @@
 package org.ensembl.genesearch.impl;
 
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.SearchType;
 
 /**
  * Implementation of transcript search that can join to other searches

@@ -43,7 +43,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 /**
- * A simple standalone CLI client for querying by one field at a time
+ * Simple Elastic command line client for retrieval of data given a set of IDs
  * 
  * @author dstaines
  *

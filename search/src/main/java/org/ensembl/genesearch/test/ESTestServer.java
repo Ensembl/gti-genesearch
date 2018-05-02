@@ -38,8 +38,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 
 /**
- * Utility to create and load a test server. Found in main to allow reuse in
- * downstream projects
+ * Utility to create and load an in-memory Elastic test server. Note that this
+ * is included in the main source folder to allow reuse in downstream projects
+ * e.g. REST server.
  * 
  * @author dstaines
  *
@@ -64,6 +65,15 @@ public class ESTestServer {
         createIndex(ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
     }
 
+    /**
+     * Read a mapping file and create an index. Resource is of the form
+     * /{type}_index.json
+     * 
+     * @param index
+     *            name of index to create
+     * @param type
+     *            mapping file type
+     */
     protected void createIndex(String index, String type) {
         try {
             log.info("Reading gene mapping");
@@ -93,6 +103,14 @@ public class ESTestServer {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Index the supplied JSON document into the specified index as the
+     * specified type
+     * 
+     * @param json
+     * @param index
+     * @param type
+     */
     public void indexTestDocs(String json, String index, String type) {
         try {
 
@@ -115,11 +133,22 @@ public class ESTestServer {
         }
     }
 
+    /**
+     * Index the supplied object into the specified index as the specified type
+     * 
+     * @param doc
+     * @param index
+     * @param type
+     * @throws JsonProcessingException
+     */
     protected void indexTestDoc(Map<String, Object> doc, String index, String type) throws JsonProcessingException {
         String id = String.valueOf(doc.get("id"));
         client.prepareIndex(index, type).setId(id).setSource(mapper.writeValueAsString(doc)).execute().actionGet();
     }
 
+    /**
+     * Close the client and shut down the ES node.
+     */
     public void disconnect() {
         client.close();
         node.close();

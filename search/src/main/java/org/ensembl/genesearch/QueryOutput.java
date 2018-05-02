@@ -31,7 +31,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Class encapsulating fields to display
+ * Class encapsulating fields to display. Can support sub-fields where
+ * additional instances of {@link QueryOutput} are nested within the object.
+ * This allows nested or joined document querying e.g.
+ * ["id","name",{"transcript":["name","biotype"]}]
  * 
  * @author dstaines
  *
@@ -44,14 +47,35 @@ public class QueryOutput {
     private static final char ARRAY_END = ']';
     private static final ObjectMapper om = new ObjectMapper();
 
+    /**
+     * Generate output specification for a nested object containing subfields
+     * 
+     * @param fields
+     * @return parsed output
+     */
     public static QueryOutput build(Map<String, Object> fields) {
         return new QueryOutput(fields);
     }
 
+    /**
+     * Generate output specification from a list of fields (can include simple
+     * strings and nested objects)
+     * 
+     * @param fields
+     * @return parsed output
+     */
     public static QueryOutput build(List<?> fields) {
         return new QueryOutput(fields);
     }
 
+    /**
+     * Generate output specification from a string representation
+     * (comma-separated)
+     * 
+     * @param field
+     *            string
+     * @return parsed output
+     */
     public static QueryOutput build(String fieldStr) {
         if (StringUtils.isEmpty(fieldStr)) {
             return new QueryOutput();
@@ -74,6 +98,10 @@ public class QueryOutput {
     private final List<String> fields = new ArrayList<>();
     private final Map<String, QueryOutput> subFields = new HashMap<>();
 
+    /**
+     * @param f
+     *            list of fields (can be strings or maps for nested subfields)
+     */
     public QueryOutput(List<?> f) {
         for (Object e : f) {
             if (Map.class.isAssignableFrom(e.getClass())) {
@@ -86,10 +114,18 @@ public class QueryOutput {
         }
     }
 
+    /**
+     * @param f
+     *            list of fields as strings
+     */
     public QueryOutput(String... f) {
         this(Arrays.asList(f));
     }
 
+    /**
+     * @param sF
+     *            map representing subfields
+     */
     public QueryOutput(Map<String, Object> sF) {
         for (Entry<String, Object> f : sF.entrySet()) {
             if (List.class.isAssignableFrom(f.getValue().getClass())) {
@@ -102,10 +138,18 @@ public class QueryOutput {
         }
     }
 
+    /**
+     * @return top level fields
+     */
     public List<String> getFields() {
         return fields;
     }
 
+    /**
+     * Return subfields
+     * 
+     * @return subfields
+     */
     public Map<String, QueryOutput> getSubFields() {
         return subFields;
     }
@@ -118,6 +162,14 @@ public class QueryOutput {
         }
     }
 
+    /**
+     * Detect if the output contains the specified path. Used by
+     * {@link QueryUtils} to decide whether to filter out fields
+     * 
+     * @param path
+     *            e.g. transcripts.xrefs
+     * @return true if path found within output
+     */
     public boolean containsPath(String path) {
         boolean contains = false;
         if (getFields().stream().anyMatch(s -> s.startsWith(path))) {
@@ -144,7 +196,8 @@ public class QueryOutput {
      * out a whole field
      * 
      * @param path
-     * @return
+     *            e.g. transcripts.xrefs
+     * @return true if field has any children
      */
     public boolean containsPathChildren(String path) {
         boolean contains = false;

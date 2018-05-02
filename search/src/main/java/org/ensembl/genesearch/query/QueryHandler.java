@@ -21,9 +21,17 @@ import java.util.Map;
 
 import org.ensembl.genesearch.Query;
 
+/**
+ * Interface to transform supplied JSON string or nested map structure into a
+ * list of {@link Query} objects.
+ * 
+ * @author dstaines
+ *
+ */
 public interface QueryHandler {
-	
-	public List<Query> parseQuery(String json);
-	public List<Query> parseQuery(Map<String,Object> query);
+
+    public List<Query> parseQuery(String json);
+
+    public List<Query> parseQuery(Map<String, Object> query);
 
 }

@@ -13,7 +13,9 @@ import org.ensembl.genesearch.utils.DataUtils;
 
 /**
  * Utility class used by {@link EVAVariantRestSearch} to translate a standard
- * Ensembl genome name into the code used internally by EVA
+ * Ensembl genome name into the code used internally by EVA. Requires
+ * {@link Search} for Ensembl genomes (e.g. {@link ESSearch}) and {@link Search}
+ * for EVA genomes (e.g. {@link EVAGenomeRestSearch})
  * 
  * @author dstaines
  *
@@ -24,6 +26,12 @@ public class EVAGenomeFinder {
     private final Search ensemblGenomeSearch;
     private final Map<String, String> genomeNames = new HashMap<>();
 
+    /**
+     * @param evaGenomeSearch
+     *            search interface on EVA genomes
+     * @param ensemblGenomeSearch
+     *            search interface on EG genomes
+     */
     public EVAGenomeFinder(Search evaGenomeSearch, Search ensemblGenomeSearch) {
         this.evaGenomeSearch = evaGenomeSearch;
         this.ensemblGenomeSearch = ensemblGenomeSearch;

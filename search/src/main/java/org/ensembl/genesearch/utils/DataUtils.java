@@ -54,7 +54,9 @@ public class DataUtils {
      * invert a map by value
      * 
      * @param r
+     *            data object to search
      * @param key
+     *            key to search for
      * @return map containing data
      */
     public static Map<String, Map<String, Object>> getObjsForKey(Map<String, Object> r, String key) {
@@ -63,6 +65,16 @@ public class DataUtils {
         return keys;
     }
 
+    /**
+     * Internal method to iteratively search an object.  
+     * 
+     * @param r
+     *            data object to search
+     * @param key
+     *            key to search for
+     * @param keys
+     *            running list of data for key
+     */
     protected static void getObjsForKey(Map<String, Object> r, String key, Map<String, Map<String, Object>> keys) {
         int i = key.indexOf('.');
         if (i != -1) {
@@ -103,11 +115,29 @@ public class DataUtils {
         }
     }
 
+    /**
+     * Slurp a gzipped resource into a string. Useful for reading JSON files
+     * from the classpath
+     * 
+     * @param name
+     *            resource name
+     * @return contents as string
+     * @throws IOException
+     */
     public static String readGzipResource(String name) throws IOException {
         return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)),
                 Charset.defaultCharset());
     }
 
+    /**
+     * Slurp a plain resource into a string. Useful for reading JSON files from
+     * the classpath
+     * 
+     * @param name
+     *            resource name
+     * @return contents as string
+     * @throws IOException
+     */
     public static String readResource(String name) throws IOException {
         return IOUtils.toString(ESTestServer.class.getResourceAsStream(name), Charset.defaultCharset());
     }

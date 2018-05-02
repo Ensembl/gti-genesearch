@@ -5,24 +5,48 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import htsjdk.samtools.util.BufferedLineReader;
 import org.apache.commons.lang3.StringUtils;
+import org.ensembl.genesearch.impl.HtsGetClient;
 
+import htsjdk.samtools.util.BufferedLineReader;
+
+/**
+ * Utilities for parsing VCF into Map objects. Used by {@link HtsGetClient} to
+ * parse VCF retrieved from htsget API.
+ * 
+ * These utilities depend on parsing the VCF headers into a {@link VcfFormat}
+ * object which can then be used to parse each line
+ * 
+ * @author dstaines
+ *
+ */
 public class VcfUtils {
 
     private static final String GENOTYPES = "genotypes";
     private static final String CONSEQUENCES = "CSQ";
 
+    /**
+     * Column data types supported by this parser
+     * 
+     * @author dstaines
+     *
+     */
     public static enum ColumnFormat {
         INTEGER, STRING, FLOAT, INTEGER_LIST, STRING_LIST, FLOAT_LIST, FLAG;
     }
 
+    /**
+     * Class representing format as derived from VCF headers. Includes list of
+     * genotypes and additional INFO elements with associated types.
+     * 
+     * @author dstaines
+     *
+     */
     public static class VcfFormat {
         private String[] genotypes;
         private Map<String, ColumnFormat> formats = new HashMap<>();
@@ -50,8 +74,8 @@ public class VcfUtils {
 
         public void addFormat(String line) {
             Matcher m = INFO_HEADER_PATTERN.matcher(line);
-            if(!m.matches()) {
-                throw new IllegalArgumentException("Not an INFO line: "+line);
+            if (!m.matches()) {
+                throw new IllegalArgumentException("Not an INFO line: " + line);
             }
             boolean isSingle = m.group(2).equals("1");
             ColumnFormat format = isSingle ? ColumnFormat.STRING : ColumnFormat.STRING_LIST;
@@ -69,7 +93,7 @@ public class VcfUtils {
         }
 
         public List<Map<String, Object>> csqToMap(String value) {
-            List<Map<String,Object>> csqs = new ArrayList<>();
+            List<Map<String, Object>> csqs = new ArrayList<>();
             for (String csqStr : value.split(",")) {
                 Map<String, Object> csq = new HashMap<>();
                 int n = 0;
@@ -84,6 +108,15 @@ public class VcfUtils {
             return csqs;
         }
 
+        /**
+         * Parse a given column into an object based on the parsed format
+         * 
+         * @param column
+         *            name of column
+         * @param value
+         *            value of column
+         * @return
+         */
         public Object valueToObj(String column, String value) {
 
             if (CONSEQUENCES.equals(column)) {
@@ -109,6 +142,13 @@ public class VcfUtils {
             }
         }
 
+        /**
+         * Entry point to parse the header lines from a VCF reader and generate
+         * a format object for subsequent use
+         * 
+         * @param vcfR
+         * @return
+         */
         public static VcfFormat readFormat(BufferedLineReader vcfR) {
             VcfFormat format = new VcfFormat();
             String line = null;
@@ -126,6 +166,9 @@ public class VcfUtils {
         }
     }
 
+    /**
+     * Known INFO fields with recased map key names to use in output
+     */
     public final static Map<String, String> INFO_NAMES = new HashMap<>();
     static {
         INFO_NAMES.put("AA", "ancestral_allele");
@@ -152,11 +195,23 @@ public class VcfUtils {
         INFO_NAMES.put("CSQ", "consequences");
     }
 
+    /**
+     * Fields that are always found in VCF
+     */
     public final static String[] FIXED_FIELDS = { "seq_region_name", "start", "id", "ref_allele", "alt_allele",
             "quality", "filter" };
-    public final static String[] CSQ_FIELDS = 
-    		"Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen".split("\\|");
 
+    /**
+     * Fields that are found in VEP consequence info types
+     */
+    public final static String[] CSQ_FIELDS = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen"
+            .split("\\|");
+
+    /**
+     * @param line
+     *            VCF line
+     * @return Map containing variant data
+     */
     public static Map<String, Object> vcfLineToMap(String line) {
         return vcfLineToMap(line, new VcfFormat());
     }
@@ -167,18 +222,34 @@ public class VcfUtils {
     private static final Pattern COLS_PATTERN = Pattern.compile("^#CHROM.+");
     private static final Pattern META_PATTERN = Pattern.compile("^##[^#]+");
 
+    /**
+     * @return true if line is an INFO header line
+     */
     public static Predicate<String> isInfoHeaderLine() {
         return line -> line.startsWith("##INFO");
     }
 
+    /**
+     * @return true if this is the COLS line
+     */
     public static Predicate<String> isColsLine() {
         return line -> COLS_PATTERN.matcher(line).matches();
     }
 
+    /**
+     * @return true if line is a meta line
+     */
     public static Predicate<String> isMetaLine() {
         return line -> META_PATTERN.matcher(line).matches();
     }
 
+    /**
+     * Convert a VCF line to a map with the pre-parsed format object
+     * 
+     * @param line
+     * @param format
+     * @return variant as map
+     */
     public static Map<String, Object> vcfLineToMap(String line, VcfFormat format) {
         Map<String, Object> map = new HashMap<>();
         String[] cols = line.split("\t");
@@ -188,14 +259,15 @@ public class VcfUtils {
         for (String infoStr : cols[7].split(";")) {
             Matcher m = INFO_PATTERN.matcher(infoStr);
             if (m.matches()) {
-                map.put(INFO_NAMES.getOrDefault(m.group(1),m.group(1)), format.valueToObj(m.group(1), m.group(2)));
+                map.put(INFO_NAMES.getOrDefault(m.group(1), m.group(1)), format.valueToObj(m.group(1), m.group(2)));
             } else {
-                map.put(INFO_NAMES.getOrDefault(infoStr,infoStr), true);
+                map.put(INFO_NAMES.getOrDefault(infoStr, infoStr), true);
             }
         }
-        if (format.getGenotypes() != null && format.getGenotypes().length>0) {
+        if (format.getGenotypes() != null && format.getGenotypes().length > 0) {
             // get format names
-            List<String> gFormat = Arrays.asList(cols[8].split(":")).stream().map(f -> INFO_NAMES.getOrDefault(f, f)).collect(Collectors.toList());
+            List<String> gFormat = Arrays.asList(cols[8].split(":")).stream().map(f -> INFO_NAMES.getOrDefault(f, f))
+                    .collect(Collectors.toList());
             // add phenotypes to list
             List<Map<String, Object>> genotypeObjs = new ArrayList<>(format.getGenotypes().length);
             for (int n = 9; n < cols.length; n++) {

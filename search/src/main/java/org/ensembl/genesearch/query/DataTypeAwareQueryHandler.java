@@ -39,6 +39,9 @@ public class DataTypeAwareQueryHandler extends DefaultQueryHandler {
 		this.info = info;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ensembl.genesearch.query.DefaultQueryHandler#getFieldType(java.lang.String, java.lang.Object)
+	 */
 	@Override
 	protected FieldType getFieldType(String key, Object value) {
 		FieldInfo field = info.getFieldByName(key);

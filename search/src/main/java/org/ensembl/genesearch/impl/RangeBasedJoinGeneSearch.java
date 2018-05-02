@@ -1,6 +1,7 @@
 package org.ensembl.genesearch.impl;
 
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.SearchType;
 
 public class RangeBasedJoinGeneSearch extends GeneSearch {
 

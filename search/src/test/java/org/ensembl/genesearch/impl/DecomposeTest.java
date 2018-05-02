@@ -27,6 +27,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
+import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.impl.JoinMergeSearch.SubSearchParams;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;

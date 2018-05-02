@@ -25,6 +25,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Search implementation using EVAs REST implementation for finding lists of
  * genomes they support
  * 
+ * Lazily loads entire genome set (which is currently very small) using
+ * {@link #getGenomes()} for subsequent in-memory query
+ * 
  * @author dstaines
  *
  */
@@ -41,6 +44,9 @@ public class EVAGenomeRestSearch implements Search {
         this.info = info;
     }
 
+    /**
+     * @return
+     */
     protected List<Map<String, Object>> getGenomes() {
         if (genomes == null) {
             String uri = baseUri + "/" + SPECIES_PATH;
@@ -51,8 +57,8 @@ public class EVAGenomeRestSearch implements Search {
                 }
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode at = mapper.readTree(response.getBody()).at("/response").get(0).get("result");
-                genomes = StreamSupport.stream(at.spliterator(), false).map(n -> (Map<String,Object>)mapper.convertValue(n, Map.class))
-                        .collect(Collectors.toList());
+                genomes = StreamSupport.stream(at.spliterator(), false)
+                        .map(n -> (Map<String, Object>) mapper.convertValue(n, Map.class)).collect(Collectors.toList());
             } catch (IOException e) {
                 throw new RestSearchException("Could not handle response", uri, e);
             }

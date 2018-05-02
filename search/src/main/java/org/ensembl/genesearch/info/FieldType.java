@@ -16,6 +16,14 @@
 
 package org.ensembl.genesearch.info;
 
+import org.ensembl.genesearch.Search;
+
+/**
+ * Enumeration of different field types supported by {@link Search}. 
+ * 
+ * @author dstaines
+ *
+ */
 public enum FieldType {
 	GENOME, ID, LOCATION, NUMBER, NESTED, ONTOLOGY, TERM, TEXT, STRAND, BOOLEAN;
 }

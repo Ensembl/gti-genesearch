@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.SearchType;
 
 /**
  * Class for providing a search and data type info for a supplied target type

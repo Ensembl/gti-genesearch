@@ -42,25 +42,31 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Code for retrieving sequences from the Ensembl REST service
+ * {@link Search} using an Ensembl-style REST API to retrieve sequences
  * 
  * @author dstaines
  *
  */
 public class EnsemblRestSequenceSearch implements Search {
-    
+
+    private static final String MULTIPLE_SEQUENCES = "multiple_sequences=1";
+
     /**
-     * Magic field which contains the query ID to which the sequences belong. Vital for joining
+     * Magic field which contains the query ID to which the sequences belong.
+     * Vital for joining. Used by {@link #getIds(List)} to extract the query
      */
     public static final String QUERY = "query";
 
     private static final int CONNECT_TIMEOUT = 5000;
 
+    /**
+     * valid arguments to pass as fields. Used by {@link #getPostUrl(List)}
+     */
     public final static List<String> VALID_ARGS = Arrays.asList("type", "expand_5prime", "expand_3prime", "type",
             "format", "species");
 
     public final static int DEFAULT_BATCH_SIZE = 50;
-    
+
     public final static String SEQUENCE_ID = "/sequence/id";
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -70,6 +76,14 @@ public class EnsemblRestSequenceSearch implements Search {
     private final RestTemplate template = new RestTemplate();
     private final DataTypeInfo dataType;
 
+    /**
+     * @param baseUrl
+     *            base URL of REST API
+     * @param dataType
+     *            type to use as label for search
+     * @param batchSize
+     *            number of sequences to retrieve at one time
+     */
     public EnsemblRestSequenceSearch(String baseUrl, DataTypeInfo dataType, int batchSize) {
         this.baseUrl = baseUrl;
         this.batchSize = batchSize;
@@ -82,7 +96,7 @@ public class EnsemblRestSequenceSearch implements Search {
             if (!StringUtils.isEmpty(proxyPort)) {
                 port = Integer.valueOf(proxyPort);
             }
-            log.info("Using proxy "+proxyHost+":"+proxyPort);
+            log.info("Using proxy " + proxyHost + ":" + proxyPort);
             factory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, port)));
         } else {
             log.info("No proxy used");
@@ -91,6 +105,12 @@ public class EnsemblRestSequenceSearch implements Search {
         template.setRequestFactory(factory);
     }
 
+    /**
+     * @param baseUrl
+     *            base URL of REST API
+     * @param dataType
+     *            type to use as label for search
+     */
     public EnsemblRestSequenceSearch(String baseUrl, DataTypeInfo dataType) {
         this(baseUrl, dataType, DEFAULT_BATCH_SIZE);
     }
@@ -104,9 +124,10 @@ public class EnsemblRestSequenceSearch implements Search {
     @Override
     public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
 
-        // transform the query string into a URI
+        // transform the query string into a base URI
         String url = getPostUrl(queries);
         log.info("Using base URL " + url);
+        // extract IDs from supplied queries
         List<String> ids = getIds(queries);
         log.info("Searching for " + ids.size() + " ids");
         // work through IDs in batches (REST server currently only allows 50 IDs
@@ -128,6 +149,12 @@ public class EnsemblRestSequenceSearch implements Search {
 
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.Search#getFieldInfo(org.ensembl.genesearch.
+     * QueryOutput)
+     */
     @Override
     public List<FieldInfo> getFieldInfo(QueryOutput fields) {
         return getDataType().getFieldInfo();
@@ -135,21 +162,22 @@ public class EnsemblRestSequenceSearch implements Search {
 
     /**
      * Extract any query params that need to be passed to the REST service,
-     * using VALID_ARGS as a lookup
+     * using VALID_ARGS as a lookup (allows support for molecule type, end
+     * extension etc). This provides a URL that can have IDs POSTed to it.
      * 
      * @param queries
-     * @return URL for params
+     * @return base URL
      */
     protected String getPostUrl(List<Query> queries) {
+        // find which queries are valid given our standard list
         List<String> params = queries.stream()
                 .filter(q -> VALID_ARGS.contains(q.getFieldName()) && q.getValues().length == 1)
                 .map(q -> q.getFieldName() + "=" + q.getValues()[0]).collect(Collectors.toList());
-        params.add("multiple_sequences=1");
-        if (!params.isEmpty()) {
-            return baseUrl + SEQUENCE_ID + "?" + StringUtils.join(params, '&');
-        } else {
-            return baseUrl + SEQUENCE_ID;
-        }
+        // add a magic query param to indicate we want multiple queries
+        params.add(MULTIPLE_SEQUENCES);
+        // generate a parameterised URL to POST to
+        return baseUrl + SEQUENCE_ID + "?" + StringUtils.join(params, '&');
+
     }
 
     /**
@@ -226,6 +254,7 @@ public class EnsemblRestSequenceSearch implements Search {
      */
     @Override
     public boolean up() {
+        // use ping endpoint to determine if the underlying REST API is working
         String url = baseUrl.replace("/sequence/id", "/info/ping");
         try {
             ResponseEntity<Map> response = template.getForEntity(url, Map.class);

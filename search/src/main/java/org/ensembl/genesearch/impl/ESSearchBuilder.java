@@ -46,8 +46,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class to translate from a simplified nested key-value structure to an
- * Elasticsearch query
+ * Class to translate from a list of nested {@link Query} objects to an
+ * Elasticsearch {@link QueryBuilder} which can then be passed to Elastic.
+ * 
+ * This class supports all common and specialised {@link FieldType} queries,
+ * including numeric ranges and genomic locations. Multiple values for a single
+ * query are ORed together, and multiple queries are ANDed together. Support is
+ * also provided for nested subqueries
+ * 
+ * This class also provides support for aggregration generation for basic facet
+ * support.
  * 
  * @author dstaines
  *
@@ -66,40 +74,61 @@ public class ESSearchBuilder {
     }
 
     /**
+     * Generate an Elastic {@link QueryBuilder} for the supplied queries
+     * 
      * @param type
-     *            ES type
-     * @param geneQs
+     *            Elastic object type
+     * @param qs
      * @return query builder for the supplied list of queries
      */
-    public static QueryBuilder buildQuery(String type, Query... geneQs) {
-        return buildQueryWithParents(type, new ArrayList<String>(), geneQs);
+    public static QueryBuilder buildQuery(String type, Query... qs) {
+        return buildQueryWithParents(type, new ArrayList<String>(), qs);
     }
 
-    protected static QueryBuilder buildQueryWithParents(String type, List<String> parents, Query... geneQs) {
+    /**
+     * Internal method for transforming a Query into. Supports nested subqueries
+     * by iterative calling
+     * 
+     * @param type
+     *            Elastic object type
+     * @param parents
+     *            optional list of parents for a nested subquery
+     * @param qs
+     * @return query builder for the supplied list of queries
+     */
+    protected static QueryBuilder buildQueryWithParents(String type, List<String> parents, Query... qs) {
         log.trace("Parents " + parents);
-        if (geneQs.length == 1) {
-            Query geneQ = geneQs[0];
+        if (qs.length == 1) {
+            Query q = qs[0];
             QueryBuilder query;
-            if (geneQ.getType().equals(FieldType.NESTED)) {
-                query = processNested(type, parents, geneQ);
+            if (q.getType().equals(FieldType.NESTED)) {
+                query = processNested(type, parents, q);
             } else {
-                query = processSingle(type, parents, geneQ);
+                query = processSingle(type, parents, q);
             }
             return query;
-        } else if (geneQs.length == 0) {
+        } else if (qs.length == 0) {
             log.trace("All IDs");
             return QueryBuilders.matchAllQuery();
         } else {
             log.trace("Multiples");
-            return processMultiple(type, parents, geneQs);
+            return processMultiple(type, parents, qs);
         }
     }
 
-    protected static BoolQueryBuilder processMultiple(String type, List<String> parents, Query... geneQs) {
+    /**
+     * Generate a boolean query by ANDing a list of queries together
+     * 
+     * @param type
+     * @param parents
+     * @param qs
+     * @return query builder for the supplied list of queries
+     */
+    protected static BoolQueryBuilder processMultiple(String type, List<String> parents, Query... qs) {
         BoolQueryBuilder query = null;
-        for (Query geneQ : geneQs) {
-            log.trace("Multiple " + geneQ.getFieldName());
-            QueryBuilder subQuery = buildQueryWithParents(type, parents, geneQ);
+        for (Query q : qs) {
+            log.trace("Multiple " + q.getFieldName());
+            QueryBuilder subQuery = buildQueryWithParents(type, parents, q);
             if (query == null) {
                 query = QueryBuilders.boolQuery().must(subQuery);
             } else {
@@ -109,80 +138,123 @@ public class ESSearchBuilder {
         return query;
     }
 
-    protected static QueryBuilder processSingle(String type, List<String> parents, Query geneQ) {
-        log.trace("Single " + geneQ.getFieldName());
-        String path = join(extendPath(parents, geneQ), '.');
-        QueryBuilder q;
-        switch (geneQ.getType()) {
+    /**
+     * Generate a single query clause that can then be combined with others.
+     * Supports the full range of {@link FieldType}s plus negation.
+     * 
+     * @param type
+     * @param parents
+     * @param q
+     * @return Elastic query
+     */
+    protected static QueryBuilder processSingle(String type, List<String> parents, Query q) {
+        log.trace("Single " + q.getFieldName());
+        String path = join(extendPath(parents, q), '.');
+        QueryBuilder eq;
+        switch (q.getType()) {
         case ID:
             if (parents.isEmpty())
-                q = processId(type, geneQ);
+                eq = processId(type, q);
             else
-                q = processTerm(type, geneQ);
+                eq = processTerm(type, q);
             break;
         case TEXT:
-            q = processText(path, geneQ);
+            eq = processText(path, q);
             break;
         case ONTOLOGY:
         case GENOME:
         case BOOLEAN:
         case TERM:
-            q = processTerm(path, geneQ);
+            eq = processTerm(path, q);
             break;
         case LOCATION:
-            q = processLocation(path, geneQ);
+            eq = processLocation(path, q);
             break;
         case NUMBER:
-            q = processNumber(path, geneQ);
+            eq = processNumber(path, q);
             break;
         default:
-            throw new UnsupportedOperationException("Query type " + geneQ.getType() + " not supported");
+            throw new UnsupportedOperationException("Query type " + q.getType() + " not supported");
         }
-        if (geneQ.isNot()) {
-            return QueryBuilders.boolQuery().mustNot(q);
+        if (q.isNot()) {
+            return QueryBuilders.boolQuery().mustNot(eq);
         } else {
-            return q;
+            return eq;
         }
     }
 
-    protected static QueryBuilder processId(String type, Query geneQ) {
-        return QueryBuilders.constantScoreQuery(QueryBuilders.idsQuery(type).addIds(geneQ.getValues()));
+    /**
+     * Generate specialised query for IDs
+     * 
+     * @param type
+     * @param q
+     * @return elastic query
+     */
+    protected static QueryBuilder processId(String type, Query q) {
+        return QueryBuilders.constantScoreQuery(QueryBuilders.idsQuery(type).addIds(q.getValues()));
     }
 
-    protected static QueryBuilder processTerm(String path, Query geneQ) {
+    /**
+     * @param path
+     * @param q
+     * @return
+     */
+    protected static QueryBuilder processTerm(String path, Query q) {
         QueryBuilder query;
-        if (geneQ.getValues().length == 1) {
-            query = QueryBuilders.termQuery(path, geneQ.getValues()[0]);
+        if (q.getValues().length == 1) {
+            query = QueryBuilders.termQuery(path, q.getValues()[0]);
         } else {
-            query = QueryBuilders.termsQuery(path, geneQ.getValues());
+            query = QueryBuilders.termsQuery(path, q.getValues());
         }
         return QueryBuilders.constantScoreQuery(query);
     }
 
-    protected static QueryBuilder processText(String path, Query geneQ) {
-        if (geneQ.getValues().length == 1) {
-            return QueryBuilders.matchQuery(path, geneQ.getValues()[0]);
+    /**
+     * Generate text query with looser matching e.g. for descriptions
+     * 
+     * @param path
+     * @param q
+     * @return
+     */
+    protected static QueryBuilder processText(String path, Query q) {
+        if (q.getValues().length == 1) {
+            return QueryBuilders.matchQuery(path, q.getValues()[0]);
         } else {
             BoolQueryBuilder qb = QueryBuilders.boolQuery();
-            for (String value : geneQ.getValues()) {
+            for (String value : q.getValues()) {
                 qb.should(QueryBuilders.matchQuery(path, value));
             }
             return qb;
         }
     }
 
-    protected static QueryBuilder processNumber(String path, Query geneQ) {
-        if (geneQ.getValues().length == 1) {
-            return processNumber(path, geneQ.getValues()[0]);
+    /**
+     * Generate numeric query from one or more queries
+     * 
+     * @param path
+     * @param q
+     * @return
+     */
+    protected static QueryBuilder processNumber(String path, Query q) {
+        if (q.getValues().length == 1) {
+            return processNumber(path, q.getValues()[0]);
         } else {
             BoolQueryBuilder qb = QueryBuilders.boolQuery();
-            for (String value : geneQ.getValues()) {
+            for (String value : q.getValues()) {
                 qb.should(processNumber(path, value));
             }
             return qb;
         }
     }
 
+    /**
+     * Generate a numeric query from a single value. Parses numeric strings to
+     * support range-based queries e.g. 1-10, <1, >=10 etc.
+     * 
+     * @param path
+     * @param value
+     * @return
+     */
     protected static QueryBuilder processNumber(String path, String value) {
         Matcher m = SINGLE_NUMBER.matcher(value);
         if (m.matches()) {
@@ -219,18 +291,33 @@ public class ESSearchBuilder {
         }
     }
 
-    protected static QueryBuilder processLocation(String path, Query geneQ) {
-        if (geneQ.getValues().length == 1) {
-            return processLocation(path, geneQ.getValues()[0]);
+    /**
+     * Generate specialised query for one or more genomic locations
+     * 
+     * @param path
+     * @param q
+     * @return
+     */
+    protected static QueryBuilder processLocation(String path, Query q) {
+        if (q.getValues().length == 1) {
+            return processLocation(path, q.getValues()[0]);
         } else {
             BoolQueryBuilder qb = QueryBuilders.boolQuery();
-            for (String value : geneQ.getValues()) {
+            for (String value : q.getValues()) {
                 qb.should(processLocation(path, value));
             }
             return qb;
         }
     }
 
+    /**
+     * Generate specialised query for a genomic location string of the form
+     * name:start-end
+     * 
+     * @param locPath
+     * @param q
+     * @return
+     */
     protected static QueryBuilder processLocation(String locPath, String q) {
         String path = locPath.replaceAll(".?location$", EMPTY);
         Matcher m = LOCATION.matcher(q);
@@ -253,21 +340,44 @@ public class ESSearchBuilder {
         return qb;
     }
 
-    protected static QueryBuilder processNested(String type, List<String> parents, Query geneQ) {
+    /**
+     * Build a nested sub query against sub-documents
+     * 
+     * @param type
+     * @param parents
+     * @param q
+     * @return
+     */
+    protected static QueryBuilder processNested(String type, List<String> parents, Query q) {
         QueryBuilder query;
-        log.trace("Nested " + geneQ.getFieldName());
-        QueryBuilder subQuery = buildQueryWithParents(type, extendPath(parents, geneQ), geneQ.getSubQueries());
-        query = QueryBuilders.nestedQuery(join(extendPath(parents, geneQ), '.'), subQuery);
+        log.trace("Nested " + q.getFieldName());
+        QueryBuilder subQuery = buildQueryWithParents(type, extendPath(parents, q), q.getSubQueries());
+        query = QueryBuilders.nestedQuery(join(extendPath(parents, q), '.'), subQuery);
         return query;
     }
 
-    protected static List<String> extendPath(List<String> parents, Query geneQ) {
+    /**
+     * Utility to keep track of path to current sub-query as Elastic requires
+     * this to be explicitly stated
+     * 
+     * @param parents
+     * @param q
+     * @return
+     */
+    protected static List<String> extendPath(List<String> parents, Query q) {
         List<String> newParents = new ArrayList<>(parents.size() + 1);
         newParents.addAll(parents);
-        newParents.add(geneQ.getFieldName());
+        newParents.add(q.getFieldName());
         return newParents;
     }
 
+    /**
+     * Helper to generate an aggregration from a facet name size
+     * 
+     * @param facet
+     * @param aggregationSize
+     * @return
+     */
     public static AbstractAggregationBuilder buildAggregation(String facet, int aggregationSize) {
         String[] subFacets = facet.split("\\.");
         AbstractAggregationBuilder builder = null;
@@ -296,7 +406,8 @@ public class ESSearchBuilder {
     }
 
     /**
-     * Prepend a path to the name, if set
+     * Prepend a path to the name, if set. Used by
+     * {@link #buildAggregation(String, int)}
      * 
      * @param path
      *            (can be null or blank)

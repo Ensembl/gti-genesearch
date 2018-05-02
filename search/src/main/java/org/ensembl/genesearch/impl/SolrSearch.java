@@ -45,6 +45,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple {@link Search} implementation using an instance of {@link SolrClient}
  * 
+ * Supports sorting but not faceting
+ * 
  * @author dstaines
  *
  */
@@ -84,8 +86,10 @@ public class SolrSearch implements Search {
 			q.setFields(fieldNames.getFields().toArray(new String[] {}));
 			q.set(SolrQueryBuilder.ROWS_PARAM, PAGESIZE);
 			if (idField.isPresent()) {
+			    // if the data type has an annotated ID, we can use a cursor (more efficient)
 				paginateWithCursor(consumer, q);
 			} else {
+			    // otherwise, use standard pagination
 				paginate(consumer, q);
 			}
 			log.info("Completed Solr query in " + w.getTime() + " ms");
@@ -95,8 +99,9 @@ public class SolrSearch implements Search {
 	}
 
 	/**
+	 * Utility to paginate over a complete result set and pass results to a consumer
 	 * @param consumer
-	 * @param q
+	 * @param q Solr query string
 	 * @throws SolrServerException
 	 * @throws IOException
 	 */
@@ -117,8 +122,9 @@ public class SolrSearch implements Search {
 	}
 
 	/**
+	 * Pagination over results using a cursor. Requires ID in the output.
 	 * @param consumer
-	 * @param q
+	 * @param q Solr query string
 	 * @throws SolrServerException
 	 * @throws IOException
 	 */
@@ -155,10 +161,10 @@ public class SolrSearch implements Search {
 		q.setFields(output.getFields().toArray(new String[] {}));
 		q.set(SolrQueryBuilder.START_PARAM, offset);
 		q.set(SolrQueryBuilder.ROWS_PARAM, limit);
-		if (!facets.isEmpty()) {
+		if (facets!=null && !facets.isEmpty()) {
 			throw new IllegalArgumentException("SolrSearch does not currently support facets");
 		}
-		if (!sorts.isEmpty()) {
+		if (sorts!=null && !sorts.isEmpty()) {
 			q.add("sort", SolrQueryBuilder.parseSorts(sorts));
 		}
 		try {

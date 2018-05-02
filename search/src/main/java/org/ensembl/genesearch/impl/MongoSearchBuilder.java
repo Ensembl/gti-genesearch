@@ -35,8 +35,11 @@ import org.bson.Document;
 import org.ensembl.genesearch.Query;
 
 /**
- * Utility to build MongoDB filter {@link Document} instances from {@link Query}
- * instances
+ * Utility methods used by {@link MongoSearch} to build MongoDB filter
+ * {@link Document} instances from {@link Query} instances.
+ * 
+ * Supports TERM, LOCATION, NESTED and NUMBER queries. TEXT fields are treated
+ * as TERM. No support for NOT (!) queries
  * 
  * @author dstaines
  *
@@ -55,10 +58,13 @@ public class MongoSearchBuilder {
     }
 
     /**
+     * Main method to transform queries to Mongo documents
+     * 
      * @param queries
      * @return Mongo filter document
      */
     public static Document buildQuery(Iterable<Query> queries) {
+        // base document that all querier are added to
         Document doc = new Document();
         for (Query q : queries) {
 
@@ -89,7 +95,9 @@ public class MongoSearchBuilder {
 
     /**
      * @param q
+     *            term query
      * @param doc
+     *            document to add query to
      */
     protected static void processTerm(Query q, Document doc) {
         if (q.getValues().length == 1) {
@@ -102,6 +110,7 @@ public class MongoSearchBuilder {
 
     /**
      * Generate a Mongo query for a location (uses EVA specific fields)
+     * 
      * @param q
      * @param doc
      */
@@ -109,7 +118,7 @@ public class MongoSearchBuilder {
         for (String value : q.getValues()) {
             Matcher m = Query.LOCATION.matcher(value);
             if (m.matches()) {
-                doc.append(SEQ_REGION_FIELD,CHR+m.group(1));
+                doc.append(SEQ_REGION_FIELD, CHR + m.group(1));
                 doc.append(START_FIELD, new Document().append("$gte", Double.valueOf(m.group(2))).append("$lte",
                         Double.valueOf(m.group(3))));
             } else {
@@ -120,7 +129,9 @@ public class MongoSearchBuilder {
 
     /**
      * @param q
+     *            nested query
      * @param doc
+     *            document to add query to
      */
     protected static void processNested(Query q, Document doc) {
         Matcher m = LIST_PATTERN.matcher(q.getFieldName());
@@ -146,6 +157,12 @@ public class MongoSearchBuilder {
         }
     }
 
+    /**
+     * @param q
+     *            numeric query
+     * @param doc
+     *            document to add query to
+     */
     protected static void processNumber(Query q, Document doc) {
         String value = q.getValues()[0];
         Matcher m = SINGLE_NUMBER.matcher(value);
@@ -183,6 +200,14 @@ public class MongoSearchBuilder {
         }
     }
 
+    /**
+     * Utility method to either add a new child to a Mongo document or append to
+     * an existing attribute
+     * 
+     * @param doc
+     * @param key
+     * @param value
+     */
     private static void appendOrAdd(Document doc, String key, Object value) {
         if (doc.containsKey(key)) {
             Object o = doc.get(key);

@@ -38,78 +38,78 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 /**
- * A simple standalone CLI client for querying by one field at a time
+ * A simple standalone CLI client for an Elastic query service
  * 
  * @author dstaines
  *
  */
 public class QueryClient {
 
-	public static class Params extends ClientParams {
+    public static class Params extends ClientParams {
 
-		@Parameter(names = "-query", description = "JSON query string")
-		private String query = "{}";
+        @Parameter(names = "-query", description = "JSON query string")
+        private String query = "{}";
 
-		@Parameter(names = "-fields", description = "Fields to retrieve")
-		private List<String> resultFields = Collections.emptyList();
+        @Parameter(names = "-fields", description = "Fields to retrieve")
+        private List<String> resultFields = Collections.emptyList();
 
-		@Parameter(names = "-facets", description = "Fields to facet by")
-		private List<String> facets = Collections.emptyList();
+        @Parameter(names = "-facets", description = "Fields to facet by")
+        private List<String> facets = Collections.emptyList();
 
-		@Parameter(names = "-sort", description = "Fields to sort by")
-		private List<String> sorts = Collections.emptyList();
+        @Parameter(names = "-sort", description = "Fields to sort by")
+        private List<String> sorts = Collections.emptyList();
 
-		@Parameter(names = "-limit", description = "Number of rows to retrieve")
-		private int limit = 10;
+        @Parameter(names = "-limit", description = "Number of rows to retrieve")
+        private int limit = 10;
 
-		@Parameter(names = "-offset", description = "Place to start from")
-		private int offset = 0;
+        @Parameter(names = "-offset", description = "Place to start from")
+        private int offset = 0;
 
-		@Parameter(names = "-target", description = "Object target to flatten to")
-		private String target = null;
+        @Parameter(names = "-target", description = "Object target to flatten to")
+        private String target = null;
 
-		@Parameter(names = "-targetQuery", description = "Object target query to flatten to")
-		private String targetQuery = null;
+        @Parameter(names = "-targetQuery", description = "Object target query to flatten to")
+        private String targetQuery = null;
 
-		@Parameter(names = "-outfile", description = "File to write results to")
-		private String outFile = null;
+        @Parameter(names = "-outfile", description = "File to write results to")
+        private String outFile = null;
 
-	}
+    }
 
-	private final static Logger log = LoggerFactory.getLogger(QueryClient.class);
+    private final static Logger log = LoggerFactory.getLogger(QueryClient.class);
 
-	public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException, IOException {
 
-		Params params = new Params();
-		JCommander jc = new JCommander(params, args);
-		jc.setProgramName(QueryClient.class.getSimpleName());
-		log.info("Creating client");
-		Client client = ClientBuilder.buildClient(params);
+        Params params = new Params();
+        JCommander jc = new JCommander(params, args);
+        jc.setProgramName(QueryClient.class.getSimpleName());
+        log.info("Creating client");
+        Client client = ClientBuilder.buildClient(params);
 
-		if (client == null) {
-			jc.usage();
-			System.exit(1);
-		}
+        if (client == null) {
+            jc.usage();
+            System.exit(1);
+        }
 
-		Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
-				DataTypeInfo.fromResource("/gene_datatype_info.json"));
+        Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
+                DataTypeInfo.fromResource("/gene_datatype_info.json"));
 
-		List<Query> queries = new DefaultQueryHandler().parseQuery(params.query);
+        List<Query> queries = new DefaultQueryHandler().parseQuery(params.query);
 
-		log.info("Starting query");
+        log.info("Starting query");
 
-		SearchResult res = search.query(queries, QueryOutput.build(params.resultFields), params.facets, params.offset,
-				params.limit, params.sorts);
+        SearchResult res = search.query(queries, QueryOutput.build(params.resultFields), params.facets, params.offset,
+                params.limit, params.sorts);
 
-		if (!StringUtils.isEmpty(params.outFile)) {
-			log.info("Writing results to " + params.outFile);
-			FileUtils.write(new File(params.outFile), res.toString());
-		}
+        if (!StringUtils.isEmpty(params.outFile)) {
+            log.info("Writing results to " + params.outFile);
+            FileUtils.write(new File(params.outFile), res.toString());
+        }
 
-		log.info("Completed retrieval");
+        log.info("Completed retrieval");
 
-		log.info("Closing client");
-		client.close();
+        log.info("Closing client");
+        client.close();
 
-	}
+    }
 }

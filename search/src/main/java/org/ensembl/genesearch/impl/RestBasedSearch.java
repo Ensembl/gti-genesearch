@@ -25,7 +25,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Base class that can be extended to use a generic REST backend
+ * Abstract class that can be extended to use a generic REST backend. Assumes that
+ * fields can be classified as either URI or post-retrieval. Provides template
+ * methods for transforming a URI response into a JsonNode document.
+ * 
  * @author dstaines
  *
  */
@@ -39,6 +42,12 @@ public abstract class RestBasedSearch implements Search {
         this.info = info;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
+     * java.util.List, org.ensembl.genesearch.QueryOutput)
+     */
     @Override
     public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
         int offset = 0;
@@ -60,15 +69,34 @@ public abstract class RestBasedSearch implements Search {
         } while (resultCnt > 0 && offset < resultCnt);
     }
 
+    /**
+     * @return number of documents to retrieve at one time
+     */
     public abstract int getBatchSize();
 
-    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.Search#getDataType()
+     */
     public DataTypeInfo getDataType() {
         return info;
     }
 
+    /**
+     * @param queries
+     *            all queries
+     * @return Find supplied queries that must be applied post-retrieval
+     */
     protected abstract List<Query> getPostQueries(List<Query> queries);
-    
+
+    /**
+     * Invoke URI and parse body of response as JSON using
+     * {@link #getResults(JsonNode)}
+     * 
+     * @param uri
+     * @return body
+     */
     protected JsonNode getResponse(String uri) {
         try {
             log.info("Querying " + uri);
@@ -83,12 +111,28 @@ public abstract class RestBasedSearch implements Search {
         }
     }
 
-    protected abstract JsonNode getResults(JsonNode response);
-    
-    protected abstract String getUrl(List<Query> queries, QueryOutput fieldNames, int offset, int limit);
-    
     /**
-     * Process a standard response
+     * Transform a response into a JSON document
+     * 
+     * @param response
+     * @return
+     */
+    protected abstract JsonNode getResults(JsonNode response);
+
+    /**
+     * Generate a URL from the supplied queries, fields and pagination options
+     * 
+     * @param queries
+     * @param fieldNames
+     * @param offset
+     * @param limit
+     * @return URL to invoke
+     */
+    protected abstract String getUrl(List<Query> queries, QueryOutput fieldNames, int offset, int limit);
+
+    /**
+     * Process a standard response and pass results to consumer. Uses template methods consumeStream and getResults
+     * 
      * @param consumer
      * @param fieldNames
      * @param postQueries
@@ -96,17 +140,17 @@ public abstract class RestBasedSearch implements Search {
      */
     protected void processResponse(Consumer<Map<String, Object>> consumer, QueryOutput fieldNames,
             List<Query> postQueries, JsonNode response) {
-        consumeStream(consumer, fieldNames,
-                postQueries, resultsToStream(getResults(response)));
+        consumeStream(consumer, fieldNames, postQueries, resultsToStream(getResults(response)));
     }
-    
+
     /**
-     * Transform results jsonnode into a stream for further processing
+     * Utility to transform results JsonNode into a stream for further processing e.g. by stream functions or a consumer
+     * 
      * @param results
      * @return
      */
     protected static Stream<JsonNode> resultsToStream(JsonNode results) {
-        
+
         if (results != null && results.size() > 0) {
             // turn iterator to iterable
             Iterable<JsonNode> iterableI = () -> results.elements();
@@ -118,6 +162,7 @@ public abstract class RestBasedSearch implements Search {
 
     /**
      * Filter and process a stream before passing to a consumer
+     * 
      * @param consumer
      * @param fieldNames
      * @param postQueries
@@ -126,18 +171,20 @@ public abstract class RestBasedSearch implements Search {
     @SuppressWarnings("unchecked")
     protected void consumeStream(Consumer<Map<String, Object>> consumer, QueryOutput fieldNames,
             List<Query> postQueries, Stream<JsonNode> stream) {
-        
+
         // do the following:
         /// turn nodes into maps
         /// filter out using the post queries
         /// filter the content of the objects
-        /// pass each object to the consumer        
-        stream
-                .map(v -> (Map<String, Object>) mapper.convertValue(v, Map.class))
+        /// pass each object to the consumer
+        stream.map(v -> (Map<String, Object>) mapper.convertValue(v, Map.class))
                 .filter(v -> QueryUtils.filterResultsByQueries.test(v, postQueries))
                 .map(v -> QueryUtils.filterFields(v, fieldNames)).forEach(consumer);
     }
-    
+
+    /* (non-Javadoc)
+     * @see org.ensembl.genesearch.Search#query(java.util.List, org.ensembl.genesearch.QueryOutput, java.util.List, int, int, java.util.List)
+     */
     public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
             List<String> sorts) {
         String url = getUrl(queries, output, offset, limit);
@@ -155,5 +202,4 @@ public abstract class RestBasedSearch implements Search {
         return new QueryResult(-1, offset, limit, getFieldInfo(output), results, Collections.emptyMap());
     }
 
-    
 }

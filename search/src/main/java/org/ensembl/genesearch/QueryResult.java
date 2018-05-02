@@ -25,60 +25,88 @@ import org.ensembl.genesearch.info.FieldInfo;
 
 /**
  * Class encapsulating a limited query result set. Returned by
- * {@link Search#query(List, QueryOutput, List, int, int, List)} 
+ * {@link Search#query(List, QueryOutput, List, int, int, List)}
+ * 
  * @author dstaines
  *
  */
 public class QueryResult extends SearchResult {
 
-	private final long resultCount;
-	private final long offset;
-	private final long limit;
-	private final Map<String, Map<String, Long>> facets;
+    private final long resultCount;
+    private final long offset;
+    private final long limit;
+    private final Map<String, Map<String, Long>> facets;
 
-	public QueryResult(long resultCount, long offset, long limit, List<FieldInfo> fields,
-			List<Map<String, Object>> results, Map<String, Map<String, Long>> facets) {
-		super(fields, results);
-		this.resultCount = resultCount;
-		this.offset = offset;
-		this.limit = limit;
-		this.facets = facets;
-	}
+    public QueryResult(long resultCount, long offset, long limit, List<FieldInfo> fields,
+            List<Map<String, Object>> results, Map<String, Map<String, Long>> facets) {
+        super(fields, results);
+        this.resultCount = resultCount;
+        this.offset = offset;
+        this.limit = limit;
+        this.facets = facets;
+    }
 
-	public Map<String, Map<String, Long>> getFacets() {
-		return facets;
-	}
+    /**
+     * Returns facets if requested/supported. Key is field name and value is map
+     * of values to counts.
+     * 
+     * @return map of facets
+     */
+    public Map<String, Map<String, Long>> getFacets() {
+        return facets;
+    }
 
-	public long getOffset() {
-		return offset;
-	}
+    /**
+     * @return offset (page start) specified when querying
+     */
+    public long getOffset() {
+        return offset;
+    }
 
-	public long getLimit() {
-		return limit;
-	}
+    /**
+     * @return limit (page size) specified when querying
+     */
+    public long getLimit() {
+        return limit;
+    }
 
-	public long getResultCount() {
-		return resultCount;
-	}
+    /**
+     * @return number of results in whole set
+     */
+    public long getResultCount() {
+        return resultCount;
+    }
 
-	public List<Object> getResultsAsList() {
-		return results.stream().map(r -> getFields().stream().map(f -> r.get(f.getName())).collect(Collectors.toList()))
-				.collect(Collectors.toList());
-	}
+    /**
+     * Render the results as a 2D list. Used for a more compact/convenient export mechanism
+     * 
+     * @return results as list of lists
+     */
+    public List<Object> getResultsAsList() {
+        return results.stream().map(r -> getFields().stream().map(f -> r.get(f.getName())).collect(Collectors.toList()))
+                .collect(Collectors.toList());
+    }
 
-	public Map<String, Object> toMap(boolean resultsAsArray) {
-		Map<String, Object> map = new LinkedHashMap<>(6);
-		map.put("resultCount", resultCount);
-		map.put("offset", offset);
-		map.put("limit", limit);
-		map.put("fields", getFields());
-		if (resultsAsArray) {
-			map.put("results", getResultsAsList());
-		} else {
-			map.put("results", results);
-		}
-		map.put("facets", facets);
-		return map;
-	}
+    /**
+     * Render results as map
+     * 
+     * @param resultsAsArray
+     *            if true, results are rendered as an array
+     * @return
+     */
+    public Map<String, Object> toMap(boolean resultsAsArray) {
+        Map<String, Object> map = new LinkedHashMap<>(6);
+        map.put("resultCount", resultCount);
+        map.put("offset", offset);
+        map.put("limit", limit);
+        map.put("fields", getFields());
+        if (resultsAsArray) {
+            map.put("results", getResultsAsList());
+        } else {
+            map.put("results", results);
+        }
+        map.put("facets", facets);
+        return map;
+    }
 
 }

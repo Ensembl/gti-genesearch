@@ -1,90 +1,99 @@
 package org.ensembl.genesearch.info;
 
 /**
- * Encapsulates information about a field
+ * Encapsulates information about a field. This information should be given to a
+ * client so that it can determine what operations are supported.
+ * 
+ * Typically, this is used to prevent clients from executing unsupported or very
+ * expensive operations.
  * 
  * @author dstaines
  *
  */
 public class FieldInfo {
 
-	private boolean display;
+    private boolean display;
 
-	private String displayName;
+    private String displayName;
 
-	private boolean facet;
+    private boolean facet;
 
-	private String name;
+    private String name;
 
-	private boolean search;
+    private boolean search;
 
-	private boolean sort;
+    private boolean sort;
 
-	private FieldType type = FieldType.TEXT;
+    private FieldType type = FieldType.TEXT;
 
-	public FieldInfo(String name, FieldType type) {
-		this.name = name;
-		this.type = type;
-	}
+    public FieldInfo(String name, FieldType type) {
+        this.name = name;
+        this.type = type;
+    }
 
-	public FieldInfo() {
-	}
+    public FieldInfo() {
+    }
 
-	public String getDisplayName() {
-		return displayName;
-	}
+    public String getDisplayName() {
+        return displayName;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public FieldType getType() {
-		return type;
-	}
+    public FieldType getType() {
+        return type;
+    }
 
-	public boolean isDisplay() {
-		return display;
-	}
+    public boolean isDisplay() {
+        return display;
+    }
 
-	public boolean isFacet() {
-		return facet;
-	}
+    public boolean isFacet() {
+        return facet;
+    }
 
-	public boolean isSearch() {
-		return search;
-	}
+    public boolean isSearch() {
+        return search;
+    }
 
-	public boolean isSort() {
-		return sort;
-	}
+    public boolean isSort() {
+        return sort;
+    }
 
-	public void setDisplay(boolean display) {
-		this.display = display;
-	}
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-	public void setFacet(boolean facet) {
-		this.facet = facet;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public void setSearch(boolean search) {
-		this.search = search;
-	}
-	public void setSort(boolean sort) {
-		this.sort = sort;
-	}
+    public void setDisplay(boolean display) {
+        this.display = display;
+    }
 
-	public void setType(FieldType type) {
-		this.type = type;
-	}
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
-	@Override
-	public String toString() {
-		return "FieldInfo [display=" + display + ", displayName=" + displayName + ", facet=" + facet + ", name=" + name
-				+ ", search=" + search + ", sort=" + sort + ", type=" + type + "]";
-	}
-	
+    public void setFacet(boolean facet) {
+        this.facet = facet;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSearch(boolean search) {
+        this.search = search;
+    }
+
+    public void setSort(boolean sort) {
+        this.sort = sort;
+    }
+
+    public void setType(FieldType type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "FieldInfo [display=" + display + ", displayName=" + displayName + ", facet=" + facet + ", name=" + name
+                + ", search=" + search + ", sort=" + sort + ", type=" + type + "]";
+    }
+
 }
