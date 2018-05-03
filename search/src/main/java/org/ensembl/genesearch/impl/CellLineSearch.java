@@ -41,8 +41,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class CellLineSearch implements Search {
 
-	private static final String CELL_LINE_NAME = "name";
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final String CELL_LINE_NAME = "name";
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final String url;
     private final String user;
@@ -71,60 +71,69 @@ public class CellLineSearch implements Search {
             // retrieve all cell lines using REST
             String uri = url + "?username=" + user + "&api_key=" + apiKey;
             log.info("Querying base " + uri);
-			int offset = 0;
-			int resultCnt = 0;
-			int limit = 100;
-			cellLines = new ArrayList<>();
-			do {
-				try {
+            int offset = 0;
+            int resultCnt = 0;
+            int limit = 100;
+            cellLines = new ArrayList<>();
+            do {
+                try {
 
-					ResponseEntity<String> response = getTemplate()
-							.getForEntity(uri + "&offset=" + offset + "&limit=" + limit, String.class);
-					if (response.getStatusCode() != HttpStatus.OK) {
-						throw new RestSearchException(uri, response.getBody(), response.getStatusCode());
-					}
-					JsonNode body = mapper.readTree(response.getBody());
-					log.info("Response retrieved");
-					RestBasedSearch.resultsToStream(body.get("objects")).map(n -> mapper.convertValue(n, Map.class))
-							.map(n -> {
-								n.remove("batches");
-								n.remove("status_log");
-								return n;
-							}).forEach(n -> cellLines.add(n));
-					if (resultCnt == 0) {
-						resultCnt = Integer.parseUnsignedInt(body.get("meta").get("total_count").asText());
-					}
-				} catch (IOException e) {
-					throw new RestSearchException("Could not parse response body", url, e);
-				}
-				log.info("Executing fetch");
-				log.info("Fetch executed");
-				offset += limit;
-			} while (resultCnt > 0 && offset < resultCnt);
-			log.info(cellLines.size() + " cell lines retrieved");
-		}
-		return cellLines;
-	}
+                    ResponseEntity<String> response = getTemplate()
+                            .getForEntity(uri + "&offset=" + offset + "&limit=" + limit, String.class);
+                    if (response.getStatusCode() != HttpStatus.OK) {
+                        throw new RestSearchException(uri, response.getBody(), response.getStatusCode());
+                    }
+                    JsonNode body = mapper.readTree(response.getBody());
+                    log.info("Response retrieved");
+                    RestBasedSearch.resultsToStream(body.get("objects")).map(n -> mapper.convertValue(n, Map.class))
+                            .map(n -> {
+                                n.remove("batches");
+                                n.remove("status_log");
+                                return n;
+                            }).forEach(n -> cellLines.add(n));
+                    if (resultCnt == 0) {
+                        resultCnt = Integer.parseUnsignedInt(body.get("meta").get("total_count").asText());
+                    }
+                } catch (IOException e) {
+                    throw new RestSearchException("Could not parse response body", url, e);
+                }
+                log.info("Executing fetch");
+                log.info("Fetch executed");
+                offset += limit;
+            } while (resultCnt > 0 && offset < resultCnt);
+            log.info(cellLines.size() + " cell lines retrieved");
+        }
+        return cellLines;
+    }
 
-	protected RestTemplate getTemplate() {
-		String proxyHost = System.getProperty("https.proxyHost");
-		if (!StringUtils.isEmpty(proxyHost)) {
-			int proxyPort = Integer.parseInt(System.getProperty("https.proxyPort", "80"));
-			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-			Proxy proxy = new Proxy(Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-			requestFactory.setProxy(proxy);
-			return new RestTemplate(requestFactory);
-		} else {
-			return new RestTemplate();
-		}
-	}
+    /**
+     * @return template configured to use proxy where specified
+     */
+    protected RestTemplate getTemplate() {
+        String proxyHost = System.getProperty("https.proxyHost");
+        if (!StringUtils.isEmpty(proxyHost)) {
+            int proxyPort = Integer.parseInt(System.getProperty("https.proxyPort", "80"));
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            Proxy proxy = new Proxy(Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            requestFactory.setProxy(proxy);
+            return new RestTemplate(requestFactory);
+        } else {
+            return new RestTemplate();
+        }
+    }
 
-	@Override
-	public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
-		getCellLines().stream().map(v -> (Map<String, Object>) mapper.convertValue(v, Map.class))
-				.filter(v -> QueryUtils.filterResultsByQueries.test(v, queries))
-				.map(v -> QueryUtils.filterFields(v, fieldNames)).forEach(consumer);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
+     * java.util.List, org.ensembl.genesearch.QueryOutput)
+     */
+    @Override
+    public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
+        getCellLines().stream().map(v -> (Map<String, Object>) mapper.convertValue(v, Map.class))
+                .filter(v -> QueryUtils.filterResultsByQueries.test(v, queries))
+                .map(v -> QueryUtils.filterFields(v, fieldNames)).forEach(consumer);
+    }
 
     /*
      * (non-Javadoc)
@@ -182,8 +191,14 @@ public class CellLineSearch implements Search {
         return true;
     }
 
-	public Optional<Map<String, Object>> getCellLine(String name) {
-		return getCellLines().stream().filter(c -> name.equals(c.get(CELL_LINE_NAME))).findFirst();
-	}
+    /**
+     * Retrieve the named cell line, lazily loading if needed
+     * 
+     * @param name
+     * @return cell line as document
+     */
+    public Optional<Map<String, Object>> getCellLine(String name) {
+        return getCellLines().stream().filter(c -> name.equals(c.get(CELL_LINE_NAME))).findFirst();
+    }
 
 }
