@@ -33,12 +33,11 @@ public enum SearchType {
                     "variant"), SEQUENCES("sequences", "sequence"), EXPRESSION("expression",
                             "expression"), EXPRESSION_EXPERIMENTS("experiments", "experiment"), EXPRESSION_ANALYTICS(
                                     "analytics", "analytics"), CELL_LINES("cell_lines", "cell_line");
-
     /**
      * Name to use when a plural is needed
      */
     private final String pluralName;
-    
+
     /**
      * Name of a single item returned by a search. This is also used by joins
      * etc.

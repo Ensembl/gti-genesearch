@@ -1,11 +1,11 @@
 package org.ensembl.gti.genesearch.services;
 
 import org.ensembl.genesearch.Search;
+import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.impl.EVAGenomeFinder;
 import org.ensembl.genesearch.impl.EVAGenomeRestSearch;
 import org.ensembl.genesearch.impl.EVAVariantRestSearch;
 import org.ensembl.genesearch.impl.SearchRegistry;
-import org.ensembl.genesearch.impl.SearchType;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;

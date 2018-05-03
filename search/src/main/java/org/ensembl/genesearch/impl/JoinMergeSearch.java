@@ -269,15 +269,7 @@ public abstract class JoinMergeSearch implements Search {
 
         } else if (to.joinStrategy.type == JoinType.RANGE) {
 
-            if (isInner(from, to)) {
-
-                fetchWithRangeJoin(consumer, innerTermJoinQuery(from, to), to);
-
-            } else {
-
-                fetchWithRangeJoin(consumer, from, to);
-
-            }
+            fetchWithRangeJoin(consumer, from, to, isInner(to,from));
 
         } else if (to.joinStrategy.type == JoinType.TERM) {
 
@@ -353,7 +345,7 @@ public abstract class JoinMergeSearch implements Search {
      * @param to
      */
     protected void fetchWithRangeJoin(Consumer<Map<String, Object>> consumer, SubSearchParams from,
-            SubSearchParams to) {
+            SubSearchParams to, boolean inner) {
         // process in batches
         Search toSearch = provider.getSearch(to.name.get());
         provider.getSearch(from.name.get()).fetch(fromRow -> {
@@ -363,7 +355,9 @@ public abstract class JoinMergeSearch implements Search {
             toSearch.fetch(toRow -> {
                 addRangeJoinData(from, to, fromRow, toRow);
             }, toQueries, to.fields);
-            consumer.accept(fromRow);
+            if(!inner || fromRow.containsKey(to.name.get().toString())) {
+            		consumer.accept(fromRow);
+            }
         }, from.queries, from.fields);
     }
 
@@ -603,15 +597,7 @@ public abstract class JoinMergeSearch implements Search {
 
         } else if (to.joinStrategy.type == JoinType.RANGE) {
 
-            if (isInner(from, to)) {
-
-                throw new UnsupportedOperationException("Inner joins are not supported for range-based joins");
-
-            } else {
-
-                return queryWithRangeJoin(output, facets, offset, limit, sorts, from, to);
-
-            }
+            return queryWithRangeJoin(output, facets, offset, limit, sorts, from, to, isInner(from, to));
 
         } else if (to.joinStrategy.type == JoinType.TERM) {
 
@@ -634,7 +620,7 @@ public abstract class JoinMergeSearch implements Search {
     }
 
     protected QueryResult queryWithRangeJoin(QueryOutput output, List<String> facets, int offset, int limit,
-            List<String> sorts, SubSearchParams from, SubSearchParams to) {
+            List<String> sorts, SubSearchParams from, SubSearchParams to, boolean inner) {
 
         log.debug("Executing join query through primary using ranges");
 
@@ -643,12 +629,22 @@ public abstract class JoinMergeSearch implements Search {
                 offset, limit, sorts);
 
         Search toSearch = provider.getSearch(to.name.get());
-        for (Map<String, Object> r : fromResults.getResults()) {
+        Iterator<Map<String, Object>> resultsI = fromResults.getResults().iterator();
+        while(resultsI.hasNext()) {
+        		Map<String, Object> r = resultsI.next();
             List<Query> toQueries = buildToRangeQuery(from, to, r);
             // execute and merge "to" results onto existing "from"
             toSearch.fetch(t -> {
                 addRangeJoinData(from, to, r, t);
             }, toQueries, to.fields);
+            if(inner && !r.containsKey(to.name.get().toString())) {
+            		resultsI.remove();
+            }
+        }
+        
+        if(inner) {
+        		// result set size cannot be set accurately so set to -1
+        		fromResults.setResultCount(-1);
         }
 
         fromResults.getFields().clear();

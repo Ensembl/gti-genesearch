@@ -66,7 +66,7 @@ public class DataUtils {
     }
 
     /**
-     * Internal method to iteratively search an object.  
+     * Internal method to iteratively search an object.
      * 
      * @param r
      *            data object to search

@@ -2,6 +2,7 @@ package org.ensembl.gti.genesearch.services;
 
 import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.impl.CellLineSearch;
+import org.ensembl.genesearch.impl.EbiscVariantSearch;
 import org.ensembl.genesearch.impl.HtsGetSingleFileVariantSearch;
 import org.ensembl.genesearch.impl.SearchRegistry;
 import org.ensembl.genesearch.info.DataTypeInfo;
@@ -39,12 +40,15 @@ public class EbiscEndpointProvider extends EndpointSearchProvider {
         super.registerSearches(reg);
         // EBiSC cell line metadata
         DataTypeInfo cellLineType = DataTypeInfo.fromResource("/celllines_datatype_info.json");
-        cellLineSearch = new CellLineSearch(cellLineType, ebiscUrl, ebiscUser, ebiscToken);
+        CellLineSearch cellLineSearch = new CellLineSearch(cellLineType, ebiscUrl, ebiscUser, ebiscToken);
         reg.registerSearch(SearchType.CELL_LINES, cellLineSearch);
         // HTSget API
         DataTypeInfo variantInfo = DataTypeInfo.fromResource("/ebisc_datatype_info.json");
-        variantSearch = new HtsGetSingleFileVariantSearch(variantInfo, egaUrl, egaAccession);
+        EbiscVariantSearch variantSearch = new EbiscVariantSearch(variantInfo, egaUrl, egaAccession, cellLineSearch);
         reg.registerSearch(SearchType.VARIANTS, variantSearch);
+        this.setCellLineSearch(cellLineSearch);
+        this.setVariantSearch(variantSearch);
+
     }
 
 }

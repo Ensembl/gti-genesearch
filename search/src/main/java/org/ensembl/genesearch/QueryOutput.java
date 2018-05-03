@@ -41,6 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class QueryOutput {
 
+    private static final String WILD = "*";
     private static final char MAP_START = '{';
     private static final char MAP_END = '}';
     private static final char ARRAY_START = '[';
@@ -163,12 +164,23 @@ public class QueryOutput {
     }
 
     /**
-     * Detect if the output contains the specified path. Used by
+     * @return true if fields contains top level '*'
+     */
+    public boolean isWild() {
+        return getFields().stream().anyMatch(s -> s.equals(WILD));
+    }
+
+    /**
+     * <<<<<<< HEAD Detect if the output contains the specified path. Used by
      * {@link QueryUtils} to decide whether to filter out fields
      * 
      * @param path
      *            e.g. transcripts.xrefs
-     * @return true if path found within output
+     * @return true if path found within output ======= Utility method to find
+     *         if one of the fields match the supplied path
+     * @param path
+     * @return true if path matched >>>>>>>
+     *         7a568994b2012e2072d0e9b23850b4efddd5aec8
      */
     public boolean containsPath(String path) {
         boolean contains = false;

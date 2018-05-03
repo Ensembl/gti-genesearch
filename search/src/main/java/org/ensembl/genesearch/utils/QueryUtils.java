@@ -30,9 +30,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
@@ -64,7 +66,9 @@ public class QueryUtils {
 
     @SuppressWarnings("unchecked")
     protected static Map<String, Object> filterFields(Map<String, Object> obj, QueryOutput output, String path) {
-        if (output == null) {
+    	    // if no output, or output is wild, don't filter.
+    	    // wild filtering only applies to top level
+        if (output == null || (StringUtils.isEmpty(path) && output.isWild())) {
             return obj;
         }
         Iterator<String> i = obj.keySet().iterator();
@@ -222,7 +226,7 @@ public class QueryUtils {
      * @return
      */
     public static boolean numberMatch(Collection<String> vals, String qv) {
-        return vals.stream().map(BigDecimal::new).anyMatch(v -> numberMatch(v, qv));
+        return vals.stream().filter(v -> !StringUtils.isEmpty(v)).map(BigDecimal::new).anyMatch(v -> numberMatch(v, qv));
     }
 
     /**
@@ -263,6 +267,50 @@ public class QueryUtils {
                 throw new UnsupportedOperationException("Cannot parse numeric query " + value);
             }
         }
+    }
+    
+    /**
+     * Hybrid method that both queries a nested object for matches and filters out sub-documents that do not match.
+     * This is used by htsget based searches where we want to just return genotypes that match.
+     * @param obj
+     * @param query
+     * @return filtered object, if empty no match was found
+     */
+    public static Optional<Map<String,Object>> queryAndFilter(Map<String,Object> obj, Query query) {
+    		Object field = obj.get(query.getFieldName());
+    		// basic check, do we have the field in this object
+    		if(field == null) {
+    			return Optional.empty();
+    		}
+    		if(query.getType() == FieldType.NESTED) {
+    			if(List.class.isAssignableFrom(field.getClass())) {
+    				List<Map<String,Object>> filteredObjs = (List<Map<String,Object>>) field;
+    				for(Query q: query.getSubQueries()) {
+    					filteredObjs = filteredObjs.stream().map(o -> queryAndFilter(o, q)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+    				}
+    				if(filteredObjs.isEmpty()) {
+    					return Optional.empty();
+    				} else {
+    					obj.put(query.getFieldName(), filteredObjs);
+    					return Optional.of(obj);
+    				}
+    			} else {
+    				for(Query q: query.getSubQueries()) {
+    					if(!queryAndFilter((Map<String, Object>) field, q).isPresent()) {
+    						// no match, so return empty
+    						return Optional.empty();
+    					}
+    				}
+    				// all matches passed, return
+    				return Optional.of(obj);
+    			}    				
+    		} else if(filterResultsByQuery.test(obj, query)) {
+    			// standard field, use normal test
+    			return Optional.of(obj);
+    		} else {
+    			// no matches
+    			return Optional.empty();
+    		}
     }
 
 }

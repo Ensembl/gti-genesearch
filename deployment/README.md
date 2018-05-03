@@ -1,6 +1,10 @@
 Requirements
 ============
-`ansible` is best deployed in your own virtual environment to avoid clashes with the EBI farm.
+`ansible` is best deployed in your own virtual environment to avoid clashes with the EBI farm e.g.
+```
+virtualenv .
+. bin/activate
+```
 
 Deployment
 ==========

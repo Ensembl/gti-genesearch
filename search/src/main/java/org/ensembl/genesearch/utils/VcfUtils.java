@@ -27,7 +27,9 @@ import htsjdk.samtools.util.BufferedLineReader;
  */
 public class VcfUtils {
 
-    private static final String GENOTYPES = "genotypes";
+	private static final String GENOTYPE_HEADER = "genotype";
+	private static final String ZYGOSITY = "heterozygosity";
+	private static final String GENOTYPES = "genotypes";
     private static final String CONSEQUENCES = "CSQ";
 
     /**
@@ -100,7 +102,11 @@ public class VcfUtils {
                 for (String val : csqStr.split("\\|")) {
                     String col = CSQ_FIELDS[n++];
                     if (!StringUtils.isEmpty(val)) {
-                        csq.put(col, val);
+                    		if(CONSEQUENCE.equals(col)) {
+                    			csq.put(col, Arrays.asList(val.split("&")));
+                    		} else {
+                    			csq.put(col, val);
+                    		}
                     }
                 }
                 csqs.add(csq);
@@ -200,12 +206,13 @@ public class VcfUtils {
      */
     public final static String[] FIXED_FIELDS = { "seq_region_name", "start", "id", "ref_allele", "alt_allele",
             "quality", "filter" };
+    public final static String CONSEQUENCE = "Consequence";
 
     /**
      * Fields that are found in VEP consequence info types
      */
-    public final static String[] CSQ_FIELDS = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen"
-            .split("\\|");
+    public final static String[] CSQ_FIELDS = 
+    		"Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen".split("\\|");
 
     /**
      * @param line
@@ -221,6 +228,7 @@ public class VcfUtils {
     private static final Pattern INFO_PATTERN = Pattern.compile("([^=]+)=(.*)");
     private static final Pattern COLS_PATTERN = Pattern.compile("^#CHROM.+");
     private static final Pattern META_PATTERN = Pattern.compile("^##[^#]+");
+    private static final Pattern GENOTYPE_PATTERN = Pattern.compile("([0-9]+)[|/]([0-9]+)");
 
     /**
      * @return true if line is an INFO header line
@@ -277,8 +285,19 @@ public class VcfUtils {
                 for (int m = 0; m < gFormat.size(); m++) {
                     genotype.put(gFormat.get(m), genotypeVals[m]);
                 }
+                Object gt = genotype.get(GENOTYPE_HEADER);
+                if(gt!=null) {
+                		Matcher m = GENOTYPE_PATTERN.matcher(String.valueOf(gt));
+                		if(m.matches()) {
+                			if(m.group(1).equals(m.group(2))) {
+                				genotype.put(ZYGOSITY,false);                				
+                			} else {
+                				genotype.put(ZYGOSITY,true);
+                			}
+                		}
+                }
                 genotypeObjs.add(genotype);
-            }
+            }            
             map.put(GENOTYPES, genotypeObjs);
         }
         return map;

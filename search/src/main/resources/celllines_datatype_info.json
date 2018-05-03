@@ -1,5 +1,5 @@
 {
-	"name": "celllines",
+	"name": "cell_lines",
 	"fieldInfo": [
 		{
 			"type": "TERM",
@@ -216,6 +216,15 @@
 			"facet": "false",
 			"display": "true",
 			"search": "true"
+		},	
+		{
+			"type": "NESTED",
+			"displayName": "Primary disease",
+			"name": "primary_disease",
+			"sort": "false",
+			"facet": "false",
+			"display": "true",
+			"search": "false"
 		},
 		{
 			"type": "TERM",

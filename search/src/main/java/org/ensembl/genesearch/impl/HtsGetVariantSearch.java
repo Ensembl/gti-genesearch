@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
@@ -64,6 +68,7 @@ public class HtsGetVariantSearch implements Search {
         public static final String SEQ_REGION_NAME = "seq_region_name";
         public static final String FILES = "files";
         public static final String DATASETS = "datasets";
+        public static final String LOCATION = "location";
 
         public static HtsGetArgs build(List<Query> qs) {
             HtsGetArgs args = new HtsGetArgs();
@@ -77,6 +82,9 @@ public class HtsGetVariantSearch implements Search {
                     break;
                 case SEQ_REGION_NAME:
                     args.seqRegionName = q.getValues()[0];
+                    break;
+                case LOCATION:
+                    args.setLocation(q.getValues()[0]);
                     break;
                 case START:
                     args.start = Long.parseLong(q.getValues()[0]);
@@ -108,6 +116,22 @@ public class HtsGetVariantSearch implements Search {
 
         List<Query> queries = new ArrayList<>();
 
+        Pattern p = Pattern.compile("([^:]+):([0-9]+)(-([0-9]+))?");
+
+        protected void setLocation(String location) {
+            Matcher m = p.matcher(location);
+            if (m.matches()) {
+                seqRegionName = m.group(1);
+                start = Integer.parseInt(m.group(2));
+                if (m.groupCount() == 4) {
+                    end = Integer.parseInt(m.group(4));
+                }
+            } else {
+                throw new IllegalArgumentException("Could not parse location string " + location);
+            }
+
+        }
+
         protected HtsGetArgs() {
         }
     }
@@ -115,36 +139,21 @@ public class HtsGetVariantSearch implements Search {
     protected final HtsGetClient client;
     protected final DataTypeInfo dataType;
 
-    /**
-     * @param type
-     *            metadata about search
-     * @param baseUrl
-     *            base URL for htsget API
-     * @param egaBaseUrl
-     *            base URL for EGA REST API
-     */
     public HtsGetVariantSearch(DataTypeInfo type, String baseUrl, String egaBaseUrl) {
         this.client = new HtsGetClient(baseUrl, egaBaseUrl);
         this.dataType = type;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
-     * java.util.List, org.ensembl.genesearch.QueryOutput)
-     */
     @Override
     public void fetch(Consumer<Map<String, Object>> consumer, List<Query> queries, QueryOutput fieldNames) {
         // extract URI arguments
         HtsGetArgs args = queryToArgs(queries);
-        // consumer which will process data from the client
         Consumer<Map<String, Object>> fetchConsumer = v -> {
-            if (QueryUtils.filterResultsByQueries.test(v, args.queries)) {
-                consumer.accept(QueryUtils.filterFields(decorateVariant(v), fieldNames));
+            Optional<Map<String, Object>> v2 = queryAndFilter(args, v);
+            if (v2.isPresent()) {
+                consumer.accept(QueryUtils.filterFields(decorateVariant(v2.get()), fieldNames));
             }
         };
-        // different queries mean different client methods
         if (args.files != null && args.files.length > 0) {
             client.getVariantsForFiles(args.files, args.seqRegionName, args.start, args.end, args.token, fetchConsumer);
         } else if (args.datasets != null && args.datasets.length > 0) {
@@ -156,6 +165,29 @@ public class HtsGetVariantSearch implements Search {
     }
 
     /**
+     * Post-process retrieved result, applying {@link QueryOutput} as a filter
+     * 
+     * @param args
+     *            parsed htsget arguments containing queries
+     * @param v
+     *            raw result
+     * @return filtered result in optional if matching
+     */
+    protected Optional<Map<String, Object>> queryAndFilter(HtsGetArgs args, Map<String, Object> v) {
+        Optional<Map<String, Object>> v2 = Optional.of(v);
+        for (Query q : args.queries) {
+            v2 = QueryUtils.queryAndFilter(v, q);
+            if (v2.isPresent()) {
+                v = v2.get();
+            } else {
+                v2 = Optional.empty();
+                break;
+            }
+        }
+        return v2;
+    }
+
+    /**
      * Template method to extract and validate query terms that can be used with
      * htsget
      * 
@@ -164,6 +196,9 @@ public class HtsGetVariantSearch implements Search {
      */
     protected HtsGetArgs queryToArgs(List<Query> queries) {
         HtsGetArgs args = HtsGetArgs.build(queries);
+        if (StringUtils.isEmpty(args.token)) {
+            throw new IllegalArgumentException("Access token not set");
+        }
         return args;
     }
 
@@ -188,30 +223,24 @@ public class HtsGetVariantSearch implements Search {
     public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
             List<String> sorts) {
         List<Map<String, Object>> results = new ArrayList<>();
-        AtomicInteger n = new AtomicInteger(); // counter - atomic int allows
-                                               // increment of effectively final
-                                               // reference
+        AtomicInteger n = new AtomicInteger();
         // extract URI arguments
         HtsGetArgs args = queryToArgs(queries);
-        // create a consumer which will handle variant results
         Consumer<Map<String, Object>> consumer = v -> {
-            if (QueryUtils.filterResultsByQueries.test(v, args.queries)) {
+            Optional<Map<String, Object>> v2 = queryAndFilter(args, v);
+            if (v2.isPresent()) {
                 int i = n.incrementAndGet();
                 if (i > offset && i < offset + limit) {
                     results.add(QueryUtils.filterFields(decorateVariant(v), output));
                 }
             }
         };
-
         if (args.files != null && args.files.length > 0) {
-            // restrict to a particular
             client.getVariantsForFiles(args.files, args.seqRegionName, args.start, args.end, args.token, consumer);
         } else if (args.datasets != null && args.datasets.length > 0) {
-            // if datasets have been specified
             client.getVariantsForDatasets(args.datasets, args.seqRegionName, args.start, args.end, args.token,
                     args.session, consumer);
         } else {
-            //
             client.getVariants(args.seqRegionName, args.start, args.end, args.token, args.session, consumer);
         }
         return new QueryResult(n.get(), offset, limit, getFieldInfo(output), results, Collections.emptyMap());
@@ -244,6 +273,7 @@ public class HtsGetVariantSearch implements Search {
      *            variant to decorate
      * @return decorated variant
      */
+
     protected Map<String, Object> decorateVariant(Map<String, Object> v) {
         // base method, do nothing
         return v;

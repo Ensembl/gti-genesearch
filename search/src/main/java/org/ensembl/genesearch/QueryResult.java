@@ -32,10 +32,10 @@ import org.ensembl.genesearch.info.FieldInfo;
  */
 public class QueryResult extends SearchResult {
 
-    private final long resultCount;
-    private final long offset;
-    private final long limit;
-    private final Map<String, Map<String, Long>> facets;
+	private long resultCount;
+	private final long offset;
+	private final long limit;
+	private final Map<String, Map<String, Long>> facets;
 
     public QueryResult(long resultCount, long offset, long limit, List<FieldInfo> fields,
             List<Map<String, Object>> results, Map<String, Map<String, Long>> facets) {
@@ -76,6 +76,10 @@ public class QueryResult extends SearchResult {
     public long getResultCount() {
         return resultCount;
     }
+	
+	public void setResultCount(long val) {
+		resultCount = val;
+	}
 
     /**
      * Render the results as a 2D list. Used for a more compact/convenient export mechanism
