@@ -38,30 +38,35 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Produces({ MediaType.APPLICATION_JSON, Application.APPLICATION_X_JAVASCRIPT })
 public abstract class QueryService extends SearchBasedService {
 
-	public QueryService(EndpointSearchProvider provider) {
-		super(provider);
-	}
+    public QueryService(EndpointSearchProvider provider) {
+        super(provider);
+    }
 
-	@GET
-	@JSONP
-	public Map<String, Object> get(@BeanParam QueryParams params) {
-		log.info("Get from query");
-		return query(params);
-	}
+    @GET
+    @JSONP
+    // @ApiOperation(
+    // value = "Get the state of the services",
+    // notes = "Find out how the service and its components are holding up",
+    // response = Health.class
+    // )
+    public Map<String, Object> get(@BeanParam QueryParams params) {
+        log.info("Get from query");
+        return query(params);
+    }
 
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@JSONP
-	public Map<String, Object> post(@RequestBody QueryParams params) {
-		log.info("Post to query");
-		return query(params);
-	}
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @JSONP
+    public Map<String, Object> post(@RequestBody QueryParams params) {
+        log.info("Post to query");
+        return query(params);
+    }
 
-	public Map<String, Object> query(QueryParams params) {
-		log.info("query:" + params);
-		QueryResult results = getSearch().query(parseQuery(params.getQueries()), params.getFields(), params.getFacets(),
-				params.getOffset(), params.getLimit(), params.getSorts());
-		return results.toMap(params.isArray());
-	}
+    public Map<String, Object> query(QueryParams params) {
+        log.info("query:" + params);
+        QueryResult results = getSearch().query(parseQuery(params.getQueries()), params.getFields(), params.getFacets(),
+                params.getOffset(), params.getLimit(), params.getSorts());
+        return results.toMap(params.isArray());
+    }
 
 }

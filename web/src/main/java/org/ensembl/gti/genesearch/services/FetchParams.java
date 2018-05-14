@@ -45,121 +45,121 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class FetchParams {
 
-	public static List<String> stringToList(String s) {
-		if (StringUtils.isEmpty(s)) {
-			return Collections.emptyList();
-		} else {
-			return Arrays.asList(s.split(","));
-		}
-	}
+    public static List<String> stringToList(String s) {
+        if (StringUtils.isEmpty(s)) {
+            return Collections.emptyList();
+        } else {
+            return Arrays.asList(s.split(","));
+        }
+    }
 
-	private String accept;
-	private String contentType;
-	private QueryOutput fields = new QueryOutput();
-	private String fileName = "genes";
-	private Map<String, Object> queries = Collections.emptyMap();
-	private boolean array = false;
+    private String accept;
+    private String contentType;
+    private QueryOutput fields = new QueryOutput();
+    private String fileName = "genes";
+    private Map<String, Object> queries = Collections.emptyMap();
+    private boolean array = false;
 
-	public String getAccept() {
-		return accept;
-	}
+    public String getAccept() {
+        return accept;
+    }
 
-	public String getContentType() {
-		return contentType;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public QueryOutput getFields() {
-		return fields;
-	}
+    public QueryOutput getFields() {
+        return fields;
+    }
 
-	public String getFileName() {
-		return fileName;
-	}
+    public String getFileName() {
+        return fileName;
+    }
 
-	public Map<String, Object> getQueries() {
-		return queries;
-	}
+    public Map<String, Object> getQueries() {
+        return queries;
+    }
 
-	@QueryParam("accept")
-	public void setAccept(String accept) {
-		this.accept = accept;
-	}
+    @QueryParam("accept")
+    public void setAccept(String accept) {
+        this.accept = accept;
+    }
 
-	@QueryParam("content-type")
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    @QueryParam("content-type")
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 
-	@JsonProperty("fields")
-	public void setFields(Object fields) {
-		Class<?> clazz = fields.getClass();
-		if (List.class.isAssignableFrom(clazz)) {
-			this.fields = QueryOutput.build((List<String>) fields);
-		} else if (Map.class.isAssignableFrom(fields.getClass())) {
-			this.fields = QueryOutput.build((Map<String, Object>) fields);
-		} else {
-			throw new IllegalArgumentException("Cannot handle query output of class " + clazz.getName());
-		}
-	}
+    @JsonProperty("fields")
+    public void setFields(Object fields) {
+        Class<?> clazz = fields.getClass();
+        if (List.class.isAssignableFrom(clazz)) {
+            this.fields = QueryOutput.build((List<String>) fields);
+        } else if (Map.class.isAssignableFrom(fields.getClass())) {
+            this.fields = QueryOutput.build((Map<String, Object>) fields);
+        } else {
+            throw new IllegalArgumentException("Cannot handle query output of class " + clazz.getName());
+        }
+    }
 
-	@QueryParam("fields")
-	@DefaultValue("id,name,genome,description")
-	@JsonIgnore
-	public void setFields(String fields) {
-		if (fields.charAt(0) == '[') {
-			this.fields = QueryOutput.build(fields);
-		} else {
-			this.fields = QueryOutput.build(stringToList(fields));
-		}
-	}
+    @QueryParam("fields")
+    @DefaultValue("id,name,genome,description")
+    @JsonIgnore
+    public void setFields(String fields) {
+        if (fields.charAt(0) == '[') {
+            this.fields = QueryOutput.build(fields);
+        } else {
+            this.fields = QueryOutput.build(stringToList(fields));
+        }
+    }
 
-	@QueryParam("filename")
-	@DefaultValue("genes")
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+    @QueryParam("filename")
+    @DefaultValue("genes")
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
-	@JsonProperty("query")
-	public void setQueries(Map<String, Object> queries) {
-		this.queries = queries;
-	}
+    @JsonProperty("query")
+    public void setQueries(Map<String, Object> queries) {
+        this.queries = queries;
+    }
 
-	@QueryParam("query")
-	@DefaultValue("")
-	@JsonIgnore
-	public void setQuery(String query) {
-		try {
-			if (!StringUtils.isEmpty(query)) {
-				setQueries(new ObjectMapper().readValue(query, new TypeReference<Map<String, Object>>() {
-				}));
-			}
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Could not parse query " + query, e);
-		}
-	}
+    @QueryParam("query")
+    @DefaultValue("")
+    @JsonIgnore
+    public void setQuery(String query) {
+        try {
+            if (!StringUtils.isEmpty(query)) {
+                setQueries(new ObjectMapper().readValue(query, new TypeReference<Map<String, Object>>() {
+                }));
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not parse query " + query, e);
+        }
+    }
 
-	@Override
-	public String toString() {
-		try {
-			return new ObjectMapper().writeValueAsString(this);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
-	}
+    @Override
+    public String toString() {
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 
-	public boolean isArray() {
-		return array;
-	}
+    public boolean isArray() {
+        return array;
+    }
 
-	@QueryParam("array")
-	@DefaultValue("false")
-	public void setArray(String array) {
-		this.array = Boolean.valueOf(array);
-	}
+    @QueryParam("array")
+    @DefaultValue("false")
+    public void setArray(String array) {
+        this.array = Boolean.valueOf(array);
+    }
 
-	@JsonProperty("array")
-	public void setArray(boolean array) {
-		this.array = array;
-	}
+    @JsonProperty("array")
+    public void setArray(boolean array) {
+        this.array = array;
+    }
 
 }

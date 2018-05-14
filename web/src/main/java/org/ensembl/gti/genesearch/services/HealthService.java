@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Endpoint to check if services are running
+ * 
  * @author dstaines
  *
  */
@@ -37,44 +38,44 @@ import org.springframework.stereotype.Service;
 @Service
 public class HealthService {
 
-	final Logger log = LoggerFactory.getLogger(this.getClass());
-	protected final EndpointSearchProvider provider;
+    final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final EndpointSearchProvider provider;
 
-	/**
-	 * @param provider
-	 *            provider for retrieving search
-	 */
-	@Autowired
-	public HealthService(EndpointSearchProvider provider) {
-		this.provider = provider;
-	}
+    /**
+     * @param provider
+     *            provider for retrieving search
+     */
+    @Autowired
+    public HealthService(EndpointSearchProvider provider) {
+        this.provider = provider;
+    }
 
-	@GET
-	@Produces("application/json")
-	public Health health() {
-		Health.Builder builder = new Health.Builder();
-		boolean ok = true;
-		for (SearchType type : SearchType.values()) {
-			Search search = provider.getRegistry().getSearch(type);
-			if (search != null) {
-				if (search.up()) {
-					builder.withDetail(type.name(), "up");
-				} else {
-					builder.withDetail(type.name(), "down");
-					ok = false;
-				}
-			} else {
-				log.warn("No search found for type" + type);
-			}
-		}
+    @GET
+    @Produces("application/json")
+    public Health health() {
+        Health.Builder builder = new Health.Builder();
+        boolean ok = true;
+        for (SearchType type : SearchType.values()) {
+            Search search = provider.getRegistry().getSearch(type);
+            if (search != null) {
+                if (search.up()) {
+                    builder.withDetail(type.name(), "up");
+                } else {
+                    builder.withDetail(type.name(), "down");
+                    ok = false;
+                }
+            } else {
+                log.warn("No search found for type" + type);
+            }
+        }
 
-		if (ok) {
-			builder.up();
-		} else {
-			builder.down();
-		}
+        if (ok) {
+            builder.up();
+        } else {
+            builder.down();
+        }
 
-		return builder.build();
-	}
+        return builder.build();
+    }
 
 }

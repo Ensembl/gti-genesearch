@@ -25,25 +25,27 @@ import org.springframework.stereotype.Service;
 /**
  * @author dstaines
  *
- */	
+ */
 @Service
 @Path("/genes/query")
 public class GeneQueryService extends QueryService {
 
-	/**
-	 * @param provider
-	 */
-	@Autowired
-	public GeneQueryService(EndpointSearchProvider provider) {
-		super(provider);
-	}
+    /**
+     * @param provider
+     */
+    @Autowired
+    public GeneQueryService(EndpointSearchProvider provider) {
+        super(provider);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ensembl.gti.genesearch.services.QueryService#getSearch()
-	 */
-	@Override
-	public Search getSearch() {
-		return provider.getGeneSearch();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.ensembl.gti.genesearch.services.QueryService#getSearch()
+     */
+    @Override
+    public Search getSearch() {
+        return provider.getGeneSearch();
+    }
 
 }

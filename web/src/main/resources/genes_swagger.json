@@ -1,0 +1,279 @@
+{
+	"/genes/query": {
+		"get": {
+			"summary": "Query genes",
+			"description": "The genes query endpoint performs the specified query and returns the first page of results. It also supports pagination, sorting and faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
+					"type": "object",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/QueryParams"
+					}
+				}
+			],
+			"tags": [
+				"Query",
+				"Genes"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/QueryResult"
+					}
+				}
+			}
+		},
+		"post": {
+			"summary": "Query genes",
+			"description": "The genes query endpoint performs the specified query and returns the first page of results. It also supports pagination, sorting and faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
+					"type": "object",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/QueryParams"
+					}
+				}
+			],
+			"tags": [
+				"Query",
+				"Genes"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/QueryResult"
+					}
+				}
+			}
+		}
+	},
+	"/genes/fetch": {
+		"get": {
+			"summary": "Fetch genes",
+			"description": "The genes fetch endpoint performs the specified query and all results. It does not support pagination, sorting or faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
+					"type": "object",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/QueryParams"
+					}
+				}
+			],
+			"tags": [
+				"Fetch",
+				"Genes"
+			],
+			"produces": [
+				"application/json",
+				"application/xml",
+				"application/vnd.ms-excel"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/SearchResult"
+					}
+				}
+			}
+		},
+		"post": {
+			"summary": "Fetch genes",
+			"description": "The genes fetch endpoint performs the specified query and all results. It does not support pagination, sorting or faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
+					"type": "object",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/QueryParams"
+					}
+				}
+			],
+			"tags": [
+				"Fetch",
+				"Genes"
+			],
+			"produces": [
+				"application/json",
+				"application/xml",
+				"application/vnd.ms-excel"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/SearchResult"
+					}
+				}
+			}
+		}
+	},
+	"/genes/{id}": {
+		"get": {
+			"summary": "Fetch a single gene by ID",
+			"description": "This endpoint returns the specified gene as a document.",
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "ID of gene",
+					"type": "string",
+					"required": true
+				}
+			],
+			"tags": [
+				"Genes"
+			],
+			"produces": [
+				"application/json",
+				"application/xml"
+			],
+			"responses": {
+				"200": {
+					"description": "Gene as nested document",
+					"type": "object",
+					"additionalProperties": "true"
+				}
+			}
+		}
+	},
+	"/genes": {
+		"post": {
+			"summary": "Fetch one or more genes by ID",
+			"description": "This endpoint returns the specified genes as a list of documents.",
+			"parameters": [
+				{
+					"name": "ids",
+					"in": "query",
+					"description": "ID(s) of gene(s)",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"required": true
+				}
+			],
+			"tags": [
+				"Genes"
+			],
+			"produces": [
+				"application/json",
+				"application/xml"
+			],
+			"responses": {
+				"200": {
+					"description": "Gene(s) as array of nested document",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": "true"
+					}
+				}
+			}
+		}
+	},
+	"/genes/health": {
+		"get": {
+			"summary": "Gene service health",
+			"description": "Find out the status of the gene search.",
+			"tags": [
+				"Genes",
+				"Health"
+			],
+			"responses": {
+				"200": {
+					"description": "Status of service",
+					"schema": {
+						"$ref": "#/definitions/Health"
+					}
+				}
+			}
+		}
+	},
+	"/genes/info": {
+		"get": {
+			"summary": "Gene search info",
+			"description": "Get information about the search and its fields.",
+			"tags": [
+				"Genes",
+				"Info"
+			],
+			"responses": {
+				"200": {
+					"description": "Search description",
+					"schema": {
+						"$ref": "#/definitions/DataTypeInfo"
+					}
+				}
+			}
+		}
+	},
+	"/genes/info/fields": {
+		"get": {
+			"summary": "Gene search fields",
+			"description": "Find which fields have",
+			"tags": [
+				"Genes",
+				"Info"
+			],
+			"responses": {
+				"200": {
+					"description": "List of fields",
+					"type": "array",
+					"items": {
+						"schema": {
+							"$ref": "#/definitions/FieldInfo"
+						}
+					}
+				}
+			}
+		}
+	},
+	"/genes/info/fields/{type}": {
+		"get": {
+			"summary": "Gene search fields",
+			"description": "Find which fields of a given type are available.",
+			"tags": [
+				"Genes",
+				"Info"
+			],
+			"parameters": [
+				{
+					"name": "type",
+					"in": "path",
+					"description": "Type of field to filter by",
+					"example": "TEXT",
+					"required": "true"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "List of matching fields",
+					"type": "array",
+					"items": {
+						"schema": {
+							"$ref": "#/definitions/FieldInfo"
+						}
+					}
+				}
+			}
+		}
+	}
+}

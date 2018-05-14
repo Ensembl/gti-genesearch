@@ -33,39 +33,41 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class JerseyConfig extends ResourceConfig {
-	public JerseyConfig() {
-		register(HealthService.class);
-		register(GeneQueryService.class);
-		register(GeneFetchService.class);
-		register(GeneService.class);
-		register(GeneInfoService.class);
-		register(TranscriptQueryService.class);
-		register(TranscriptFetchService.class);
-		register(TranscriptService.class);
-		register(TranscriptInfoService.class);
-		register(GenomeQueryService.class);
-		register(GenomeFetchService.class);
-		register(GenomeService.class);
-		register(GenomeInfoService.class);
-		register(VariantQueryService.class);
-		register(VariantFetchService.class);
-		register(VariantService.class);
-		register(VariantInfoService.class);
-		register(ExpressionQueryService.class);
-		register(ExpressionFetchService.class);
-		register(ExpressionService.class);
-		register(ExpressionInfoService.class);
-		register(CellLineQueryService.class);
-		register(CellLineFetchService.class);
-		register(CellLineService.class);		
-		register(CellLineInfoService.class);
-		register(JacksonFeature.class);
-		register(InfoService.class);
-		register(CORSFilter.class);
-		register(LoggingFilter.class);
-		register(QueryHandlerExceptionMapper.class);
-		register(NotFoundExceptionMapper.class);
-		register(DefaultExceptionMapper.class);
-		EncodingFilter.enableFor(this, GZipEncoder.class);
-	}
+    public JerseyConfig() {
+        register(HealthService.class);
+        register(SwaggerService.class);
+        register(GeneQueryService.class);
+        register(GeneFetchService.class);
+        register(GeneService.class);
+        register(GeneInfoService.class);
+        register(TranscriptQueryService.class);
+        register(TranscriptFetchService.class);
+        register(TranscriptService.class);
+        register(TranscriptInfoService.class);
+        register(GenomeQueryService.class);
+        register(GenomeFetchService.class);
+        register(GenomeService.class);
+        register(GenomeInfoService.class);
+        register(VariantQueryService.class);
+        register(VariantFetchService.class);
+        register(VariantService.class);
+        register(VariantInfoService.class);
+        register(ExpressionQueryService.class);
+        register(ExpressionFetchService.class);
+        register(ExpressionService.class);
+        register(ExpressionInfoService.class);
+        register(CellLineQueryService.class);
+        register(CellLineFetchService.class);
+        register(CellLineService.class);
+        register(CellLineInfoService.class);
+        register(JacksonFeature.class);
+        register(InfoService.class);
+        register(CORSFilter.class);
+        register(LoggingFilter.class);
+        register(QueryHandlerExceptionMapper.class);
+        register(NotFoundExceptionMapper.class);
+        register(DefaultExceptionMapper.class);
+        EncodingFilter.enableFor(this, GZipEncoder.class);
+    }
+
 }

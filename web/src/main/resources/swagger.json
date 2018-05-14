@@ -1,0 +1,283 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"title": "Ensembl Warehouse API",
+		"description": "API for querying and retrieving data from Ensembl",
+		"version": "0.0.1"
+	},
+	"schemes": [
+		"https"
+	],
+	"basePath": "/api",
+	"produces": [
+		"application/json"
+	],
+	"definitions": {
+		"Health": {
+			"properties": {
+				"status": {
+					"type": "string",
+					"example": "UP",
+					"description": "Whether the service is up or down"
+				},
+				"details": {
+					"type": "object",
+					"description": "Any additional information on the service"
+				}
+			}
+		},
+		"FetchParams": {
+			"properties": {
+				"accept": {
+					"type": "string",
+					"example": "application/json",
+					"description": "Optionally specify the Accept type (its preferred to use HTTP headers)"
+				},
+				"contentType": {
+					"type": "string",
+					"example": "application/json",
+					"description": "Optionally specify the type being posted type (its preferred to use HTTP headers)"
+				},
+				"fileName": {
+					"type": "string",
+					"example": "myfile.xml",
+					"description": "Name of file for downloading results"
+				},
+				"array": {
+					"type": "boolean",
+					"description": "Set to true to flatten results into 2D arrays rather than nested maps"
+				},
+				"fields": {
+					"$ref": "#/definitions/QueryOutput",
+					"description": "Fields to return",
+					"example": "[\"id\",\"description\"]"
+				},
+				"queries": {
+					"type": "object",
+					"description": "Query as nested object",
+					"example": {
+						"genome": "homo_sapiens",
+						"biotype": "protein_coding"
+					}
+				}
+			}
+		},
+		"QueryParams": {
+			"properties": {
+				"accept": {
+					"type": "string"
+				},
+				"contentType": {
+					"type": "string"
+				},
+				"array": {
+					"type": "boolean"
+				},
+				"fields": {
+					"$ref": "#/definitions/QueryOutput",
+					"description": "Fields to return",
+					"example": "[\"id\",\"description\"]"
+				},
+				"queries": {
+					"type": "object",
+					"description": "Query as nested object",
+					"example": {
+						"genome": "homo_sapiens",
+						"biotype": "protein_coding"
+					}
+				},
+				"limit": {
+					"type": "integer",
+					"description": "Number of results per page",
+					"example": 10
+				},
+				"offset": {
+					"type": "integer",
+					"description": "Page start offset",
+					"example": 1
+				},
+				"facets": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "Fields to facet by",
+					"example": [
+						"genome",
+						"biotype"
+					]
+				},
+				"sorts": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "Fields to sort by",
+					"example": [
+						"genome",
+						"description"
+					]
+				},
+				"callback": {
+					"type": "string",
+					"description": "Callback for JSONP"
+				}
+			}
+		},
+		"QueryOutput": {
+			"properties": {
+				"status": {
+					"type": "string"
+				},
+				"details": {
+					"type": "object"
+				}
+			}
+		},
+		"SearchResult": {
+			"properties": {
+				"fields": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/FieldInfo"
+					},
+					"description": "Fields in result output"
+				},
+				"results": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": "true"
+					},
+					"description": "Results"
+				}
+			}
+		},
+		"QueryResult": {
+			"properties": {
+				"fields": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/FieldInfo"
+					},
+					"description": "Fields in result output"
+				},
+				"results": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": "true"
+					},
+					"description": "Results"
+				},
+				"resultCount": {
+					"type": "integer",
+					"description": "Number of results"
+				},
+				"offset": {
+					"type": "integer",
+					"description": "Requestd page start offset",
+					"example": 1
+				},
+				"limit": {
+					"type": "integer",
+					"description": "Requested number of results per page",
+					"example": 10
+				},
+				"facets": {
+					"type": "object",
+					"additionalProperties": "true",
+					"description": "Faceted fields with values and count"
+				}
+			}
+		},
+		"DataTypeInfo": {
+			"description": "Information about a data source",
+			"properties": {
+				"name": {
+					"description": "The name of the search",
+					"$ref": "#/definitions/SearchType"
+				},
+				"fieldInfo": {
+					"type": "array",
+					"description":"The fields which the search contains",
+					"items": {
+						"$ref": "#/definitions/FieldInfo"
+					}
+				},
+				"targets": {
+					"type": "array",
+					"description": "Searches which can be joined to this search by inclusion in the field list",
+					"items": {
+						"$ref": "#/definitions/SearchType"
+					}
+				}
+			}
+		},
+		"SearchType": {
+			"description": "Definition of the search and its names",
+			"properties": {
+				"name": {
+					"type": "string",
+					"example": "GENES"
+				},
+				"singleName": {
+					"type": "string",
+					"example": "gene"
+				},
+				"pluralName": {
+					"type": "string",
+					"example": "genes"
+				}
+			}
+		},
+		"FieldInfo": {
+			"description": "Information about a field in a data source",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "Name of field as used in query and field specification",
+					"example": "genome"
+				},
+				"displayName": {
+					"type": "string",
+					"description": "Human-readable name",
+					"example": "Genome"
+				},
+				"type": {
+					"type": "string",
+					"description": "Field content type",
+					"enum": [
+						"GENOME",
+						"ID",
+						"LOCATION",
+						"NUMBER",
+						"NESTED",
+						"ONTOLOGY",
+						"TERM",
+						"TEXT",
+						"STRAND",
+						"BOOLEAN"
+					]
+				},
+				"search": {
+					"type": "boolean",
+					"description": "If true, the field can be searched"
+				},
+				"display": {
+					"type": "boolean",
+					"description": "If true, the field is suitable for displaying in results"
+				},
+				"sort": {
+					"type": "boolean",
+					"description": "If true, the field is suitable for sorting"
+				},
+				"facet": {
+					"type": "boolean",
+					"description": "If true, the field is suitable for faceting"
+				}
+			}
+		}
+	}
+}
+	
