@@ -1,10 +1,14 @@
 # Overview
 
+The main Search abstraction is just that, so concrete implementations are needed for each different technology. 
 
+In addition, there are specialised implementations that can combine or rework data from concrete implementations.
+
+All of this is described below.
 
 # ElasticSearch implementation
 
-The main implementation of `Search` is `org.ensembl.genesearch.impl.ESGeneSearch` which uses Elasticsearch (ES) via a Java API.
+From an Ensembl-centric standpoint, the most important implementation of `Search` is `org.ensembl.genesearch.impl.ESGeneSearch` which uses Elasticsearch (ES) via a Java API.
 
 The main steps used in executing a query include:
 1. Create an ES `QueryBuilder` instance from the supplied `Query` object
@@ -58,7 +62,7 @@ The REST sequence endpoints are currently limited in that EG and e! genomes are 
 
 ## Flattening implementation
 
-The Elastic implementations implicitly support nesting, and the gene search contains transcripts as sub-objects. However, some times we need to 'flatten' results to subobjects e.g. transcripts. This can be carried out using instances of `ESSearchFlatten` which flattens returned results to a specified target. For instance, if the target is "transcripts" then the documents are split to provide a list of documents representing each transcript. Any gene level fields are attached to each transcript. For instance, consider a query matching the following gene:
+The Elastic implementations implicitly support nesting, and the gene search contains transcripts as sub-objects. However, some times we need to 'flatten' results to sub-objects e.g. transcripts. This can be carried out using instances of `ESSearchFlatten` which flattens returned results to a specified target. For instance, if the target is "transcripts" then the documents are split to provide a list of documents representing each transcript. Any gene level fields are attached to each transcript. For instance, consider a query matching the following gene:
 ```
 {
   id:"123", 

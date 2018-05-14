@@ -19,7 +19,7 @@ cd search-0.2
 
 # Implementation
 
-The current implementation uses Java, allowing the project to take full advantage of the extensive Java API elasticsearch, which allows the client layer to join the Elastic cluster without the need for unnecessary data transport. 
+The current implementation uses Java, allowing the project to take full advantage of the extensive Java API elasticsearch, which allows the client layer to join the Elastic cluster without the need for unnecessary data transport. Note that this is deprecated in later Elastic releases in favour of an HTTP-based client. Its unclear what impact migrating to this will have.
 
 The interface to the search API is as follows:
 * `org.ensembl.genesearch.Search`

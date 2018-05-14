@@ -1,49 +1,33 @@
 # Overview
 
-# Design
-
+The core of the system is the search API. This provides a simple abstraction for searching data from a variety of different database backends, from Elastic and Mongo to REST and htsget. This layer also allows basic joining between different sources.
 
 # Implementation
 
-The current implementation uses Java, allowing the project to take full advantage of the extensive Java API elasticsearch, which allows the client layer to join the Elastic cluster without the need for unnecessary data transport. 
-
-The interface to the search API is as follows:
-* `org.ensembl.genesearch.Search`
-* `org.ensembl.genesearch.Query`
-* `org.ensembl.genesearch.QueryResult`
-* `org.ensembl.genesearch.SearchResult`
+The central point of entry for the search API is `org.ensembl.genesearch.Search`, an interface which must be implemented by each different backend technology implementation, or for specific functionality such as joining etc. See [Implementations](implementations.md) for more detail on individual implementations.
 
 ## Search
-The `Search` interface provides two main sets of search methods - fetch and query. `Search` also includes default methods which are independent of implementation to reduce the numbers of methods required for an implementation.
+The `Search` interface provides two main sets of search methods - `fetch` and `query`. `Search` also includes default methods which are independent of implementation to reduce the numbers of methods required for an implementation.
 
-Fetch methods are intended to produce entire result sets matching a specified query, either by returning a `SearchResult` object containing all matched documents, or by writing Map objects to a supplied Consumer, which allows streaming of very large sets. There are a group of fetch methods for fetching by query, lists of IDs, single IDs etc. Query documents may either be genes or genomes, something which can be specified when constructing an instance of `Search`.
+`Search` methods use `Query` and `FieldInfo` objects to define the search terms used.  
 
-The query method returns a `QueryResult` object containing subset of results (based on offset and limit) parameters and supports faceting and sorting.
+### fetch
 
-Both sets of methods can consume `Query` objects, support sorting and allow a subset of fields to be returned. Fields can be leaves or entire sections of a hierarchy e.g. "name" (the gene name), "transcripts" (all transcripts), "transcripts.name" (names of all transcripts).
+Fetch methods are intended to produce entire result sets matching a specified query, either by returning a `SearchResult` object containing all matched documents, or by writing Map objects to a supplied Consumer, which allows streaming of very large sets. There are a group of fetch methods for fetching by query, lists of IDs, single IDs etc.
 
-`Search` also provides a `getFieldInfo` object to return type and further details for a list of names fields. This is used to populate `SearchResult` and `QueryResult` field lists.
+### query
 
-Finally, both groups of methods support optional targets to control the type of object returned. By default, the target is the gene object, but a sub-object can be specified. For instance, if the target is "transcripts" then the documents are split to provide a list of documents representing each transcript. Any gene level fields are attached to each transcript. For instance, consider a query matching the following gene:
-```
-{
-  id:"123", 
-  name:"xyz", 
-  description:"my gene", 
-  transcripts:[
-    {id:"123.1", name:"xyz1"}, 
-    {id:"123.2", name:"xyz2"}
- ]
-}
-```
-If the target is transcripts, then the following two objects would be returned:
-```
-[
-  {gene.id:"123", id:"123.1", name:"xyz1"},
-  {gene.id:"123", id:"123.2", name:"xyz2"}
-]
-```
-Note that currently result counts and offsets etc. will still indicate the number of genes.
+The query method returns a `QueryResult` object containing subset of results (based on offset and limit) parameters and supports faceting and sorting (where the underlying implementation supports it). It is intended for interactive use by a web interface so that the first few results are returned very quickly.
+
+### getFieldInfo
+
+`Search` also provides a `getFieldInfo` object to return type and further details for a list of names fields. This is used to populate `SearchResult` and `QueryResult` field lists, and is typically generated from JSON resources within the project e.g. `genes_datatype_info.json`
+
+### select
+This method is intended for basic auto-complete functionality e.g. show me all genomes starting 'Homo'. It is optional.
+
+### up
+This is a method to indicate whether the search is available, and is implementation-specific.
 
 ## Query
 The `Query` object encapsulates parameters to be used when querying the `Search` interface. There are several types of `Query` possible, defined by an enum passed during construction.
@@ -57,5 +41,16 @@ Queries can be specified as JSON or generic Map structures, and transformed into
 
 Negation can be specified by prepending `!` to a query field e.g. `{"!genome":"homo_sapiens"}`
 
+Note that different `Search` [implementations](implementations.md) support different sets of query types - please check support.
+
+## QueryOutput
+`QueryOutput` objects are passed to `fetch` and `query` to define which fields should be returned from a document. These objects can be nested to allow sub-documents to be returned. They are simple maps to allow flexibility.
+
+## SearchResult
+`SearchResult` encapsulates a set of results, plus a list of `FieldInfo` objects. This can be returned by `fetch`.
+
 ## QueryResult
-`QueryResult` encapsulates the first set of results, a count and any facets.
+`QueryResult` is an extension of `SearchResult` intended to encapsulates the first set of results returned by `query`, and adds a count and any facets.
+
+## FieldInfo
+`FieldInfo` objects are intended to inform a client about what a field result contains, and are added to `SearchResult` and `QueryResult`. Supported `FieldInfo` objects are also provided by `Search.getFieldInfo()` and provides hints on how to handle the field e.g. can it be sorted or faceted. These are unenforced in search and just intended as hints. 
