@@ -7,12 +7,44 @@
 				{
 					"name": "query",
 					"in": "query",
-					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
-					"type": "object",
-					"required": true,
-					"schema": {
-						"$ref": "#/definitions/QueryParams"
-					}
+					"description": "Query string as JSON",
+					"example": "{\"genome\":\"homo_sapiens\",\"gene_name\":\"BRCA2\"}"
+				},
+				{
+					"name": "fields",
+					"in": "query",
+					"description": "Fields to return in result",
+					"example": "[\"id\",\"genome\",\"description\"]"
+				},
+				{
+					"name": "offset",
+					"in": "query",
+					"description": "Offset start of results by",
+					"example": 1
+				},
+				{
+					"name": "limit",
+					"in": "query",
+					"description": "Results by page",
+					"example": 10
+				},
+				{
+					"name": "sorts",
+					"in": "query",
+					"description": "Fields to sort by",
+					"example": "[\"genome\"]"
+				},
+				{
+					"name": "facets",
+					"in": "query",
+					"description": "Fields to facet on",
+					"example": "[\"genome\"]"
+				},
+				{
+					"name": "accept",
+					"in": "query",
+					"description": "Media type to return",
+					"example": "application/json"
 				}
 			],
 			"tags": [
@@ -34,9 +66,8 @@
 			"parameters": [
 				{
 					"name": "query",
-					"in": "query",
+					"in": "body",
 					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
-					"type": "object",
 					"required": true,
 					"schema": {
 						"$ref": "#/definitions/QueryParams"
@@ -65,12 +96,26 @@
 				{
 					"name": "query",
 					"in": "query",
-					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
-					"type": "object",
-					"required": true,
-					"schema": {
-						"$ref": "#/definitions/QueryParams"
-					}
+					"description": "Query string as JSON",
+					"example": "{\"genome\":\"homo_sapiens\",\"gene_name\":\"BRCA2\"}"
+				},
+				{
+					"name": "fields",
+					"in": "query",
+					"description": "Fields to return in result",
+					"example": "[\"id\",\"genome\",\"description\"]"
+				},
+				{
+					"name": "filename",
+					"in": "query",
+					"description": "File name to use for download",
+					"example": "mygenes.json"
+				},
+				{
+					"name": "accept",
+					"in": "query",
+					"description": "Media type to return",
+					"example": "application/json"
 				}
 			],
 			"tags": [
@@ -97,9 +142,8 @@
 			"parameters": [
 				{
 					"name": "query",
-					"in": "query",
-					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
-					"type": "object",
+					"in": "body",
+					"description": "Specification of query, fields, facets etc.",
 					"required": true,
 					"schema": {
 						"$ref": "#/definitions/QueryParams"
