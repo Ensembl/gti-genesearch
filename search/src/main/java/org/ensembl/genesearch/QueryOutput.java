@@ -171,16 +171,12 @@ public class QueryOutput {
     }
 
     /**
-     * <<<<<<< HEAD Detect if the output contains the specified path. Used by
+     * Detect if the output contains the specified path. Used by
      * {@link QueryUtils} to decide whether to filter out fields
      * 
      * @param path
      *            e.g. transcripts.xrefs
-     * @return true if path found within output ======= Utility method to find
-     *         if one of the fields match the supplied path
-     * @param path
-     * @return true if path matched >>>>>>>
-     *         7a568994b2012e2072d0e9b23850b4efddd5aec8
+     * @return true if path found within output
      */
     public boolean containsPath(String path) {
         boolean contains = false;
