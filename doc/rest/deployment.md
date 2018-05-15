@@ -1,0 +1,63 @@
+# Manual deployment
+
+To build and run:
+```console
+./gradlew clean :web:bootRepackage
+# launch with optional command line options
+java -Xmx2g -jar web/build/libs/web-0.1.jar --es.node=false --es.host=gti-es-0 --rest.url.eg=http://rest.ensemblgenomes.org/sequence/id --rest.url.ens=http://rest.ensembl.org/sequence/id
+```
+* Note 1: JDK 9 isn't currently compatible with SpringBoot. Make sure your JDK version is < 9.
+* Note 2: Use of Lets Encrypt-based sites such as EBiSC require 8u101 or better.*
+
+This will automatically connect to an elasticsearch cluster named genesearch on localhost:9300 as a transport client
+To override, use the following command line options:
+- to connect as a client node `--es.node=true`
+- to override the cluster name `--es.cluster=mycluster`
+- to override the ES host `--es.host=127.0.0.1`
+- to override the ES port `--es.port=9300`
+- to enable basic security (user `user` and random password) `--security.basic.enabled=true`
+- to set the basic security password `--security.user.password=myawesomepassword`
+
+# Configuration
+
+Configuration is typically carried out using the `application.properties` file but can be passed to the java command line used to start Spring Boot. This supports all the wonderful things that Spring Boot does so well, but here are some useful config properties.
+
+General Spring boot options:
+* `server.port` - port to run Spring boot on (default is good old `8080`)
+* `spring.jersey.applicationPath` - path for REST API (`/api` by default)
+* `security.basic.enabled` - set to `true` to enable basic authentication
+* `spring.profiles.active` - variation profile to use (`default`, `ebisc`, `eva_rest`, `ensembl_rest`, `eva_mongo`)
+* `debug` - set to `true` for lots of debuggy goodness
+
+SSL support options (https requires a key store):
+* `server.ssl.key-store` - path to key store
+* `server.ssl.key-store-password` - password for key store
+* `server.ssl.keyAlias` - alias for key to use
+* `server.ssl.keyStoreType` - key store type (default is `PKCS12`)
+
+Ensembl data options:
+* `es.host` - head node of Elastic cluster
+* `es.node` - if `true`, join cluster as node
+* `es.cluster` - name of elastic cluster
+* `rest.url.eg` - base URL for EG REST
+* `rest.url.ens` - base URL for Ensembl REST
+
+EVA-related options (depending if an EVA profile is used):
+* `eva.rest.url`
+* `mongo.url`
+* `mongo.database`
+* `mongo.collection`
+
+GXA options:
+* `solr.expression.url`
+* `solr.experiments.url`
+
+EBiSC options:
+* `ebisc.rest.url` - EBiSC metadata REST url
+* `ebisc.rest.username`,  `ebisc.rest.api_token` - credentials for EBiSC metadata REST
+* `ebisc.ega.url` - htsget REST API url
+* `ebisc.ega.accession` - single file accession to use (contains all EBiSC data)
+
+# Deployment with ansible
+
+To make life easier (at least until we get proper Kubernetes support!), there are ansible files allowing a cluster of Elastic nodes and a web app to be automatically provisioned. Find out more about deployment [here](../../deployment/README.md) 
