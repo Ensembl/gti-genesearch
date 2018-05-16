@@ -23,6 +23,6 @@ For more about this system, please see [Search](./search/overview.md)
 For more about this system, please see [REST](./rest/overview.md)
 
 ## GUI
-For interactive use, a Javascript GUI allows access to 
+For interactive use, a Javascript GUI allows access to the search application.
 
 For more about this system, please see [Web](./web/README.md)
