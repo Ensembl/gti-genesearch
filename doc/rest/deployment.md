@@ -9,15 +9,6 @@ java -Xmx2g -jar web/build/libs/web-0.1.jar --es.node=false --es.host=gti-es-0 -
 * Note 1: JDK 9 isn't currently compatible with SpringBoot. Make sure your JDK version is < 9.
 * Note 2: Use of Lets Encrypt-based sites such as EBiSC require 8u101 or better.*
 
-This will automatically connect to an elasticsearch cluster named genesearch on localhost:9300 as a transport client
-To override, use the following command line options:
-- to connect as a client node `--es.node=true`
-- to override the cluster name `--es.cluster=mycluster`
-- to override the ES host `--es.host=127.0.0.1`
-- to override the ES port `--es.port=9300`
-- to enable basic security (user `user` and random password) `--security.basic.enabled=true`
-- to set the basic security password `--security.user.password=myawesomepassword`
-
 # Configuration
 
 Configuration is typically carried out using the `application.properties` file but can be passed to the java command line used to start Spring Boot. This supports all the wonderful things that Spring Boot does so well, but here are some useful config properties.
@@ -25,7 +16,8 @@ Configuration is typically carried out using the `application.properties` file b
 General Spring boot options:
 * `server.port` - port to run Spring boot on (default is good old `8080`)
 * `spring.jersey.applicationPath` - path for REST API (`/api` by default)
-* `security.basic.enabled` - set to `true` to enable basic authentication
+* `security.basic.enabled` - set to `true` to enable basic authentication (user is called `user`)
+* `security.user.password` - configure a password for basic auth
 * `spring.profiles.active` - variation profile to use (`default`, `ebisc`, `eva_rest`, `ensembl_rest`, `eva_mongo`)
 * `debug` - set to `true` for lots of debuggy goodness
 
@@ -37,7 +29,8 @@ SSL support options (https requires a key store):
 
 Ensembl data options:
 * `es.host` - head node of Elastic cluster
-* `es.node` - if `true`, join cluster as node
+* `es.port` - port of Elastic cluster head node (default is `9300`)
+* `es.node` - if `true`, join cluster as node (rather as transport client)
 * `es.cluster` - name of elastic cluster
 * `rest.url.eg` - base URL for EG REST
 * `rest.url.ens` - base URL for Ensembl REST
@@ -48,11 +41,11 @@ EVA-related options (depending if an EVA profile is used):
 * `mongo.database`
 * `mongo.collection`
 
-GXA options:
+GXA Solr instance options:
 * `solr.expression.url`
 * `solr.experiments.url`
 
-EBiSC options:
+EBiSC-related options (for `ebisc` profile):
 * `ebisc.rest.url` - EBiSC metadata REST url
 * `ebisc.rest.username`,  `ebisc.rest.api_token` - credentials for EBiSC metadata REST
 * `ebisc.ega.url` - htsget REST API url
