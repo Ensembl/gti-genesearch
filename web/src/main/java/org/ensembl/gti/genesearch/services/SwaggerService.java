@@ -25,7 +25,9 @@ public class SwaggerService {
     final ObjectMapper mapper = new ObjectMapper();
     final TypeReference<Map<String, Object>> ref = new TypeReference<Map<String, Object>>() {
     };
-    private final static String[] RES = new String[] { "/genes_swagger.json" };
+    private final static String[] RES = new String[] { "/health_swagger.json", "/genes_swagger.json",
+            "/transcripts_swagger.json", "/genomes_swagger.json", "/variants_swagger.json", "/expression_swagger.json",
+            "/cell_lines_swagger.json" };
 
     @GET
     @Produces("application/json")
