@@ -1,0 +1,19 @@
+{
+	"/health": {
+		"get": {
+			"summary": "Health of the service",
+			"description": "Find out the overall health of the service, including individual searches.",
+			"tags": [
+				"Health"
+			],
+			"responses": {
+				"200": {
+					"description": "Service health",
+					"schema": {
+						"$ref": "#/definitions/Health"
+					}
+				}
+			}
+		}
+	}
+}

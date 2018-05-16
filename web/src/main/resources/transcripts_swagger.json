@@ -1,0 +1,323 @@
+{
+	"/transcripts/query": {
+		"get": {
+			"summary": "Query transcripts",
+			"description": "The transcripts query endpoint performs the specified query and returns the first page of results. It also supports pagination, sorting and faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "Query string as JSON",
+					"example": "{\"genes.genome\":\"homo_sapiens\",\"biotype\":\"protein_coding\"}"
+				},
+				{
+					"name": "fields",
+					"in": "query",
+					"description": "Fields to return in result",
+					"example": "[\"id\",\"description\"]"
+				},
+				{
+					"name": "offset",
+					"in": "query",
+					"description": "Offset start of results by",
+					"example": 1
+				},
+				{
+					"name": "limit",
+					"in": "query",
+					"description": "Results by page",
+					"example": 10
+				},
+				{
+					"name": "sorts",
+					"in": "query",
+					"description": "Fields to sort by",
+					"example": "[\"biotype\"]"
+				},
+				{
+					"name": "facets",
+					"in": "query",
+					"description": "Fields to facet on",
+					"example": "[\"biotype\"]"
+				},
+				{
+					"name": "accept",
+					"in": "query",
+					"description": "Media type to return",
+					"example": "application/json"
+				}
+			],
+			"tags": [
+				"Query",
+				"Transcripts"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/QueryResult"
+					}
+				}
+			}
+		},
+		"post": {
+			"summary": "Query transcripts",
+			"description": "The transcripts query endpoint performs the specified query and returns the first page of results. It also supports pagination, sorting and faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "body",
+					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/QueryParams"
+					}
+				}
+			],
+			"tags": [
+				"Query",
+				"Transcripts"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/QueryResult"
+					}
+				}
+			}
+		}
+	},
+	"/transcripts/fetch": {
+		"get": {
+			"summary": "Fetch transcripts",
+			"description": "The transcripts fetch endpoint performs the specified query and all results. It does not support pagination, sorting or faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "Query string as JSON",
+          "example": "{\"genes.genome\":\"homo_sapiens\",\"biotype\":\"protein_coding\"}"
+				},
+				{
+					"name": "fields",
+					"in": "query",
+					"description": "Fields to return in result",
+					"example": "[\"id\",\"description\"]"
+				},
+				{
+					"name": "filename",
+					"in": "query",
+					"description": "File name to use for download",
+					"example": "mytranscripts.json"
+				},
+				{
+					"name": "accept",
+					"in": "query",
+					"description": "Media type to return",
+					"example": "application/json"
+				}
+			],
+			"tags": [
+				"Fetch",
+				"Transcripts"
+			],
+			"produces": [
+				"application/json",
+				"application/xml",
+				"application/vnd.ms-excel"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/SearchResult"
+					}
+				}
+			}
+		},
+		"post": {
+			"summary": "Fetch transcripts",
+			"description": "The transcripts fetch endpoint performs the specified query and all results. It does not support pagination, sorting or faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "body",
+					"description": "Specification of query, fields, facets etc.",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/QueryParams"
+					}
+				}
+			],
+			"tags": [
+				"Fetch",
+				"Transcripts"
+			],
+			"produces": [
+				"application/json",
+				"application/xml",
+				"application/vnd.ms-excel"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/SearchResult"
+					}
+				}
+			}
+		}
+	},
+	"/transcripts/{id}": {
+		"get": {
+			"summary": "Fetch a single transcript by ID",
+			"description": "This endpoint returns the specified transcript as a document.",
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "ID of transcript",
+					"type": "string",
+					"required": true
+				}
+			],
+			"tags": [
+				"Transcripts"
+			],
+			"produces": [
+				"application/json",
+				"application/xml"
+			],
+			"responses": {
+				"200": {
+					"description": "Transcript as nested document",
+					"type": "object",
+					"additionalProperties": "true"
+				}
+			}
+		}
+	},
+	"/transcripts": {
+		"post": {
+			"summary": "Fetch one or more transcripts by ID",
+			"description": "This endpoint returns the specified transcripts as a list of documents.",
+			"parameters": [
+				{
+					"name": "ids",
+					"in": "query",
+					"description": "ID(s) of transcript(s)",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"required": true
+				}
+			],
+			"tags": [
+				"Transcripts"
+			],
+			"produces": [
+				"application/json",
+				"application/xml"
+			],
+			"responses": {
+				"200": {
+					"description": "Transcript(s) as array of nested document",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": "true"
+					}
+				}
+			}
+		}
+	},
+	"/transcripts/health": {
+		"get": {
+			"summary": "Transcript service health",
+			"description": "Find out the status of the transcript search.",
+			"tags": [
+				"Transcripts",
+				"Health"
+			],
+			"responses": {
+				"200": {
+					"description": "Status of service",
+					"schema": {
+						"$ref": "#/definitions/Health"
+					}
+				}
+			}
+		}
+	},
+	"/transcripts/info": {
+		"get": {
+			"summary": "Transcript search info",
+			"description": "Get information about the search and its fields.",
+			"tags": [
+				"Transcripts",
+				"Info"
+			],
+			"responses": {
+				"200": {
+					"description": "Search description",
+					"schema": {
+						"$ref": "#/definitions/DataTypeInfo"
+					}
+				}
+			}
+		}
+	},
+	"/transcripts/info/fields": {
+		"get": {
+			"summary": "Transcript search fields",
+			"description": "Find which fields have",
+			"tags": [
+				"Transcripts",
+				"Info"
+			],
+			"responses": {
+				"200": {
+					"description": "List of fields",
+					"type": "array",
+					"items": {
+						"schema": {
+							"$ref": "#/definitions/FieldInfo"
+						}
+					}
+				}
+			}
+		}
+	},
+	"/transcripts/info/fields/{type}": {
+		"get": {
+			"summary": "TGranscript search fields",
+			"description": "Find which fields of a given type are available.",
+			"tags": [
+				"Transcripts",
+				"Info"
+			],
+			"parameters": [
+				{
+					"name": "type",
+					"in": "path",
+					"description": "Type of field to filter by",
+					"example": "TEXT",
+					"required": "true"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "List of matching fields",
+					"type": "array",
+					"items": {
+						"schema": {
+							"$ref": "#/definitions/FieldInfo"
+						}
+					}
+				}
+			}
+		}
+	}
+}

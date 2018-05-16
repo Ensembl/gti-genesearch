@@ -1,0 +1,362 @@
+{
+	"/genomes/query": {
+		"get": {
+			"summary": "Query genomes",
+			"description": "The genomes query endpoint performs the specified query and returns the first page of results. It also supports pagination, sorting and faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "Query string as JSON",
+					"example": "{\"Genome\":\"homo_sapiens\",\"Genome_name\":\"BRCA2\"}"
+				},
+				{
+					"name": "fields",
+					"in": "query",
+					"description": "Fields to return in result",
+					"example": "[\"id\",\"Genome\",\"description\"]"
+				},
+				{
+					"name": "offset",
+					"in": "query",
+					"description": "Offset start of results by",
+					"example": 1
+				},
+				{
+					"name": "limit",
+					"in": "query",
+					"description": "Results by page",
+					"example": 10
+				},
+				{
+					"name": "sorts",
+					"in": "query",
+					"description": "Fields to sort by",
+					"example": "[\"Genome\"]"
+				},
+				{
+					"name": "facets",
+					"in": "query",
+					"description": "Fields to facet on",
+					"example": "[\"Genome\"]"
+				},
+				{
+					"name": "accept",
+					"in": "query",
+					"description": "Media type to return",
+					"example": "application/json"
+				}
+			],
+			"tags": [
+				"Query",
+				"Genomes"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/QueryResult"
+					}
+				}
+			}
+		},
+		"post": {
+			"summary": "Query genomes",
+			"description": "The genomes query endpoint performs the specified query and returns the first page of results. It also supports pagination, sorting and faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "body",
+					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/QueryParams"
+					}
+				}
+			],
+			"tags": [
+				"Query",
+				"Genomes"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/QueryResult"
+					}
+				}
+			}
+		}
+	},
+	"/genomes/fetch": {
+		"get": {
+			"summary": "Fetch genomes",
+			"description": "The genomes fetch endpoint performs the specified query and all results. It does not support pagination, sorting or faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "Query string as JSON",
+					"example": "{\"Genome\":\"homo_sapiens\",\"Genome_name\":\"BRCA2\"}"
+				},
+				{
+					"name": "fields",
+					"in": "query",
+					"description": "Fields to return in result",
+					"example": "[\"id\",\"Genome\",\"description\"]"
+				},
+				{
+					"name": "filename",
+					"in": "query",
+					"description": "File name to use for download",
+					"example": "mygenomes.json"
+				},
+				{
+					"name": "accept",
+					"in": "query",
+					"description": "Media type to return",
+					"example": "application/json"
+				}
+			],
+			"tags": [
+				"Fetch",
+				"Genomes"
+			],
+			"produces": [
+				"application/json",
+				"application/xml",
+				"application/vnd.ms-excel"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/SearchResult"
+					}
+				}
+			}
+		},
+		"post": {
+			"summary": "Fetch genomes",
+			"description": "The genomes fetch endpoint performs the specified query and all results. It does not support pagination, sorting or faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "body",
+					"description": "Specification of query, fields, facets etc.",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/QueryParams"
+					}
+				}
+			],
+			"tags": [
+				"Fetch",
+				"Genomes"
+			],
+			"produces": [
+				"application/json",
+				"application/xml",
+				"application/vnd.ms-excel"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/SearchResult"
+					}
+				}
+			}
+		}
+	},
+	"/genomes/{id}": {
+		"get": {
+			"summary": "Fetch a single genome by ID",
+			"description": "This endpoint returns the specified genome as a document.",
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "ID of genome",
+					"type": "string",
+					"required": true
+				}
+			],
+			"tags": [
+				"Genomes"
+			],
+			"produces": [
+				"application/json",
+				"application/xml"
+			],
+			"responses": {
+				"200": {
+					"description": "Genome as nested document",
+					"type": "object",
+					"additionalProperties": "true"
+				}
+			}
+		}
+	},
+	"/genomes": {
+		"post": {
+			"summary": "Fetch one or more genomes by ID",
+			"description": "This endpoint returns the specified genomes as a list of documents.",
+			"parameters": [
+				{
+					"name": "ids",
+					"in": "query",
+					"description": "ID(s) of genome(s)",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"required": true
+				}
+			],
+			"tags": [
+				"Genomes"
+			],
+			"produces": [
+				"application/json",
+				"application/xml"
+			],
+			"responses": {
+				"200": {
+					"description": "Genome(s) as array of nested document",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": "true"
+					}
+				}
+			}
+		}
+	},
+	"/genomes/select": {
+		"get": {
+			"summary": "Select genomes",
+			"description": "Find genomes with names that match the supplied string. Intended for auto-suggestion",
+			"tags": [
+				"Genomes",
+				"Health"
+			],
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "ID(s) of genome(s)",
+					"type": "string",
+					"required": true
+				},
+				{
+					"name": "offset",
+					"in": "query",
+					"description": "Offset start of results by",
+					"example": 1
+				},
+				{
+					"name": "limit",
+					"in": "query",
+					"description": "Results per page",
+					"example": 10
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "Suggested genomes",
+					"schema": {
+						"$ref": "#/definitions/QueryResult"
+					}
+				}
+			}
+		}
+	},
+	"/genomes/health": {
+		"get": {
+			"summary": "Genome service health",
+			"description": "Find out the status of the genome search.",
+			"tags": [
+				"Genomes",
+				"Health"
+			],
+			"responses": {
+				"200": {
+					"description": "Status of service",
+					"schema": {
+						"$ref": "#/definitions/Health"
+					}
+				}
+			}
+		}
+	},
+	"/genomes/info": {
+		"get": {
+			"summary": "Genome search info",
+			"description": "Get information about the search and its fields.",
+			"tags": [
+				"Genomes",
+				"Info"
+			],
+			"responses": {
+				"200": {
+					"description": "Search description",
+					"schema": {
+						"$ref": "#/definitions/DataTypeInfo"
+					}
+				}
+			}
+		}
+	},
+	"/genomes/info/fields": {
+		"get": {
+			"summary": "Genome search fields",
+			"description": "Find which fields have",
+			"tags": [
+				"Genomes",
+				"Info"
+			],
+			"responses": {
+				"200": {
+					"description": "List of fields",
+					"type": "array",
+					"items": {
+						"schema": {
+							"$ref": "#/definitions/FieldInfo"
+						}
+					}
+				}
+			}
+		}
+	},
+	"/genomes/info/fields/{type}": {
+		"get": {
+			"summary": "Genome search fields",
+			"description": "Find which fields of a given type are available.",
+			"tags": [
+				"Genomes",
+				"Info"
+			],
+			"parameters": [
+				{
+					"name": "type",
+					"in": "path",
+					"description": "Type of field to filter by",
+					"example": "TEXT",
+					"required": "true"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "List of matching fields",
+					"type": "array",
+					"items": {
+						"schema": {
+							"$ref": "#/definitions/FieldInfo"
+						}
+					}
+				}
+			}
+		}
+	}
+}

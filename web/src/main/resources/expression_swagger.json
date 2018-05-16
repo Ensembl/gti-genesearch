@@ -1,0 +1,323 @@
+{
+	"/expressions/query": {
+		"get": {
+			"summary": "Query expression data",
+			"description": "The expression data query endpoint performs the specified query and returns the first page of results. It also supports pagination, sorting and faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "Query string as JSON",
+					"example": "{\"genome\":\"homo_sapiens\",\"gene_name\":\"BRCA2\"}"
+				},
+				{
+					"name": "fields",
+					"in": "query",
+					"description": "Fields to return in result",
+					"example": "[\"id\",\"genome\",\"description\"]"
+				},
+				{
+					"name": "offset",
+					"in": "query",
+					"description": "Offset start of results by",
+					"example": 1
+				},
+				{
+					"name": "limit",
+					"in": "query",
+					"description": "Results by page",
+					"example": 10
+				},
+				{
+					"name": "sorts",
+					"in": "query",
+					"description": "Fields to sort by",
+					"example": "[\"genome\"]"
+				},
+				{
+					"name": "facets",
+					"in": "query",
+					"description": "Fields to facet on",
+					"example": "[\"genome\"]"
+				},
+				{
+					"name": "accept",
+					"in": "query",
+					"description": "Media type to return",
+					"example": "application/json"
+				}
+			],
+			"tags": [
+				"Query",
+				"Expression"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/QueryResult"
+					}
+				}
+			}
+		},
+		"post": {
+			"summary": "Query expression data",
+			"description": "The expression data query endpoint performs the specified query and returns the first page of results. It also supports pagination, sorting and faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "body",
+					"description": "Specification of query, fields, facets etc. Can be supplied as URL parameters as well",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/QueryParams"
+					}
+				}
+			],
+			"tags": [
+				"Query",
+				"Expression"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/QueryResult"
+					}
+				}
+			}
+		}
+	},
+	"/expressions/fetch": {
+		"get": {
+			"summary": "Fetch expression data",
+			"description": "The expression data fetch endpoint performs the specified query and all results. It does not support pagination, sorting or faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "query",
+					"description": "Query string as JSON",
+					"example": "{\"genome\":\"homo_sapiens\",\"gene_name\":\"BRCA2\"}"
+				},
+				{
+					"name": "fields",
+					"in": "query",
+					"description": "Fields to return in result",
+					"example": "[\"id\",\"genome\",\"description\"]"
+				},
+				{
+					"name": "filename",
+					"in": "query",
+					"description": "File name to use for download",
+					"example": "mygenes.json"
+				},
+				{
+					"name": "accept",
+					"in": "query",
+					"description": "Media type to return",
+					"example": "application/json"
+				}
+			],
+			"tags": [
+				"Fetch",
+				"Expression"
+			],
+			"produces": [
+				"application/json",
+				"application/xml",
+				"application/vnd.ms-excel"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/SearchResult"
+					}
+				}
+			}
+		},
+		"post": {
+			"summary": "Fetch expression data",
+			"description": "The genes fetch endpoint performs the specified query and all results. It does not support pagination, sorting or faceting.",
+			"parameters": [
+				{
+					"name": "query",
+					"in": "body",
+					"description": "Specification of query, fields, facets etc.",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/QueryParams"
+					}
+				}
+			],
+			"tags": [
+				"Fetch",
+				"Expression"
+			],
+			"produces": [
+				"application/json",
+				"application/xml",
+				"application/vnd.ms-excel"
+			],
+			"responses": {
+				"200": {
+					"description": "Query results",
+					"schema": {
+						"$ref": "#/definitions/SearchResult"
+					}
+				}
+			}
+		}
+	},
+	"/expressions/{id}": {
+		"get": {
+			"summary": "Fetch a single gene by ID",
+			"description": "This endpoint returns the specified gene as a document.",
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "ID of gene",
+					"type": "string",
+					"required": true
+				}
+			],
+			"tags": [
+				"Expression"
+			],
+			"produces": [
+				"application/json",
+				"application/xml"
+			],
+			"responses": {
+				"200": {
+					"description": "Expression data as nested document",
+					"type": "object",
+					"additionalProperties": "true"
+				}
+			}
+		}
+	},
+	"/expressions": {
+		"post": {
+			"summary": "Fetch one or more genes by ID",
+			"description": "This endpoint returns the specified genes as a list of documents.",
+			"parameters": [
+				{
+					"name": "ids",
+					"in": "query",
+					"description": "ID(s) of gene(s)",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"required": true
+				}
+			],
+			"tags": [
+				"Expression"
+			],
+			"produces": [
+				"application/json",
+				"application/xml"
+			],
+			"responses": {
+				"200": {
+					"description": "Expression data as array of nested document",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": "true"
+					}
+				}
+			}
+		}
+	},
+	"/expressions/health": {
+		"get": {
+			"summary": "Expression service health",
+			"description": "Find out the status of the gene search.",
+			"tags": [
+				"Expression",
+				"Health"
+			],
+			"responses": {
+				"200": {
+					"description": "Status of service",
+					"schema": {
+						"$ref": "#/definitions/Health"
+					}
+				}
+			}
+		}
+	},
+	"/expressions/info": {
+		"get": {
+			"summary": "Expression data search info",
+			"description": "Get information about the search and its fields.",
+			"tags": [
+				"Expression",
+				"Info"
+			],
+			"responses": {
+				"200": {
+					"description": "Search description",
+					"schema": {
+						"$ref": "#/definitions/DataTypeInfo"
+					}
+				}
+			}
+		}
+	},
+	"/expressions/info/fields": {
+		"get": {
+			"summary": "Expression data search fields",
+			"description": "Find which fields have",
+			"tags": [
+				"Expression",
+				"Info"
+			],
+			"responses": {
+				"200": {
+					"description": "List of fields",
+					"type": "array",
+					"items": {
+						"schema": {
+							"$ref": "#/definitions/FieldInfo"
+						}
+					}
+				}
+			}
+		}
+	},
+	"/expressions/info/fields/{type}": {
+		"get": {
+			"summary": "Expression data search fields",
+			"description": "Find which fields of a given type are available.",
+			"tags": [
+				"Expression",
+				"Info"
+			],
+			"parameters": [
+				{
+					"name": "type",
+					"in": "path",
+					"description": "Type of field to filter by",
+					"example": "TEXT",
+					"required": "true"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "List of matching fields",
+					"type": "array",
+					"items": {
+						"schema": {
+							"$ref": "#/definitions/FieldInfo"
+						}
+					}
+				}
+			}
+		}
+	}
+}
