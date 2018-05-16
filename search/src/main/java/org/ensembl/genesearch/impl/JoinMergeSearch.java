@@ -259,8 +259,10 @@ public abstract class JoinMergeSearch implements Search {
         Pair<SubSearchParams, SubSearchParams> qf = decomposeQueryFields(queries, fieldNames);
 
         SubSearchParams from = qf.getLeft();
+        log.debug("'from' params:"+from);
         SubSearchParams to = qf.getRight();
-
+        log.debug("'to' params:"+to);
+        
         if (!to.name.isPresent()) {
 
             // we either have no target, or the target is a passthrough
@@ -269,16 +271,19 @@ public abstract class JoinMergeSearch implements Search {
 
         } else if (to.joinStrategy.type == JoinType.RANGE) {
 
+            log.debug("Executing join range query");
             fetchWithRangeJoin(consumer, from, to, isInner(to,from));
 
         } else if (to.joinStrategy.type == JoinType.TERM) {
 
             if (isInner(from, to)) {
 
+                log.debug("Executing inner join term query");
                 fetchWithTermJoin(consumer, innerTermJoinQuery(from, to), to);
 
             } else {
 
+                log.debug("Executing join term query");
                 fetchWithTermJoin(consumer, from, to);
 
             }
@@ -587,7 +592,9 @@ public abstract class JoinMergeSearch implements Search {
         Pair<SubSearchParams, SubSearchParams> qf = decomposeQueryFields(queries, output);
 
         SubSearchParams from = qf.getLeft();
+        log.debug("'from' params:"+from);
         SubSearchParams to = qf.getRight();
+        log.debug("'to' params:"+to);
 
         if (!to.name.isPresent()) {
 
@@ -597,16 +604,19 @@ public abstract class JoinMergeSearch implements Search {
 
         } else if (to.joinStrategy.type == JoinType.RANGE) {
 
+            log.debug("Using range join to "+to.name);
             return queryWithRangeJoin(output, facets, offset, limit, sorts, from, to, isInner(from, to));
 
         } else if (to.joinStrategy.type == JoinType.TERM) {
 
             if (isInner(from, to)) {
 
+                log.debug("Using inner term join to "+to.name);
                 return queryWithTermJoin(output, facets, offset, limit, sorts, innerTermJoinQuery(from, to), to);
 
             } else {
 
+                log.debug("Using term join to "+to.name);
                 return queryWithTermJoin(output, facets, offset, limit, sorts, from, to);
 
             }
@@ -622,17 +632,22 @@ public abstract class JoinMergeSearch implements Search {
     protected QueryResult queryWithRangeJoin(QueryOutput output, List<String> facets, int offset, int limit,
             List<String> sorts, SubSearchParams from, SubSearchParams to, boolean inner) {
 
-        log.debug("Executing join query through primary using ranges");
+        log.debug("Executing join query through primary using ranges "+(inner?"":"(inner)"));
 
         // query from first and generate a set of results
+        log.debug("Executing 'from' query: "+from.queries);
         QueryResult fromResults = provider.getSearch(getPrimarySearchType()).query(from.queries, from.fields, facets,
                 offset, limit, sorts);
+        
+        log.debug("Found "+fromResults.getResults().size()+" 'from' results");
 
         Search toSearch = provider.getSearch(to.name.get());
+        log.debug("Applying to queries vs "+to.name.get());
         Iterator<Map<String, Object>> resultsI = fromResults.getResults().iterator();
         while(resultsI.hasNext()) {
         		Map<String, Object> r = resultsI.next();
             List<Query> toQueries = buildToRangeQuery(from, to, r);
+            log.debug("To queries: "+toQueries);
             // execute and merge "to" results onto existing "from"
             toSearch.fetch(t -> {
                 addRangeJoinData(from, to, r, t);
