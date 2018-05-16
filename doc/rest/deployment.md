@@ -3,7 +3,7 @@
 To build and run:
 ```console
 ./gradlew clean :web:bootRepackage
-# launch with optional command line options
+# launch - optional command line options shown
 java -Xmx2g -jar web/build/libs/web-0.1.jar --es.node=false --es.host=gti-es-0 --rest.url.eg=http://rest.ensemblgenomes.org/sequence/id --rest.url.ens=http://rest.ensembl.org/sequence/id
 ```
 * Note 1: JDK 9 isn't currently compatible with SpringBoot. Make sure your JDK version is < 9.
@@ -11,12 +11,12 @@ java -Xmx2g -jar web/build/libs/web-0.1.jar --es.node=false --es.host=gti-es-0 -
 
 # Configuration
 
-Configuration is typically carried out using the `application.properties` file but can be passed to the java command line used to start Spring Boot. This supports all the wonderful things that Spring Boot does so well, but here are some useful config properties.
+As you might expect for a Spring boot app, configuration is typically carried out using the `application.properties` file but can be passed to the java command line used to start Spring Boot. This supports all the wonderful things that Spring Boot does so well, but here are some useful config properties.
 
 General Spring boot options:
 * `server.port` - port to run Spring boot on (default is good old `8080`)
 * `spring.jersey.applicationPath` - path for REST API (`/api` by default)
-* `security.basic.enabled` - set to `true` to enable basic authentication (user is called `user`)
+* `security.basic.enabled` - set to `false` to disable basic authentication. Otherwise, basic auth will be on!
 * `security.user.password` - configure a password for basic auth
 * `spring.profiles.active` - variation profile to use (`default`, `ebisc`, `eva_rest`, `ensembl_rest`, `eva_mongo`)
 * `debug` - set to `true` for lots of debuggy goodness
