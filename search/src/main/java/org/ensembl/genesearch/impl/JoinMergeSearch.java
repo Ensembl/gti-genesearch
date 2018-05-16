@@ -278,12 +278,12 @@ public abstract class JoinMergeSearch implements Search {
 
             if (isInner(from, to)) {
 
-                log.debug("Executing inner join term query");
+                log.debug("Executing inner join term fetch");
                 fetchWithTermJoin(consumer, innerTermJoinQuery(from, to), to);
 
             } else {
 
-                log.debug("Executing join term query");
+                log.debug("Executing join term fetch");
                 fetchWithTermJoin(consumer, from, to);
 
             }
@@ -700,7 +700,7 @@ public abstract class JoinMergeSearch implements Search {
         // step 2: query b for b.n=list[a.n] and b.c=2 and retrieve b.m ->
         // list[b.m]
         List<Query> qs = new ArrayList<>();
-        qs.add(new Query(FieldType.TERM, toKey, false, fromIds.toArray(new String[] {})));
+        qs.add(Query.expandQuery(new Query(FieldType.TERM, toKey, false, fromIds.toArray(new String[] {}))));
         qs.addAll(to.queries);
         Set<String> fromJoinedIds = new HashSet<>(); // all "from" IDs found
                                                      // in "to"
@@ -711,7 +711,7 @@ public abstract class JoinMergeSearch implements Search {
         // step 3: query is now n:list[b.m], b:{c.2} which can be passed
         // directly to query
         List<Query> newFromQ = new ArrayList<>(from.queries.size() + 1);
-        newFromQ.add(new Query(FieldType.TERM, fromKey, false, fromJoinedIds.toArray(new String[] {})));
+        newFromQ.add(Query.expandQuery(new Query(FieldType.TERM, fromKey, false, fromJoinedIds.toArray(new String[] {}))));
         // we still need the original x:1 query to avoid issues with n-m queries
         newFromQ.addAll(from.queries);
         return new SubSearchParams(from.name, from.keys, newFromQ, from.fields, from.joinStrategy);
