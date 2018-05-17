@@ -43,6 +43,7 @@ public class GeneSearch extends JoinMergeSearch {
         }
         Search variantSearch = provider.getSearch(SearchType.VARIANTS);
         if (variantSearch != null) {
+            // different implementations of 
             if (MongoSearch.class.isAssignableFrom(variantSearch.getClass())) {
                 joinTargets.put(SearchType.VARIANTS, JoinStrategy.as(MergeStrategy.APPEND, "id", "annot.xrefs.id"));
             } else if (ESSearch.class.isAssignableFrom(variantSearch.getClass())) {
@@ -73,7 +74,7 @@ public class GeneSearch extends JoinMergeSearch {
         }
         Search expressionSearch = provider.getSearch(SearchType.EXPRESSION);
         if (expressionSearch != null) {
-            joinTargets.put(SearchType.EXPRESSION, JoinStrategy.as(MergeStrategy.APPEND, "id", "bioentityIdentifier"));
+            joinTargets.put(SearchType.EXPRESSION, JoinStrategy.as(MergeStrategy.APPEND, "id", "bioentity_identifier"));
         }
     }
 
