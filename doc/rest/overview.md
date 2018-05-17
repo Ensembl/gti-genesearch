@@ -53,6 +53,12 @@ The abstract service implementations are responsible for processing data into JS
 
 The concrete `Search` implementations behind each service endpoint are provided by instances of the abstract class `EndpointSearchProvider`. These are used by service endpoint components to get an instance of `Search`. Different instances of `EndpointSearchProvider` provide different combinations of searches for different applications, and can be turned on and off by using Spring profiles which inject them into service components using Spring autowiring. For instance, `EnsemblVariationEndpointProvider` is used by default, so that (for instance) `VariantQueryService` would get an instance of `ESSearch` pointing to variant indices containing Ensembl data. However, if the profile is set to `ebisc` (e.g. by setting the property `spring.profiles.active=ebisc`), `VariantQueryService` is given an instance of `EbiscVariantSearch` which returns EBiSC specific data. Note that the EBiSC application is described in more detail in [EBiSC](ebisc.md).
 
+`EndpointSearchProvider` is a fairly complex piece of code which tries to do two things.
+
+Firstly, it instantiates all concrete searches and adds them to the `SearchRegistry` (a glorified hash map). This _must_ happen before anything else so that. This is ensured by having `getRegistry()` lazily instantiate and load all searches when requested. This method calls other methods for registering groups of searches, so that these can be overridden in other instances of EndpointSearchProvider.
+ 
+Secondly, it instantiates and provides final searches to endpoints through custom methods e.g. `getGeneSearch()`. These searches typically use the registry (obtained via `getRegistry()`) to obtain and combine concrete searches together for joining etc. For instance, `getGeneSearch()` passes the registry to `GeneSearch` which uses `ESSearch` instances etc. to build different join strategies.
+
 # Copyright and Licensing
 Copyright 1999-2016 EMBL-European Bioinformatics Institute
 
