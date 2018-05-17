@@ -41,6 +41,10 @@ import org.springframework.beans.factory.annotation.Value;
  * endpoints. Base class sets up common services allowing addition of different
  * variation implementations
  * 
+ * This uses an instance of {@link SearchRegistry} (which itself is used across
+ * different searches where joins are needed. These two classes are different in
+ * how they are used, though do similar things.
+ * 
  * @author dstaines
  *
  */
@@ -186,6 +190,7 @@ public class EndpointSearchProvider {
     public Search getGeneSearch() {
         if (geneSearch == null) {
             geneSearch = new GeneSearch(getRegistry());
+            assertHasSearch(geneSearch, "gene");
         }
         return geneSearch;
     }
@@ -193,6 +198,7 @@ public class EndpointSearchProvider {
     public Search getGenomeSearch() {
         if (genomeSearch == null) {
             genomeSearch = getRegistry().getSearch(SearchType.GENOMES);
+            assertHasSearch(genomeSearch, "genome");
         }
         return genomeSearch;
     }
@@ -224,6 +230,7 @@ public class EndpointSearchProvider {
     public Search getTranscriptSearch() {
         if (transcriptSearch == null) {
             transcriptSearch = new TranscriptSearch(getRegistry());
+            assertHasSearch(transcriptSearch, "transcript");
         }
         return transcriptSearch;
     }
@@ -235,6 +242,7 @@ public class EndpointSearchProvider {
     public Search getVariantSearch() {
         if (variantSearch == null) {
             variantSearch = new VariantSearch(getRegistry());
+            assertHasSearch(variantSearch, "variant");
         }
         return variantSearch;
     }
@@ -246,18 +254,42 @@ public class EndpointSearchProvider {
     public Search getExpressionSearch() {
         if (expressionSearch == null) {
             expressionSearch = new ExpressionSearch(getRegistry());
+            assertHasSearch(expressionSearch, "expression");
         }
         return expressionSearch;
     }
 
     public Search getSequenceSearch() {
-        return getRegistry().getSearch(SearchType.SEQUENCES);
+        if (sequenceSearch == null) {
+            sequenceSearch = getRegistry().getSearch(SearchType.SEQUENCES);
+            assertHasSearch(sequenceSearch, "sequence");
+        }
+        return sequenceSearch;
     }
 
     public Search getCellLineSearch() {
-        return getRegistry().getSearch(SearchType.CELL_LINES);
+        if (this.cellLineSearch == null) {
+            this.cellLineSearch = getRegistry().getSearch(SearchType.CELL_LINES);
+            assertHasSearch(cellLineSearch, "cell_line");
+        }
+        return this.cellLineSearch;
     }
+
     public void setCellLineSearch(Search cellLineSearch) {
         this.cellLineSearch = cellLineSearch;
+    }
+
+    /**
+     * Helper method to assert that we have a particular search and throw an
+     * exception if we don't
+     * 
+     * @param search
+     * @param name
+     *            name to use in message
+     */
+    protected static void assertHasSearch(Search search, String name) {
+        if (search == null) {
+            throw new UnsupportedOperationException("Search type " + name + " is not implemented in this interface");
+        }
     }
 }
