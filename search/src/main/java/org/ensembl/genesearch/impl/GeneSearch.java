@@ -27,21 +27,21 @@ import org.ensembl.genesearch.SearchType;
  */
 public class GeneSearch extends JoinMergeSearch {
 
-    public GeneSearch(SearchRegistry provider) {
-        super(SearchType.GENES, provider);
-        Search homologSearch = provider.getSearch(SearchType.HOMOLOGUES);
+    public GeneSearch(SearchRegistry registry) {
+        super(SearchType.GENES, registry);
+        Search homologSearch = registry.getSearch(SearchType.HOMOLOGUES);
         if (homologSearch != null) {
             joinTargets.put(SearchType.HOMOLOGUES, JoinStrategy.as(MergeStrategy.MERGE, "homologues.stable_id", "id"));
         }
-        Search seqSearch = provider.getSearch(SearchType.SEQUENCES);
+        Search seqSearch = registry.getSearch(SearchType.SEQUENCES);
         if (seqSearch != null) {
             joinTargets.put(SearchType.SEQUENCES, JoinStrategy.as(MergeStrategy.APPEND, "id", "query", "genome"));
         }
-        Search genomeSearch = provider.getSearch(SearchType.GENOMES);
+        Search genomeSearch = registry.getSearch(SearchType.GENOMES);
         if (genomeSearch != null) {
             joinTargets.put(SearchType.GENOMES, JoinStrategy.as(MergeStrategy.APPEND, "genome", "id"));
         }
-        Search variantSearch = provider.getSearch(SearchType.VARIANTS);
+        Search variantSearch = registry.getSearch(SearchType.VARIANTS);
         if (variantSearch != null) {
             // different implementations of 
             if (MongoSearch.class.isAssignableFrom(variantSearch.getClass())) {
@@ -72,7 +72,7 @@ public class GeneSearch extends JoinMergeSearch {
                         "Cannot use variant search of type " + variantSearch.getClass());
             }
         }
-        Search expressionSearch = provider.getSearch(SearchType.EXPRESSION);
+        Search expressionSearch = registry.getSearch(SearchType.EXPRESSION);
         if (expressionSearch != null) {
             joinTargets.put(SearchType.EXPRESSION, JoinStrategy.as(MergeStrategy.APPEND, "id", "bioentity_identifier"));
         }
