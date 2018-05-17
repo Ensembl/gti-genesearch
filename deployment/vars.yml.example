@@ -1,5 +1,6 @@
-# location of ES & Java
+# location to deploy ES & Java
 base_dir : /data/search
+# optional proxy for working behind a firewall
 proxy_host : TODO
 proxy_port : TODO
 http_proxy : "http://{{ proxy_host }}:{{ proxy_port }}"
