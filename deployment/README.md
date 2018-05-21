@@ -41,8 +41,15 @@ ansible-playbook clean.yml -i hosts
 ### Java downloads
 Oracle will only allow downloads of Java with a clickthrough agreement. This is a pain for command line access, so this ansible project uses `curl` to pass a cookie to Oracle to allow download. Note that the URLs are somewhat cryptic and may need updating over time. You can find the URL used in [roles/java/vars/main.yml](roles/java/vars/main.yml). You can find the current URLs from http://www.oracle.com/technetwork/java/javase/downloads/index.html and this topic is discussed more online e.g. https://gist.github.com/hgomez/4697585
 
+An alternative is to use OpenJDK Java. However, any change of JDK needs careful testing as performance and functionality can reportedly be different (this was certainly true in the past).
+
 ### Redeployment of a running server
 Currently, if `deploy.yml` is run on a running cluster, it may delete the target directory without first killing the Java processes, which can remain running in the background. It may be possible to configure ansible to shutdown first, but for now stop should be called first.
 
 ### Empty variables
 Ansible uses Jinja templates to generate `application.properties`. Variables must be present or jinja will raise an error. However, quite often properties should be absent or Spring boot will not launch as expected. Improvements might be to add conditional jinja directories to only include content when variables are present.
+
+### Wait for Elastic shutdown
+Currently, shutdown sends a kill to the Elastic process, but needs to give time for running process to stop and free up memory before starting a new process, or things don't get restarted cleanly. Ideally, shutdown should loop/sleep until the process is gone.
+
+
