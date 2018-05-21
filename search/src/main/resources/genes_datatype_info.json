@@ -2483,7 +2483,7 @@
 			"display": "true"
 		},
 		{
-			"displayName": "seq_region_name",
+			"displayName": "Seq region name",
 			"name": "seq_region_name",
 			"type": "TERM",
 			"search": "true",
