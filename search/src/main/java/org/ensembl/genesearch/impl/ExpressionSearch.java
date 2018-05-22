@@ -31,16 +31,16 @@ public class ExpressionSearch extends JoinMergeSearch {
 		super(SearchType.EXPRESSION_ANALYTICS, provider);
 		Search geneSearch = provider.getSearch(SearchType.GENES);
 		if (geneSearch != null) {
-			joinTargets.put(SearchType.GENES, JoinStrategy.as(MergeStrategy.APPEND, "bioentityIdentifier", "id"));
+			joinTargets.put(SearchType.GENES, JoinStrategy.as(MergeStrategy.APPEND, "bioentity_identifier", "id"));
 		}
 		Search transcriptSearch = provider.getSearch(SearchType.TRANSCRIPTS);
 		if (transcriptSearch != null) {
-			joinTargets.put(SearchType.TRANSCRIPTS, JoinStrategy.as(MergeStrategy.APPEND, "bioentityIdentifier", "id"));
+			joinTargets.put(SearchType.TRANSCRIPTS, JoinStrategy.as(MergeStrategy.APPEND, "bioentity_identifier", "id"));
 		}
 		Search experimentsSearch = provider.getSearch(SearchType.EXPRESSION_EXPERIMENTS);
 		if (experimentsSearch != null) {
 			joinTargets.put(SearchType.EXPRESSION_EXPERIMENTS,
-					JoinStrategy.as(MergeStrategy.APPEND, "experimentAccession", "experiment_accession"));
+					JoinStrategy.as(MergeStrategy.APPEND, "experiment_accession", "experiment_accession"));
 		}
 
 	}
