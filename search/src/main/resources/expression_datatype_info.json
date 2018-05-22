@@ -15,8 +15,8 @@
 			"display": "true"
 		},
 		{
-			"displayName": "bioentityIdentifier",
-			"name": "bioentityIdentifier",
+			"displayName": "bioentity_identifier",
+			"name": "bioentity_identifier",
 			"type": "TERM",
 			"search": "true",
 			"sort": "true",
@@ -24,8 +24,17 @@
 			"display": "true"
 		},
 		{
-			"displayName": "identifierSearch",
-			"name": "identifierSearch",
+			"displayName": "identifier_search",
+			"name": "bioentity_identifier_search",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "bioentity_identifier_search",
+			"name": "bioentity_identifier_search",
 			"type": "TERM",
 			"search": "true",
 			"sort": "true",
@@ -42,8 +51,125 @@
 			"display": "true"
 		},
 		{
-			"displayName": "keyword_*",
-			"name": "keyword_*",
+			"displayName": "keyword_synonym",
+			"name": "keyword_synonym",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "true"
+		},
+		{
+			"displayName": "keyword_ensgene",
+			"name": "keyword_ensgene",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_ensprotein",
+			"name": "keyword_ensprotein",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_enstranscript",
+			"name": "keyword_enstranscript",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_gene_biotype",
+			"name": "keyword_gene_biotype",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_go",
+			"name": "keyword_go",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_hgnc_symbol",
+			"name": "keyword_hgnc_symbol",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_interpro",
+			"name": "keyword_interpro",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_mgi_id",
+			"name": "keyword_mgi_id",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_mirbase_name",
+			"name": "keyword_mirbase_name",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_pathwayid",
+			"name": "keyword_pathwayid",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_po",
+			"name": "keyword_po",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_rgdsymbol",
+			"name": "keyword_rgdsymbol",
+			"type": "TERM",
+			"search": "true",
+			"sort": "true",
+			"facet": "false",
+			"display": "false"
+		},
+		{
+			"displayName": "keyword_uniprot",
+			"name": "keyword_uniprot",
 			"type": "TERM",
 			"search": "true",
 			"sort": "true",
@@ -69,8 +195,8 @@
 			"display": "true"
 		},
 		{
-			"displayName": "experimentAccession",
-			"name": "experimentAccession",
+			"displayName": "experiment_accession",
+			"name": "experiment_accession",
 			"type": "TERM",
 			"search": "true",
 			"sort": "true",
@@ -78,8 +204,8 @@
 			"display": "true"
 		},
 		{
-			"displayName": "experimentType",
-			"name": "experimentType",
+			"displayName": "experiment_type",
+			"name": "experiment_type",
 			"type": "TERM",
 			"search": "true",
 			"sort": "true",
@@ -87,8 +213,8 @@
 			"display": "true"
 		},
 		{
-			"displayName": "defaultQueryFactorType",
-			"name": "defaultQueryFactorType",
+			"displayName": "default_query_factor_type",
+			"name": "default_query_factor_type",
 			"type": "TERM",
 			"search": "true",
 			"sort": "true",
@@ -96,7 +222,7 @@
 			"display": "true"
 		},
 		{
-			"displayName": "conditionsSearch",
+			"displayName": "conditions_search",
 			"name": "conditionsSearch",
 			"type": "TERM",
 			"search": "true",
@@ -105,8 +231,8 @@
 			"display": "false"
 		},
 		{
-			"displayName": "assayGroupId",
-			"name": "assayGroupId",
+			"displayName": "assay_group_id",
+			"name": "assay_group_id",
 			"type": "TERM",
 			"search": "true",
 			"sort": "true",
@@ -114,8 +240,8 @@
 			"display": "true"
 		},
 		{
-			"displayName": "expressionLevel",
-			"name": "expressionLevel",
+			"displayName": "expression_level",
+			"name": "expression_level",
 			"type": "NUMBER",
 			"search": "true",
 			"sort": "true",
@@ -123,7 +249,7 @@
 			"display": "true"
 		},
 		{
-			"displayName": "contrastId",
+			"displayName": "contrast_id",
 			"name": "contrastId",
 			"type": "TERM",
 			"search": "true",
@@ -141,8 +267,8 @@
 			"display": "true"
 		},
 		{
-			"displayName": "numReplicates",
-			"name": "numReplicates",
+			"displayName": "num_replicates",
+			"name": "num_replicates",
 			"type": "TERM",
 			"search": "true",
 			"sort": "true",
@@ -150,7 +276,7 @@
 			"display": "true"
 		},
 		{
-			"displayName": "foldChange",
+			"displayName": "fold_change",
 			"name": "foldChange",
 			"type": "NUMBER",
 			"search": "true",
@@ -159,8 +285,8 @@
 			"display": "true"
 		},
 		{
-			"displayName": "pValue",
-			"name": "pValue",
+			"displayName": "p_value",
+			"name": "p_value",
 			"type": "NUMBER",
 			"search": "true",
 			"sort": "true",
@@ -168,8 +294,8 @@
 			"display": "true"
 		},
 		{
-			"displayName": "tStatistics",
-			"name": "tStatistics",
+			"displayName": "t_statistics",
+			"name": "t_statistics",
 			"type": "NUMBER",
 			"search": "true",
 			"sort": "true",
