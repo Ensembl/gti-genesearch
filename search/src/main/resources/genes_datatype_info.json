@@ -7208,6 +7208,51 @@
 			"facet": "true",
 			"display": "true",
 			"search": "true"
-		}
+		},
+		{
+      "facet": "false",
+      "sort": "false",
+      "display": "true",
+      "search": "false",
+      "type": "NESTED",
+      "displayName": "sequences",
+      "name": "sequences"
+    },
+    {
+      "search": "true",
+      "display": "false",
+      "facet": "false",
+      "sort": "false",
+      "name": "sequences.type",
+      "displayName": "Molecule type",
+      "type": "TERM"
+    },
+    {
+      "search": "true",
+      "display": "false",
+      "facet": "false",
+      "sort": "false",
+      "name": "sequences.expand_5prime",
+      "displayName": "5' extension'",
+      "type": "NUMBER"
+    },   
+    {
+      "search": "true",
+      "display": "false",
+      "facet": "false",
+      "sort": "false",
+      "name": "sequences.expand_3prime",
+      "displayName": "3' extension'",
+      "type": "NUMBER"
+    }, 
+    {
+      "search": "true",
+      "display": "false",
+      "facet": "false",
+      "sort": "false",
+      "name": "sequences.format",
+      "displayName": "Format",
+      "type": "TERM"
+    }
 	]
 }
