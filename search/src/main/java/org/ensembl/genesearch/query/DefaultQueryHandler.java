@@ -77,10 +77,19 @@ public class DefaultQueryHandler implements QueryHandler {
     @SuppressWarnings("unchecked")
     @Override
     public List<Query> parseQuery(Map<String, Object> queryObj) {
+        return parseQuery(null, queryObj);
+                               
+    }
+    
+    protected List<Query> parseQuery(String path, Map<String, Object> queryObj) {
         queryObj = mergeQueries(queryObj);
         List<Query> queries = new ArrayList<>();
         for (Entry<String, Object> query : queryObj.entrySet()) {
             String fieldName = query.getKey();
+            String newPath = query.getKey();
+            if(!StringUtils.isEmpty(path)) {
+                newPath = path + "." + newPath;
+            }
             boolean not;
             if (fieldName.charAt(0) == '!') {
                 not = true;
@@ -88,9 +97,9 @@ public class DefaultQueryHandler implements QueryHandler {
             } else {
                 not = false;
             }
-            FieldType type = getFieldType(fieldName, query.getValue());
+            FieldType type = getFieldType(newPath, query.getValue());
             if (type == FieldType.NESTED) {
-                List<Query> subQs = parseQuery((Map<String, Object>) query.getValue());
+                List<Query> subQs = parseQuery(newPath, (Map<String, Object>) query.getValue());
                 queries.add(new Query(type, fieldName, not, subQs.toArray(new Query[subQs.size()])));
             } else if (isList(query.getValue())) {
                 List<String> vals = ((List<Object>) query.getValue()).stream().map(String::valueOf)
