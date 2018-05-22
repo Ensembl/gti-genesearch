@@ -311,7 +311,7 @@ public class ESSearch implements Search {
     public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
             List<String> sorts) {
 
-        List<String> fieldNames = output.getFields();
+        List<String> fieldNames = output.getPaths();
 
         log.debug("Building query");
         // create an elastic querybuilder object from our queries

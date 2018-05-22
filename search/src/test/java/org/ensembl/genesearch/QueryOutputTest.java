@@ -236,4 +236,35 @@ public class QueryOutputTest {
             assertFalse("variations kids not found", o.containsPathChildren("variations"));
         }
     }
+    
+    @Test
+    public void testGetPaths() {
+        {
+            String testStr = "{\"genes\":[\"1\",\"2\",\"3\"],\"variations\":[\"A\",\"B\"]}";
+            QueryOutput o = QueryOutput.build(testStr);
+            List<String> paths = o.getPaths();
+            assertTrue(paths.contains("genes.1"));
+            assertTrue(paths.contains("genes.2"));
+            assertTrue(paths.contains("genes.3"));
+            assertTrue(paths.contains("variations.A"));
+            assertTrue(paths.contains("variations.B"));
+        }
+        
+        {
+            QueryOutput o = new QueryOutput("genes.1","genes.2","genes.3");
+            List<String> paths = o.getPaths();
+            assertTrue(paths.contains("genes.1"));
+            assertTrue(paths.contains("genes.2"));
+            assertTrue(paths.contains("genes.3"));
+        }
+        
+        {
+            String testStr = "{\"genes\":[\"1\",{\"2\":[\"3\"]}]}";
+            QueryOutput o = QueryOutput.build(testStr);
+            List<String> paths = o.getPaths();
+            assertTrue(paths.contains("genes.1"));
+            assertTrue(paths.contains("genes.2.3"));
+        }
+        
+    }
 }

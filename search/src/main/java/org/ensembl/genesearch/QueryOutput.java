@@ -145,6 +145,19 @@ public class QueryOutput {
     public List<String> getFields() {
         return fields;
     }
+    
+    public List<String> getPaths() {
+        List<String> paths = new ArrayList<>();
+        for(String field: getFields()) {
+            paths.add(field);
+        }
+        for(Entry<String,QueryOutput> e: getSubFields().entrySet()) {
+            for(String subPath : e.getValue().getPaths()) {
+                paths.add(e.getKey()+"."+subPath);
+            }
+        }
+        return paths;
+    }
 
     /**
      * Return subfields
