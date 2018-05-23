@@ -223,11 +223,31 @@ public abstract class JoinMergeSearch implements Search {
                 }
             }
 
-            // add the base fields
-            QueryOutput fromOutput = new QueryOutput();
-            fromOutput.getFields().addAll(output.getFields());
+            Pair<QueryOutput, QueryOutput> decomposeOutputs = decomposeOutputs(output);
+
+            return Pair.of(
+                    SubSearchParams.build(fromName, joinStrategy.fromKey, fromQueries, decomposeOutputs.getLeft(),
+                            joinStrategy),
+                    SubSearchParams.build(toName, joinStrategy.toKey, toQueries, decomposeOutputs.getRight(),
+                            joinStrategy));
+
+        }
+
+    }
+
+    protected Pair<QueryOutput, QueryOutput> decomposeOutputs(QueryOutput output) {
+        Optional<SearchType> fromName = Optional.of(getPrimarySearchType());
+        Optional<SearchType> toName = getToName(output);
+
+        // add the base fields
+        QueryOutput fromOutput = new QueryOutput();
+        QueryOutput toOutput = null;
+
+        fromOutput.getFields().addAll(output.getFields());
+
+        if (toName.isPresent()) {
+            JoinStrategy joinStrategy = joinTargets.get(toName.get());
             // split subfields into "to" and "from"
-            QueryOutput toOutput = null;
             // NB: Could avoid adding into "from" here I guess
             for (Entry<String, QueryOutput> e : output.getSubFields().entrySet()) {
                 if (toName.get().is(e.getKey())) {
@@ -240,11 +260,9 @@ public abstract class JoinMergeSearch implements Search {
             if (joinStrategy.toGroupBy.isPresent()) {
                 fromOutput.getFields().add(joinStrategy.toGroupBy.get());
             }
-
-            return Pair.of(SubSearchParams.build(fromName, joinStrategy.fromKey, fromQueries, fromOutput, joinStrategy),
-                    SubSearchParams.build(toName, joinStrategy.toKey, toQueries, toOutput, joinStrategy));
-
         }
+
+        return Pair.of(fromOutput, toOutput);
 
     }
 
@@ -259,10 +277,10 @@ public abstract class JoinMergeSearch implements Search {
         Pair<SubSearchParams, SubSearchParams> qf = decomposeQueryFields(queries, fieldNames);
 
         SubSearchParams from = qf.getLeft();
-        log.debug("'from' params:"+from);
+        log.debug("'from' params:" + from);
         SubSearchParams to = qf.getRight();
-        log.debug("'to' params:"+to);
-        
+        log.debug("'to' params:" + to);
+
         if (!to.name.isPresent()) {
 
             // we either have no target, or the target is a passthrough
@@ -272,7 +290,7 @@ public abstract class JoinMergeSearch implements Search {
         } else if (to.joinStrategy.type == JoinType.RANGE) {
 
             log.debug("Executing join range query");
-            fetchWithRangeJoin(consumer, from, to, isInner(to,from));
+            fetchWithRangeJoin(consumer, from, to, isInner(to, from));
 
         } else if (to.joinStrategy.type == JoinType.TERM) {
 
@@ -349,8 +367,8 @@ public abstract class JoinMergeSearch implements Search {
      * @param from
      * @param to
      */
-    protected void fetchWithRangeJoin(Consumer<Map<String, Object>> consumer, SubSearchParams from,
-            SubSearchParams to, boolean inner) {
+    protected void fetchWithRangeJoin(Consumer<Map<String, Object>> consumer, SubSearchParams from, SubSearchParams to,
+            boolean inner) {
         // process in batches
         Search toSearch = provider.getSearch(to.name.get());
         provider.getSearch(from.name.get()).fetch(fromRow -> {
@@ -360,8 +378,8 @@ public abstract class JoinMergeSearch implements Search {
             toSearch.fetch(toRow -> {
                 addRangeJoinData(from, to, fromRow, toRow);
             }, toQueries, to.fields);
-            if(!inner || fromRow.containsKey(to.name.get().toString())) {
-            		consumer.accept(fromRow);
+            if (!inner || fromRow.containsKey(to.name.get().toString())) {
+                consumer.accept(fromRow);
             }
         }, from.queries, from.fields);
     }
@@ -592,9 +610,9 @@ public abstract class JoinMergeSearch implements Search {
         Pair<SubSearchParams, SubSearchParams> qf = decomposeQueryFields(queries, output);
 
         SubSearchParams from = qf.getLeft();
-        log.debug("'from' params:"+from);
+        log.debug("'from' params:" + from);
         SubSearchParams to = qf.getRight();
-        log.debug("'to' params:"+to);
+        log.debug("'to' params:" + to);
 
         if (!to.name.isPresent()) {
 
@@ -604,19 +622,19 @@ public abstract class JoinMergeSearch implements Search {
 
         } else if (to.joinStrategy.type == JoinType.RANGE) {
 
-            log.debug("Using range join to "+to.name);
+            log.debug("Using range join to " + to.name);
             return queryWithRangeJoin(output, facets, offset, limit, sorts, from, to, isInner(from, to));
 
         } else if (to.joinStrategy.type == JoinType.TERM) {
 
             if (isInner(from, to)) {
 
-                log.debug("Using inner term join to "+to.name);
+                log.debug("Using inner term join to " + to.name);
                 return queryWithTermJoin(output, facets, offset, limit, sorts, innerTermJoinQuery(from, to), to);
 
             } else {
 
-                log.debug("Using term join to "+to.name);
+                log.debug("Using term join to " + to.name);
                 return queryWithTermJoin(output, facets, offset, limit, sorts, from, to);
 
             }
@@ -632,34 +650,34 @@ public abstract class JoinMergeSearch implements Search {
     protected QueryResult queryWithRangeJoin(QueryOutput output, List<String> facets, int offset, int limit,
             List<String> sorts, SubSearchParams from, SubSearchParams to, boolean inner) {
 
-        log.debug("Executing join query through primary using ranges "+(inner?"":"(inner)"));
+        log.debug("Executing join query through primary using ranges " + (inner ? "" : "(inner)"));
 
         // query from first and generate a set of results
-        log.debug("Executing 'from' query: "+from.queries);
+        log.debug("Executing 'from' query: " + from.queries);
         QueryResult fromResults = provider.getSearch(getPrimarySearchType()).query(from.queries, from.fields, facets,
                 offset, limit, sorts);
-        
-        log.debug("Found "+fromResults.getResults().size()+" 'from' results");
+
+        log.debug("Found " + fromResults.getResults().size() + " 'from' results");
 
         Search toSearch = provider.getSearch(to.name.get());
-        log.debug("Applying to queries vs "+to.name.get());
+        log.debug("Applying to queries vs " + to.name.get());
         Iterator<Map<String, Object>> resultsI = fromResults.getResults().iterator();
-        while(resultsI.hasNext()) {
-        		Map<String, Object> r = resultsI.next();
+        while (resultsI.hasNext()) {
+            Map<String, Object> r = resultsI.next();
             List<Query> toQueries = buildToRangeQuery(from, to, r);
-            log.debug("To queries: "+toQueries);
+            log.debug("To queries: " + toQueries);
             // execute and merge "to" results onto existing "from"
             toSearch.fetch(t -> {
                 addRangeJoinData(from, to, r, t);
             }, toQueries, to.fields);
-            if(inner && !r.containsKey(to.name.get().toString())) {
-            		resultsI.remove();
+            if (inner && !r.containsKey(to.name.get().toString())) {
+                resultsI.remove();
             }
         }
-        
-        if(inner) {
-        		// result set size cannot be set accurately so set to -1
-        		fromResults.setResultCount(-1);
+
+        if (inner) {
+            // result set size cannot be set accurately so set to -1
+            fromResults.setResultCount(-1);
         }
 
         fromResults.getFields().clear();
@@ -711,7 +729,8 @@ public abstract class JoinMergeSearch implements Search {
         // step 3: query is now n:list[b.m], b:{c.2} which can be passed
         // directly to query
         List<Query> newFromQ = new ArrayList<>(from.queries.size() + 1);
-        newFromQ.add(Query.expandQuery(new Query(FieldType.TERM, fromKey, false, fromJoinedIds.toArray(new String[] {}))));
+        newFromQ.add(
+                Query.expandQuery(new Query(FieldType.TERM, fromKey, false, fromJoinedIds.toArray(new String[] {}))));
         // we still need the original x:1 query to avoid issues with n-m queries
         newFromQ.addAll(from.queries);
         return new SubSearchParams(from.name, from.keys, newFromQ, from.fields, from.joinStrategy);
@@ -733,9 +752,10 @@ public abstract class JoinMergeSearch implements Search {
             List<String> sorts, SubSearchParams from, SubSearchParams to) {
         log.debug("Executing join query through primary");
 
+        Search fromSearch = provider.getSearch(getPrimarySearchType());
+
         // query from first and generate a set of results
-        QueryResult fromResults = provider.getSearch(getPrimarySearchType()).query(from.queries, from.fields, facets,
-                offset, limit, sorts);
+        QueryResult fromResults = fromSearch.query(from.queries, from.fields, facets, offset, limit, sorts);
 
         // hash results by ID and also create a new "to" search
         Map<String, List<Map<String, Object>>> resultsById = new HashMap<>();
@@ -745,8 +765,7 @@ public abstract class JoinMergeSearch implements Search {
         // mop up leftovers
         mapTo(toSearch, to, from, resultsById, ids);
         fromResults.getFields().clear();
-        fromResults.getFields().addAll(this.getFieldInfo(output));
-
+        fromResults.getFields().addAll(getFieldInfo(output));
         return fromResults;
     }
 
@@ -756,22 +775,41 @@ public abstract class JoinMergeSearch implements Search {
     }
 
     @Override
-    public List<FieldInfo> getFieldInfo(QueryOutput fieldNames) {
-        List<FieldInfo> fields = Search.super.getFieldInfo(fieldNames);
-        for (String subField : fieldNames.getSubFields().keySet()) {
-            Search search = provider.getSearch(SearchType.findByName(subField));
-            if (search != null) {
-                FieldInfo f = new FieldInfo();
-                f.setName(search.getDataType().getName().toString());
-                f.setFacet(false);
-                f.setSort(false);
-                f.setType(FieldType.NESTED);
-                if (!fields.contains(f)) {
-                    fields.add(f);
+    public List<FieldInfo> getFieldInfo(QueryOutput output) {
+
+        // attempt to produce a complete set of fields for the output
+
+        Optional<SearchType> toName = getToName(output);
+        if (toName.isPresent()) {
+            Pair<QueryOutput, QueryOutput> outputs = decomposeOutputs(output);
+            JoinStrategy joinStrategy = joinTargets.get(toName.get());
+            // from fields
+            List<FieldInfo> info = Search.super.getFieldInfo(outputs.getLeft());
+            if (joinStrategy.merge != MergeStrategy.MERGE) {
+                // nested join field
+                FieldInfo joinInfo = new FieldInfo(toName.get().getObjectName(), FieldType.NESTED);
+                joinInfo.setSearch(false);
+                joinInfo.setDisplay(true);
+                joinInfo.setSort(false);
+                joinInfo.setFacet(false);
+                joinInfo.setDisplayName(toName.get().getObjectName());
+                info.add(joinInfo);
+            }
+            // to fields
+            Search toSearch = provider.getSearch(toName.get());
+            for (FieldInfo f : toSearch.getFieldInfo(outputs.getRight())) {
+                if (joinStrategy.merge == MergeStrategy.MERGE) {
+                    // add joined fields as peers
+                    info.add(f);
+                } else {
+                    // add joined fields as children
+                    info.add(FieldInfo.clone(toName.get().getObjectName(), f));
                 }
             }
+            return info;
+        } else {
+            return Search.super.getFieldInfo(output);
         }
-        return fields;
     }
 
     @Override
