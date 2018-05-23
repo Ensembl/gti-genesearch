@@ -37,6 +37,8 @@ To remove ES and web installs from the hosts in `hosts`:
 ansible-playbook clean.yml -i hosts 
 ```
 
+Note that older versions of the playbook installed the Elasticsearch `head` plugin. This is now supported as a Chrome extension, available from https://chrome.google.com/webstore/detail/elasticsearch-head/ffmkiejjmecolpfloofpjologoblkegm
+
 ## Known issues
 ### Java downloads
 Oracle will only allow downloads of Java with a clickthrough agreement. This is a pain for command line access, so this ansible project uses `curl` to pass a cookie to Oracle to allow download. Note that the URLs are somewhat cryptic and may need updating over time. You can find the URL used in [roles/java/vars/main.yml](roles/java/vars/main.yml). You can find the current URLs from http://www.oracle.com/technetwork/java/javase/downloads/index.html and this topic is discussed more online e.g. https://gist.github.com/hgomez/4697585

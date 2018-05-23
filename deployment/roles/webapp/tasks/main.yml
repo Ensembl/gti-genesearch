@@ -18,6 +18,7 @@
     src: "application.properties.j2"
     dest: "{{ web_dir }}/application.properties"
 - name: "Copy keystore"
+  when: keystore_name is defined
   copy:
     src: "{{ keystore_name }}"
     dest: "{{ web_dir }}/{{ keystore_name }}"
