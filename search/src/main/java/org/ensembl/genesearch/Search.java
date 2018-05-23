@@ -171,7 +171,7 @@ public interface Search {
      */
     public default List<FieldInfo> getFieldInfo(QueryOutput fieldNames) {
         List<FieldInfo> fields = new ArrayList<>();
-        for (String field : fieldNames.getFields()) {
+        for (String field : fieldNames.getPaths()) {
             for (FieldInfo f : getDataType().getInfoForFieldName(field)) {
                 if (!fields.contains(f)) {
                     fields.add(f);
