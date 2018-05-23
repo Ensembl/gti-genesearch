@@ -11,6 +11,16 @@ package org.ensembl.genesearch.info;
  *
  */
 public class FieldInfo {
+    
+    public static FieldInfo clone(String path, FieldInfo info) {
+        FieldInfo newInfo = new FieldInfo(path+"."+info.getName(), info.getType());
+        newInfo.setDisplayName(info.getDisplayName());
+        newInfo.setDisplay(info.isDisplay());
+        newInfo.setFacet(info.isFacet());
+        newInfo.setSearch(info.isSearch());
+        newInfo.setSort(info.isSort());        
+        return newInfo;        
+    }
 
     private boolean display;
 
