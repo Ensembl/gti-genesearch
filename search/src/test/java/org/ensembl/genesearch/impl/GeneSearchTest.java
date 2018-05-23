@@ -91,7 +91,6 @@ public class GeneSearchTest {
         assertEquals("Total facets", 0, result.getFacets().size());
         assertTrue("id found", result.getResults().get(0).containsKey("id"));
         assertEquals("1 field only", 1, result.getResults().get(0).keySet().size());
-        assertEquals("Correct field info found", 5, result.getFields().size());
     }
 
     @Test
@@ -112,6 +111,7 @@ public class GeneSearchTest {
         assertTrue("genomes.id found", genomes.containsKey("id"));
         assertTrue("genomes.name found", genomes.containsKey("name"));
         assertTrue("genomes.division found", genomes.containsKey("division"));
+        assertEquals("Correct field info found", 5, result.getFields().size());
     }
 
     @Test
