@@ -1,0 +1,177 @@
+{
+  "name": "genomes",
+  "targets": [],
+  "fieldInfo": [
+    {
+      "type": "ID",
+      "displayName": "ID",
+      "name": "id",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Division",
+      "name": "division",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Database name",
+      "name": "dbname",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Ensembl species ID",
+      "name": "species_id",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "BOOLEAN",
+      "displayName": "Ensembl reference genome",
+      "name": "is_reference",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NESTED",
+      "displayName": "Assembly",
+      "name": "assembly",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Assembly accession",
+      "name": "assembly.accession",
+      "sort": "true",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Assembly name",
+      "name": "assembly.name",
+      "sort": "true",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Assembly level",
+      "name": "assembly.level",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NESTED",
+      "displayName": "Organism",
+      "name": "organism",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Organism display name",
+      "name": "organism.display_name",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Organism name",
+      "name": "organism.name",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Aliases",
+      "name": "organism.aliases",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Species taxonomy ID",
+      "name": "organism.species_taxonomy_id",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Taxonomy ID",
+      "name": "organism.taxonomy_id",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Serotype",
+      "name": "organism.serotype",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Strain",
+      "name": "organism.strain",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Lineage taxonomy ID(s)",
+      "name": "organism.lineage",
+      "sort": "false",
+      "facet": "false",
+      "display": "false",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Genome GO terms",
+      "name": "GO_genome",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    }
+  ]
+}

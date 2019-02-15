@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class EnsemblVariantSearch extends RestBasedSearch {
 
-    protected final static String GENOME_FIELD = "genome";
+    final static String GENOME_FIELD = "genome";
     protected final static String LOCATION_FIELD = "location";
     protected final static String LOCATION_PATH = "%s/overlap/region/%s/%s?feature=variation;"
             + "feature=somatic_variation;feature=structural_variation;feature=somatic_structural_variation;"

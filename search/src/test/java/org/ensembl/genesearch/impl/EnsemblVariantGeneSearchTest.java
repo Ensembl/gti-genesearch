@@ -45,11 +45,11 @@ public class EnsemblVariantGeneSearchTest {
             testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         }
         ESSearch ensemblGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
-                DataTypeInfo.fromResource("/genes_datatype_info.json"));
+                DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json"));
 
         String url = wireMockRule.url(StringUtils.EMPTY);
         EnsemblVariantSearch variantSearch = new EnsemblVariantSearch(url,
-                DataTypeInfo.fromResource("/evavariants_datatype_info.json"));
+                DataTypeInfo.fromResource("/datatypes/evavariants_datatype_info.json"));
 
         SearchRegistry provider = new SearchRegistry();
         provider.registerSearch(SearchType.GENES, ensemblGeneSearch);

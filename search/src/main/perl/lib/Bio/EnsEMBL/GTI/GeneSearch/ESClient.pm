@@ -26,52 +26,53 @@ with 'MooseX::Log::Log4perl';
 use Search::Elasticsearch;
 use Carp;
 
-has 'url'         => ( is => 'ro', isa => 'Str', required => 1 );
-has 'index'       => ( is => 'ro', isa => 'Str', required => 1 );
-has 'bulk' => ( is => 'rw', isa => 'Search::Elasticsearch::Client::2_0::Bulk' );
-has 'timeout' => ( is => 'rw', isa => 'Int', default => 3600 );
+
+has 'url' => (is => 'ro', isa => 'Str', required => 1);
+has 'index' => (is => 'ro', isa => 'Str', required => 1);
+has 'bulk' => (is => 'rw', isa => 'Search::Elasticsearch::Client::6_0::Bulk');
+has 'timeout' => (is => 'rw', isa => 'Int', default => 3600);
 
 sub BUILD {
-  my ($self) = @_;
+    my ($self) = @_;
 
-  $self->log()->info( "Connecting to " . $self->url() );
-  my $es =
-    Search::Elasticsearch->new( client          => "2_0::Direct",
-                                nodes           => [ $self->url() ],
-                                request_timeout => $self->timeout() );
-  my $bulk = $es->bulk_helper(
-    index    => $self->index(),
-    timeout  => $self->timeout().'s',
-    on_error => sub {
-      my ( $action, $response, $i ) = @_;
-      $self->handle_error( $action, $response, $i );
-    },
-    on_conflict => sub {
-      my ( $action, $response, $i ) = @_;
-      $self->handle_conflict( $action, $response, $i );
-    } );
-  $self->{es} = $es;
-  $self->bulk($bulk);
-  $self->log()->info( "Connected to " . $self->url() );
-  return;
+    $self->log->info("Connecting to " . $self->url());
+    my $es =
+        Search::Elasticsearch->new(#client => "6_00::Direct",
+            nodes                         => [ $self->url() ],
+            request_timeout               => $self->timeout());
+    my $bulk = $es->bulk_helper(
+        index       => $self->index(),
+        timeout     => $self->timeout() . 's',
+        on_error    => sub {
+            my ($action, $response, $i) = @_;
+            $self->handle_error($action, $response, $i);
+        },
+        on_conflict => sub {
+            my ($action, $response, $i) = @_;
+            $self->handle_conflict($action, $response, $i);
+        });
+    $self->{es} = $es;
+    $self->bulk($bulk);
+    $self->log->info("Connected to " . $self->url());
+
+    return;
 }
 
 sub search {
-  my ($self) = @_;
-  return $self->{es};
+    my ($self) = @_;
+    return $self->{es};
 }
 
 sub handle_error {
-  my ( $self, $action, $response, $i ) = @_;
-  croak "Failed to execute $action $i due to " . $response->{error}->{type} .
-    " error: " . $response->{error}->{reason};
-  return;
+    my ($self, $action, $response, $i) = @_;
+    croak "Failed to execute $action $i due to " . $response->{error}->{type} . " error: " . $response->{error}->{reason};
+    return;
 }
 
-sub handle_conflict {  
-  my ( $self, $action, $response, $i ) = @_;
-  # no action required
-  return;
+sub handle_conflict {
+    my ($self, $action, $response, $i) = @_;
+    # no action required
+    return;
 }
 
 1;

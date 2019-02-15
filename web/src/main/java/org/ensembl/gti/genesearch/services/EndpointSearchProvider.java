@@ -149,9 +149,9 @@ public class EndpointSearchProvider {
     }
 
     protected void registerExpressionSearches(SearchRegistry reg) {
-        DataTypeInfo expressionType = DataTypeInfo.fromResource("/expression_datatype_info.json");
+        DataTypeInfo expressionType = DataTypeInfo.fromResource("/datatypes/expression_datatype_info.json");
         DataTypeInfo expressionExperimentsType = DataTypeInfo
-                .fromResource("/expression_experiments_datatype_info.json");
+                .fromResource("/datatypes/expression_experiments_datatype_info.json");
 
         Search solrExpressionSearch = new SolrSearch(getSolrAnalyticsClient(), expressionType);
         Search solrExpressionExperimentsSearch = new SolrSearch(getSolrExperimentsClient(), expressionExperimentsType);
@@ -166,7 +166,7 @@ public class EndpointSearchProvider {
 
     protected void registerEnsemblRestSearches(SearchRegistry reg) {
         // Ensembl REST searches
-        DataTypeInfo seqType = DataTypeInfo.fromResource("/sequences_datatype_info.json");
+        DataTypeInfo seqType = DataTypeInfo.fromResource("/datatypes/sequences_datatype_info.json");
         Search seqSearch = new DivisionAwareSequenceSearch(registry.getSearch(SearchType.GENOMES), seqType,
                 getEnsRestUrl(), getEgRestUrl());
         reg.registerSearch(SearchType.SEQUENCES, seqSearch);
@@ -174,9 +174,9 @@ public class EndpointSearchProvider {
 
     protected void registerESSearches(SearchRegistry reg) {
         // Elastic based searches
-        DataTypeInfo geneType = DataTypeInfo.fromResource("/genes_datatype_info.json");
-        DataTypeInfo genomeType = DataTypeInfo.fromResource("/genomes_datatype_info.json");
-        DataTypeInfo transcriptType = DataTypeInfo.fromResource("/transcripts_datatype_info.json");
+        DataTypeInfo geneType = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
+        DataTypeInfo genomeType = DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json");
+        DataTypeInfo transcriptType = DataTypeInfo.fromResource("/datatypes/transcripts_datatype_info.json");
 
         Search esGenomeSearch = new ESSearch(getESClient(), genomesIndex, ESSearch.GENOME_ESTYPE, genomeType);
         Search esGeneSearch = new ESSearch(getESClient(), genesIndex, ESSearch.GENE_ESTYPE, geneType);

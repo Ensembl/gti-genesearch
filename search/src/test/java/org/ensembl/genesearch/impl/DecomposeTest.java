@@ -45,9 +45,9 @@ public class DecomposeTest {
 	static Logger log = LoggerFactory.getLogger(ESGeneSearchTest.class);
 
 	static ESTestServer testServer = new ESTestServer();
-	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/genes_datatype_info.json");
-	static DataTypeInfo genomeInfo = DataTypeInfo.fromResource("/genomes_datatype_info.json");
-	static DataTypeInfo homologueInfo = DataTypeInfo.fromResource("/homologues_datatype_info.json");
+	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
+	static DataTypeInfo genomeInfo = DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json");
+	static DataTypeInfo homologueInfo = DataTypeInfo.fromResource("/datatypes/homologues_datatype_info.json");
 	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
 	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE,
 			genomeInfo);

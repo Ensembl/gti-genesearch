@@ -20,13 +20,15 @@ limitations under the License.
 
 package Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer;
 
-use Moose;
-extends 'Bio::EnsEMBL::GTI::GeneSearch::ESClient';
-
 use File::Slurp;
 use JSON;
 use Carp;
 use Data::Dumper;
+
+use Moose;
+extends 'Bio::EnsEMBL::GTI::GeneSearch::ESClient';
+with 'MooseX::Log::Log4perl';
+
 
 use Bio::EnsEMBL::Production::Search::JSONReformatter qw/process_json_file/;
 
@@ -43,7 +45,7 @@ sub index_file {
 
 sub index_file_single {
   my ( $self, $file, $type, $id_field ) = @_;
-  $self->log()->info("Loading from $file");
+  $self->log->info("Loading from $file");
   $self->index_document( from_json( read_file($file) ), $type, $id_field );
   $self->bulk()->flush();
   return;
@@ -51,9 +53,9 @@ sub index_file_single {
 
 sub index_file_array {
   my ( $self, $file, $type, $id_field, $offset, $limit ) = @_;
-  $self->log()->info("Loading array from $file");
+  $self->log->info("Loading array from $file");
       if(defined $offset && defined $limit) {
-  $self->log()->info("Offset=$offset, limit=$limit");
+  $self->log->info("Offset=$offset, limit=$limit");
       }
   my $n = 0;
   my $m = 0;
@@ -70,15 +72,14 @@ sub index_file_array {
       return;
     } );
   $self->bulk()->flush();
-  $self->log()->info("Loaded $m/$n $type documents from $file");
+  $self->log->info("Loaded $m/$n $type documents from $file");
   return;
 }
 
 sub index_document {
   my ( $self, $doc, $type, $id ) = @_;
   eval {
-    $self->bulk()
-      ->create( { id => $doc->{$id}, source => $doc, type => $type } );
+    $self->bulk()->create( { id => $doc->{$id}, source => $doc, type => $type } );
   };
   if ($@) {
     my $msg;
@@ -89,7 +90,7 @@ sub index_document {
     else {
       $msg = "Indexing failed: " . $@;
     }
-    $self->log()->error($msg);
+    $self->log->error($msg);
     croak "Indexing failed: $msg";
   }
   return;

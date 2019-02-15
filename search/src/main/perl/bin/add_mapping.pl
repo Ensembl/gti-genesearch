@@ -30,7 +30,7 @@ if ( $opts->{verbose} ) {
 else {
   Log::Log4perl->easy_init($INFO);
 }
-my $logger = get_logger();
+my $logger =  Log::Log4perl->get_logger();
 
 $logger->info("Reading from $opts->{mapping_file}");
 my $mapping = from_json(read_file($opts->{mapping_file}));

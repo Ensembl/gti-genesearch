@@ -1,12 +1,12 @@
 /*
  * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,17 +22,23 @@ import org.ensembl.genesearch.impl.JoinMergeSearch;
  * Enum of data types currently supported by search. These are used by join
  * mechanisms such as {@link JoinMergeSearch} to determine which searches can be
  * joined together.
- * 
- * @author dstaines
  *
+ * @author dstaines
  */
 public enum SearchType {
 
-    GENOMES("genomes", "genome"), GENES("genes", "gene"), TRANSCRIPTS("transcripts", "transcript"), TRANSLATIONS(
-            "translations", "translation"), HOMOLOGUES("homologues", "homologue"), VARIANTS("variants",
-                    "variant"), SEQUENCES("sequences", "sequence"), EXPRESSION("expression",
-                            "expression"), EXPRESSION_EXPERIMENTS("experiments", "experiment"), EXPRESSION_ANALYTICS(
-                                    "analytics", "analytics"), CELL_LINES("cell_lines", "cell_line");
+    GENOMES("genomes", "genome"),
+    GENES("genes", "gene"),
+    TRANSCRIPTS("transcripts", "transcript"),
+    TRANSLATIONS("translations", "translation"),
+    HOMOLOGUES("homologues", "homologue"),
+    VARIANTS("variants", "variant"),
+    SEQUENCES("sequences", "sequence"),
+    EXPRESSION("expression", "expression"),
+    EXPRESSION_EXPERIMENTS("experiments", "experiment"),
+    EXPRESSION_ANALYTICS("analytics", "analytics"),
+    CELL_LINES("cell_lines", "cell_line");
+
     /**
      * Name to use when a plural is needed
      */
@@ -44,20 +50,17 @@ public enum SearchType {
      */
     private final String singleName;
 
-    private SearchType(String pluralName, String singleName) {
+    SearchType(String pluralName, String singleName) {
         this.pluralName = pluralName;
         this.singleName = singleName;
     }
 
     public static SearchType findByName(String name) {
-        SearchType type = null;
-        for (SearchType t : SearchType.values()) {
+        for (SearchType t : SearchType.values())
             if (t.is(name)) {
-                type = t;
-                break;
+                return t;
             }
-        }
-        return type;
+        return null;
     }
 
     @Override

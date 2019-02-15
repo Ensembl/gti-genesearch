@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright [1999-2016] EMBL-European Bioinformatics Institute
+# Copyright [1999-2019] EMBL-European Bioinformatics Institute
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ url=$1
 type=$2
 name=$3
 n=$4
-if [ -z "$n" ]; then
+if [[ -z "$n" ]]; then
     n=8
 fi
 
-if [ -z "$url" ] || [ -z "$type" ] || [ -z "$name" ]; then
+if [[ -z "$url" ]] || [[ -z "$type" ]] || [[ -z "$name" ]]; then
     echo "Usage: $0 <url> <type> <name> [shardN]" 1>&2 
     exit 1
 fi
@@ -36,4 +36,4 @@ curl -XDELETE "${url}/$name"
 echo
 # create a new index
 echo "Creating index"
-sed -e "s/SHARDN/$n/" ${dir}/../resources/${type}_index.json | curl -XPUT -d @- "${url}/${name}"
+sed -e "s/SHARDN/$n/" ${dir}/../resources/indexes/${type}_index.json | curl -XPUT -d @- -H "Content-Type: application/json" "${url}/${name}"

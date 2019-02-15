@@ -1,0 +1,33 @@
+{
+  "settings": {
+    "number_of_shards": "SHARDN",
+    "number_of_replicas": 0,
+    "analysis": {
+      "analyzer": {
+        "string_lowercase": {
+          "tokenizer": "keyword",
+          "filter": "lowercase"
+        }
+      }
+    }
+  },
+  "aliases" : {
+    "regulations": {}
+  },
+  "mappings" : {
+    "probes" : {
+      "dynamic": "false",
+      "properties": {
+
+      }
+    },
+    "regulatory_features": {
+      "dynamic": "false",
+      "properties": {
+      }
+    },
+    "transcription_factors": {
+
+    }
+  }
+}

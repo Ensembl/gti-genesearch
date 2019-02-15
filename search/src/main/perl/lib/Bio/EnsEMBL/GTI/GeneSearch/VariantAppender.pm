@@ -30,7 +30,7 @@ has 'variant_index' => ( is => 'ro', isa => 'Str', required => 1 );
 sub get_variation_genomes {
   my ($self) = @_;
 
-  $self->log()->info("Looking for genomes with variation");
+  $self->log->info("Looking for genomes with variation");
   my $results = $self->search()->search(
         index => $self->variant_index(),
         size  => 0,
@@ -40,13 +40,13 @@ sub get_variation_genomes {
 
   my @genomes =
     map { $_->{key} } @{ $results->{aggregations}{genomes}{buckets} };
-  $self->log()->info( "Retrieved " . scalar(@genomes) . " genomes" );
+  $self->log->info( "Retrieved " . scalar(@genomes) . " genomes" );
   return \@genomes;
 }
 
 sub get_genes {
   my ( $self, $genome ) = @_;
-  $self->log()->info("Fetching genes for $genome");
+  $self->log->info("Fetching genes for $genome");
 
   my $scroll = $self->search()->scroll_helper(
     index => $self->index(),
@@ -56,7 +56,7 @@ sub get_genes {
       _source => ["_id"],
       sort    => '_doc' } );
 
-  $self->log()->info( "Fetching IDs for " . $scroll->total() . " genes" );
+  $self->log->info( "Fetching IDs for " . $scroll->total() . " genes" );
 
   my $genes = [];
   while ( my $doc = $scroll->next() ) {
@@ -69,7 +69,7 @@ sub get_genes {
 sub add_variation_to_transcript {
   my ( $self, $transcript ) = @_;
   # consequence_types, clinical_significance
-  $self->log()
+  $self->log
     ->info( "Retrieving variants for transcript " . $transcript->{id} );
   my $results = $self->search()->search(
         index => $self->variant_index(),
@@ -119,7 +119,7 @@ sub get_gene {
   };
   if ($@) {
     my $msg = "Gene $id not found";
-    $self->log()->fatal($msg);
+    $self->log->fatal($msg);
     croak $msg;
   }
   return $results->{_source};
@@ -162,7 +162,7 @@ sub add_variation_to_gene {
       else {
         $msg = "Indexing failed: " . $@;
       }
-      $self->log()->error($msg);
+      $self->log->error($msg);
       croak "Indexing failed: $msg";
     }
 

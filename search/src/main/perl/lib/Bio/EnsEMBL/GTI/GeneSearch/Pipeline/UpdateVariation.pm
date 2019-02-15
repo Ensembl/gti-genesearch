@@ -39,7 +39,7 @@ sub run {
   my $gene_ids = $self->param_required("gene_ids");
 
 for my $id (@$gene_ids) {
-    $self->log()->info("Updating gene $id");
+    $self->log->info("Updating gene $id");
     $indexer->add_variation_to_gene($id);  
 }
 $indexer->bulk()->flush();

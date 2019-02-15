@@ -1,0 +1,233 @@
+{
+  "name": "genotypes",
+  "targets": [
+    "genes"
+  ],
+  "fieldInfo": [
+    {
+      "type": "LOCATION",
+      "displayName": "Genomic location",
+      "name": "location",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Chromosome",
+      "name": "chromosome",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "facet": "false",
+      "display": "true",
+      "sort": "false",
+      "search": "true",
+      "type": "NUMBER",
+      "name": "start",
+      "displayName": "start"
+    },
+    {
+      "facet": "false",
+      "display": "true",
+      "sort": "false",
+      "search": "true",
+      "type": "NUMBER",
+      "name": "end",
+      "displayName": "end"
+    },
+    {
+      "type": "TERM",
+      "displayName": "rsID",
+      "name": "rsid",
+      "sort": "false",
+      "facet": "false",
+      "display": "false",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Sample ID",
+      "name": "rsid",
+      "sort": "false",
+      "facet": "false",
+      "display": "false",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Reference allele",
+      "name": "ref",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Alternative allele",
+      "name": "alt",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Genotype",
+      "name": "genotype",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "displayName": "Minor allele frequency",
+      "name": "maf",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "BOOLEAN",
+      "displayName": "Indel",
+      "name": "indel",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Consequence",
+      "name": "consequence",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "ONTOLOGY",
+      "displayName": "Consequence term",
+      "name": "consequence",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Impact",
+      "name": "consequence",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Gene name",
+      "name": "gene_name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Gene ID",
+      "name": "gene_id",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Feature ID",
+      "name": "feature_id",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Feature type",
+      "name": "feature_type",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Exon",
+      "name": "exon",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Intron",
+      "name": "intron",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "HGVSc",
+      "name": "hgvsc",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "HGVSp",
+      "name": "hgvsp",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "displayName": "cDNA position",
+      "name": "cdna_pos",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "displayName": "CDS position",
+      "name": "cds_pos",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "displayName": "Protein position",
+      "name": "protein_pos",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    }
+  ]
+}

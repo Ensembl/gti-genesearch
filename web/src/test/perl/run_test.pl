@@ -15,6 +15,7 @@
 
 use warnings;
 use strict;
+
 use HTTP::Request;
 use LWP::UserAgent;
 use Data::Dumper;
@@ -47,7 +48,7 @@ if ( $opts->{verbose} ) {
 else {
   Log::Log4perl->easy_init($INFO);
 }
-my $logger = get_logger();
+my $logger = Log::Log4perl->get_logger();
 
 $opts->{uri}        ||= 'http://gti-es-0.ebi.ac.uk:8080/api/genes';
 $opts->{es_uri}     ||= 'http://gti-es-0.ebi.ac.uk:9200';

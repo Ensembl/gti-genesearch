@@ -29,7 +29,7 @@ public class EnsemblVariationEndpointProvider extends EndpointSearchProvider {
     @Override
     protected void registerSearches(SearchRegistry reg) {
         super.registerSearches(reg);
-        DataTypeInfo variantType = DataTypeInfo.fromResource("/es_variants_datatype_info.json");
+        DataTypeInfo variantType = DataTypeInfo.fromResource("/datatypes/es_variants_datatype_info.json");
         Search variantSearch = new ESSearch(getESClient(), variantsIndex, ESSearch.VARIANT_ESTYPE, variantType);
         reg.registerSearch(SearchType.VARIANTS, variantSearch);
     }

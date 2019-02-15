@@ -42,15 +42,15 @@ public class EVAVariantRestSearchTest {
         log.info("Creating test index for genomes");
         testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
-                ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/genomes_datatype_info.json"));
+                ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
 
         // build a finder using the test ES server and a wiremock REST
         // implementation
         EVAGenomeFinder finder = new EVAGenomeFinder(new EVAGenomeRestSearch(wireMockRule.url(StringUtils.EMPTY),
-                DataTypeInfo.fromResource("/evagenomes_datatype_info.json")), ensemblGenomeSearch);
+                DataTypeInfo.fromResource("/datatypes/evagenomes_datatype_info.json")), ensemblGenomeSearch);
 
         search = new EVAVariantRestSearch(wireMockRule.url(StringUtils.EMPTY),
-                DataTypeInfo.fromResource("/evavariants_datatype_info.json"), finder);
+                DataTypeInfo.fromResource("/datatypes/evavariants_datatype_info.json"), finder);
 
     }
 

@@ -1,0 +1,97 @@
+{
+  "settings": {
+    "number_of_shards": "SHARDN",
+    "number_of_replicas": 0,
+    "analysis": {
+      "analyzer": {
+        "string_lowercase": {
+          "tokenizer": "keyword",
+          "filter": "lowercase"
+        }
+      }
+    }
+  },
+  "aliases" : {
+    "genomes": {}
+  },
+  "mappings": {
+    "genome": {
+      "dynamic": "false",
+      "properties": {
+        "assembly": {
+          "properties": {
+            "accession": {
+              "type": "text",
+              "index": false
+            },
+            "level": {
+              "type": "text",
+              "index": false
+            },
+            "name": {
+              "type": "text",
+              "index": false
+            }
+          }
+        },
+        "division": {
+          "type": "text",
+          "index": false
+        },
+        "id": {
+          "type": "text",
+          "index": false
+        },
+        "organism": {
+          "properties": {
+            "display_name": {
+              "type": "text"
+            },
+            "aliases": {
+              "type": "text"
+            },
+            "name": {
+              "type": "text",
+              "index": false
+            },
+            "species_taxonomy_id": {
+              "type": "text",
+              "index": false
+            },
+            "taxonomy_id": {
+              "type": "text",
+              "index": false
+            },
+            "serotype": {
+              "type": "text",
+              "index": false
+            },
+            "strain": {
+              "type": "text",
+              "index": false
+            },
+            "lineage": {
+              "type": "text",
+              "index": false
+            }
+          }
+        },
+        "dbname": {
+          "type": "text",
+          "index": false
+        },
+        "species_id": {
+          "type": "text",
+          "index": false
+        },
+        "is_reference": {
+          "type": "boolean"
+        },
+        "GO_genome": {
+          "type": "text",
+          "index": false
+        }
+      }
+    }
+  }
+}

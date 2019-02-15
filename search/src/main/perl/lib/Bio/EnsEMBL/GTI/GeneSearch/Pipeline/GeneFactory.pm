@@ -35,10 +35,10 @@ sub run {
                          variant_index => $self->param_required('variant_index')
     );
   my $genes = $indexer->get_genes( $self->param_required('genome') );
-  $self->log()->info( "Retrieved " . scalar(@$genes) . " genes" );
+  $self->log->info( "Retrieved " . scalar(@$genes) . " genes" );
   my $it = natatime( 1000, @$genes );
   while ( my @ids = $it->() ) {
-    $self->log()->info("Flowing ".scalar(@ids)." gene IDs");
+    $self->log->info("Flowing ".scalar(@ids)." gene IDs");
     $self->dataflow_output_id( { gene_ids => \@ids }, 2 );
   }
   return;

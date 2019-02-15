@@ -1,4 +1,3 @@
-
 =head1 LICENSE
 
 Copyright [1999-2016] EMBL-European Bioinformatics Institute
@@ -26,25 +25,25 @@ use base ('Bio::EnsEMBL::Production::Pipeline::Common::Base');
 use Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer;
 
 sub run {
-  my $self = shift @_;
-  my $url = $self->param_required("es_url");
-  my $index = $self->param_required("index");
-  $self->log()->info("Creating indexer for $index on $url");
-  my $indexer =
-    Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer->new(
-                                url   => $url,
-				index => $index
-    );
-  my $file = $self->param_required('file');
-  my $type = $self->param_required('type');
-  my $id = $self->param_required('id');
-  my $array = $self->param_required('is_array');
-  $self->log()->info("Indexing $file as $type");
-  $self->log()->debug("id=$id, array=$array");
-  $self->dbc()->disconnect_if_idle() if defined $self->dbc();
-  $indexer->index_file($file, $type, $id, $array);
-  $self->log()->info("Completed indexing $file as $type");
-  return;
+    my $self = shift @_;
+    my $url = $self->param_required("es_url");
+    my $index = $self->param_required("index");
+    $self->log->info("Creating indexer for $index on $url");
+    my $indexer =
+        Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer->new(
+            url   => $url,
+            index => $index
+        );
+    my $file = $self->param_required('file');
+    my $type = $self->param_required('type');
+    my $id = $self->param_required('id');
+    my $array = $self->param_required('is_array');
+    $self->log->info("Indexing $file as $type");
+    $self->log->debug("id=$id, array=$array");
+    $self->dbc()->disconnect_if_idle() if defined $self->dbc();
+    $indexer->index_file($file, $type, $id, $array);
+    $self->log->info("Completed indexing $file as $type");
+    return;
 }
 
 1;

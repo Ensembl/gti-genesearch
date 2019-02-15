@@ -16,7 +16,7 @@ public class DataTypeInfoTests {
 
 	@Test
 	public void testCreation() throws IOException {
-		DataTypeInfo genes = DataTypeInfo.fromString(DataUtils.readResource("/genes_datatype_info.json"));
+		DataTypeInfo genes = DataTypeInfo.fromString(DataUtils.readResource("/datatypes/genes_datatype_info.json"));
 		assertNotNull("genes found", genes);
 		assertTrue("Genes have targets", genes.getTargets().size() > 0);
 		assertTrue("Genes have fields", genes.getFieldInfo().size() > 0);
@@ -35,7 +35,7 @@ public class DataTypeInfoTests {
 
 	@Test
 	public void testSearch() throws IOException {
-		DataTypeInfo genes = DataTypeInfo.fromResource("/genes_datatype_info.json");
+		DataTypeInfo genes = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
 		assertNotNull("genes found", genes);
 		List<FieldInfo> infoForFieldName = genes.getInfoForFieldName("id");
 		assertTrue("Single ID found", infoForFieldName.size() == 1);
@@ -49,8 +49,8 @@ public class DataTypeInfoTests {
 
 	@Test
 	public void parseInfo() {
-		for (String resourceName : Arrays.asList("/genes_datatype_info.json", "/genomes_datatype_info.json",
-				"/transcripts_datatype_info.json", "/sequences_datatype_info.json", "/homologues_datatype_info.json")) {
+		for (String resourceName : Arrays.asList("/datatypes/genes_datatype_info.json", "/datatypes/genomes_datatype_info.json",
+                "/datatypes/transcripts_datatype_info.json", "/datatypes/sequences_datatype_info.json", "/datatypes/homologues_datatype_info.json")) {
 			try {
 				DataTypeInfo info = DataTypeInfo.fromResource(resourceName);
 				assertNotNull("Checking for null "+resourceName,info);

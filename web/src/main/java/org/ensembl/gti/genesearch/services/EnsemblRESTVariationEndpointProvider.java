@@ -25,7 +25,7 @@ public class EnsemblRESTVariationEndpointProvider extends EndpointSearchProvider
     @Override
     protected void registerSearches(SearchRegistry reg) {
         super.registerSearches(reg);
-        DataTypeInfo variantType = DataTypeInfo.fromResource("/variants_datatype_info.json");
+        DataTypeInfo variantType = DataTypeInfo.fromResource("/datatypes/variants_datatype_info.json");
         Search variantSearch = new EnsemblVariantSearch(ensRestUrl, variantType);
         reg.registerSearch(SearchType.VARIANTS, variantSearch);
     }

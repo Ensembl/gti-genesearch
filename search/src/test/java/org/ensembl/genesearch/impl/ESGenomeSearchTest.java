@@ -48,7 +48,7 @@ public class ESGenomeSearchTest {
 
 	static ESTestServer testServer = new ESTestServer();
 	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE,
-			DataTypeInfo.fromResource("/genomes_datatype_info.json"));
+			DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
 
 	@BeforeClass
 	public static void setUp() throws IOException {

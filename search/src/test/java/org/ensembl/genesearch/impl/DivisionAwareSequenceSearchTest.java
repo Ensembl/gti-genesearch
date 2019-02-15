@@ -54,7 +54,7 @@ public class DivisionAwareSequenceSearchTest {
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
     
-	static DataTypeInfo sequenceInfo = DataTypeInfo.fromResource("/sequences_datatype_info.json");
+	static DataTypeInfo sequenceInfo = DataTypeInfo.fromResource("/datatypes/sequences_datatype_info.json");
 	private static DivisionAwareSequenceSearch search;
     
     @BeforeClass

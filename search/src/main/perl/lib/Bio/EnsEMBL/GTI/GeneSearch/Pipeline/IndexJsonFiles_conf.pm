@@ -1,4 +1,3 @@
-
 =head1 LICENSE
 
 Copyright [1999-2016] EMBL-European Bioinformatics Institute
@@ -25,84 +24,85 @@ use warnings;
 use base ('Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf');
 
 sub resource_classes {
-  my ($self) = @_;
-  return {
-     'default' => { 'LSF' => '-q production-rh7' }
-  };
+    my ($self) = @_;
+    return {
+        'default' => { 'LSF' => '-q production-rh7' }
+    };
 }
 
 sub default_options {
-  my ($self) = @_;
-  return { %{ $self->SUPER::default_options() },
-           dumps_dir => '.',
-           blacklist => undef,
-           es_url    => 'http://127.0.0.1:9200/',
-           genes_index  => 'genes',
-           genomes_index  => 'genomes',
-           variants_index  => 'variants'
-	 };
+    my ($self) = @_;
+    return { %{$self->SUPER::default_options()},
+        dumps_dir      => '.',
+        blacklist      => undef,
+        es_url         => 'http://127.0.0.1:9200/',
+        genes_index    => 'genes',
+        genomes_index  => 'genomes',
+        variants_index => 'variants'
+    };
 }
 
 sub pipeline_analyses {
-  my ($self) = @_;
-  return [ {
-           -logic_name => 'JsonFileFactory',
-           -module =>
-             'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::JsonFileFactory',
-           -meadow_type => 'LOCAL',
-           -input_ids   => [ { dumps_dir => $self->o('dumps_dir') } ],
-           -parameters => { blacklist => $self->o('blacklist') },
-           -flow_into  => { 
-			   '2'       => ['IndexGenomeJsonFile'],
-			   '3'       => ['IndexGenesJsonFile'],
-			   '4'       => ['IndexVariantsJsonFile']
-			  } },
-	   {
-	    -logic_name => 'IndexGenomeJsonFile',
-	    -module =>
-	    'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-	    -meadow_type   => 'LSF',
-	    -hive_capacity => 10,
-	    -rc_name       => 'default',
-	    -parameters    => {
-			       'es_url' => $self->o('es_url'),
-			       'index'  => $self->o('genomes_index'),
-			       'type'  => 'genome',
-			       'id'  => 'id',
-			       'is_array'  => 0
-			      }
-	   },
-	   {
-	    -logic_name => 'IndexGenesJsonFile',
-	    -module =>
-	    'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-	    -meadow_type   => 'LSF',
-	    -hive_capacity => 10,
-	    -rc_name       => 'default',
-	    -parameters    => {
-			       'es_url' => $self->o('es_url'),
-			       'index'  => $self->o('genes_index'),
-			       'type'  => 'gene',
-			       'id'  => 'id',
-			       'is_array'  => 1
-			      }
-	   },
-	   {
-	    -logic_name => 'IndexVariantsJsonFile',
-	    -module =>
-	    'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-	    -meadow_type   => 'LSF',
-	    -hive_capacity => 10,
-	    -rc_name       => 'default',
-	    -parameters    => {
-			       'es_url' => $self->o('es_url'),
-			       'index'  => $self->o('variants_index'),
-			       'type'  => 'variant',
-			       'id'  => 'id',
-			       'is_array'  => 1
-			      }
-	   }
-	 ];
+    my ($self) = @_;
+    return [
+        {
+            -logic_name  => 'JsonFileFactory',
+            -module      =>
+                'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::JsonFileFactory',
+            -meadow_type => 'LOCAL',
+            -input_ids   => [ { dumps_dir => $self->o('dumps_dir') } ],
+            -parameters  => { blacklist => $self->o('blacklist') },
+            -flow_into   => {
+                '2' => [ 'IndexGenomeJsonFile' ],
+                '3' => [ 'IndexGenesJsonFile' ],
+                '4' => [ 'IndexVariantsJsonFile' ]
+            } },
+        {
+            -logic_name    => 'IndexGenomeJsonFile',
+            -module        =>
+                'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
+            -meadow_type   => 'LSF',
+            -hive_capacity => 10,
+            -rc_name       => 'default',
+            -parameters    => {
+                'es_url'   => $self->o('es_url'),
+                'index'    => $self->o('genomes_index'),
+                'type'     => 'genome',
+                'id'       => 'id',
+                'is_array' => 0
+            }
+        },
+        {
+            -logic_name    => 'IndexGenesJsonFile',
+            -module        =>
+                'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
+            -meadow_type   => 'LSF',
+            -hive_capacity => 10,
+            -rc_name       => 'default',
+            -parameters    => {
+                'es_url'   => $self->o('es_url'),
+                'index'    => $self->o('genes_index'),
+                'type'     => 'gene',
+                'id'       => 'id',
+                'is_array' => 1
+            }
+        },
+        {
+            -logic_name    => 'IndexVariantsJsonFile',
+            -module        =>
+                'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
+            -meadow_type   => 'LSF',
+            -hive_capacity => 10,
+            -rc_name       => 'default',
+            -parameters    => {
+                'es_url'   => $self->o('es_url'),
+                'index'    => $self->o('variants_index'),
+                'type'     => 'variant',
+                'id'       => 'id',
+                'is_array' => 1
+            }
+        }
+    ];
 } ## end sub pipeline_analyses
 
 1;

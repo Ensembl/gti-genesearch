@@ -47,7 +47,7 @@ public class ESTranscriptSearchTest {
 
 	static ESTestServer testServer = new ESTestServer();
 	static ESSearchFlatten search = new ESSearchFlatten(testServer.getClient(), ESSearch.GENES_INDEX,
-			ESSearch.GENE_ESTYPE, "transcripts", "genes", DataTypeInfo.fromResource("/transcripts_datatype_info.json"));
+			ESSearch.GENE_ESTYPE, "transcripts", "genes", DataTypeInfo.fromResource("/datatypes/transcripts_datatype_info.json"));
 
 	@BeforeClass
 	public static void setUp() throws IOException {

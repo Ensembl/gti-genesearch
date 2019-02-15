@@ -51,7 +51,7 @@ public class EVAGenomeRestSearchTest {
     @Test
     public void testSelect() {
         EVAGenomeRestSearch search = new EVAGenomeRestSearch(wireMockRule.url(StringUtils.EMPTY),
-                DataTypeInfo.fromResource("/evagenomes_datatype_info.json"));
+                DataTypeInfo.fromResource("/datatypes/evagenomes_datatype_info.json"));
         QueryResult result = search.select("GCA_000001405.1", 1, 10);
         assertEquals("Expected number of genomes", 1, result.getResultCount());
         Map<String, Object> hsap = result.getResults().get(0);
@@ -63,7 +63,7 @@ public class EVAGenomeRestSearchTest {
     @Test
     public void testFetch() {
         EVAGenomeRestSearch search = new EVAGenomeRestSearch(wireMockRule.url(StringUtils.EMPTY),
-                DataTypeInfo.fromResource("/evagenomes_datatype_info.json"));
+                DataTypeInfo.fromResource("/datatypes/evagenomes_datatype_info.json"));
         SearchResult result = search.fetch(
                 Arrays.asList(new Query(FieldType.TERM, "assemblyAccession", "GCA_000001405.1")),
                 new QueryOutput("assemblyAccession", "assemblyCode", "taxonomyCode"));
@@ -79,7 +79,7 @@ public class EVAGenomeRestSearchTest {
     @Test
     public void testQuery() {
         EVAGenomeRestSearch search = new EVAGenomeRestSearch(wireMockRule.url(StringUtils.EMPTY),
-                DataTypeInfo.fromResource("/evagenomes_datatype_info.json"));
+                DataTypeInfo.fromResource("/datatypes/evagenomes_datatype_info.json"));
         QueryResult result = search.query(
                 Arrays.asList(new Query(FieldType.TERM, "assemblyAccession", "GCA_000001405.1")),
                 new QueryOutput("assemblyAccession", "assemblyCode", "taxonomyCode"), null, 1, 10, null);

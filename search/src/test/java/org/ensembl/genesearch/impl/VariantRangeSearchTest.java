@@ -43,12 +43,12 @@ public class VariantRangeSearchTest {
 	static Logger log = LoggerFactory.getLogger(VariantRangeSearchTest.class);
 
 	static ESTestServer testServer = new ESTestServer();
-	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/genes_datatype_info.json");
+	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
 	static ESSearch esGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
 			geneInfo);
 
 	static MongoTestServer mongoTestServer = new MongoTestServer();
-	static DataTypeInfo variantInfo = DataTypeInfo.fromResource("/variants_datatype_info.json");
+	static DataTypeInfo variantInfo = DataTypeInfo.fromResource("/datatypes/variants_datatype_info.json");
 	static Search mSearch = new MongoSearch(mongoTestServer.getCollection(), variantInfo);
 
 	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.VARIANTS, mSearch)

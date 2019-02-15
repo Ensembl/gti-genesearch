@@ -24,3 +24,6 @@ nytprof.out
 .gradle
 search/build
 web/build
+.idea/
+*.iml
+/_Deparsed_XSubs.pm

@@ -50,18 +50,18 @@ public class EVAVariantGeneSearchTest {
             testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         }
         ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
-                ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/genomes_datatype_info.json"));
+                ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
 
         ESSearch ensemblGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
-                DataTypeInfo.fromResource("/genes_datatype_info.json"));
+                DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json"));
 
         // build a finder using the test ES server and a wiremock REST
         // implementation
         EVAGenomeFinder finder = new EVAGenomeFinder(new EVAGenomeRestSearch(wireMockRule.url(StringUtils.EMPTY),
-                DataTypeInfo.fromResource("/evagenomes_datatype_info.json")), ensemblGenomeSearch);
+                DataTypeInfo.fromResource("/datatypes/evagenomes_datatype_info.json")), ensemblGenomeSearch);
 
         EVAVariantRestSearch variantSearch = new EVAVariantRestSearch(wireMockRule.url(StringUtils.EMPTY),
-                DataTypeInfo.fromResource("/evavariants_datatype_info.json"), finder);
+                DataTypeInfo.fromResource("/datatypes/evavariants_datatype_info.json"), finder);
 
         SearchRegistry provider = new SearchRegistry();
         provider.registerSearch(SearchType.GENES, ensemblGeneSearch);

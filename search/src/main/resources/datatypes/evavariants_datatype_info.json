@@ -1,16 +1,16 @@
 {
-	"name": "variants",
-	"targets": [],
-	"fieldInfo": [
-		{
-			"type": "TERM",
-			"displayName": "IDs",
-			"name": "ids",
-			"sort": "false",
-			"facet": "false",
-			"display": "true",
-			"search": "true"
-		},
+  "name": "variants",
+  "targets": [],
+  "fieldInfo": [
+    {
+      "type": "TERM",
+      "displayName": "IDs",
+      "name": "ids",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
     {
       "type": "LOCATION",
       "displayName": "Location",
@@ -37,6 +37,6 @@
       "facet": "false",
       "display": "false",
       "search": "true"
-    }    
-	]
+    }
+  ]
 }

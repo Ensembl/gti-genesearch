@@ -31,8 +31,8 @@ public class EVAEndpointProvider extends EndpointSearchProvider {
     @Override
     protected void registerSearches(SearchRegistry reg) {
         super.registerSearches(reg);
-        DataTypeInfo evaGenomeType = DataTypeInfo.fromResource("/evagenomes_datatype_info.json");
-        DataTypeInfo variantType = DataTypeInfo.fromResource("/evavariants_datatype_info.json");
+        DataTypeInfo evaGenomeType = DataTypeInfo.fromResource("/datatypes/evagenomes_datatype_info.json");
+        DataTypeInfo variantType = DataTypeInfo.fromResource("/datatypes/evavariants_datatype_info.json");
         Search evaGenomesSearch = new EVAGenomeRestSearch(evaRestUrl, evaGenomeType);
         Search variantSearch = new EVAVariantRestSearch(evaRestUrl, variantType,
                 new EVAGenomeFinder(evaGenomesSearch, reg.getSearch(SearchType.GENOMES)));

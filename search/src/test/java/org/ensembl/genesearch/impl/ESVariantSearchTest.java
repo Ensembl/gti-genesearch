@@ -43,7 +43,7 @@ public class ESVariantSearchTest {
 
     static ESTestServer testServer = new ESTestServer();
     static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE,
-            DataTypeInfo.fromResource("/es_variants_datatype_info.json"));
+            DataTypeInfo.fromResource("/datatypes/es_variants_datatype_info.json"));
 
     @BeforeClass
     public static void setUp() throws IOException {

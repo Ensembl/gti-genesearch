@@ -54,7 +54,7 @@ public class EVAMongoEndpointProvider extends EndpointSearchProvider {
     protected void registerSearches(SearchRegistry reg) {
 
         super.registerSearches(reg);
-        DataTypeInfo variantType = DataTypeInfo.fromResource("/mongo_variants_datatype_info.json");
+        DataTypeInfo variantType = DataTypeInfo.fromResource("/datatypes/mongo_variants_datatype_info.json");
         Search mongoVariantSearch = new MongoSearch(getMongoCollection(), variantType);
         reg.registerSearch(SearchType.VARIANTS, mongoVariantSearch);
 

@@ -45,8 +45,8 @@ public class TranscriptSearchTest {
 	static Logger log = LoggerFactory.getLogger(TranscriptSearchTest.class);
 
 	static ESTestServer testServer = new ESTestServer();
-	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/genes_datatype_info.json");
-	static DataTypeInfo transcriptsInfo = DataTypeInfo.fromResource("/transcripts_datatype_info.json");
+	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
+	static DataTypeInfo transcriptsInfo = DataTypeInfo.fromResource("/datatypes/transcripts_datatype_info.json");
 	static ESSearchFlatten search = new ESSearchFlatten(testServer.getClient(), ESSearch.GENES_INDEX,
 			ESSearch.GENE_ESTYPE, "transcripts", "genes", transcriptsInfo);
 	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);

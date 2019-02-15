@@ -78,7 +78,7 @@ public class ESTestServer {
         try {
             log.info("Reading gene mapping");
             // slurp the mapping file into memory
-            String geneMapping = DataUtils.readResource("/" + type + "_index.json");
+            String geneMapping = DataUtils.readResource("/indexes/" + type + "_index.json");
             geneMapping = geneMapping.replaceAll("SHARDN", "1");
             Map<String, Object> geneIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {
             });

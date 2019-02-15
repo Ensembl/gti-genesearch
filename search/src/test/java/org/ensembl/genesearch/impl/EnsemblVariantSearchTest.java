@@ -35,7 +35,7 @@ public class EnsemblVariantSearchTest {
         String url = wireMockRule.url(StringUtils.EMPTY);        
 
         search = new EnsemblVariantSearch(url,
-                DataTypeInfo.fromResource("/evavariants_datatype_info.json"));
+                DataTypeInfo.fromResource("/datatypes/evavariants_datatype_info.json"));
 
     }
 
