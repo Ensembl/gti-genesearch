@@ -18,7 +18,11 @@
     "probes" : {
       "dynamic": "false",
       "properties": {
-
+        "genome": {
+          "type": "text",
+          "index": false,
+          "norms": false
+        }
       }
     },
     "regulatory_features": {
