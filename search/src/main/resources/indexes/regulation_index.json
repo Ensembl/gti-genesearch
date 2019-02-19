@@ -11,27 +11,243 @@
       }
     }
   },
-  "aliases" : {
+  "aliases": {
     "regulations": {}
   },
-  "mappings" : {
-    "probes" : {
+  "mappings": {
+    "probes": {
       "dynamic": "false",
       "properties": {
-        "genome": {
+        "probe_transcripts": {
+          "type": "nested",
+          "properties": {
+            "stable_id": {
+              "type": "text",
+              "index": false,
+              "norms": false
+            },
+            "description": {
+              "type": "text",
+              "index": false,
+              "norms": false
+            }
+          }
+        },
+        "name": {
           "type": "text",
           "index": false,
           "norms": false
+        },
+        "sequence": {
+          "type": "text",
+          "index": false,
+          "norms": false
+        },
+        "length": {
+          "type": "text",
+          "index": false,
+          "norms": false
+        },
+        "class": {
+          "type": "text",
+          "index": false,
+          "norms": false
+        },
+        "description": {
+          "type": "text",
+          "index": false,
+          "norms": false
+        },
+        "probe_set": {
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "size": {
+              "type": "long",
+              "index": false
+            },
+            "family": {
+              "type": "text",
+              "index": false
+            },
+            "probeset_transcript": {
+              "type": "text",
+              "index": false,
+              "norms": false
+            }
+          }
+        },
+        "probes_features": {
+          "type": "nested",
+          "properties": {
+            "seq_region_name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "seq_region_start": {
+              "type": "long",
+              "index": false
+            },
+            "seq_region_end": {
+              "type": "long",
+              "index": false
+            },
+            "seq_region_strand": {
+              "type": "text",
+              "index": false,
+              "norms": false
+            },
+            "probe_feature": {
+              "type": "text",
+              "index": false,
+              "norms": false
+            }
+          }
+        },
+        "array_chip": {
+          "properties": {
+            "design_id": {
+              "type": "text",
+              "index": true
+            },
+            "name": {
+              "type": "text",
+              "index": false
+            },
+            "array": {
+              "properties": {
+                "name": {
+                  "type": "text",
+                  "index": false,
+                  "norms": false
+                },
+                "format": {
+                  "type": "text",
+                  "index": false,
+                  "norms": false
+                },
+                "vendor": {
+                  "type": "text",
+                  "index": false,
+                  "norms": false
+                },
+                "class": {
+                  "type": "text",
+                  "index": false,
+                  "norms": false
+                },
+                "array_type": {
+                  "type": "text",
+                  "index": false,
+                  "norms": false
+                }
+              }
+            }
+          }
         }
       }
     },
     "regulatory_features": {
       "dynamic": "false",
       "properties": {
+        "seq_region_name": {
+          "type": "text",
+          "index": false,
+          "norms": false
+        },
+        "stable_id": {
+          "type": "text",
+          "index": true,
+          "norms": false
+        },
+        "feature_type": {
+          "properties": {
+            "name": {
+              "type": "text",
+              "index": false,
+              "norms": false
+            },
+            "description": {
+              "type": "text",
+              "index": false,
+              "norms": false
+            },
+            "SO_accession": {
+              "type": "text",
+              "index": true,
+              "norms": false
+            },
+            "SO_name": {
+              "type": "text",
+              "index": false,
+              "norms": false
+            },
+            "transcription_factors": {
+              "type": "nested",
+              "properties": {
+                "name": {
+                  "type": "text",
+                  "index": false,
+                  "norms": false
+                },
+                "complexes": {
+                  "type": "nested",
+                  "properties": {
+                    "name": {
+                      "type": "text",
+                      "index": false,
+                      "norms": false
+                    },
+                    "binding_matrix": {
+                      "properties": {
+                        "name": {
+                          "type": "text",
+                          "index": false,
+                          "norms": false
+                        },
+                        "source": {
+                          "type": "text",
+                          "index": false,
+                          "norms": false
+                        },
+                        "stable_id": {
+                          "type": "text",
+                          "index": false,
+                          "norms": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "motif_features": {
+              "type": "nested",
+              "properties": {
+                "seq_region_id": {
+                  "type": "double",
+                  "index": false,
+                  "norms": false
+                },
+                "score": {
+                  "type": "double",
+                  "index": false,
+                  "norms": false
+                },
+                "stable_id": {
+                  "type": "text",
+                  "index": true,
+                  "norms": false
+                }
+              }
+            }
+          }
+        }
       }
-    },
-    "transcription_factors": {
-
     }
   }
 }
