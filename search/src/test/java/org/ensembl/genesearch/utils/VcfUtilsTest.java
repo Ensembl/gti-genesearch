@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.lucene.search.CachingWrapperQuery;
+//import org.apache.lucene.search.CachingWrapperQuery;
 import org.ensembl.genesearch.utils.VcfUtils.ColumnFormat;
 import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
 import org.junit.Test;

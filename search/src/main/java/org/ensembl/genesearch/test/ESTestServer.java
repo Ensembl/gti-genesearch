@@ -1,12 +1,12 @@
 /*
  * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,63 +16,69 @@
 
 package org.ensembl.genesearch.test;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Utility to create and load an in-memory Elastic test server. Note that this
  * is included in the main source folder to allow reuse in downstream projects
  * e.g. REST server.
- * 
- * @author dstaines
  *
+ * @author dstaines
  */
 public class ESTestServer {
 
-    private final Node node;
+    static final String ELASTIC_VERSION = "5.6.4";
+    static final int TRANSPORT_TCP_PORT_VALUE = 9350;
+    static final String CLUSTER_NAME_VALUE = "gti-test-cluster";
+
+    private final Node node = null;
     private final Client client;
-    private final File dataDir;
+    private final File dataDir = null;
+
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public ESTestServer() {
-        dataDir = Files.createTempDir();
-        dataDir.deleteOnExit();
-        log.info("Starting test server");
-        node = new NodeBuilder()
-                .settings(Settings.settingsBuilder().put("http.enabled", false).put("path.home", dataDir.getPath()))
-                .local(true).node();
-        client = node.client();
+        // TODO update any call to constructor without parameters
+        client = null;
+    }
+
+    public ESTestServer(Client testCaseClient) {
+        client = testCaseClient;
         createIndex(ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         createIndex(ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         createIndex(ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
+        // TODO add Regulation INDEX
     }
 
     /**
      * Read a mapping file and create an index. Resource is of the form
      * /{type}_index.json
-     * 
-     * @param index
-     *            name of index to create
-     * @param type
-     *            mapping file type
+     *
+     * @param index name of index to create
+     * @param type  mapping file type
      */
     protected void createIndex(String index, String type) {
         try {
@@ -89,9 +95,8 @@ public class ESTestServer {
             log.info("Creating index");
             // create an index with mapping
             Map<String, Object> mappingObj = (Map<String, Object>) geneIndexObj.get("mappings");
-            client.admin().indices().prepareCreate(index)
-                    .setSettings(mapper.writeValueAsString(geneIndexObj.get("settings")))
-                    .addMapping(type, mapper.writeValueAsString(mappingObj.get(type))).get();
+            client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>)geneIndexObj.get("settings")).get();
+            client.admin().indices().preparePutMapping(index).setType(type).setSource(mapper.writeValueAsString(mappingObj.get(type)), XContentType.JSON).get();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -101,12 +106,12 @@ public class ESTestServer {
         return client;
     }
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Index the supplied JSON document into the specified index as the
      * specified type
-     * 
+     *
      * @param json
      * @param index
      * @param type
@@ -117,8 +122,8 @@ public class ESTestServer {
             log.info("Indexing ");
 
             int n = 0;
-            List<Map<String, Object>> docs = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {
-            });
+            List<Map<String, Object>> docs = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {});
+
             for (Map<String, Object> doc : docs) {
                 indexTestDoc(doc, index, type);
                 n++;
@@ -135,7 +140,7 @@ public class ESTestServer {
 
     /**
      * Index the supplied object into the specified index as the specified type
-     * 
+     *
      * @param doc
      * @param index
      * @param type
@@ -143,15 +148,14 @@ public class ESTestServer {
      */
     protected void indexTestDoc(Map<String, Object> doc, String index, String type) throws JsonProcessingException {
         String id = String.valueOf(doc.get("id"));
-        client.prepareIndex(index, type).setId(id).setSource(mapper.writeValueAsString(doc)).execute().actionGet();
+        client.prepareIndex(index, type, id).setSource(mapper.writeValueAsString(doc), XContentType.JSON).get();
     }
 
     /**
      * Close the client and shut down the ES node.
      */
-    public void disconnect() {
+    public void disconnect() throws IOException {
         client.close();
-        node.close();
     }
 
 }
