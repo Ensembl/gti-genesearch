@@ -46,9 +46,9 @@ import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.NestedSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.elasticsearch.search.sort.SortParseElement;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
@@ -79,7 +79,7 @@ import com.beust.jcommander.internal.Lists;
  */
 public class ESSearch implements Search {
 
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger log = LoggerFactory.getLogger(ESSearch.class);
 
     /*
      * Default fields
@@ -90,8 +90,8 @@ public class ESSearch implements Search {
     /*
      * defaults for interacting with Elastic
      */
-    public static final int DEFAULT_SCROLL_SIZE = 50000;
-    public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
+    public static final int DEFAULT_SCROLL_SIZE = 1000;
+    public static final int DEFAULT_SCROLL_TIMEOUT = 6000;
     private static final int DEFAULT_AGGREGATION_SIZE = 10;
 
     /*
@@ -193,12 +193,13 @@ public class ESSearch implements Search {
         log.info("Building fetch query");
         QueryBuilder query = ESSearchBuilder.buildQuery(type, queries.toArray(new Query[queries.size()]));
 
-        log.debug(query.toString());
+        log.info(query.toString());
 
         SearchRequestBuilder request = client.prepareSearch(index).setQuery(query).setTypes(type);
 
         // force _doc order for more efficiency
-        request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
+        // FIXME check if still needed
+        //request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
 
         if (fieldNames.contains(ALL_FIELDS) || fieldNames.isEmpty()) {
             fieldNames = Arrays.asList(ALL_FIELDS);
@@ -211,7 +212,7 @@ public class ESSearch implements Search {
         log.info("Executing fetch request");
         log.debug(request.toString());
         SearchResponse response = request.execute().actionGet();
-        log.info("Retrieved " + response.getHits().totalHits() + " in " + response.getTookInMillis() + " ms");
+        log.info("Retrieved " + response.getHits().getTotalHits() + " in " + response.getTook().getMillis() + " ms");
         watch.start();
         consumeAllHits(consumer, response);
         watch.stop();
@@ -334,8 +335,8 @@ public class ESSearch implements Search {
         log.info("Query " + request.toString());
 
         SearchResponse response = request.execute().actionGet();
-        log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
-                + response.getTookInMillis() + " ms");
+        log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().getTotalHits() + " in "
+                + response.getTook().getMillis() + " ms");
 
         return new QueryResult(response.getHits().getTotalHits(), offset, limit, getFieldInfo(output),
                 processResults(response), processAggregations(response));
@@ -391,9 +392,8 @@ public class ESSearch implements Search {
             log.info("Adding " + sort.direction + " sort on '" + sort.name + "'");
             FieldSortBuilder missing = SortBuilders.fieldSort(sort.name).order(sort.direction).missing("_last");
             if (sort.path != null) {
-                missing.setNestedPath(sort.path);
-                // TODO support for nested filter but would need to reparse the
-                // query as QueryBuilder is not readable
+                missing.setNestedSort(new NestedSortBuilder(sort.path));
+                // TODO support for nested filter but would need to reparse the query as QueryBuilder is not readable
             }
             request.addSort(missing);
         }
@@ -422,8 +422,8 @@ public class ESSearch implements Search {
     protected Map<String, Object> hitToMap(SearchHit hit) {
         Map<String, Object> map = new HashMap<>();
         map.put("id", hit.getId());
-        if (hit.getSource() != null)
-            map.putAll(hit.getSource());
+        if (hit.getSourceAsMap() != null)
+            map.putAll(hit.getSourceAsMap());
         return map;
     }
 
@@ -603,8 +603,8 @@ public class ESSearch implements Search {
         log.debug("Query " + request.toString());
 
         SearchResponse response = request.execute().actionGet();
-        log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
-                + response.getTookInMillis() + " ms");
+        log.info("Retrieved " + response.getHits().getHits().length + "/" + response.getHits().getTotalHits() + " in "
+                + response.getTook().getMillis() + " ms");
 
         return new QueryResult(response.getHits().getTotalHits(), offset, limit,
                 getFieldInfo(QueryOutput.build(Arrays.asList(fields))), processResults(response),

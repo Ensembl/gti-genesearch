@@ -16,34 +16,28 @@
 
 package org.ensembl.genesearch.impl;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.join;
-import static org.ensembl.genesearch.Query.GT;
-import static org.ensembl.genesearch.Query.GTE;
-import static org.ensembl.genesearch.Query.LOCATION;
-import static org.ensembl.genesearch.Query.LT;
-import static org.ensembl.genesearch.Query.LTE;
-import static org.ensembl.genesearch.Query.RANGE;
-import static org.ensembl.genesearch.Query.SINGLE_NUMBER;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
+import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.info.FieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.ensembl.genesearch.Query.*;
 
 /**
  * Class to translate from a list of nested {@link Query} objects to an
@@ -64,13 +58,15 @@ public class ESSearchBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(ESSearchBuilder.class);
 
-    public static final String SEQ_REGION_FIELD = "seq_region_name";
-    public static final String GENOME_FIELD = "genome";
-    public static final String START_FIELD = "start";
-    public static final String END_FIELD = "end";
-    public static final String STRAND_FIELD = "strand";
+    static final String SEQ_REGION_FIELD = "seq_region_name";
+    static final String GENOME_FIELD = "genome";
+    static final String START_FIELD = "start";
+    static final String END_FIELD = "end";
+    static final String STRAND_FIELD = "strand";
+    static final ScoreMode scoreMode = ScoreMode.Avg;
 
     private ESSearchBuilder() {
+        //
     }
 
     /**
@@ -352,7 +348,7 @@ public class ESSearchBuilder {
         QueryBuilder query;
         log.trace("Nested " + q.getFieldName());
         QueryBuilder subQuery = buildQueryWithParents(type, extendPath(parents, q), q.getSubQueries());
-        query = QueryBuilders.nestedQuery(join(extendPath(parents, q), '.'), subQuery);
+        query = QueryBuilders.nestedQuery(join(extendPath(parents, q), '.'), subQuery, scoreMode);
         return query;
     }
 
@@ -382,23 +378,25 @@ public class ESSearchBuilder {
         String[] subFacets = facet.split("\\.");
         AbstractAggregationBuilder builder = null;
         String path = EMPTY;
+
         for (int i = 0; i < subFacets.length; i++) {
             String subFacet = subFacets[i];
             path = prependPath(path, subFacet);
             if (i == subFacets.length - 1) {
-                TermsBuilder subBuilder = AggregationBuilders.terms(subFacet).field(path).size(aggregationSize)
-                        .order(Terms.Order.compound(Terms.Order.count(false), Terms.Order.term(true)));
+
+                TermsAggregationBuilder subBuilder = AggregationBuilders.terms(subFacet).field(path).size(aggregationSize)
+                        .order(BucketOrder.compound(BucketOrder.count(false), BucketOrder.key(true)));
                 if (builder == null) {
                     builder = subBuilder;
                 } else {
-                    ((NestedBuilder) builder).subAggregation(subBuilder);
+                    ((AggregationBuilder) builder).subAggregation(subBuilder);
                 }
             } else {
-                NestedBuilder subBuilder = AggregationBuilders.nested(subFacet).path(path);
+                NestedAggregationBuilder subBuilder = AggregationBuilders.nested(subFacet.intern(), subFacet.toLowerCase()); //.path();
                 if (builder == null) {
                     builder = subBuilder;
                 } else {
-                    ((NestedBuilder) builder).subAggregation(subBuilder);
+                    ((AggregationBuilder) builder).subAggregation(subBuilder);
                 }
             }
         }

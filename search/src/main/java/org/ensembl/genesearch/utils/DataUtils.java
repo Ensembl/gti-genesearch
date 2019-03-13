@@ -108,8 +108,7 @@ public class DataUtils {
      */
     public static Map<String, Object> jsonToMap(String json) {
         try {
-            return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {
-            });
+            return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {});
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -125,8 +124,7 @@ public class DataUtils {
      * @throws IOException
      */
     public static String readGzipResource(String name) throws IOException {
-        return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)),
-                Charset.defaultCharset());
+        return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)), Charset.defaultCharset());
     }
 
     /**
