@@ -192,7 +192,7 @@ public class ESTranscriptSearchTest {
 	}
 
 	@AfterClass
-	public static void tearDown() {
+	public static void tearDown() throws IOException {
 		log.info("Disconnecting server");
 		testServer.disconnect();
 	}

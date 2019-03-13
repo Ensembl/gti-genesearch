@@ -8,7 +8,7 @@
     {
       "type": "TERM",
       "displayName": "Variant ID",
-      "name": "_id",
+      "name": "variant_id",
       "sort": "false",
       "facet": "false",
       "display": "true"

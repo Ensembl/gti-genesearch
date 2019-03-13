@@ -5,8 +5,11 @@
     "analysis": {
       "analyzer": {
         "string_lowercase": {
-          "tokenizer": "keyword",
-          "filter": "lowercase"
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase"
+          ]
         }
       }
     }
@@ -22,40 +25,40 @@
           "type": "nested",
           "properties": {
             "stable_id": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "description": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             }
           }
         },
         "name": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "sequence": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "length": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "class": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "description": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "probe_set": {
@@ -67,15 +70,15 @@
             },
             "size": {
               "type": "long",
-              "index": false
+              "index": true
             },
             "family": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "probeset_transcript": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             }
           }
@@ -90,20 +93,20 @@
             },
             "seq_region_start": {
               "type": "long",
-              "index": false
+              "index": true
             },
             "seq_region_end": {
               "type": "long",
-              "index": false
+              "index": true
             },
             "seq_region_strand": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "probe_feature": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             }
           }
@@ -111,38 +114,38 @@
         "array_chip": {
           "properties": {
             "design_id": {
-              "type": "text",
+              "type": "keyword",
               "index": true
             },
             "name": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "array": {
               "properties": {
                 "name": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "format": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "vendor": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "class": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "array_type": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 }
               }
@@ -155,68 +158,68 @@
       "dynamic": "false",
       "properties": {
         "seq_region_name": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "stable_id": {
-          "type": "text",
+          "type": "keyword",
           "index": true,
           "norms": false
         },
         "feature_type": {
           "properties": {
             "name": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "description": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "SO_accession": {
-              "type": "text",
+              "type": "keyword",
               "index": true,
               "norms": false
             },
             "SO_name": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "transcription_factors": {
               "type": "nested",
               "properties": {
                 "name": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "complexes": {
                   "type": "nested",
                   "properties": {
                     "name": {
-                      "type": "text",
-                      "index": false,
+                      "type": "keyword",
+                      "index": true,
                       "norms": false
                     },
                     "binding_matrix": {
                       "properties": {
                         "name": {
-                          "type": "text",
-                          "index": false,
+                          "type": "keyword",
+                          "index": true,
                           "norms": false
                         },
                         "source": {
-                          "type": "text",
-                          "index": false,
+                          "type": "keyword",
+                          "index": true,
                           "norms": false
                         },
                         "stable_id": {
-                          "type": "text",
-                          "index": false,
+                          "type": "keyword",
+                          "index": true,
                           "norms": false
                         }
                       }
@@ -230,16 +233,16 @@
               "properties": {
                 "seq_region_id": {
                   "type": "double",
-                  "index": false,
+                  "index": true,
                   "norms": false
                 },
                 "score": {
                   "type": "double",
-                  "index": false,
+                  "index": true,
                   "norms": false
                 },
                 "stable_id": {
-                  "type": "text",
+                  "type": "keyword",
                   "index": true,
                   "norms": false
                 }

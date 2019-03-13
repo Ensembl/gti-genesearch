@@ -50,14 +50,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ESTestServer {
 
-    static final String ELASTIC_VERSION = "5.6.4";
-    static final int TRANSPORT_TCP_PORT_VALUE = 9350;
-    static final String CLUSTER_NAME_VALUE = "gti-test-cluster";
-
-    private final Node node = null;
     private final Client client;
-    private final File dataDir = null;
-
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public ESTestServer() {

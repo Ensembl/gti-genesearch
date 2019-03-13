@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -157,7 +158,7 @@ public class DecomposeTest {
 	}
 
 	@AfterClass
-	public static void tearDown() {
+	public static void tearDown() throws IOException {
 		log.info("Disconnecting server");
 		testServer.disconnect();
 	}

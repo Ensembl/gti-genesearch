@@ -16,18 +16,7 @@ http://gti-es-0.ebi.ac.uk:9200/genomes/genome/_search?pretty&q=K12 * Copyright [
 
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import org.elasticsearch.test.ESIntegTestCase;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
@@ -36,45 +25,46 @@ import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ESGenomeSearchTest {
+import java.util.*;
+import java.util.stream.Collectors;
+
+@ESIntegTestCase.ClusterScope(scope = ESIntegTestCase.Scope.SUITE, numDataNodes = 2)
+@ESIntegTestCase.SuiteScopeTestCase
+@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
+public class ESGenomeSearchTest extends ESIntegTestCase {
 
 	static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
 
-	static ESTestServer testServer = new ESTestServer();
-	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE,
-			DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
+	static ESTestServer testServer;
+	static ESSearch search;
 
-	@BeforeClass
-	public static void setUp() throws IOException {
-		// index a sample of JSON
-		log.info("Reading documents");
+	@Override
+	protected void setupSuiteScopeCluster() throws Exception {
+		super.setupSuiteScopeCluster();
+		log.info("Setting up SuitScopeCluster");
+		testServer = new ESTestServer(client());
+		search = new ESSearch(client(), ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE,
+				DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
 		String json = DataUtils.readGzipResource("/genomes.json.gz");
-		log.info("Creating test index");
 		testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
 	}
 
-	@Test
+	@Test(expected = UnsupportedOperationException.class)
 	public void fetchAll() {
 		log.info("Fetching all genomes");
-		try {
-			search.fetch(Collections.emptyList(), QueryOutput.build(Arrays.asList("_id")));
-			fail("Illegal operation succeeded");
-		} catch (UnsupportedOperationException e) {
-			// OK
-		}
+		search.fetch(Collections.emptyList(), QueryOutput.build(Collections.singletonList("_id")));
 	}
 
 	@Test
 	public void fetchGenomeById() {
 		log.info("Fetching  genomes from genome");
-		SearchResult result = search.fetch(Arrays.asList(new Query(FieldType.TERM, "id", "homo_sapiens")),
-				QueryOutput.build(Arrays.asList("_id")));
+		SearchResult result = search.fetch(Collections.singletonList(new Query(FieldType.TERM, "id", "homo_sapiens")),
+				QueryOutput.build(Collections.singletonList("_id")));
 		List<Map<String, Object>> ids = result.getResults();
 		log.info("Fetched " + ids.size() + " genomes");
 		assertEquals("Number of genomes", 1, ids.size());
@@ -83,7 +73,7 @@ public class ESGenomeSearchTest {
 	@Test
 	public void querySimple() {
 		log.info("Querying for all genomes");
-		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")),
+		QueryResult result = search.query(Collections.emptyList(), QueryOutput.build(Collections.singletonList("id")),
 				Collections.emptyList(), 0, 5, Collections.emptyList());
 		assertEquals("Total hits", 5, result.getResultCount());
 		assertEquals("Fetched hits", 5, result.getResults().size());
@@ -97,7 +87,7 @@ public class ESGenomeSearchTest {
 		log.info("Fetching a single genome");
 		String id = "homo_sapiens";
 		Map<String, Object> genome = search.fetchById(id);
-		assertTrue("Genome is not null", genome != null);
+		assertNotNull("Genome is not null", genome);
 		assertEquals("ID correct", id, genome.get("id"));
 	}
 
@@ -107,7 +97,7 @@ public class ESGenomeSearchTest {
 		String id1 = "homo_sapiens";
 		String id2 = "escherichia_coli_str_k_12_substr_mg1655";
 		List<Map<String, Object>> genomes = search.fetchByIds(id1, id2);
-		assertTrue("genomes are not null", genomes != null);
+		assertNotNull("genomes are not null", genomes);
 		assertEquals("2 genomes found", 2, genomes.size());
 		Set<String> ids = genomes.stream().map(gene -> (String) gene.get("id")).collect(Collectors.toSet());
 		assertTrue("id1 found", ids.contains(id1));
@@ -117,23 +107,17 @@ public class ESGenomeSearchTest {
 	@Test
 	public void testSelectHuman() {
 		SearchResult results = search.select("human", 0, 10);
-		assertTrue("Results found", results != null);
-		assertEquals("2 results", 2, results.getResults().size());
+		assertNotNull("Results found", results);
+		assertEquals("1 results", 1, results.getResults().size());
 		assertTrue("Human found", results.getResults().stream().anyMatch(r -> r.get("id").equals("homo_sapiens")));
 	}
 
 	@Test
 	public void testSelectEcoli() {
 		QueryResult results = search.select("escherichia", 0, 10);
-		assertTrue("Results found", results != null);
-		assertEquals("2 results", 2, results.getResultCount());
+		assertNotNull("Results found", results);
+		assertEquals("1 results", 1, results.getResultCount());
 		assertEquals("K12 first", "escherichia_coli_str_k_12_substr_mg1655", results.getResults().get(0).get("id"));
-	}
-
-	@AfterClass
-	public static void tearDown() {
-		log.info("Disconnecting server");
-		testServer.disconnect();
 	}
 
 }
