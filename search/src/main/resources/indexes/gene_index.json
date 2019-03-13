@@ -4,275 +4,279 @@
     "number_of_replicas": 0,
     "analysis": {
       "analyzer": {
-        "text_lowercase": {
-          "tokenizer": "keyword",
-          "filter": "lowercase"
+        "string_lowercase": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase"
+          ]
         }
       }
     }
   },
-  "aliases" : {
+  "aliases": {
     "genes": {}
   },
   "mappings": {
     "gene": {
       "properties": {
         "RefSeq_rna": {
-          "type": "text",
           "norms": false,
-          "index": false
+          "index": true,
+          "type": "keyword"
         },
         "Prosite_profiles": {
-          "norms": false,
-          "type": "text",
-          "index": false
+          "norms":false,
+          "type": "keyword",
+          "index": true
         },
         "cint_aniseed_v1": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "RNACentral": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "UCSC": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "PDBsum": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Smar_Community_Annotation": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "RefSeq_peptide": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "goslim_goa": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "Reactome": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "ENA_TRANSCRIPT": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Xenbase": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "UniGene": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "PlantGDB_PUT": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "wormbase_gseqname": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "ImmunoDB": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "gfbgp": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "SPD": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "BGI_EST_Cluster": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Reactome_gene": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "WikiGene": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "consequence_types": {
-          "index": false,
-          "type": "text",
-          "norms": false
+          "index": true,
+          "type": "keyword",
+          "norms":false
         },
         "RefSeq_ncRNA": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "ArrayExpress": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "IntAct": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Uniprot/SWISSPROT": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "AGD_GENE": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "SubtiList": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "ProDom": {
-          "norms": false,
-          "index": false,
-          "type": "text"
+          "norms":false,
+          "index": true,
+          "type": "keyword"
         },
         "triad_jgi_v1_0": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "name": {
+          "analyzer": "string_lowercase",
           "type": "text",
-          "analyzer": "text_lowercase"
+          "fielddata": true
         },
         "BROAD_G_zeae": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "RFAM": {
-          "type": "text",
-          "index": false,
-          "norms": false
+          "type": "keyword",
+          "index": true,
+          "norms":false
         },
         "IBSC": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "Gene3D": {
-          "norms": false,
-          "type": "text",
-          "index": false
+          "norms":false,
+          "type": "keyword",
+          "index": true
         },
         "BROAD_U_maydis": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "seq_region_name": {
-          "norms": false,
-          "index": false,
-          "type": "text"
+          "norms":false,
+          "index": true,
+          "type": "keyword"
         },
         "TIGRfam": {
-          "norms": false,
-          "type": "text",
-          "index": false
+          "norms":false,
+          "type": "keyword",
+          "index": true
         },
         "Interpro": {
-          "index": false,
-          "type": "text",
-          "norms": false
+          "index": true,
+          "type": "keyword",
+          "norms":false
         },
         "PHI": {
           "properties": {
             "term": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "host": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "condition": {
-              "index": false,
-              "type": "text",
-              "norms": false
+              "index": true,
+              "type": "keyword",
+              "norms":false
             },
             "phenotype": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             }
           },
           "type": "nested"
         },
         "TransFac": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "Ens_Hs_translation": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Ens_Hs_transcript": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "GO_expanded": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "GO": {
           "type": "nested",
           "properties": {
             "parents": {
-              "type": "text",
-              "index": false,
-              "norms": false
+              "type": "keyword",
+              "index": true,
+              "norms":false
             },
             "evidence": {
-              "index": false,
-              "type": "text",
-              "norms": false
+              "index": true,
+              "type": "keyword",
+              "norms":false
             },
             "term": {
-              "type": "text",
-              "index": false,
-              "norms": false
+              "type": "keyword",
+              "index": true,
+              "norms":false
             }
           }
         },
@@ -280,19 +284,19 @@
           "type": "nested",
           "properties": {
             "term": {
-              "index": false,
-              "type": "text",
-              "norms": false
+              "index": true,
+              "type": "keyword",
+              "norms":false
             },
             "evidence": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "parents": {
-              "norms": false,
-              "index": false,
-              "type": "text"
+              "norms":false,
+              "index": true,
+              "type": "keyword"
             }
           }
         },
@@ -300,19 +304,19 @@
           "type": "nested",
           "properties": {
             "term": {
-              "index": false,
-              "type": "text",
-              "norms": false
+              "index": true,
+              "type": "keyword",
+              "norms":false
             },
             "evidence": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "parents": {
-              "norms": false,
-              "index": false,
-              "type": "text"
+              "norms":false,
+              "index": true,
+              "type": "keyword"
             }
           }
         },
@@ -320,19 +324,19 @@
           "type": "nested",
           "properties": {
             "term": {
-              "index": false,
-              "type": "text",
-              "norms": false
+              "index": true,
+              "type": "keyword",
+              "norms":false
             },
             "evidence": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "parents": {
-              "norms": false,
-              "index": false,
-              "type": "text"
+              "norms":false,
+              "index": true,
+              "type": "keyword"
             }
           }
         },
@@ -340,19 +344,19 @@
           "type": "nested",
           "properties": {
             "term": {
-              "index": false,
-              "type": "text",
-              "norms": false
+              "index": true,
+              "type": "keyword",
+              "norms":false
             },
             "evidence": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "parents": {
-              "norms": false,
-              "index": false,
-              "type": "text"
+              "norms":false,
+              "index": true,
+              "type": "keyword"
             }
           }
         },
@@ -360,925 +364,925 @@
           "type": "nested",
           "properties": {
             "term": {
-              "index": false,
-              "type": "text",
-              "norms": false
+              "index": true,
+              "type": "keyword",
+              "norms":false
             },
             "evidence": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "parents": {
-              "norms": false,
-              "index": false,
-              "type": "text"
+              "norms":false,
+              "index": true,
+              "type": "keyword"
             }
           }
         },
         "UniPathway": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "Uniprot_SWISSPROT": {
-          "index": false,
-          "type": "text",
-          "norms": false
+          "index": true,
+          "type": "keyword",
+          "norms":false
         },
         "EMBL": {
-          "norms": false,
-          "type": "text",
-          "index": false
+          "norms":false,
+          "type": "keyword",
+          "index": true
         },
         "BaylorCollege": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "homologues": {
           "properties": {
             "stable_id": {
-              "norms": false,
-              "index": false,
-              "type": "text"
+              "norms":false,
+              "index": true,
+              "type": "keyword"
             },
-            "orthology_type": {
-              "norms": false,
-              "type": "text",
-              "index": false
+            "description": {
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "genome": {
-              "index": false,
-              "type": "text",
-              "norms": false
+              "index": true,
+              "type": "keyword",
+              "norms":false
             }
           },
           "type": "nested"
         },
         "GigaDB_A_tauschii": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "GenBank": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "TAIR_TRANSLATION": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "Pfam": {
-          "type": "text",
-          "index": false,
-          "norms": false
+          "type": "keyword",
+          "index": true,
+          "norms":false
         },
         "KEGG_Enzyme": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "LNCC": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "LRG": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "flybase_translation_id": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "zngp": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "SCHISTODB": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "flybase_transcript_id": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Rhea": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "FSTs": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "EntrezGene": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "CADRE_Afum_A1163": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "HGNC": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "FlyBaseCGID_transcript": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Oxford_FGU_Oa_gene": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "AGI_TRANSCRIPT": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "VB_External_Description": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "description": {
-          "type": "text"
+          "type": "keyword"
         },
         "Uniprot_gn": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Seg": {
-          "type": "text",
-          "index": false,
-          "norms": false
+          "type": "keyword",
+          "index": true,
+          "norms":false
         },
         "HPA": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "BROAD_P_triticina": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Platypus_olfactory_receptor": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "ASPGD_GENE": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Tmhmm": {
-          "index": false,
-          "type": "text",
-          "norms": false
+          "index": true,
+          "type": "keyword",
+          "norms":false
         },
         "RNAMMER": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "MetaCyc": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "flybase_annotation_id": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "BROAD_F_oxysporum": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "RAP_Gene": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "EC_NUMBER": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "RGD_trans_name": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Celera_Trans": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "CADRE_GENE": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "DIP": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "RefSeq_mRNA": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "clinical_significance": {
-          "norms": false,
-          "type": "text",
-          "index": false
+          "norms":false,
+          "type": "keyword",
+          "index": true
         },
         "LegioList": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "TIGR_LOCUS": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Gramene_MarkersDB_EST": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Gramene_Plant_Reactome": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "tuber_genoscope_gene": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "miRBase": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "genome": {
-          "norms": false,
-          "index": false,
-          "type": "text"
+          "norms":false,
+          "index": true,
+          "type": "keyword"
         },
         "BROAD_G_moniliformis": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "strand": {
           "type": "short"
         },
         "FGDB": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "thaps_jgi_v2_bd": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "BGI_Gene": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "CADRE_TRANSCRIPT": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "RFAM_GENE": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "shares_CDS_and_UTR_with_OTTT": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "ChEMBL": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Reactome_transcript": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "BROAD_M_violaceum": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Clone_based_ensembl_gene": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Clone_based_ensembl_transcript": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "BioCyc": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "Ens_Hs_gene": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "shares_CDS_with_OTTT": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "RefSeq_mRNA_predicted": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "JGI_TRANSCRIPT": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "MGI": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "PomBase_TRANSCRIPT": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "UniParc": {
-          "norms": false,
-          "type": "text",
-          "index": false
+          "norms":false,
+          "type": "keyword",
+          "index": true
         },
         "ZFIN_ID_trans_name": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "DBASS3": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Clone_based_vega_gene": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "MGI_trans_name": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "TIGR_GeneIndex": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "BindingDB": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "HAMAP": {
-          "norms": false,
-          "index": false,
-          "type": "text"
+          "norms":false,
+          "index": true,
+          "type": "keyword"
         },
         "MIM_GENE": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "FlyBaseName_transcript": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
-        "text": {
-          "index": false,
-          "type": "text",
+        "STRING": {
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "PGD_GENE": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Vega_translation": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "biotype": {
-          "index": false,
-          "type": "text",
-          "norms": false
+          "index": true,
+          "type": "keyword",
+          "norms":false
         },
         "analysis": {
-          "index": false,
-          "type": "text",
-          "norms": false
+          "index": true,
+          "type": "keyword",
+          "norms":false
         },
         "CGNC": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "end": {
           "type": "integer"
         },
         "TubercuList": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "Prosite_patterns": {
-          "index": false,
-          "type": "text",
-          "norms": false
+          "index": true,
+          "type": "keyword",
+          "norms":false
         },
         "AGD_TRANSCRIPT": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Gramene_MarkersDB_mRNA": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "PUBMED_POMBASE": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "BioGRID": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "LGBPratt_EST_Cluster": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "id": {
-          "norms": false,
-          "index": false,
-          "type": "text"
+          "norms":false,
+          "index": true,
+          "type": "keyword"
         },
         "Ens_Ga_translation": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "RefSeq_ncRNA_predicted": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "cint_jgi_v2": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "RefSeq_dna": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "ncoils": {
-          "index": false,
-          "type": "text",
-          "norms": false
+          "index": true,
+          "type": "keyword",
+          "norms":false
         },
         "phyra_jgi_v1_1": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "TAIR_SYMBOL": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "OTTP": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "AGI_GENE": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "flybase_gene_id": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Ens_Ga_gene": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "FlyBaseCGID_gene": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "BRAD_TRANSCRIPT": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "PDB": {
-          "index": false,
-          "type": "text",
-          "norms": false
+          "index": true,
+          "type": "keyword",
+          "norms":false
         },
         "taxon_id": {
-          "norms": false,
-          "type": "text",
-          "index": false
+          "norms":false,
+          "type": "keyword",
+          "index": true
         },
         "CADRE": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "TAIR_LOCUS_MODEL": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "FlyBaseName_gene": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "wormbase_gene": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "COG": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "SGD_TRANSCRIPT": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "chainp": {
-          "type": "text",
-          "index": false,
-          "norms": false
+          "type": "keyword",
+          "index": true,
+          "norms":false
         },
         "ENS_LRG_transcript": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "DrugBank": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "EcoGene": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "protein_id_predicted": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "KEGG": {
-          "type": "text",
-          "index": false,
-          "norms": false
+          "type": "keyword",
+          "index": true,
+          "norms":false
         },
         "Celera_Gene": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "ENS_LRG_gene": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "IntEnz": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Vega_gene": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Ribosomal_Protein_Gene_Database": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "miRBase_trans_name": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "start": {
           "type": "integer"
         },
         "Mycgr3_jgi_v2_0_gene": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "PANTHER": {
-          "norms": false,
-          "type": "text",
-          "index": false
+          "norms":false,
+          "type": "keyword",
+          "index": true
         },
         "Smart": {
-          "norms": false,
-          "index": false,
-          "type": "text"
+          "norms":false,
+          "index": true,
+          "type": "keyword"
         },
         "EntrezGene_trans_name": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "RefSeq_peptide_predicted": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Superfamily": {
-          "norms": false,
-          "type": "text",
-          "index": false
+          "norms":false,
+          "type": "keyword",
+          "index": true
         },
         "necha_jgi_v2_0": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "SpBase": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "DBASS5": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "PGSC_GENE": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "BROAD_Magnaporthe_DB": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "PIR": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "MEROPS": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "GeneDB": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "GeneIndex": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Gramene_Pathway": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Celera_Pep": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "wormbase_locus": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "FlyBaseCGID_translation": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "CCDS": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "RegulonDb_Transcript": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "PeroxiBase": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "VB_RNA_Description": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "JGI_GENE": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Vega_transcript": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "BROAD_P_NODORUM_GENE": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "TAIR_LOCUS": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "FlyReactome": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "physo1_jgi_v1_1": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Uniprot_SPTREMBL": {
-          "type": "text",
-          "index": false,
-          "norms": false
+          "type": "keyword",
+          "index": true,
+          "norms":false
         },
         "NASC_GENE_ID": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "ENA_GENE": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "variant_phenotypes": {
           "properties": {
             "description": {
-              "type": "text"
+              "type": "keyword"
             },
             "name": {
-              "type": "text",
-              "index": false,
-              "norms": false
+              "type": "keyword",
+              "index": true,
+              "norms":false
             },
             "source": {
-              "type": "text",
-              "index": false,
-              "norms": false
+              "type": "keyword",
+              "index": true,
+              "norms":false
             }
           },
           "type": "nested"
         },
         "OTTT": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "SGD": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "thaps_jgi_v2": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "VB_Community_Symbol": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Ens_Ga_transcript": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "PUBMED": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Xenbase_trans_name": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "RFAM_trans_name": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "RefSeq_dna_predicted": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "protein_id": {
-          "norms": false,
-          "index": false,
-          "type": "text"
+          "norms":false,
+          "index": true,
+          "type": "keyword"
         },
         "SGD_GENE": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "PomBase_TRANSLATION": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "ZFIN_ID": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "transcripts": {
@@ -1286,116 +1290,116 @@
           "properties": {
             "Xenbase_trans_name": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "RAP_Gene": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "RGD_trans_name": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "EC_NUMBER": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "MetaCyc": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "Ens_Ga_transcript": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "RefSeq_dna_predicted": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "DIP": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "RefSeq_mRNA": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "protein_id": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "RFAM_trans_name": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "Celera_Trans": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "description": {
-              "type": "text"
+              "type": "keyword"
             },
             "AGI_TRANSCRIPT": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "Platypus_olfactory_receptor": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "SGD": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "OTTT": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "HPA": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "ENA_GENE": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "HSSP": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "xrefs": {
               "type": "nested",
               "properties": {
                 "dbname": {
-                  "type": "text",
-                  "index": false,
-                  "norms": false
+                  "type": "keyword",
+                  "index": true,
+                  "norms":false
                 },
                 "linkage_types": {
                   "properties": {
                     "evidence": {
-                      "type": "text",
-                      "index": false,
-                      "norms": false
+                      "type": "keyword",
+                      "index": true,
+                      "norms":false
                     },
                     "source": {
                       "type": "nested",
@@ -1418,110 +1422,110 @@
                   "type": "nested"
                 },
                 "parents": {
-                  "norms": false,
-                  "type": "text",
-                  "index": false
+                  "norms":false,
+                  "type": "keyword",
+                  "index": true
                 },
                 "display_name": {
-                  "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "norms":false,
+                  "index": true,
+                  "type": "keyword"
                 },
                 "primary_id": {
-                  "norms": false,
-                  "type": "text",
-                  "index": false
+                  "norms":false,
+                  "type": "keyword",
+                  "index": true
                 }
               }
             },
             "CADRE_TRANSCRIPT": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "cint_jgi_v1": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "Oxford_FGU_Oa_tscript": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "BGI_Gene": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "Clone_based_ensembl_transcript": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "BioCyc": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "Clone_based_vega_transcript": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "shares_CDS_and_UTR_with_OTTT": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "ChEMBL": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "FlyBaseName_translation": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "Reactome_transcript": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "PomBase_TRANSLATION": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "PBO": {
               "type": "nested",
               "properties": {
                 "term": {
-                  "index": false,
-                  "type": "text",
-                  "norms": false
+                  "index": true,
+                  "type": "keyword",
+                  "norms":false
                 },
                 "evidence": {
-                  "norms": false,
-                  "type": "text",
-                  "index": false
+                  "norms":false,
+                  "type": "keyword",
+                  "index": true
                 },
                 "parents": {
-                  "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "norms":false,
+                  "index": true,
+                  "type": "keyword"
                 }
               }
             },
             "clinical_significance": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "Gramene_MarkersDB_EST": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "strand": {
@@ -1529,157 +1533,157 @@
             },
             "Uniprot_gn_trans_name": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "HGNC_trans_name": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "FlyBaseName_transcript": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "TIGR_GeneIndex": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "BindingDB": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "HAMAP": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "REBASE": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
-            "text": {
+            "STRING": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "Vega_translation": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "JGI_TRANSCRIPT": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "translations": {
               "properties": {
                 "Ens_Ga_translation": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "id": {
-                  "norms": false,
-                  "type": "text",
-                  "index": false
+                  "norms":false,
+                  "type": "keyword",
+                  "index": true
                 },
                 "RefSeq_peptide": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "PDBsum": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "cint_jgi_v2": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "cint_aniseed_v1": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "HPA": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "EC_NUMBER": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "OTTP": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "Reactome": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "MetaCyc": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "coding_end": {
                   "type": "integer"
                 },
                 "goslim_goa": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "PDB": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "protein_id": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "DIP": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "protein_features": {
                   "type": "nested",
                   "properties": {
                     "name": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     },
                     "description": {
-                      "type": "text"
+                      "type": "keyword"
                     },
                     "start": {
                       "type": "integer"
                     },
                     "dbname": {
-                      "type": "text",
-                      "index": false,
-                      "norms": false
+                      "type": "keyword",
+                      "index": true,
+                      "norms":false
                     },
                     "interpro_ac": {
-                      "norms": false,
-                      "type": "text",
-                      "index": false
+                      "norms":false,
+                      "type": "keyword",
+                      "index": true
                     },
                     "end": {
                       "type": "integer"
@@ -1688,30 +1692,30 @@
                 },
                 "UniGene": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "PomBase_TRANSLATION": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "xrefs": {
                   "properties": {
                     "display_name": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     },
                     "primary_id": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     },
                     "parents": {
-                      "norms": false,
-                      "index": false,
-                      "type": "text"
+                      "norms":false,
+                      "index": true,
+                      "type": "keyword"
                     },
                     "linkage_types": {
                       "type": "nested",
@@ -1734,141 +1738,141 @@
                           "type": "nested"
                         },
                         "evidence": {
-                          "index": false,
-                          "type": "text",
-                          "norms": false
+                          "index": true,
+                          "type": "keyword",
+                          "norms":false
                         }
                       }
                     },
                     "dbname": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     }
                   },
                   "type": "nested"
                 },
                 "Uniprot/SWISSPROT": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "HSSP": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "IntAct": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "cint_jgi_v1": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "Celera_Gene": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "BioCyc": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "KEGG": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "FlyBaseName_translation": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "ChEMBL": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "protein_id_predicted": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "DrugBank": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "PHI": {
                   "properties": {
                     "term": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     },
                     "host": {
-                      "norms": false,
-                      "type": "text",
-                      "index": false
+                      "norms":false,
+                      "type": "keyword",
+                      "index": true
                     },
                     "phenotype": {
-                      "norms": false,
-                      "index": false,
-                      "type": "text"
+                      "norms":false,
+                      "index": true,
+                      "type": "keyword"
                     },
                     "condition": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     }
                   },
                   "type": "nested"
                 },
                 "Interpro": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
                 "UniParc": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "IntEnz": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "UniPathway": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "HAMAP": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
                 "GO": {
                   "properties": {
                     "evidence": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     },
                     "term": {
-                      "type": "text",
-                      "index": false,
-                      "norms": false
+                      "type": "keyword",
+                      "index": true,
+                      "norms":false
                     },
                     "parents": {
-                      "norms": false,
-                      "index": false,
-                      "type": "text"
+                      "norms":false,
+                      "index": true,
+                      "type": "keyword"
                     }
                   },
                   "type": "nested"
@@ -1877,19 +1881,19 @@
                   "type": "nested",
                   "properties": {
                     "term": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     },
                     "evidence": {
-                      "norms": false,
-                      "type": "text",
-                      "index": false
+                      "norms":false,
+                      "type": "keyword",
+                      "index": true
                     },
                     "parents": {
-                      "norms": false,
-                      "index": false,
-                      "type": "text"
+                      "norms":false,
+                      "index": true,
+                      "type": "keyword"
                     }
                   }
                 },
@@ -1897,19 +1901,19 @@
                   "type": "nested",
                   "properties": {
                     "term": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     },
                     "evidence": {
-                      "norms": false,
-                      "type": "text",
-                      "index": false
+                      "norms":false,
+                      "type": "keyword",
+                      "index": true
                     },
                     "parents": {
-                      "norms": false,
-                      "index": false,
-                      "type": "text"
+                      "norms":false,
+                      "index": true,
+                      "type": "keyword"
                     }
                   }
                 },
@@ -1917,19 +1921,19 @@
                   "type": "nested",
                   "properties": {
                     "term": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     },
                     "evidence": {
-                      "norms": false,
-                      "type": "text",
-                      "index": false
+                      "norms":false,
+                      "type": "keyword",
+                      "index": true
                     },
                     "parents": {
-                      "norms": false,
-                      "index": false,
-                      "type": "text"
+                      "norms":false,
+                      "index": true,
+                      "type": "keyword"
                     }
                   }
                 },
@@ -1937,19 +1941,19 @@
                   "type": "nested",
                   "properties": {
                     "term": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     },
                     "evidence": {
-                      "norms": false,
-                      "type": "text",
-                      "index": false
+                      "norms":false,
+                      "type": "keyword",
+                      "index": true
                     },
                     "parents": {
-                      "norms": false,
-                      "index": false,
-                      "type": "text"
+                      "norms":false,
+                      "index": true,
+                      "type": "keyword"
                     }
                   }
                 },
@@ -1957,472 +1961,472 @@
                   "type": "nested",
                   "properties": {
                     "term": {
-                      "index": false,
-                      "type": "text",
-                      "norms": false
+                      "index": true,
+                      "type": "keyword",
+                      "norms":false
                     },
                     "evidence": {
-                      "norms": false,
-                      "type": "text",
-                      "index": false
+                      "norms":false,
+                      "type": "keyword",
+                      "index": true
                     },
                     "parents": {
-                      "norms": false,
-                      "index": false,
-                      "type": "text"
+                      "norms":false,
+                      "index": true,
+                      "type": "keyword"
                     }
                   }
                 },
                 "Ens_Hs_translation": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "BindingDB": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
                 "EMBL": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
                 "REBASE": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "Vega_translation": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "Uniprot_SWISSPROT": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
-                "text": {
+                "STRING": {
                   "norms": false,
-                  "type": "text",
-                  "index": false
+                  "type": "keyword",
+                  "index": true
                 },
                 "RefSeq_peptide_predicted": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "MINT": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "MEROPS": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
                 "GenBank": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "TAIR_TRANSLATION": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
                 "cint_aniseed_v2": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
                 "PIR": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "flybase_translation_id": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "FlyBaseCGID_translation": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "EMBL_predicted": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "Celera_Pep": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "KEGG_Enzyme": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
                 "Uniprot/SPTREMBL": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "PeroxiBase": {
-                  "index": false,
-                  "type": "text",
+                  "index": true,
+                  "type": "keyword",
                   "norms": false
                 },
                 "DisProt": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "PRIDE": {
-                  "type": "text",
-                  "index": false,
+                  "type": "keyword",
+                  "index": true,
                   "norms": false
                 },
                 "BRENDA": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
                 "coding_start": {
                   "type": "integer"
                 },
                 "wormpep_id": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 },
                 "SWISS_MODEL": {
                   "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "index": true,
+                  "type": "keyword"
                 }
               },
               "type": "nested"
             },
             "RefSeq_mRNA_predicted": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "shares_CDS_with_OTTT": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "ZFIN_ID_trans_name": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "MGI_trans_name": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "PomBase_TRANSCRIPT": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "UniParc": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "PRIDE": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "BRENDA": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "AGD_TRANSCRIPT": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "DisProt": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "wormbase_transcript": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "Gramene_MarkersDB_mRNA": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "Uniprot/SPTREMBL": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "LGBPratt_EST_Cluster": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "wormpep_id": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "SWISS_MODEL": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "MINT": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "biotype": {
-              "type": "text",
-              "index": false,
-              "norms": false
+              "type": "keyword",
+              "index": true,
+              "norms":false
             },
             "analysis": {
-              "index": false,
-              "type": "text",
-              "norms": false
+              "index": true,
+              "type": "keyword",
+              "norms":false
             },
             "end": {
               "type": "integer"
             },
             "cint_aniseed_v2": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "EMBL_predicted": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "ASPGD_TRANSCRIPT": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "Reactome": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "OTTP": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "goslim_goa": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "BRAD_TRANSCRIPT": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "PDB": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "ENA_TRANSCRIPT": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "RefSeq_rna": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "Ens_Ga_translation": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "id": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "RefSeq_dna": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "PDBsum": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "RefSeq_peptide": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "RefSeq_ncRNA_predicted": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "cint_aniseed_v1": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "RNACentral": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "UCSC": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "cint_jgi_v2": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "IntAct": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "Uniprot/SWISSPROT": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "SGD_TRANSCRIPT": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "RefSeq_ncRNA": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "name": {
               "type": "text",
-              "analyzer": "text_lowercase"
+              "analyzer": "string_lowercase"
             },
             "KEGG": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "Celera_Gene": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "RFAM": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "ENS_LRG_transcript": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "DrugBank": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "protein_id_predicted": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "PlantGDB_PUT": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "UniGene": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "TAIR_LOCUS_MODEL": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "consequence_types": {
-              "type": "text",
-              "index": false,
-              "norms": false
+              "type": "keyword",
+              "index": true,
+              "norms":false
             },
             "COG": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "BGI_EST_Cluster": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "UniPathway": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "Ens_Hs_translation": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "Ens_Hs_transcript": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "GO": {
               "type": "nested",
               "properties": {
                 "parents": {
-                  "type": "text",
-                  "index": false,
-                  "norms": false
+                  "type": "keyword",
+                  "index": true,
+                  "norms":false
                 },
                 "evidence": {
-                  "index": false,
-                  "type": "text",
-                  "norms": false
+                  "index": true,
+                  "type": "keyword",
+                  "norms":false
                 },
                 "term": {
-                  "type": "text",
-                  "index": false,
-                  "norms": false
+                  "type": "keyword",
+                  "index": true,
+                  "norms":false
                 }
               }
             },
@@ -2430,46 +2434,46 @@
               "type": "nested",
               "properties": {
                 "term": {
-                  "index": false,
-                  "type": "text",
-                  "norms": false
+                  "index": true,
+                  "type": "keyword",
+                  "norms":false
                 },
                 "evidence": {
-                  "norms": false,
-                  "type": "text",
-                  "index": false
+                  "norms":false,
+                  "type": "keyword",
+                  "index": true
                 },
                 "parents": {
-                  "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "norms":false,
+                  "index": true,
+                  "type": "keyword"
                 }
               }
             },
             "EMBL": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "EntrezGene_trans_name": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "RefSeq_peptide_predicted": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "Uniprot_SWISSPROT": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "IBSC": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "start": {
               "type": "integer"
@@ -2478,195 +2482,195 @@
               "type": "nested",
               "properties": {
                 "host": {
-                  "norms": false,
-                  "type": "text",
-                  "index": false
+                  "norms":false,
+                  "type": "keyword",
+                  "index": true
                 },
                 "condition": {
-                  "type": "text",
-                  "index": false,
-                  "norms": false
+                  "type": "keyword",
+                  "index": true,
+                  "norms":false
                 },
                 "phenotype": {
-                  "index": false,
-                  "type": "text",
-                  "norms": false
+                  "index": true,
+                  "type": "keyword",
+                  "norms":false
                 },
                 "term": {
-                  "norms": false,
-                  "type": "text",
-                  "index": false
+                  "norms":false,
+                  "type": "keyword",
+                  "index": true
                 }
               }
             },
             "Interpro": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "seq_region_name": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "IntEnz": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "miRBase_trans_name": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "PeroxiBase": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "RegulonDb_Transcript": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "FlyBaseCGID_transcript": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "Vega_transcript": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "flybase_transcript_id": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "FSTs": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "Rhea": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "GenBank": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "TAIR_TRANSLATION": {
-              "type": "text",
-              "index": false,
+              "type": "keyword",
+              "index": true,
               "norms": false
             },
             "MEROPS": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "GeneIndex": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "PIR": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "MOD": {
               "type": "nested",
               "properties": {
                 "term": {
-                  "index": false,
-                  "type": "text",
-                  "norms": false
+                  "index": true,
+                  "type": "keyword",
+                  "norms":false
                 },
                 "evidence": {
-                  "norms": false,
-                  "type": "text",
-                  "index": false
+                  "norms":false,
+                  "type": "keyword",
+                  "index": true
                 },
                 "parents": {
-                  "norms": false,
-                  "index": false,
-                  "type": "text"
+                  "norms":false,
+                  "index": true,
+                  "type": "keyword"
                 }
               }
             },
             "FlyBaseCGID_translation": {
-              "index": false,
-              "type": "text",
+              "index": true,
+              "type": "keyword",
               "norms": false
             },
             "CCDS": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "flybase_translation_id": {
               "norms": false,
-              "index": false,
-              "type": "text"
+              "index": true,
+              "type": "keyword"
             },
             "KEGG_Enzyme": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "Celera_Pep": {
               "norms": false,
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             }
           }
         },
         "Uniprot_gn_trans_name": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "HGNC_trans_name": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "PRINTS": {
-          "type": "text",
-          "index": false,
-          "norms": false
+          "type": "keyword",
+          "index": true,
+          "norms":false
         },
         "cint_jgi_v1": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "Oxford_FGU_Oa_tscript": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "HSSP": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "xrefs": {
           "properties": {
             "dbname": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "parents": {
-              "norms": false,
-              "type": "text",
-              "index": false
+              "norms":false,
+              "type": "keyword",
+              "index": true
             },
             "linkage_types": {
               "type": "nested",
@@ -2689,179 +2693,179 @@
                   "type": "nested"
                 },
                 "evidence": {
-                  "type": "text",
-                  "index": false,
-                  "norms": false
+                  "type": "keyword",
+                  "index": true,
+                  "norms":false
                 }
               }
             },
             "display_name": {
-              "type": "text",
-              "index": false,
-              "norms": false
+              "type": "keyword",
+              "index": true,
+              "norms":false
             },
             "primary_id": {
-              "index": false,
-              "type": "text",
-              "norms": false
+              "index": true,
+              "type": "keyword",
+              "norms":false
             }
           },
           "type": "nested"
         },
         "InteractiveFly": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "lineage": {
-          "type": "text",
-          "index": false,
-          "norms": false
+          "type": "keyword",
+          "index": true,
+          "norms":false
         },
         "EchoBASE": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "FlyBaseName_translation": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "SignalP": {
-          "norms": false,
-          "type": "text",
-          "index": false
+          "norms":false,
+          "type": "keyword",
+          "index": true
         },
         "Clone_based_vega_transcript": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "PIRSF": {
-          "type": "text",
-          "index": false,
-          "norms": false
+          "type": "keyword",
+          "index": true,
+          "norms":false
         },
         "MitoDrome": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "MTGD": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "OTTG": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "PomBase_Ortholog": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "TRNASCAN_SE": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "ARAPORT_GENE": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "REBASE": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "PGSB_WHEAT_GENE": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "BROAD_P_infestans": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "cint_aniseed_v2": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "RGD": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "MINT": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "GenomeRNAi": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "VB_Community_Annotation": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "EMBL_predicted": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "ASPGD_TRANSCRIPT": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "BRENDA": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "PRIDE": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "DisProt": {
-          "type": "text",
-          "index": false,
+          "type": "keyword",
+          "index": true,
           "norms": false
         },
         "wormbase_transcript": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "Uniprot/SPTREMBL": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "SWISS_MODEL": {
           "norms": false,
-          "index": false,
-          "type": "text"
+          "index": true,
+          "type": "keyword"
         },
         "EPD": {
-          "index": false,
-          "type": "text",
+          "index": true,
+          "type": "keyword",
           "norms": false
         },
         "wormpep_id": {
           "norms": false,
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         }
       },
       "dynamic": "false"

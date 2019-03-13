@@ -5,13 +5,16 @@
     "analysis": {
       "analyzer": {
         "string_lowercase": {
-          "tokenizer": "keyword",
-          "filter": "lowercase"
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase"
+          ]
         }
       }
     }
   },
-  "aliases" : {
+  "aliases": {
     "genomes": {}
   },
   "mappings": {
@@ -21,75 +24,77 @@
         "assembly": {
           "properties": {
             "accession": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "level": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "name": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             }
           }
         },
         "division": {
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "id": {
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "organism": {
           "properties": {
             "display_name": {
-              "type": "text"
+              "type": "keyword",
+              "index": true
             },
             "aliases": {
-              "type": "text"
+              "type": "keyword",
+              "index": true
             },
             "name": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "species_taxonomy_id": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "taxonomy_id": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "serotype": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "strain": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             },
             "lineage": {
-              "type": "text",
-              "index": false
+              "type": "keyword",
+              "index": true
             }
           }
         },
         "dbname": {
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "species_id": {
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         },
         "is_reference": {
           "type": "boolean"
         },
         "GO_genome": {
-          "type": "text",
-          "index": false
+          "type": "keyword",
+          "index": true
         }
       }
     }
