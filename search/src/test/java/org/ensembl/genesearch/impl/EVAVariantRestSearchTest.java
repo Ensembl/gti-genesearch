@@ -12,10 +12,7 @@ import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +31,12 @@ public class EVAVariantRestSearchTest {
 
     static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
     static EVAVariantRestSearch search;
+    static ESTestServer testServer;
 
     @BeforeClass
     public static void setUp() throws IOException {
 
-        ESTestServer testServer = new ESTestServer();
+        testServer = new ESTestServer();
         // index a sample of JSON for use in search genomes
         log.info("Reading documents");
         String json = DataUtils.readGzipResource("/eva_genomes.json.gz");
@@ -139,4 +137,9 @@ public class EVAVariantRestSearchTest {
                 DataUtils.getObjValsForKey(v, "annotation.xrefs.id").isEmpty());
     }
 
+    @AfterClass
+    public static void tearDown() {
+        log.info("Disconnecting server");
+        testServer.disconnect();
+    }
 }
