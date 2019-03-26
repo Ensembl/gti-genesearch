@@ -307,7 +307,9 @@ public class ESSearch implements Search {
 
         // prepare a search request object using the query, fields, limits etc.
         SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
-                .setFetchSource(fieldNames.toArray(new String[fieldNames.size()]), null).setSize(limit).setFrom(offset)
+                .setFetchSource(fieldNames.toArray(new String[fieldNames.size()]), null)
+                .setSize(limit)
+                .setFrom(offset)
                 .setTypes(type);
 
         setFields(fieldNames, request);
@@ -320,7 +322,7 @@ public class ESSearch implements Search {
         log.info("Query " + request.toString());
 
         SearchResponse response = request.execute().actionGet();
-        log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().getTotalHits() + " in "
+        log.info("Retrieved " + response.getHits().getHits().length + "/" + response.getHits().getTotalHits() + " in "
                 + response.getTook().getMillis() + " ms");
 
         return new QueryResult(response.getHits().getTotalHits(), offset, limit, getFieldInfo(output),
@@ -558,7 +560,7 @@ public class ESSearch implements Search {
                             .should(QueryBuilders.matchPhrasePrefixQuery("organism.aliases", name).maxExpansions(limit).slop(10))
                             .should(QueryBuilders.matchPhrasePrefixQuery("organism.strain", name).maxExpansions(limit).slop(10))
                             .should(QueryBuilders.matchPhrasePrefixQuery("organism.serotype", name).maxExpansions(limit).slop(10)),
-                    ScoreFunctionBuilders.fieldValueFactorFunction("is_reference").factor(2).modifier(Modifier.LOG1P));
+                    ScoreFunctionBuilders.fieldValueFactorFunction("is_reference").factor(2).modifier(Modifier.LOG));
 
             fields = new String[]{"id", "organism.display_name", "organism.scientific_name"};
         } else {

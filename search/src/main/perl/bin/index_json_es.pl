@@ -45,7 +45,7 @@ my $indexer = Bio::EnsEMBL::GTI::GeneSearch::JsonIndexer->new(url => $opts->{es_
 $opts->{id} ||= 'id';
 
 for my $file (@{$opts->{file}}) {
-    $logger->info("Indexing $file");
     my $array = $opts->{type} eq 'genome' ? 0 : 1;
+    $logger->info("Indexing $file $opts->{type} ");
     $indexer->index_file($file, $opts->{type}, $opts->{id}, $array, $opts->{offset}, $opts->{limit});
 }

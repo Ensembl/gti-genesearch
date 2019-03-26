@@ -5,11 +5,21 @@
     "analysis": {
       "analyzer": {
         "string_lowercase": {
-          "type": "custom",
+          "type":      "custom",
           "tokenizer": "standard",
+          "char_filter": [
+            "html_strip"
+          ],
           "filter": [
-            "lowercase"
+            "lowercase",
+            "asciifolding"
           ]
+        }
+      },
+      "normalizer": {
+        "keyword_lowercase": {
+          "type": "custom",
+          "filter": ["lowercase"]
         }
       }
     }
@@ -165,9 +175,8 @@
           }
         },
         "gene_names": {
-          "analyzer": "string_lowercase",
-          "type": "text",
-          "index": true
+          "type": "keyword",
+          "normalizer": "keyword_lowercase"
         },
         "failures": {
           "type": "keyword",

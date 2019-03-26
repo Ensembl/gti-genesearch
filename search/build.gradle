@@ -35,10 +35,12 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile "com.github.tomakehurst:wiremock-standalone:2.9.0"
     testCompile group: 'org.elasticsearch.test', name: 'framework', version: '6.6.1'
-    testCompile 'org.apache.lucene:lucene-test-framework:6.4.1'
+    // testCompile 'org.apache.lucene:lucene-test-framework:6.4.1'
     testCompile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
     testCompile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
-
+    // testCompile group: 'org.codelibs.elasticsearch.module', name: 'analysis-common', version: '6.6.1'
+    compile 'pl.allegro.tech:embedded-elasticsearch:2.7.0'
+    compile "org.testcontainers:elasticsearch:1.11.1"
     // compile 'pl.allegro.tech:embedded-elasticsearch:2.7.0'
 }
         

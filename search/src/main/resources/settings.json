@@ -5,8 +5,15 @@
     "analysis": {
       "analyzer": {
         "string_lowercase": {
-          "tokenizer": "keyword",
-          "filter": "lowercase"
+          "type":      "custom",
+          "tokenizer": "standard",
+          "char_filter": [
+            "html_strip"
+          ],
+          "filter": [
+            "lowercase",
+            "asciifolding"
+          ]
         }
       }
     }

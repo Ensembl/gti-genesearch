@@ -5,11 +5,21 @@
     "analysis": {
       "analyzer": {
         "string_lowercase": {
-          "type": "custom",
+          "type":      "custom",
           "tokenizer": "standard",
+          "char_filter": [
+            "html_strip"
+          ],
           "filter": [
-            "lowercase"
+            "lowercase",
+            "asciifolding"
           ]
+        }
+      },
+      "normalizer": {
+        "keyword_lowercase": {
+          "type": "custom",
+          "filter": ["lowercase"]
         }
       }
     }
@@ -49,7 +59,7 @@
           "properties": {
             "display_name": {
               "type": "keyword",
-              "index": true
+              "normalizer": "keyword_lowercase"
             },
             "aliases": {
               "type": "keyword",
@@ -57,7 +67,7 @@
             },
             "name": {
               "type": "keyword",
-              "index": true
+              "normalizer": "keyword_lowercase"
             },
             "species_taxonomy_id": {
               "type": "keyword",

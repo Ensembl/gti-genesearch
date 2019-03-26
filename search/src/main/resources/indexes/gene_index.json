@@ -7,9 +7,19 @@
         "string_lowercase": {
           "type": "custom",
           "tokenizer": "standard",
+          "char_filter": [
+            "html_strip"
+          ],
           "filter": [
-            "lowercase"
+            "lowercase",
+            "asciifolding"
           ]
+        }
+      },
+      "normalizer": {
+        "keyword_lowercase": {
+          "type": "custom",
+          "filter": ["lowercase"]
         }
       }
     }
@@ -26,7 +36,7 @@
           "type": "keyword"
         },
         "Prosite_profiles": {
-          "norms":false,
+          "norms": false,
           "type": "keyword",
           "index": true
         },
@@ -128,7 +138,7 @@
         "consequence_types": {
           "index": true,
           "type": "keyword",
-          "norms":false
+          "norms": false
         },
         "RefSeq_ncRNA": {
           "index": true,
@@ -161,7 +171,7 @@
           "norms": false
         },
         "ProDom": {
-          "norms":false,
+          "norms": false,
           "index": true,
           "type": "keyword"
         },
@@ -171,9 +181,8 @@
           "type": "keyword"
         },
         "name": {
-          "analyzer": "string_lowercase",
-          "type": "text",
-          "fielddata": true
+          "normalizer": "keyword_lowercase",
+          "type": "keyword"
         },
         "BROAD_G_zeae": {
           "type": "keyword",
@@ -183,7 +192,7 @@
         "RFAM": {
           "type": "keyword",
           "index": true,
-          "norms":false
+          "norms": false
         },
         "IBSC": {
           "norms": false,
@@ -191,7 +200,7 @@
           "index": true
         },
         "Gene3D": {
-          "norms":false,
+          "norms": false,
           "type": "keyword",
           "index": true
         },
@@ -201,39 +210,39 @@
           "norms": false
         },
         "seq_region_name": {
-          "norms":false,
+          "norms": false,
           "index": true,
           "type": "keyword"
         },
         "TIGRfam": {
-          "norms":false,
+          "norms": false,
           "type": "keyword",
           "index": true
         },
         "Interpro": {
           "index": true,
           "type": "keyword",
-          "norms":false
+          "norms": false
         },
         "PHI": {
           "properties": {
             "term": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
             "host": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
             "condition": {
               "index": true,
               "type": "keyword",
-              "norms":false
+              "norms": false
             },
             "phenotype": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             }
@@ -266,17 +275,17 @@
             "parents": {
               "type": "keyword",
               "index": true,
-              "norms":false
+              "norms": false
             },
             "evidence": {
               "index": true,
               "type": "keyword",
-              "norms":false
+              "norms": false
             },
             "term": {
               "type": "keyword",
               "index": true,
-              "norms":false
+              "norms": false
             }
           }
         },
@@ -286,15 +295,15 @@
             "term": {
               "index": true,
               "type": "keyword",
-              "norms":false
+              "norms": false
             },
             "evidence": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
             "parents": {
-              "norms":false,
+              "norms": false,
               "index": true,
               "type": "keyword"
             }
@@ -306,15 +315,15 @@
             "term": {
               "index": true,
               "type": "keyword",
-              "norms":false
+              "norms": false
             },
             "evidence": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
             "parents": {
-              "norms":false,
+              "norms": false,
               "index": true,
               "type": "keyword"
             }
@@ -326,15 +335,15 @@
             "term": {
               "index": true,
               "type": "keyword",
-              "norms":false
+              "norms": false
             },
             "evidence": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
             "parents": {
-              "norms":false,
+              "norms": false,
               "index": true,
               "type": "keyword"
             }
@@ -346,15 +355,15 @@
             "term": {
               "index": true,
               "type": "keyword",
-              "norms":false
+              "norms": false
             },
             "evidence": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
             "parents": {
-              "norms":false,
+              "norms": false,
               "index": true,
               "type": "keyword"
             }
@@ -366,15 +375,15 @@
             "term": {
               "index": true,
               "type": "keyword",
-              "norms":false
+              "norms": false
             },
             "evidence": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
             "parents": {
-              "norms":false,
+              "norms": false,
               "index": true,
               "type": "keyword"
             }
@@ -388,10 +397,10 @@
         "Uniprot_SWISSPROT": {
           "index": true,
           "type": "keyword",
-          "norms":false
+          "norms": false
         },
         "EMBL": {
-          "norms":false,
+          "norms": false,
           "type": "keyword",
           "index": true
         },
@@ -403,19 +412,19 @@
         "homologues": {
           "properties": {
             "stable_id": {
-              "norms":false,
+              "norms": false,
               "index": true,
               "type": "keyword"
             },
             "description": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
             "genome": {
               "index": true,
               "type": "keyword",
-              "norms":false
+              "norms": false
             }
           },
           "type": "nested"
@@ -438,7 +447,7 @@
         "Pfam": {
           "type": "keyword",
           "index": true,
-          "norms":false
+          "norms": false
         },
         "KEGG_Enzyme": {
           "norms": false,
@@ -531,7 +540,7 @@
         "Seg": {
           "type": "keyword",
           "index": true,
-          "norms":false
+          "norms": false
         },
         "HPA": {
           "index": true,
@@ -556,7 +565,7 @@
         "Tmhmm": {
           "index": true,
           "type": "keyword",
-          "norms":false
+          "norms": false
         },
         "RNAMMER": {
           "norms": false,
@@ -614,7 +623,7 @@
           "norms": false
         },
         "clinical_significance": {
-          "norms":false,
+          "norms": false,
           "type": "keyword",
           "index": true
         },
@@ -649,7 +658,7 @@
           "index": true
         },
         "genome": {
-          "norms":false,
+          "norms": false,
           "index": true,
           "type": "keyword"
         },
@@ -752,7 +761,7 @@
           "type": "keyword"
         },
         "UniParc": {
-          "norms":false,
+          "norms": false,
           "type": "keyword",
           "index": true
         },
@@ -787,7 +796,7 @@
           "norms": false
         },
         "HAMAP": {
-          "norms":false,
+          "norms": false,
           "index": true,
           "type": "keyword"
         },
@@ -819,12 +828,12 @@
         "biotype": {
           "index": true,
           "type": "keyword",
-          "norms":false
+          "norms": false
         },
         "analysis": {
           "index": true,
           "type": "keyword",
-          "norms":false
+          "norms": false
         },
         "CGNC": {
           "type": "keyword",
@@ -842,7 +851,7 @@
         "Prosite_patterns": {
           "index": true,
           "type": "keyword",
-          "norms":false
+          "norms": false
         },
         "AGD_TRANSCRIPT": {
           "type": "keyword",
@@ -870,7 +879,7 @@
           "norms": false
         },
         "id": {
-          "norms":false,
+          "norms": false,
           "index": true,
           "type": "keyword"
         },
@@ -897,7 +906,7 @@
         "ncoils": {
           "index": true,
           "type": "keyword",
-          "norms":false
+          "norms": false
         },
         "phyra_jgi_v1_1": {
           "norms": false,
@@ -942,10 +951,10 @@
         "PDB": {
           "index": true,
           "type": "keyword",
-          "norms":false
+          "norms": false
         },
         "taxon_id": {
-          "norms":false,
+          "norms": false,
           "type": "keyword",
           "index": true
         },
@@ -982,7 +991,7 @@
         "chainp": {
           "type": "keyword",
           "index": true,
-          "norms":false
+          "norms": false
         },
         "ENS_LRG_transcript": {
           "type": "keyword",
@@ -1007,7 +1016,7 @@
         "KEGG": {
           "type": "keyword",
           "index": true,
-          "norms":false
+          "norms": false
         },
         "Celera_Gene": {
           "type": "keyword",
@@ -1048,12 +1057,12 @@
           "type": "keyword"
         },
         "PANTHER": {
-          "norms":false,
+          "norms": false,
           "type": "keyword",
           "index": true
         },
         "Smart": {
-          "norms":false,
+          "norms": false,
           "index": true,
           "type": "keyword"
         },
@@ -1068,7 +1077,7 @@
           "type": "keyword"
         },
         "Superfamily": {
-          "norms":false,
+          "norms": false,
           "type": "keyword",
           "index": true
         },
@@ -1190,7 +1199,7 @@
         "Uniprot_SPTREMBL": {
           "type": "keyword",
           "index": true,
-          "norms":false
+          "norms": false
         },
         "NASC_GENE_ID": {
           "index": true,
@@ -1210,12 +1219,12 @@
             "name": {
               "type": "keyword",
               "index": true,
-              "norms":false
+              "norms": false
             },
             "source": {
               "type": "keyword",
               "index": true,
-              "norms":false
+              "norms": false
             }
           },
           "type": "nested"
@@ -1266,7 +1275,7 @@
           "norms": false
         },
         "protein_id": {
-          "norms":false,
+          "norms": false,
           "index": true,
           "type": "keyword"
         },
@@ -1392,14 +1401,14 @@
                 "dbname": {
                   "type": "keyword",
                   "index": true,
-                  "norms":false
+                  "norms": false
                 },
                 "linkage_types": {
                   "properties": {
                     "evidence": {
                       "type": "keyword",
                       "index": true,
-                      "norms":false
+                      "norms": false
                     },
                     "source": {
                       "type": "nested",
@@ -1422,17 +1431,17 @@
                   "type": "nested"
                 },
                 "parents": {
-                  "norms":false,
+                  "norms": false,
                   "type": "keyword",
                   "index": true
                 },
                 "display_name": {
-                  "norms":false,
+                  "norms": false,
                   "index": true,
                   "type": "keyword"
                 },
                 "primary_id": {
-                  "norms":false,
+                  "norms": false,
                   "type": "keyword",
                   "index": true
                 }
@@ -1504,22 +1513,22 @@
                 "term": {
                   "index": true,
                   "type": "keyword",
-                  "norms":false
+                  "norms": false
                 },
                 "evidence": {
-                  "norms":false,
+                  "norms": false,
                   "type": "keyword",
                   "index": true
                 },
                 "parents": {
-                  "norms":false,
+                  "norms": false,
                   "index": true,
                   "type": "keyword"
                 }
               }
             },
             "clinical_significance": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
@@ -1589,7 +1598,7 @@
                   "norms": false
                 },
                 "id": {
-                  "norms":false,
+                  "norms": false,
                   "type": "keyword",
                   "index": true
                 },
@@ -1667,7 +1676,7 @@
                     "name": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     },
                     "description": {
                       "type": "keyword"
@@ -1678,10 +1687,10 @@
                     "dbname": {
                       "type": "keyword",
                       "index": true,
-                      "norms":false
+                      "norms": false
                     },
                     "interpro_ac": {
-                      "norms":false,
+                      "norms": false,
                       "type": "keyword",
                       "index": true
                     },
@@ -1705,15 +1714,15 @@
                     "display_name": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     },
                     "primary_id": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     },
                     "parents": {
-                      "norms":false,
+                      "norms": false,
                       "index": true,
                       "type": "keyword"
                     },
@@ -1740,14 +1749,14 @@
                         "evidence": {
                           "index": true,
                           "type": "keyword",
-                          "norms":false
+                          "norms": false
                         }
                       }
                     },
                     "dbname": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     }
                   },
                   "type": "nested"
@@ -1812,22 +1821,22 @@
                     "term": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     },
                     "host": {
-                      "norms":false,
+                      "norms": false,
                       "type": "keyword",
                       "index": true
                     },
                     "phenotype": {
-                      "norms":false,
+                      "norms": false,
                       "index": true,
                       "type": "keyword"
                     },
                     "condition": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     }
                   },
                   "type": "nested"
@@ -1862,15 +1871,15 @@
                     "evidence": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     },
                     "term": {
                       "type": "keyword",
                       "index": true,
-                      "norms":false
+                      "norms": false
                     },
                     "parents": {
-                      "norms":false,
+                      "norms": false,
                       "index": true,
                       "type": "keyword"
                     }
@@ -1883,15 +1892,15 @@
                     "term": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     },
                     "evidence": {
-                      "norms":false,
+                      "norms": false,
                       "type": "keyword",
                       "index": true
                     },
                     "parents": {
-                      "norms":false,
+                      "norms": false,
                       "index": true,
                       "type": "keyword"
                     }
@@ -1903,15 +1912,15 @@
                     "term": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     },
                     "evidence": {
-                      "norms":false,
+                      "norms": false,
                       "type": "keyword",
                       "index": true
                     },
                     "parents": {
-                      "norms":false,
+                      "norms": false,
                       "index": true,
                       "type": "keyword"
                     }
@@ -1923,15 +1932,15 @@
                     "term": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     },
                     "evidence": {
-                      "norms":false,
+                      "norms": false,
                       "type": "keyword",
                       "index": true
                     },
                     "parents": {
-                      "norms":false,
+                      "norms": false,
                       "index": true,
                       "type": "keyword"
                     }
@@ -1943,15 +1952,15 @@
                     "term": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     },
                     "evidence": {
-                      "norms":false,
+                      "norms": false,
                       "type": "keyword",
                       "index": true
                     },
                     "parents": {
-                      "norms":false,
+                      "norms": false,
                       "index": true,
                       "type": "keyword"
                     }
@@ -1963,15 +1972,15 @@
                     "term": {
                       "index": true,
                       "type": "keyword",
-                      "norms":false
+                      "norms": false
                     },
                     "evidence": {
-                      "norms":false,
+                      "norms": false,
                       "type": "keyword",
                       "index": true
                     },
                     "parents": {
-                      "norms":false,
+                      "norms": false,
                       "index": true,
                       "type": "keyword"
                     }
@@ -2201,12 +2210,12 @@
             "biotype": {
               "type": "keyword",
               "index": true,
-              "norms":false
+              "norms": false
             },
             "analysis": {
               "index": true,
               "type": "keyword",
-              "norms":false
+              "norms": false
             },
             "end": {
               "type": "integer"
@@ -2267,7 +2276,7 @@
               "norms": false
             },
             "id": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
@@ -2332,8 +2341,8 @@
               "index": true
             },
             "name": {
-              "type": "text",
-              "analyzer": "string_lowercase"
+              "type": "keyword",
+              "normalizer": "keyword_lowercase"
             },
             "KEGG": {
               "norms": false,
@@ -2383,7 +2392,7 @@
             "consequence_types": {
               "type": "keyword",
               "index": true,
-              "norms":false
+              "norms": false
             },
             "COG": {
               "norms": false,
@@ -2416,17 +2425,17 @@
                 "parents": {
                   "type": "keyword",
                   "index": true,
-                  "norms":false
+                  "norms": false
                 },
                 "evidence": {
                   "index": true,
                   "type": "keyword",
-                  "norms":false
+                  "norms": false
                 },
                 "term": {
                   "type": "keyword",
                   "index": true,
-                  "norms":false
+                  "norms": false
                 }
               }
             },
@@ -2436,15 +2445,15 @@
                 "term": {
                   "index": true,
                   "type": "keyword",
-                  "norms":false
+                  "norms": false
                 },
                 "evidence": {
-                  "norms":false,
+                  "norms": false,
                   "type": "keyword",
                   "index": true
                 },
                 "parents": {
-                  "norms":false,
+                  "norms": false,
                   "index": true,
                   "type": "keyword"
                 }
@@ -2482,22 +2491,22 @@
               "type": "nested",
               "properties": {
                 "host": {
-                  "norms":false,
+                  "norms": false,
                   "type": "keyword",
                   "index": true
                 },
                 "condition": {
                   "type": "keyword",
                   "index": true,
-                  "norms":false
+                  "norms": false
                 },
                 "phenotype": {
                   "index": true,
                   "type": "keyword",
-                  "norms":false
+                  "norms": false
                 },
                 "term": {
-                  "norms":false,
+                  "norms": false,
                   "type": "keyword",
                   "index": true
                 }
@@ -2509,7 +2518,7 @@
               "norms": false
             },
             "seq_region_name": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
@@ -2589,15 +2598,15 @@
                 "term": {
                   "index": true,
                   "type": "keyword",
-                  "norms":false
+                  "norms": false
                 },
                 "evidence": {
-                  "norms":false,
+                  "norms": false,
                   "type": "keyword",
                   "index": true
                 },
                 "parents": {
-                  "norms":false,
+                  "norms": false,
                   "index": true,
                   "type": "keyword"
                 }
@@ -2643,7 +2652,7 @@
         "PRINTS": {
           "type": "keyword",
           "index": true,
-          "norms":false
+          "norms": false
         },
         "cint_jgi_v1": {
           "type": "keyword",
@@ -2663,12 +2672,12 @@
         "xrefs": {
           "properties": {
             "dbname": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
             "parents": {
-              "norms":false,
+              "norms": false,
               "type": "keyword",
               "index": true
             },
@@ -2695,19 +2704,19 @@
                 "evidence": {
                   "type": "keyword",
                   "index": true,
-                  "norms":false
+                  "norms": false
                 }
               }
             },
             "display_name": {
               "type": "keyword",
               "index": true,
-              "norms":false
+              "norms": false
             },
             "primary_id": {
               "index": true,
               "type": "keyword",
-              "norms":false
+              "norms": false
             }
           },
           "type": "nested"
@@ -2720,7 +2729,7 @@
         "lineage": {
           "type": "keyword",
           "index": true,
-          "norms":false
+          "norms": false
         },
         "EchoBASE": {
           "norms": false,
@@ -2733,7 +2742,7 @@
           "index": true
         },
         "SignalP": {
-          "norms":false,
+          "norms": false,
           "type": "keyword",
           "index": true
         },
@@ -2745,7 +2754,7 @@
         "PIRSF": {
           "type": "keyword",
           "index": true,
-          "norms":false
+          "norms": false
         },
         "MitoDrome": {
           "type": "keyword",

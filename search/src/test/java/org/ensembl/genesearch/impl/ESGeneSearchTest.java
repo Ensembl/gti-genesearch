@@ -16,7 +16,7 @@ http://gti-es-0.ebi.ac.uk:9200/genes/genome/_search?pretty&q=K12 * Copyright [19
 
 package org.ensembl.genesearch.impl;
 
-import org.elasticsearch.test.ESIntegTestCase;
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.ensembl.genesearch.*;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
@@ -24,6 +24,8 @@ import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -33,24 +35,25 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.*;
 
-@ESIntegTestCase.ClusterScope(scope = ESIntegTestCase.Scope.SUITE, numDataNodes = 2)
-@ESIntegTestCase.SuiteScopeTestCase
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
-public class ESGeneSearchTest extends ESIntegTestCase {
+@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
+public class ESGeneSearchTest {
 
     static Logger log = LoggerFactory.getLogger(ESGeneSearchTest.class);
 
     static ESSearch search;
     static ESTestServer testServer;
 
-    @Override
-    protected void setupSuiteScopeCluster() throws Exception {
-        super.setupSuiteScopeCluster();
-        log.info("Setting up SuitScopeCluster");
-        testServer = new ESTestServer(client());
-        search = new ESSearch(client(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json"));
+    @BeforeClass
+    public static void setUp() throws IOException {
+        // index a sample of JSON
+        testServer = new ESTestServer();
+        search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json"));
+        log.info("Reading documents");
         String json = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
+        log.info("Creating test index");
         testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
     }
 
@@ -438,4 +441,12 @@ public class ESGeneSearchTest extends ESIntegTestCase {
         assertTrue("id2 found", ids.contains(id2));
         assertTrue("id3 found", ids.contains(id3));
     }
+
+    @AfterClass
+    public static void tearDown() {
+        log.info("Disconnecting server");
+        testServer.disconnect();
+        testServer = null;
+    }
+
 }

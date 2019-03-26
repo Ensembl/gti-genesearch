@@ -26,20 +26,18 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.node.Node;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Utility to create and load an in-memory Elastic test server. Note that this
@@ -52,10 +50,36 @@ public class ESTestServer {
 
     private final Client client;
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static ElasticsearchContainer container;
 
     public ESTestServer() {
-        // TODO update any call to constructor without parameters
-        client = null;
+        TransportClient transportClient = null;
+        boolean createIndex = false;
+        try {
+            log.info("Try to connect to local");
+            // look for a accessible Test ES server available locally
+            transportClient = new PreBuiltTransportClient(
+                    Settings.builder().put("cluster.name", "genesearch").build())
+                    .addTransportAddress(new TransportAddress(InetAddress.getByName("gti-es-test.ebi.ac.uk"), 9300));
+            log.info("Connected to ES Docker test server ");
+        } catch (UnknownHostException e) {
+            log.info("gti-es-test not found");
+            container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.6.1");
+            container.start();
+            TransportAddress transportAddress = new TransportAddress(container.getTcpHost());
+            Settings settings = Settings.builder().put("cluster.name", "docker-cluster").build();
+            transportClient = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
+            createIndex = true;
+        }
+        client = transportClient;
+        if (createIndex){
+            // only create index when using docker, local test server should be up and set up already
+            createIndex(ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+            createIndex(ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
+            createIndex(ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
+            log.debug("Created indexes ");
+
+        }
     }
 
     public ESTestServer(Client testCaseClient) {
@@ -75,12 +99,11 @@ public class ESTestServer {
      */
     protected void createIndex(String index, String type) {
         try {
-            log.info("Reading gene mapping");
+            log.info("Reading "+ index +" mapping");
             // slurp the mapping file into memory
             String geneMapping = DataUtils.readResource("/indexes/" + type + "_index.json");
             geneMapping = geneMapping.replaceAll("SHARDN", "1");
-            Map<String, Object> geneIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {
-            });
+            Map<String, Object> geneIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {});
             if (client.admin().indices().prepareExists(index).execute().actionGet().isExists()) {
                 log.info("Deleting index");
                 client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
@@ -88,8 +111,9 @@ public class ESTestServer {
             log.info("Creating index");
             // create an index with mapping
             Map<String, Object> mappingObj = (Map<String, Object>) geneIndexObj.get("mappings");
-            client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>)geneIndexObj.get("settings")).get();
+            client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>) geneIndexObj.get("settings")).get();
             client.admin().indices().preparePutMapping(index).setType(type).setSource(mapper.writeValueAsString(mappingObj.get(type)), XContentType.JSON).get();
+            log.info("Index created");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -115,7 +139,8 @@ public class ESTestServer {
             log.info("Indexing ");
 
             int n = 0;
-            List<Map<String, Object>> docs = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {});
+            List<Map<String, Object>> docs = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {
+            });
 
             for (Map<String, Object> doc : docs) {
                 indexTestDoc(doc, index, type);
@@ -147,8 +172,11 @@ public class ESTestServer {
     /**
      * Close the client and shut down the ES node.
      */
-    public void disconnect() throws IOException {
-        client.close();
+    public void disconnect() {
+        if (client != null)
+            client.close();
+        if (container != null)
+            container.close();
     }
 
 }
