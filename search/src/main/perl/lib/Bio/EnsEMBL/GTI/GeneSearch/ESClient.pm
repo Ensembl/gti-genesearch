@@ -26,7 +26,6 @@ with 'MooseX::Log::Log4perl';
 use Search::Elasticsearch;
 use Carp;
 
-
 has 'url' => (is => 'ro', isa => 'Str', required => 1);
 has 'index' => (is => 'ro', isa => 'Str', required => 1);
 has 'bulk' => (is => 'rw', isa => 'Search::Elasticsearch::Client::6_0::Bulk');
@@ -37,9 +36,10 @@ sub BUILD {
 
     $self->log->info("Connecting to " . $self->url());
     my $es =
-        Search::Elasticsearch->new(#client => "6_00::Direct",
-            nodes                         => [ $self->url() ],
-            request_timeout               => $self->timeout());
+        Search::Elasticsearch->new(
+            # client          => "6_00::Direct",
+            nodes           => [ $self->url() ],
+            request_timeout => $self->timeout());
     my $bulk = $es->bulk_helper(
         index       => $self->index(),
         timeout     => $self->timeout() . 's',

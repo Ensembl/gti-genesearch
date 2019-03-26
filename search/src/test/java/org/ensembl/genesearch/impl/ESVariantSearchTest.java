@@ -22,33 +22,40 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
+import org.ensembl.genesearch.utils.DataUtilsTest;
+import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
+@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class ESVariantSearchTest {
 
     static Logger log = LoggerFactory.getLogger(ESVariantSearchTest.class);
 
-    static ESTestServer testServer = new ESTestServer();
-    static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE,
-            DataTypeInfo.fromResource("/datatypes/es_variants_datatype_info.json"));
+    static ESTestServer testServer;
+    static ESSearch search;
 
     @BeforeClass
     public static void setUp() throws IOException {
         // index a sample of JSON
+        testServer = new ESTestServer();
         log.info("Reading documents");
+        search = new ESSearch(testServer.getClient(), ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE,
+                DataTypeInfo.fromResource("/datatypes/es_variants_datatype_info.json"));
         String json = DataUtils.readGzipResource("/es_variants.json.gz");
         log.info("Creating test index");
         testServer.indexTestDocs(json, ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
@@ -58,7 +65,7 @@ public class ESVariantSearchTest {
     public void fetchAll() {
         log.info("Fetching all variants");
         try {
-            search.fetch(Collections.emptyList(), QueryOutput.build(Arrays.asList("_id")));
+            search.fetch(Collections.emptyList(), QueryOutput.build(Collections.singletonList("_id")));
             fail("Illegal operation succeeded");
         } catch (UnsupportedOperationException e) {
             // OK
@@ -67,7 +74,7 @@ public class ESVariantSearchTest {
 
     @Test
     public void testQueryById() {
-        QueryResult res = search.query(Arrays.asList(new Query(FieldType.TERM, "_id", "rs192")),
+        QueryResult res = search.query(Collections.singletonList(new Query(FieldType.TERM, "_id", "rs192")),
                 QueryOutput.build("[\"_id\"]"), Collections.emptyList(), 0, 10, Collections.emptyList());
         Assert.assertEquals("1 result found", 1, res.getResults().size());
     }
@@ -77,11 +84,11 @@ public class ESVariantSearchTest {
         QueryResult res = search.query(
                 QueryHandlerTest.build("{\"locations\":{\"location\":\"7:11547118-24405439\"}}"),
                 QueryOutput.build("[\"_id\"]"), Collections.emptyList(), 0, 50, Collections.emptyList());
-        Assert.assertEquals("34 results found", 59, res.getResultCount());
+        Assert.assertEquals("59 results found", 59, res.getResultCount());
     }
 
     @AfterClass
-    public static void tearDown() throws IOException {
+    public static void tearDown() {
         log.info("Disconnecting server");
         testServer.disconnect();
     }

@@ -32,7 +32,9 @@ import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.impl.JoinMergeSearch.SubSearchParams;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,20 +47,33 @@ public class DecomposeTest {
 
 	static Logger log = LoggerFactory.getLogger(ESGeneSearchTest.class);
 
-	static ESTestServer testServer = new ESTestServer();
+	static ESTestServer testServer;
 	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
 	static DataTypeInfo genomeInfo = DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json");
 	static DataTypeInfo homologueInfo = DataTypeInfo.fromResource("/datatypes/homologues_datatype_info.json");
-	static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
-	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE,
-			genomeInfo);
+	static ESSearch search;
+	static ESSearch gSearch;
 
 	// set up a provider
-	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.GENES, search)
-			.registerSearch(SearchType.HOMOLOGUES, search).registerSearch(SearchType.GENOMES, gSearch);
+	static SearchRegistry provider;
 
 	// instantiate a join aware search
-	static JoinMergeSearch geneSearch = new GeneSearch(provider);
+	static JoinMergeSearch geneSearch;
+
+	@BeforeClass
+	public static void setUp() throws IOException {
+		// index a sample of JSON
+		testServer = new ESTestServer();
+		search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
+		gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE, genomeInfo);
+		provider = new SearchRegistry().registerSearch(SearchType.GENES, search)
+				.registerSearch(SearchType.HOMOLOGUES, search).registerSearch(SearchType.GENOMES, gSearch);
+		geneSearch = new GeneSearch(provider);
+		log.info("Reading documents");
+		String json = DataUtils.readGzipResource("/es_variants.json.gz");
+		log.info("Creating test index");
+		testServer.indexTestDocs(json, ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
+	}
 
 	@Test
 	public void decomposeEmpty() {
