@@ -560,7 +560,7 @@ public class ESSearch implements Search {
                             .should(QueryBuilders.matchPhrasePrefixQuery("organism.aliases", name).maxExpansions(limit).slop(10))
                             .should(QueryBuilders.matchPhrasePrefixQuery("organism.strain", name).maxExpansions(limit).slop(10))
                             .should(QueryBuilders.matchPhrasePrefixQuery("organism.serotype", name).maxExpansions(limit).slop(10)),
-                    ScoreFunctionBuilders.fieldValueFactorFunction("is_reference").factor(2).modifier(Modifier.LOG));
+                    ScoreFunctionBuilders.fieldValueFactorFunction("is_reference").factor(2).modifier(Modifier.LOG1P));
 
             fields = new String[]{"id", "organism.display_name", "organism.scientific_name"};
         } else {

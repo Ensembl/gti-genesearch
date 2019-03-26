@@ -16,17 +16,14 @@
 
 package org.ensembl.genesearch.utils;
 
-import static org.ensembl.genesearch.utils.DataUtils.getObjsForKey;
-import static org.ensembl.genesearch.utils.DataUtils.getObjValsForKey;
-import static org.ensembl.genesearch.utils.DataUtils.jsonToMap;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.util.Map;
 import java.util.Set;
 
-import org.ensembl.genesearch.utils.DataUtils;
-import org.junit.Test;
+import static org.ensembl.genesearch.utils.DataUtils.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link DataUtils}
@@ -36,7 +33,8 @@ import org.junit.Test;
  */
 public class DataUtilsTest {
 
-	@Test
+
+    @Test
 	public void testGetObjsForKeySimple() {
 		Map<String, Object> data = jsonToMap("{\"a\":\"one\", \"c\":\"two\"}");
 		Map<String, Map<String,Object>> values = getObjsForKey(data, "a");

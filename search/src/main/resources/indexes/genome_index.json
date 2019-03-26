@@ -83,7 +83,7 @@
             },
             "strain": {
               "type": "keyword",
-              "index": true
+              "normalizer": "keyword_lowercase"
             },
             "lineage": {
               "type": "keyword",
