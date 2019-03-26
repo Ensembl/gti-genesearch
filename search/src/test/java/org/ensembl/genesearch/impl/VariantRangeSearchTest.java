@@ -16,14 +16,7 @@ http://gti-es-0.ebi.ac.uk:9200/genes/genome/_search?pretty&q=K12 * Copyright [19
 
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.Search;
@@ -35,30 +28,47 @@ import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+
+@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
+@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class VariantRangeSearchTest {
 
 	static Logger log = LoggerFactory.getLogger(VariantRangeSearchTest.class);
 
-	static ESTestServer testServer = new ESTestServer();
 	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
-	static ESSearch esGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
-			geneInfo);
+    static DataTypeInfo variantInfo = DataTypeInfo.fromResource("/datatypes/variants_datatype_info.json");
 
-	static MongoTestServer mongoTestServer = new MongoTestServer();
-	static DataTypeInfo variantInfo = DataTypeInfo.fromResource("/datatypes/variants_datatype_info.json");
-	static Search mSearch = new MongoSearch(mongoTestServer.getCollection(), variantInfo);
-
-	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.VARIANTS, mSearch)
-			.registerSearch(SearchType.GENES, esGeneSearch);
-	static Search search = new VariantSearch(provider);
-	static Search geneSearch = new RangeBasedJoinGeneSearch(provider);
+    static ESTestServer testServer;
+    static ESSearch esGeneSearch;
+	static MongoTestServer mongoTestServer;
+	static Search mSearch;
+	static SearchRegistry provider;
+	static Search search;
+	static Search geneSearch;
 
 	@BeforeClass
 	public static void setUp() throws IOException {
 		// index a sample of JSON
+        testServer = new ESTestServer();
+        mongoTestServer = new MongoTestServer();
+        esGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
+        mSearch = new MongoSearch(mongoTestServer.getCollection(), variantInfo);
+        provider = new SearchRegistry().registerSearch(SearchType.VARIANTS, mSearch)
+                .registerSearch(SearchType.GENES, esGeneSearch);
+        search = new VariantSearch(provider);
+        geneSearch = new RangeBasedJoinGeneSearch(provider);
 		log.info("Reading documents");
 		String variantJson = DataUtils.readGzipResource("/variants.json.gz");
 		mongoTestServer.indexData(variantJson);
