@@ -1,11 +1,8 @@
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
@@ -19,24 +16,31 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
+@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class EnsemblVariantGeneSearchTest {
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
 
+    static ESTestServer testServer;
     static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
     static GeneSearch geneSearch;
 
     @BeforeClass
     public static void setUp() throws IOException {
 
-        ESTestServer testServer = new ESTestServer();
+        testServer = new ESTestServer();
         // index a sample of JSON for use in search genomes
         log.info("Reading documents");
         {
