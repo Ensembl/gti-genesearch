@@ -16,59 +16,56 @@
 
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.QueryHandlerTest;
-import org.ensembl.genesearch.QueryOutput;
-import org.ensembl.genesearch.QueryResult;
-import org.ensembl.genesearch.SearchResult;
-import org.ensembl.genesearch.SearchType;
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
+import org.ensembl.genesearch.*;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.*;
+
+import static org.junit.Assert.*;
+
 /**
  * @author dstaines
- *
+ * @author mchakiachvili
  */
+@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
+@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class GeneSearchTest {
 
     static Logger log = LoggerFactory.getLogger(ESGeneSearchTest.class);
 
-    static ESTestServer testServer = new ESTestServer();
+    static ESTestServer testServer;
     static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
     static DataTypeInfo genomeInfo = DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json");
     static DataTypeInfo homologueInfo = DataTypeInfo.fromResource("/datatypes/homologues_datatype_info.json");
-    static ESSearch search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
-    static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE,
-            genomeInfo);
+    static ESSearch search;
+    static ESSearch gSearch;
 
     // set up a provider
-    static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.GENES, search)
-            .registerSearch(SearchType.GENOMES, gSearch).registerSearch(SearchType.HOMOLOGUES, search);
+    static SearchRegistry provider;
 
     // instantiate a join aware search
-    static GeneSearch geneSearch = new GeneSearch(provider);
+    static GeneSearch geneSearch;
 
     @BeforeClass
     public static void setUp() throws IOException {
         // index a sample of JSON
+        testServer = new ESTestServer();
+        search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
+        gSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE,
+                genomeInfo);
+        provider = new SearchRegistry().registerSearch(SearchType.GENES, search)
+                .registerSearch(SearchType.GENOMES, gSearch).registerSearch(SearchType.HOMOLOGUES, search);
+        geneSearch = new GeneSearch(provider);
         log.info("Reading documents");
         String json = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
         String json2 = DataUtils.readGzipResource("/mycoplasma_pneumoniae_m129_genes.json.gz");
@@ -84,7 +81,7 @@ public class GeneSearchTest {
     @Test
     public void querySimple() {
         log.info("Querying for all genes");
-        QueryResult result = geneSearch.query(Collections.emptyList(), QueryOutput.build(Arrays.asList("id")),
+        QueryResult result = geneSearch.query(Collections.emptyList(), QueryOutput.build(Collections.singletonList("id")),
                 Collections.emptyList(), 0, 5, Collections.emptyList());
         assertEquals("Total hits", 2646, result.getResultCount());
         assertEquals("Fetched hits", 5, result.getResults().size());
@@ -174,7 +171,7 @@ public class GeneSearchTest {
     public void fetchSimple() {
         log.info("Fetching for all genes");
         SearchResult result = geneSearch.fetch(QueryHandlerTest.build("{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}"),
-                QueryOutput.build(Arrays.asList("id")));
+                QueryOutput.build(Collections.singletonList("id")));
         assertEquals("Total hits", 598, result.getResults().size());
         assertTrue("id found", result.getResults().get(0).containsKey("id"));
         assertEquals("1 field only", 1, result.getResults().get(0).keySet().size());
@@ -315,7 +312,7 @@ public class GeneSearchTest {
     }
 
     @AfterClass
-    public static void tearDown() throws IOException {
+    public static void tearDown() {
         log.info("Disconnecting server");
         testServer.disconnect();
     }
