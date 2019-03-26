@@ -1,7 +1,8 @@
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
-
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;
@@ -10,12 +11,14 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import java.io.IOException;
 
+@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
+@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class EVAGenomeFinderTest {
 
     @ClassRule
@@ -23,15 +26,17 @@ public class EVAGenomeFinderTest {
 
     static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
 
-    static ESTestServer testServer = new ESTestServer();
-    static ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
-            ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
-    static EVAGenomeFinder finder;
+    static ESTestServer testServer;
+    private static ESSearch ensemblGenomeSearch;
+    private static EVAGenomeFinder finder;
 
     @BeforeClass
     public static void setUp() throws IOException {
         // index a sample of JSON
         log.info("Reading documents");
+        testServer = new ESTestServer();
+        ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
+                ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
         String json = DataUtils.readGzipResource("/eva_genomes.json.gz");
         log.info("Creating test index");
         testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
