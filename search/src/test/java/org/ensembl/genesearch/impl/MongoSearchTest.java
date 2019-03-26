@@ -28,8 +28,9 @@ import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.test.MongoTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
+import org.ensembl.genesearch.utils.DataUtilsTest;
+import org.ensembl.genesearch.test.MongoTestServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -45,13 +46,15 @@ public class MongoSearchTest {
 
 	static Logger log = LoggerFactory.getLogger(MongoSearchTest.class);
 
-	static MongoTestServer testServer = new MongoTestServer();
-	static MongoSearch search = new MongoSearch(testServer.getCollection(),
-			DataTypeInfo.fromResource("/datatypes/mongo_variants_datatype_info.json"));
+	static MongoTestServer testServer;
+	static MongoSearch search;
 
 	@BeforeClass
 	public static void setUp() throws IOException {
 		// index a sample of JSON
+        testServer = new MongoTestServer();
+        search = new MongoSearch(testServer.getCollection(),
+                DataTypeInfo.fromResource("/datatypes/mongo_variants_datatype_info.json"));
 		log.info("Reading documents");
 		String json = DataUtils.readGzipResource("/variants.json.gz");
 		log.info("Creating test index");
