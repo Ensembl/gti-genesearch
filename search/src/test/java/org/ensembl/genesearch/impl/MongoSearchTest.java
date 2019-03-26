@@ -16,25 +16,25 @@
 
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.ensembl.genesearch.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.utils.DataUtils;
-import org.ensembl.genesearch.utils.DataUtilsTest;
 import org.ensembl.genesearch.test.MongoTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link MongoSearch}
@@ -119,4 +119,9 @@ public class MongoSearchTest {
 		assertTrue("", result.getResults().stream().allMatch(r -> r.get("chr").equals("Chr1")));
 	}
 
+	@AfterClass
+	public static void tearDown() {
+		log.info("Disconnecting server");
+		testServer.disconnect();
+	}
 }
