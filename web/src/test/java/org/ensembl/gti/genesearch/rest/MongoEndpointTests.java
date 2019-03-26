@@ -16,16 +16,7 @@
 
 package org.ensembl.gti.genesearch.rest;
 
-import static org.ensembl.gti.genesearch.rest.EndpointTests.MAP_REF;
-import static org.ensembl.gti.genesearch.rest.EndpointTests.getUrlToObject;
-import static org.ensembl.gti.genesearch.rest.EndpointTests.postUrlToObject;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
+import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.test.ESTestServer;
@@ -50,7 +41,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.web.client.RestTemplate;
 
-import com.mongodb.client.MongoCollection;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import static org.ensembl.gti.genesearch.rest.EndpointTests.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author dstaines

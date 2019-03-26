@@ -16,16 +16,9 @@
 
 package org.ensembl.gti.genesearch.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
@@ -50,17 +43,23 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * @author dstaines
  *
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
 @WebIntegrationTest
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
+@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
+@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class EndpointTests {
 
     private static final String API_BASE = "http://localhost:8080/api";
@@ -98,12 +97,9 @@ public class EndpointTests {
     @Autowired
     EndpointSearchProvider provider;
 
-    public static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {
-    };
-    public static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {
-    };
-    public static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {
-    };
+    public static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {};
+    public static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {};
+    public static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {};
 
     RestTemplate restTemplate = new TestRestTemplate();
 
