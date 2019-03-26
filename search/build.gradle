@@ -36,6 +36,7 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock-standalone:2.9.0"
     testCompile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
     testCompile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
+    testCompile group: 'com.carrotsearch.randomizedtesting', name: 'randomizedtesting-runner', version: '2.7.2'
     compile "org.testcontainers:elasticsearch:1.11.1"
 }
         
