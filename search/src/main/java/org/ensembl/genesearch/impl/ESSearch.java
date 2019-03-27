@@ -102,6 +102,8 @@ public class ESSearch implements Search {
     public static final String GENE_ESTYPE = "gene";
     public static final String GENOME_ESTYPE = "genome";
     public static final String VARIANT_ESTYPE = "variant";
+    public static final String REGULATORY_FEATURES_ESTYPE = "regulatory_feature";
+    public static final String PROBESET_ESTYPE = "probeset";
 
     private final Client client;
     private final String index;

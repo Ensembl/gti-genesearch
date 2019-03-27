@@ -25,7 +25,7 @@
     }
   },
   "aliases": {
-    "regulations": {}
+    "probesets": {}
   },
   "mappings": {
     "probes": {
@@ -154,104 +154,6 @@
                   "norms": false
                 },
                 "array_type": {
-                  "type": "keyword",
-                  "index": true,
-                  "norms": false
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "regulatory_features": {
-      "dynamic": "false",
-      "properties": {
-        "seq_region_name": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
-        "stable_id": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
-        "feature_type": {
-          "properties": {
-            "name": {
-              "type": "keyword",
-              "index": true,
-              "norms": false
-            },
-            "description": {
-              "type": "keyword",
-              "index": true,
-              "norms": false
-            },
-            "SO_accession": {
-              "type": "keyword",
-              "index": true,
-              "norms": false
-            },
-            "SO_name": {
-              "type": "keyword",
-              "index": true,
-              "norms": false
-            },
-            "transcription_factors": {
-              "type": "nested",
-              "properties": {
-                "name": {
-                  "type": "keyword",
-                  "index": true,
-                  "norms": false
-                },
-                "complexes": {
-                  "type": "nested",
-                  "properties": {
-                    "name": {
-                      "type": "keyword",
-                      "index": true,
-                      "norms": false
-                    },
-                    "binding_matrix": {
-                      "properties": {
-                        "name": {
-                          "type": "keyword",
-                          "index": true,
-                          "norms": false
-                        },
-                        "source": {
-                          "type": "keyword",
-                          "index": true,
-                          "norms": false
-                        },
-                        "stable_id": {
-                          "type": "keyword",
-                          "index": true,
-                          "norms": false
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "motif_features": {
-              "type": "nested",
-              "properties": {
-                "seq_region_id": {
-                  "type": "double",
-                  "index": true,
-                  "norms": false
-                },
-                "score": {
-                  "type": "double",
-                  "index": true,
-                  "norms": false
-                },
-                "stable_id": {
                   "type": "keyword",
                   "index": true,
                   "norms": false

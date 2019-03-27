@@ -35,6 +35,8 @@ public enum SearchType {
     VARIANTS("variants", "variant"),
     SEQUENCES("sequences", "sequence"),
     EXPRESSION("expression", "expression"),
+    REGULATORY_FEATURES("regulatory_features", "regulatory_feature"),
+    PROBES_SET("probesets", "probeset"),
     EXPRESSION_EXPERIMENTS("experiments", "experiment"),
     EXPRESSION_ANALYTICS("analytics", "analytics"),
     CELL_LINES("cell_lines", "cell_line");
