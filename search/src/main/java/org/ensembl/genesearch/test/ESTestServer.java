@@ -1,17 +1,15 @@
 /*
- * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.ensembl.genesearch.test;
@@ -72,7 +70,7 @@ public class ESTestServer {
             createIndex = true;
         }
         client = transportClient;
-        if (createIndex){
+        if (createIndex) {
             // only create index when using docker, local test server should be up and set up already
             createIndex(ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
             createIndex(ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
@@ -99,11 +97,12 @@ public class ESTestServer {
      */
     protected void createIndex(String index, String type) {
         try {
-            log.info("Reading "+ index +" mapping");
+            log.info("Reading " + index + " mapping");
             // slurp the mapping file into memory
             String geneMapping = DataUtils.readResource("/indexes/" + type + "_index.json");
             geneMapping = geneMapping.replaceAll("SHARDN", "1");
-            Map<String, Object> geneIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {});
+            Map<String, Object> geneIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {
+            });
             if (client.admin().indices().prepareExists(index).execute().actionGet().isExists()) {
                 log.info("Deleting index");
                 client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
