@@ -72,6 +72,7 @@ public class DataUtilsTest {
 	@Test
 	public void testGetObjValsForKeyList() {
 		Map<String, Object> data = jsonToMap("{\"a\":[{\"b\":\"one\", \"c\":\"two\"},{\"b\":\"three\", \"c\":\"four\"}]}");
+		System.out.println(data);
 		Set<String> values = getObjValsForKey(data, "a.b");
 		assertTrue("one found", values.contains("one"));
 		assertTrue("three found", values.contains("three"));
