@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -146,7 +147,7 @@ public class DivisionAwareSequenceSearchTest {
 	}
 
 	private List<String> getIds(String name) throws IOException {
-		return IOUtils.readLines(this.getClass().getResourceAsStream(name));
+		return IOUtils.readLines(this.getClass().getResourceAsStream(name), Charset.forName("UTF-8"));
 	}
 
 	@Test

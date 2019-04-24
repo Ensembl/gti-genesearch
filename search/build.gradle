@@ -54,5 +54,5 @@ test {
 mainClassName = 'org.ensembl.genesearch.clients.IdLookupClient'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.12'
+    gradleVersion = '5.4'
 }
