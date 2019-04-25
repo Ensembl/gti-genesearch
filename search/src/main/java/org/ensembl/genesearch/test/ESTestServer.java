@@ -76,7 +76,6 @@ public class ESTestServer {
             createIndex(ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
             createIndex(ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
             log.debug("Created indexes ");
-
         }
     }
 

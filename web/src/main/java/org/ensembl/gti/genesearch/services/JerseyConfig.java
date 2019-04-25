@@ -18,7 +18,6 @@ import org.ensembl.gti.genesearch.services.errors.DefaultExceptionMapper;
 import org.ensembl.gti.genesearch.services.errors.NotFoundExceptionMapper;
 import org.ensembl.gti.genesearch.services.errors.QueryHandlerExceptionMapper;
 import org.ensembl.gti.genesearch.services.filters.CORSFilter;
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.message.GZipEncoder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -61,7 +60,7 @@ public class JerseyConfig extends ResourceConfig {
         register(JacksonFeature.class);
         register(InfoService.class);
         register(CORSFilter.class);
-        register(LoggingFilter.class);
+        //register(LoggingFilter.class);
         register(QueryHandlerExceptionMapper.class);
         register(NotFoundExceptionMapper.class);
         register(DefaultExceptionMapper.class);

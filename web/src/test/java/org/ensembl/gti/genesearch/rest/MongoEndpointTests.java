@@ -30,9 +30,8 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -52,8 +51,7 @@ import static org.junit.Assert.assertTrue;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(Application.class)
-@WebIntegrationTest({"spring.profiles.active=eva_mongo"})
+@SpringBootTest(classes=Application.class, webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("eva_mongo")
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 public class MongoEndpointTests {
@@ -90,7 +88,7 @@ public class MongoEndpointTests {
     @Autowired
     EndpointSearchProvider provider;
 
-    RestTemplate restTemplate = new TestRestTemplate();
+    RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
 
     @Before
     public void injectSearch() {

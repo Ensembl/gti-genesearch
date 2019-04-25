@@ -42,6 +42,7 @@ public class MapXmlWriterTest {
 		MapXmlWriter writer = new MapXmlWriter(xsw);
 		writer.writeObject("test", map);
 		String xml = new String(os.toByteArray(), "UTF-8");
+		System.out.println("xml" + os.toString());
 		assertEquals("Correct XML", "<test 1=\"one\" 2=\"two\"></test>", xml);
 	}
 
