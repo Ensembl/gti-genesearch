@@ -54,7 +54,7 @@ public class ESTestServer {
         TransportClient transportClient = null;
         boolean createIndex = false;
         try {
-            log.info("Try to connect to local");
+            log.info("Try to connect to existing test ES");
             // look for a accessible Test ES server available locally
             transportClient = new PreBuiltTransportClient(
                     Settings.builder().put("cluster.name", "genesearch").build())
