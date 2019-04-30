@@ -16,7 +16,6 @@ package org.ensembl.genesearch.impl;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
@@ -27,7 +26,6 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.utils.DataUtils;
-import org.ensembl.genesearch.utils.DataUtilsTest;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.junit.AfterClass;
 import org.junit.Assert;

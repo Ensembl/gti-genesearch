@@ -31,7 +31,6 @@ import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.utils.DataUtils;
-import org.ensembl.genesearch.utils.DataUtilsTest;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.test.MongoTestServer;
 import org.junit.AfterClass;

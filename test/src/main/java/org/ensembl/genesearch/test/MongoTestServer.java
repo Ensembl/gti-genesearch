@@ -15,24 +15,24 @@
 package org.ensembl.genesearch.test;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.bson.Document;
-import org.ensembl.genesearch.utils.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.fakemongo.Fongo;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
 /**
  * Utility to create and load an in-memory Mongo test server using
  * {@link Fongo}. Note that this is included in the main source folder to allow
  * reuse in downstream projects e.g. REST server.
- * 
- * @author dstaines
  *
+ * @author dstaines
  */
 public class MongoTestServer {
 
@@ -51,12 +51,12 @@ public class MongoTestServer {
 
     /**
      * Read JSON from the specified Java resource and index
-     * 
+     *
      * @param resourceName
      */
     public void indexDataResource(String resourceName) {
         try {
-            indexData(DataUtils.readResource(resourceName));
+            indexData(IOUtils.toString(MongoTestServer.class.getResourceAsStream(resourceName), Charset.defaultCharset()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -64,7 +64,7 @@ public class MongoTestServer {
 
     /**
      * Index a JSON document
-     * 
+     *
      * @param json
      */
     public void indexData(String json) {

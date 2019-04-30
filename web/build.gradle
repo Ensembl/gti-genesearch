@@ -10,20 +10,9 @@ configurations.all {
     }
 }
 
-
-apply plugin: 'java'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'java'
-apply plugin: 'idea'
-
-version =  '0.1'
-group = "org.ensembl.gti"
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 repositories {
-    mavenCentral()
-    mavenLocal()
     jcenter()
 }
 
@@ -33,10 +22,7 @@ configurations {
 }
 
 dependencies {
-    compile project (':search')
     // explicitly force ES & Solr to avoid weird transitive behaviour
-    compile 'org.elasticsearch:elasticsearch:6.6.1'
- 	compile 'org.apache.solr:solr-solrj:6.3.0'
     // tag::jetty[]
     compile("org.springframework.boot:spring-boot-starter-web:2.1.4.RELEASE") {
         exclude module: "spring-boot-starter-tomcat"
@@ -51,12 +37,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-jersey:2.1.4.RELEASE")
     compile("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider")
     // end::jersey[]
-    testCompile('org.springframework.boot:spring-boot-starter-test:2.1.4.RELEASE')
-    testCompile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
-    testCompile group: 'com.carrotsearch.randomizedtesting', name: 'randomizedtesting-runner', version: '2.7.2'
-    compile "org.testcontainers:elasticsearch:1.11.1"
-}
+    compile 'org.slf4j:slf4j-log4j12:1.7.12'
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '5.4'
+    testCompile project (':test')
+    testCompile('org.springframework.boot:spring-boot-starter-test:2.1.4.RELEASE')
 }

@@ -241,8 +241,6 @@ public class HtsGetClient {
      *            region end
      * @param token
      *            oauth token
-     * @param session
-     *            active EGA session
      * @param consumer
      *            destination for variants
      */
@@ -280,8 +278,6 @@ public class HtsGetClient {
      *            region end
      * @param token
      *            oauth token
-     * @param session
-     *            active EGA session
      * @param consumer
      *            destination for variants
      */

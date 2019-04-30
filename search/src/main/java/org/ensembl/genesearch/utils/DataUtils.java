@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.ensembl.genesearch.test.ESTestServer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -122,7 +121,7 @@ public class DataUtils {
      * @throws IOException
      */
     public static String readGzipResource(String name) throws IOException {
-        return IOUtils.toString(new GZIPInputStream(ESTestServer.class.getResourceAsStream(name)), Charset.defaultCharset());
+        return IOUtils.toString(new GZIPInputStream(DataUtils.class.getResourceAsStream(name)), Charset.defaultCharset());
     }
 
     /**
@@ -134,6 +133,6 @@ public class DataUtils {
      * @throws IOException
      */
     public static String readResource(String name) throws IOException {
-        return IOUtils.toString(ESTestServer.class.getResourceAsStream(name), Charset.defaultCharset());
+        return IOUtils.toString(DataUtils.class.getResourceAsStream(name), Charset.defaultCharset());
     }
 }

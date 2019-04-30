@@ -14,7 +14,6 @@
 
 package org.ensembl.gti.genesearch.rest;
 
-import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ensembl.genesearch.impl.ESSearch;
@@ -36,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.web.client.RestTemplate;
 
@@ -50,11 +50,9 @@ import static org.junit.Assert.*;
  * @author dstaines
  *
  */
-//@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes=Application.class, webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
-@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class EndpointTests {
 
     private static final String API_BASE = "http://localhost:8080/api";
@@ -86,15 +84,16 @@ public class EndpointTests {
         esTestServer.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         esTestServer.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         String variantJson = DataUtils.readGzipResource("/variants.json.gz");
+        esTestServer.indexTestDocs(variantJson, ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
 
     }
 
     @Autowired
     EndpointSearchProvider provider;
 
-    public static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {};
-    public static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {};
-    public static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {};
+    static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {};
+    static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {};
+    static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {};
 
     RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
 

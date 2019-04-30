@@ -1,0 +1,50 @@
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'idea'
+
+    group = 'org.ensembl.gti'
+    version = '0.2'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        compile group: 'org.elasticsearch', name: 'elasticsearch', version: '6.6.1'
+        compile group: 'org.elasticsearch.client', name: 'transport', version: '6.6.1'
+        compile 'org.apache.solr:solr-solrj:6.3.0'
+
+        
+        testImplementation "junit:junit:4.12"
+        testCompile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
+        testCompile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
+
+    }
+
+    /*task wrapper(type: Wrapper) {
+        gradleVersion = '5.4'
+    }*/
+}
+
+project(':web') {
+    dependencies {
+        implementation project(':search')
+        testCompile project(':test')
+
+    }
+}
+
+project(':test') {
+
+}
+
+project(':search') {
+    dependencies {
+        testCompile project(':test')
+    }
+}
