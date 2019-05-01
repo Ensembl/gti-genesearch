@@ -86,7 +86,7 @@ public class ESSearch implements Search {
     /*
      * defaults for interacting with Elastic
      */
-    public static final int DEFAULT_SCROLL_SIZE = 1000;
+    public static final int DEFAULT_SCROLL_SIZE = 5000;
     public static final int DEFAULT_SCROLL_TIMEOUT = 6000;
     private static final int DEFAULT_AGGREGATION_SIZE = 10;
 
@@ -302,7 +302,7 @@ public class ESSearch implements Search {
         // create an elastic querybuilder object from our queries
         QueryBuilder query = ESSearchBuilder.buildQuery(type, queries.toArray(new Query[queries.size()]));
 
-        log.info(query.toString());
+        log.info("QueryBuilder: ", query.toString());
 
         // prepare a search request object using the query, fields, limits etc.
         SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
