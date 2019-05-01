@@ -91,7 +91,7 @@ public class ESSearchBuilder {
      * @return query builder for the supplied list of queries
      */
     protected static QueryBuilder buildQueryWithParents(String type, List<String> parents, Query... qs) {
-        log.trace("Parents " + parents);
+        log.trace("[Parents:" + parents + "][Type:" + type + "][Query:" + qs.toString() + "]");
         if (qs.length == 1) {
             Query q = qs[0];
             QueryBuilder query;
@@ -142,7 +142,7 @@ public class ESSearchBuilder {
      * @return Elastic query
      */
     protected static QueryBuilder processSingle(String type, List<String> parents, Query q) {
-        log.trace("Single " + q.getFieldName());
+        log.trace("[FieldName:" + q.getFieldName() + "][FieldType:" + q.getType() + "][Type:" + type + "]");
         String path = join(extendPath(parents, q), '.');
         QueryBuilder eq;
         switch (q.getType()) {
@@ -294,10 +294,13 @@ public class ESSearchBuilder {
      */
     protected static QueryBuilder processLocation(String path, Query q) {
         if (q.getValues().length == 1) {
+            log.trace("ProcessLocation" + q.getValues().toString());
             return processLocation(path, q.getValues()[0]);
         } else {
+
             BoolQueryBuilder qb = QueryBuilders.boolQuery();
             for (String value : q.getValues()) {
+                log.trace("Bool value" + value);
                 qb.should(processLocation(path, value));
             }
             return qb;

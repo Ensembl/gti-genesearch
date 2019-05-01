@@ -2,14 +2,6 @@ plugins {
     id 'org.springframework.boot' version '2.1.4.RELEASE'
 }
 
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if (details.requested.name == 'log4j') {
-            details.useTarget 'log4j:log4j:1.2.+'
-        }
-    }
-}
-
 apply plugin: 'io.spring.dependency-management'
 
 repositories {
@@ -18,7 +10,8 @@ repositories {
 
 
 configurations {
-  compile.exclude group: "org.slf4j", module: "slf4j-log4j12"
+    compile.exclude group: "org.slf4j", module: "slf4j-log4j12"
+    compile.exclude group: "ch.qos.logback"
 }
 
 dependencies {
@@ -37,8 +30,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-jersey:2.1.4.RELEASE")
     compile("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider")
     // end::jersey[]
-    compile 'org.slf4j:slf4j-log4j12:1.7.12'
 
-    testCompile project (':test')
+    testCompile project(':test')
     testCompile('org.springframework.boot:spring-boot-starter-test:2.1.4.RELEASE')
 }

@@ -85,9 +85,6 @@ public class DefaultQueryHandler implements QueryHandler {
         for (Entry<String, Object> query : queryObj.entrySet()) {
             String fieldName = query.getKey();
             String newPath = query.getKey();
-            if(!StringUtils.isEmpty(path)) {
-                newPath = path + "." + newPath;
-            }
             boolean not;
             if (fieldName.charAt(0) == '!') {
                 not = true;
@@ -97,6 +94,10 @@ public class DefaultQueryHandler implements QueryHandler {
             }
             FieldType type = getFieldType(newPath, query.getValue());
             if (type == FieldType.NESTED) {
+                // only append path for nested field
+                if (!StringUtils.isEmpty(path)) {
+                    newPath = path + "." + newPath;
+                }
                 List<Query> subQs = parseQuery(newPath, (Map<String, Object>) query.getValue());
                 queries.add(new Query(type, fieldName, not, subQs.toArray(new Query[subQs.size()])));
             } else if (isList(query.getValue())) {
@@ -123,16 +124,22 @@ public class DefaultQueryHandler implements QueryHandler {
      * @return
      */
     protected FieldType getFieldType(String key, Object value) {
+        log.trace("Field type for " + key + " obj:" + value);
         if ("location".equals(key)) {
+            log.trace("Location found");
             return FieldType.LOCATION;
         } else if (Map.class.isAssignableFrom(value.getClass())) {
+            log.trace("Map (i.e nested) found");
             return FieldType.NESTED;
         } else {
             if (isList(value)) {
+                log.trace("List found");
                 return FieldType.TERM;
             } else if (NUMBER_PATTERN.matcher(String.valueOf(value)).matches()) {
+                log.trace("Number found");
                 return FieldType.NUMBER;
             } else {
+                log.trace("Default TERM found");
                 return FieldType.TERM;
             }
         }

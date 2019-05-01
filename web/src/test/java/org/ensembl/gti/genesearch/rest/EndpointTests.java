@@ -65,25 +65,24 @@ public class EndpointTests {
     private static final String TRANSCRIPTS_QUERY = API_BASE + "/transcripts/query";
     private static final String INFO = API_BASE + "/genes/info";
 
-    static Logger log = LoggerFactory.getLogger(EndpointTests.class);
+    private static Logger log = LoggerFactory.getLogger(EndpointTests.class);
+    private static ESTestServer esTestServer;
+
     static ESSearch geneSearch;
     static ESSearch genomeSearch;
-    static ESTestServer esTestServer;
 
     @BeforeClass
     public static void setUp() throws IOException {
         // create our ES test server once only
         log.info("Setting up");
         esTestServer = new ESTestServer();
-        // index a sample of JSON
         log.info("Reading documents");
         String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
-        log.info("Creating test index");
         String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
+        String variantJson = DataUtils.readGzipResource("/variants.json.gz");
         log.info("Creating test index");
         esTestServer.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         esTestServer.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
-        String variantJson = DataUtils.readGzipResource("/variants.json.gz");
         esTestServer.indexTestDocs(variantJson, ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
 
     }
@@ -95,7 +94,7 @@ public class EndpointTests {
     static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {};
     static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {};
 
-    RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
+    private RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
 
     @Before
     public void injectSearch() {

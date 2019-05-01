@@ -46,12 +46,12 @@ import java.util.Map;
 public class ESTestServer {
 
     private final Client client;
+    private String clusterName;
     static Logger log = LoggerFactory.getLogger(ESTestServer.class);
     private static ElasticsearchContainer container;
 
     public ESTestServer() {
         TransportAddress transportAddress;
-        String clusterName;
         try {
             log.info("Try to connect to existing test ES");
             // look for a accessible Test ES server available locally
@@ -86,10 +86,10 @@ public class ESTestServer {
             log.info("Reading " + index + " mapping");
             // slurp the mapping file into memory
             String geneMapping = IOUtils.toString(ESTestServer.class.getResourceAsStream("/indexes/" + type + "_index.json"), Charset.defaultCharset());
-            ;
             geneMapping = geneMapping.replaceAll("SHARDN", "1");
             Map<String, Object> geneIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {
             });
+
             if (client.admin().indices().prepareExists(index).execute().actionGet().isExists()) {
                 log.info("Deleting index");
                 client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
@@ -122,7 +122,7 @@ public class ESTestServer {
     public void indexTestDocs(String json, String index, String type) {
         try {
 
-            log.info("Indexing ");
+            log.info("Indexing [Index:" + index + "][Type:" + type + "]");
 
             int n = 0;
             List<Map<String, Object>> docs = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {
@@ -135,10 +135,8 @@ public class ESTestServer {
             // wait for indices to be built
             client.admin().indices().refresh(new RefreshRequest(index)).actionGet();
             log.info("Indexed " + n + " documents");
-            return;
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
         }
     }
 
@@ -159,8 +157,7 @@ public class ESTestServer {
      * Close the client and shut down the ES node.
      */
     public void disconnect() {
-        if (client != null)
-            client.close();
+        client.close();
         if (container != null)
             container.close();
     }
