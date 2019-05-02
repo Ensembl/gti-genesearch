@@ -91,7 +91,6 @@ public class EndpointTests {
         log.info("Creating test index");
         esTestServer.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         esTestServer.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
-        String variantJson = DataUtils.readGzipResource("/variants.json.gz");
 
     }
 
