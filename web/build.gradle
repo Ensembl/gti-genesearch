@@ -10,7 +10,7 @@ repositories {
 
 
 configurations {
-    compile.exclude group: "org.slf4j", module: "slf4j-log4j12"
+    //compile.exclude group: "org.slf4j", module: "slf4j-log4j12"
     compile.exclude group: "ch.qos.logback"
 }
 
@@ -33,4 +33,6 @@ dependencies {
 
     testCompile project(':test')
     testCompile('org.springframework.boot:spring-boot-starter-test:2.1.4.RELEASE')
+    //compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
+    testCompile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
 }

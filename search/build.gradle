@@ -12,20 +12,15 @@ dependencies {
     compile 'org.mongodb:mongodb-driver:3.2.2'
     compile group: 'com.github.samtools', name: 'htsjdk', version: '2.13.2'
     compile 'com.beust:jcommander:1.48'
-    // compile 'org.slf4j:slf4j-log4j12:1.7.12'
-
     testCompile project (':test')
     testCompile "com.github.tomakehurst:wiremock-standalone:2.9.0"
     testCompile group: 'com.carrotsearch.randomizedtesting', name: 'randomizedtesting-runner', version: '2.7.2'
 }
         
 test {
-    testLogging {
-        events = ["passed", "failed", "skipped"]
-        showStandardStreams = true
-        exceptionFormat = "full"
-    }
     systemProperty "tests.security.manager", false
+    minHeapSize = "512m"
+    maxHeapSize = "2048m"
 }
  
 mainClassName = 'org.ensembl.genesearch.clients.IdLookupClient'
