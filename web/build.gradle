@@ -8,31 +8,17 @@ repositories {
     jcenter()
 }
 
+configurations.all {
+/*    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.name == 'log4j') {
+            details.useTarget 'log4j:log4j:1.7.+'
+        }
+    }*/
+}
 
 configurations {
-    //compile.exclude group: "org.slf4j", module: "slf4j-log4j12"
-    compile.exclude group: "ch.qos.logback"
+    // compile.exclude group: "ch.qos.logback"
+    compile.exclude group: "org.slf4j", module: "slf4j-log4j12"
+    // compile.exclude module: "log4j-over-slf4j"
 }
 
-dependencies {
-    // explicitly force ES & Solr to avoid weird transitive behaviour
-    // tag::jetty[]
-    compile("org.springframework.boot:spring-boot-starter-web:2.1.4.RELEASE") {
-        exclude module: "spring-boot-starter-tomcat"
-    }
-    compile("org.springframework.boot:spring-boot-starter-jetty:2.1.4.RELEASE")
-    compile("org.springframework.boot:spring-boot-starter-security:2.1.4.RELEASE")
-    // end::jetty[]
-    // tag::actuator[]
-    compile("org.springframework.boot:spring-boot-starter-actuator:2.1.4.RELEASE")
-    // end::actuator[]
-    // tag::jersey[]
-    compile("org.springframework.boot:spring-boot-starter-jersey:2.1.4.RELEASE")
-    compile("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider")
-    // end::jersey[]
-
-    testCompile project(':test')
-    testCompile('org.springframework.boot:spring-boot-starter-test:2.1.4.RELEASE')
-    //compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
-    testCompile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
-}

@@ -1,6 +1,0 @@
-dependencies {
-    compile 'com.github.fakemongo:fongo:2.0.6'
-    compile "org.testcontainers:elasticsearch:1.11.1"
-    compile 'org.mongodb:mongodb-driver:3.2.2'
-
-}

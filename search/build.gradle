@@ -1,22 +1,5 @@
 apply plugin: 'application'
 
-dependencies {
-    compile group: 'org.codelibs.elasticsearch.module', name: 'analysis-common', version: '6.6.1'
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'com.fasterxml.jackson.core:jackson-core:2.7.2'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.2'
-    compile 'commons-io:commons-io:2.4'
-    compile 'com.google.guava:guava:16+'
-    compile 'org.apache.commons:commons-collections4:4.1'
-    compile 'org.springframework:spring-web:4.3.2.RELEASE'
-    compile 'org.mongodb:mongodb-driver:3.2.2'
-    compile group: 'com.github.samtools', name: 'htsjdk', version: '2.13.2'
-    compile 'com.beust:jcommander:1.48'
-    testCompile project (':test')
-    testCompile "com.github.tomakehurst:wiremock-standalone:2.9.0"
-    testCompile group: 'com.carrotsearch.randomizedtesting', name: 'randomizedtesting-runner', version: '2.7.2'
-}
-        
 test {
     systemProperty "tests.security.manager", false
     minHeapSize = "512m"

@@ -13,6 +13,9 @@
  */
 package org.ensembl.gti.genesearch.services.converter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
@@ -32,7 +35,9 @@ import javax.xml.stream.XMLStreamWriter;
  *
  */
 public class MapXmlWriter {
-	
+
+	final Logger log = LoggerFactory.getLogger(MapXmlWriter.class);
+
 	/**
 	 * Transform a map into XML
 	 * @param name
@@ -63,6 +68,7 @@ public class MapXmlWriter {
 	@SuppressWarnings("unchecked")
 	public void writeObject(String name, Object data) throws XMLStreamException {
 		Class<?> clazz = data.getClass();
+		log.debug("Data received:" + data.toString());
 		if (Map.class.isAssignableFrom(clazz)) {
 			Map<String, Object> dataMap = (Map<String, Object>) data;
 			writeMap(name, dataMap);
@@ -70,13 +76,16 @@ public class MapXmlWriter {
 			Collection<Object> dataCollection = (Collection<Object>) data;
 			writeCollection(name, dataCollection);
 		} else {
-			if (data != null)
+			log.debug("Default behavior ");
+			if (data != null) {
 				writer.writeAttribute(name, String.valueOf(data));
+			}
 		}
 	}
 
 	public void writeCollection(String name, Collection<Object> dataCollection) throws XMLStreamException {
 		if (dataCollection != null && !dataCollection.isEmpty()) {
+			log.debug("Write Collection");
 			String elemName = null;
 			if (name.endsWith("s")) {
 				elemName = name.substring(0, name.length() - 1);
@@ -100,6 +109,7 @@ public class MapXmlWriter {
 
 	public void writeMap(String name, Map<String, Object> dataMap) throws XMLStreamException {
 		if (dataMap != null && !dataMap.isEmpty()) {
+			log.debug("write Map ");
 			writer.writeStartElement(name);
 			// write attributes first
 			for (Entry<String, Object> e : dataMap.entrySet()) {

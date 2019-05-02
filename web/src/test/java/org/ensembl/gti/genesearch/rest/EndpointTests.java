@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -55,15 +56,18 @@ import static org.junit.Assert.*;
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 public class EndpointTests {
 
-    private static final String API_BASE = "http://localhost:8080/api";
-    private static final String GENES_FETCH = API_BASE + "/genes/fetch";
-    private static final String GENES_QUERY = API_BASE + "/genes/query";
-    private static final String GENOMES_FETCH = API_BASE + "/genomes/fetch";
-    private static final String GENOMES_QUERY = API_BASE + "/genomes/query";
-    private static final String GENOMES_SELECT = API_BASE + "/genomes/select";
-    private static final String TRANSCRIPTS_FETCH = API_BASE + "/transcripts/fetch";
-    private static final String TRANSCRIPTS_QUERY = API_BASE + "/transcripts/query";
-    private static final String INFO = API_BASE + "/genes/info";
+    @LocalServerPort
+    private int port;
+
+    private String API_BASE;
+    private String GENES_FETCH = "/genes/fetch";
+    private String GENES_QUERY = "/genes/query";
+    private String GENOMES_FETCH = "/genomes/fetch";
+    private String GENOMES_QUERY = "/genomes/query";
+    private String GENOMES_SELECT = "/genomes/select";
+    private String TRANSCRIPTS_FETCH = "/transcripts/fetch";
+    private String TRANSCRIPTS_QUERY = "/transcripts/query";
+    private String INFO = "/genes/info";
 
     private static Logger log = LoggerFactory.getLogger(EndpointTests.class);
     private static ESTestServer esTestServer;
@@ -74,16 +78,15 @@ public class EndpointTests {
     @BeforeClass
     public static void setUp() throws IOException {
         // create our ES test server once only
-        log.info("Setting up");
+        log.info("Setting up ");
         esTestServer = new ESTestServer();
         log.info("Reading documents");
         String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
         String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
-        String variantJson = DataUtils.readGzipResource("/variants.json.gz");
         log.info("Creating test index");
         esTestServer.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         esTestServer.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
-        esTestServer.indexTestDocs(variantJson, ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
+        String variantJson = DataUtils.readGzipResource("/variants.json.gz");
 
     }
 
@@ -96,6 +99,11 @@ public class EndpointTests {
 
     private RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
 
+    private String createURLWithPort(String uri) {
+        log.info("Setting up " + port);
+        return "http://localhost:" + port + "/api" + uri;
+    }
+
     @Before
     public void injectSearch() {
         // ensure we always use our test instances
@@ -104,7 +112,7 @@ public class EndpointTests {
 
     @Test
     public void testQueryGetEndpoint() {
-        Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, GENES_QUERY);
+        Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, createURLWithPort(GENES_QUERY));
         assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
         assertEquals("Checking limited results retrieved", 10, ((List<?>) result.get("results")).size());
         List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));

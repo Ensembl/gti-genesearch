@@ -268,7 +268,7 @@ public class ESGeneSearchTest {
         QueryResult result = search.query(
                 QueryHandlerTest.build("{\"location\":[\"Chromosome:883-2691\",\"Chromosome:2668-3189\"]}"),
                 QueryOutput.build(Arrays.asList("seq_region_name", "start", "end")), Collections.emptyList(), 0, 5,
-                Collections.emptyList());
+                Collections.singletonList("+start"));
         assertEquals("2 result", 2, result.getResultCount());
         {
             Map<String, Object> gene = result.getResults().get(0);

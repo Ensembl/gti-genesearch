@@ -17,6 +17,7 @@ package org.ensembl.gti.genesearch.rest;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.ensembl.genesearch.impl.ESSearch;
+import org.ensembl.genesearch.impl.MongoSearch;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.test.MongoTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
@@ -30,8 +31,8 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -48,10 +49,9 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author dstaines
- *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes=Application.class, webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("eva_mongo")
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 public class MongoEndpointTests {
@@ -66,6 +66,8 @@ public class MongoEndpointTests {
     static ESTestServer esTestServer;
     static MongoCollection<Document> mongoCollection;
     static MongoTestServer mongoTestServer;
+    static MongoSearch search;
+
 
     @BeforeClass
     public static void setUp() throws IOException {
@@ -77,11 +79,11 @@ public class MongoEndpointTests {
         String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
         log.info("Creating test index");
         String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
-        log.info("Creating test index");
         esTestServer.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         esTestServer.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         String variantJson = DataUtils.readGzipResource("/variants.json.gz");
         mongoTestServer = new MongoTestServer();
+        log.info("Creating MongoDB test index");
         mongoTestServer.indexData(variantJson);
     }
 
