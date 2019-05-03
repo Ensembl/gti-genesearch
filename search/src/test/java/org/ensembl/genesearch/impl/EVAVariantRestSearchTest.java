@@ -1,10 +1,21 @@
+/*
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
@@ -14,16 +25,18 @@ import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
+@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
+@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class EVAVariantRestSearchTest {
 
     @ClassRule
@@ -31,26 +44,27 @@ public class EVAVariantRestSearchTest {
 
     static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
     static EVAVariantRestSearch search;
+    static ESTestServer testServer;
 
     @BeforeClass
     public static void setUp() throws IOException {
 
-        ESTestServer testServer = new ESTestServer();
+        testServer = new ESTestServer();
         // index a sample of JSON for use in search genomes
         log.info("Reading documents");
         String json = DataUtils.readGzipResource("/eva_genomes.json.gz");
         log.info("Creating test index for genomes");
         testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
-                ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/genomes_datatype_info.json"));
+                ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
 
         // build a finder using the test ES server and a wiremock REST
         // implementation
         EVAGenomeFinder finder = new EVAGenomeFinder(new EVAGenomeRestSearch(wireMockRule.url(StringUtils.EMPTY),
-                DataTypeInfo.fromResource("/evagenomes_datatype_info.json")), ensemblGenomeSearch);
+                DataTypeInfo.fromResource("/datatypes/evagenomes_datatype_info.json")), ensemblGenomeSearch);
 
         search = new EVAVariantRestSearch(wireMockRule.url(StringUtils.EMPTY),
-                DataTypeInfo.fromResource("/evavariants_datatype_info.json"), finder);
+                DataTypeInfo.fromResource("/datatypes/evavariants_datatype_info.json"), finder);
 
     }
 
@@ -136,4 +150,9 @@ public class EVAVariantRestSearchTest {
                 DataUtils.getObjValsForKey(v, "annotation.xrefs.id").isEmpty());
     }
 
+    @AfterClass
+    public static void tearDown() {
+        log.info("Disconnecting server");
+        testServer.disconnect();
+    }
 }

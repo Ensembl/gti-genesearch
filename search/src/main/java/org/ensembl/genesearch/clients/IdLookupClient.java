@@ -1,19 +1,16 @@
 /*
- * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-
 package org.ensembl.genesearch.clients;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -44,91 +41,90 @@ import com.beust.jcommander.Parameter;
 
 /**
  * Simple Elastic command line client for retrieval of data given a set of IDs
- * 
- * @author dstaines
  *
+ * @author dstaines
  */
 public class IdLookupClient {
 
-	public static class Params extends ClientParams {
+    public static class Params extends ClientParams {
 
-		@Parameter(names = "-query", description = "Field to query")
-		private String queryField = "_id";
+        @Parameter(names = "-query", description = "Field to query")
+        private String queryField = "_id";
 
-		@Parameter(names = "-terms", description = "Terms to search on")
-		private List<String> queryIds;
+        @Parameter(names = "-terms", description = "Terms to search on")
+        private List<String> queryIds;
 
-		@Parameter(names = "-query_file", description = "File of terms to search on")
-		private String queryFile;
+        @Parameter(names = "-query_file", description = "File of terms to search on")
+        private String queryFile;
 
-		@Parameter(names = "-out_file", description = "File to write results to")
-		private String outFile;
+        @Parameter(names = "-out_file", description = "File to write results to")
+        private String outFile;
 
-		@Parameter(names = "-fields", description = "Fields to retrieve")
-		private List<String> resultField = Arrays.asList(new String[] { "genome" });
+        @Parameter(names = "-fields", description = "Fields to retrieve")
+        private List<String> resultField = Arrays.asList(new String[]{"genome"});
 
-		@Parameter(names = "-source", description = "Retrieve source")
-		private boolean source = false;
+        @Parameter(names = "-source", description = "Retrieve source")
+        private boolean source = false;
 
-	}
+    }
 
-	private final static Logger log = LoggerFactory.getLogger(IdLookupClient.class);
+    private final static Logger log = LoggerFactory.getLogger(IdLookupClient.class);
 
-	public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException, IOException {
 
-		Params params = new Params();
-		JCommander jc = new JCommander(params, args);
-		jc.setProgramName(IdLookupClient.class.getSimpleName());
-		if (params.help) {
-			jc.usage();
-			System.exit(1);
-		}
+        Params params = new Params();
+        JCommander jc = new JCommander(params, args);
+        jc.setProgramName(IdLookupClient.class.getSimpleName());
+        if (params.help) {
+            jc.usage();
+            System.exit(1);
+        }
 
-		Client client = ClientBuilder.buildClient(params);
+        Client client = ClientBuilder.buildClient(params);
 
-		if (client == null) {
-			jc.usage();
-			System.exit(1);
-		}
+        if (client == null) {
+            jc.usage();
+            System.exit(1);
+        }
 
-		final Writer out = getWriter(params);
+        final Writer out = getWriter(params);
 
-		Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
-				DataTypeInfo.fromResource("/gene_datatype_info.json"));
+        Search search = new ESSearch(client, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
+                DataTypeInfo.fromResource("/gene_datatype_info.json"));
 
-		List<String> ids = params.queryIds;
-		if (ids == null && !isEmpty(params.queryFile)) {
-			ids = Files.lines(new File(params.queryFile).toPath()).collect(Collectors.toList());
-		}
+        List<String> ids = params.queryIds;
+        if (ids == null && !isEmpty(params.queryFile)) {
+            ids = Files.lines(new File(params.queryFile).toPath()).collect(Collectors.toList());
+        }
 
-		List<Query> queries = Arrays.asList(new Query[] { new Query(FieldType.TERM, params.queryField, false, ids) });
-		search.fetch(row -> {
-			try {
-				out.write(StringUtils.join(row.values(), "\t"));
-				out.write('\n');
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} finally {
-			}
-		}, queries, QueryOutput.build(params.resultField));
+        List<Query> queries = Arrays.asList(new Query[]{new Query(FieldType.TERM, params.queryField, false, ids)});
+        search.fetch(row -> {
+            try {
+                out.write(StringUtils.join(row.values(), "\t"));
+                out.write('\n');
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+            }
+        }, queries, QueryOutput.build(params.resultField));
 
-		log.info("Completed retrieval");
-		out.flush();
-		out.close();
+        log.info("Completed retrieval");
+        out.flush();
+        out.close();
 
-		log.info("Closing client");
-		client.close();
+        log.info("Closing client");
+        client.close();
 
-	}
+    }
 
-	protected static Writer getWriter(Params params) throws IOException {
-		Writer out;
-		if (!isEmpty(params.outFile)) {
-			log.info("Writing output to " + params.outFile);
-			out = new FileWriter(new File(params.outFile));
-		} else {
-			out = new OutputStreamWriter(System.out);
-		}
-		return out;
-	}
+    protected static Writer getWriter(Params params) throws IOException {
+        Writer out;
+        if (!isEmpty(params.outFile)) {
+            log.info("Writing output to " + params.outFile);
+            out = new FileWriter(new File(params.outFile));
+        } else {
+            out = new OutputStreamWriter(System.out);
+        }
+        return out;
+    }
 }

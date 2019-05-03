@@ -1,0 +1,285 @@
+{
+  "settings": {
+    "number_of_shards": "SHARDN",
+    "number_of_replicas": 0,
+    "max_result_window": 50000,
+    "analysis": {
+      "analyzer": {
+        "string_lowercase": {
+          "type":      "custom",
+          "tokenizer": "standard",
+          "char_filter": [
+            "html_strip"
+          ],
+          "filter": [
+            "lowercase",
+            "asciifolding"
+          ]
+        }
+      },
+      "normalizer": {
+        "keyword_lowercase": {
+          "type": "custom",
+          "filter": ["lowercase"]
+        }
+      }
+    }
+  },
+  "aliases" : {
+    "variants": {}
+  },
+  "mappings": {
+    "variant": {
+      "dynamic": "false",
+      "properties": {
+        "genome": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "lineage": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "source": {
+          "type": "nested",
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "version": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            }
+          }
+        },
+        "somatic": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "class": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "minor_allele_count": {
+          "type": "integer"
+        },
+        "minor_allele_freq": {
+          "type": "float"
+        },
+        "minor_allele": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "gwas": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "phenotypes": {
+          "type": "nested",
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "description": {
+              "type": "keyword"
+            },
+            "ontology_name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "ontology_accession": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "parents": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "ontology_term": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "study": {
+              "type": "nested",
+              "properties": {
+                "name": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "description": {
+                  "type": "keyword"
+                },
+                "type": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                }
+              }
+            },
+            "source": {
+              "type": "nested",
+              "properties": {
+                "name": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "version": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                }
+              }
+            }
+          }
+        },
+        "hgvs": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "sets": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "citations": {
+          "type": "nested",
+          "properties": {
+            "pubmed_id": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "title": {
+              "type": "keyword"
+            }
+          }
+        },
+        "gene_names": {
+          "type": "keyword",
+          "normalizer": "keyword_lowercase"
+        },
+        "failures": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "clinical_significance": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "locations": {
+          "type": "nested",
+          "properties": {
+            "seq_region_name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "allele_string": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "start": {
+              "type": "integer"
+            },
+            "end": {
+              "type": "integer"
+            },
+            "strand": {
+              "type": "integer"
+            },
+            "annotations": {
+              "type": "nested",
+              "properties": {
+                "hgvs_transcript": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "stable_id": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "hgvs_protein": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "hgvs_genomic": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "sift": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "polyphen": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "sift_score": {
+                  "type": "float"
+                },
+                "polyphen_score": {
+                  "type": "float"
+                },
+                "consequence_terms": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "consequences": {
+                  "type": "nested",
+                  "properties": {
+                    "so_accession": {
+                      "type": "keyword",
+                      "index": true,
+                      "norms": false
+                    },
+                    "parents": {
+                      "type": "keyword",
+                      "index": true,
+                      "norms": false
+                    },
+                    "name": {
+                      "type": "keyword",
+                      "index": true,
+                      "norms": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

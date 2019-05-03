@@ -1,23 +1,29 @@
 /*
-http://gti-es-0.ebi.ac.uk:9200/genes/genome/_search?pretty&q=K12 * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
+import org.ensembl.genesearch.*;
+import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -25,31 +31,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.QueryHandlerTest;
-import org.ensembl.genesearch.QueryOutput;
-import org.ensembl.genesearch.QueryResult;
-import org.ensembl.genesearch.SearchResult;
-import org.ensembl.genesearch.SearchType;
-import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.test.ESTestServer;
-import org.ensembl.genesearch.utils.DataUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
+@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class TranscriptSearchTest {
 
 	static Logger log = LoggerFactory.getLogger(TranscriptSearchTest.class);
 
-	static ESTestServer testServer = new ESTestServer();
-	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/genes_datatype_info.json");
-	static DataTypeInfo transcriptsInfo = DataTypeInfo.fromResource("/transcripts_datatype_info.json");
-	static ESSearchFlatten search = new ESSearchFlatten(testServer.getClient(), ESSearch.GENES_INDEX,
-			ESSearch.GENE_ESTYPE, "transcripts", "genes", transcriptsInfo);
-	static ESSearch gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
+	static ESTestServer testServer;
+	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
+	static DataTypeInfo transcriptsInfo = DataTypeInfo.fromResource("/datatypes/transcripts_datatype_info.json");
+	static ESSearchFlatten search;
+	static ESSearch gSearch;
 
 	// set up a provider
 	static SearchRegistry provider = new SearchRegistry().registerSearch(SearchType.TRANSCRIPTS, search)
@@ -57,6 +52,10 @@ public class TranscriptSearchTest {
 
 	@BeforeClass
 	public static void setUp() throws IOException {
+		testServer = new ESTestServer();
+		search = new ESSearchFlatten(testServer.getClient(), ESSearch.GENES_INDEX,
+				ESSearch.GENE_ESTYPE, "transcripts", "genes", transcriptsInfo);
+		gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
 		// index a sample of JSON
 		log.info("Creating test index");
 		testServer.indexTestDocs(DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz"), ESSearch.GENES_INDEX,ESSearch.GENE_ESTYPE);
@@ -156,7 +155,7 @@ public class TranscriptSearchTest {
 	}	
 
 	@AfterClass
-	public static void tearDown() {
+	public static void tearDown() throws IOException {
 		log.info("Disconnecting server");
 		testServer.disconnect();
 	}

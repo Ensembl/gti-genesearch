@@ -1,0 +1,45 @@
+{
+  "name": "variants",
+  "targets": [
+    "genes",
+    "transcripts"
+  ],
+  "fieldInfo": [
+    {
+      "type": "TERM",
+      "displayName": "Variant ID",
+      "name": "id",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "displayName": "Sequence Region",
+      "name": "seq_region_name",
+      "type": "TERM",
+      "search": "true",
+      "facet": "false",
+      "sort": "false",
+      "display": "true"
+    },
+    {
+      "type": "NUMBER",
+      "displayName": "Start",
+      "name": "start",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "displayName": "End",
+      "name": "end",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    }
+  ]
+}

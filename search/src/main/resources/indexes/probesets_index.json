@@ -1,0 +1,169 @@
+{
+  "settings": {
+    "number_of_shards": "SHARDN",
+    "number_of_replicas": 0,
+    "max_result_window": 50000,
+    "analysis": {
+      "analyzer": {
+        "string_lowercase": {
+          "type":      "custom",
+          "tokenizer": "standard",
+          "char_filter": [
+            "html_strip"
+          ],
+          "filter": [
+            "lowercase",
+            "asciifolding"
+          ]
+        }
+      },
+      "normalizer": {
+        "keyword_lowercase": {
+          "type": "custom",
+          "filter": ["lowercase"]
+        }
+      }
+    }
+  },
+  "aliases": {
+    "probesets": {}
+  },
+  "mappings": {
+    "probes": {
+      "dynamic": "false",
+      "properties": {
+        "probe_transcripts": {
+          "type": "nested",
+          "properties": {
+            "stable_id": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "description": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            }
+          }
+        },
+        "name": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "sequence": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "length": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "class": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "description": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "probe_set": {
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "size": {
+              "type": "long",
+              "index": true
+            },
+            "family": {
+              "type": "keyword",
+              "index": true
+            },
+            "probeset_transcript": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            }
+          }
+        },
+        "probes_features": {
+          "type": "nested",
+          "properties": {
+            "seq_region_name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "seq_region_start": {
+              "type": "long",
+              "index": true
+            },
+            "seq_region_end": {
+              "type": "long",
+              "index": true
+            },
+            "seq_region_strand": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "probe_feature": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            }
+          }
+        },
+        "array_chip": {
+          "properties": {
+            "design_id": {
+              "type": "keyword",
+              "index": true
+            },
+            "name": {
+              "type": "keyword",
+              "index": true
+            },
+            "array": {
+              "properties": {
+                "name": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "format": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "vendor": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "class": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "array_type": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

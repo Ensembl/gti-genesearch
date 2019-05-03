@@ -1,20 +1,20 @@
 #!/bin/env perl
-# Copyright [1999-2016] EMBL-European Bioinformatics Institute
+# ..  See the NOTICE file distributed with this work for additional information
+#     regarding copyright ownership.
+#     Licensed under the Apache License, Version 2.0 (the "License");
+#     you may not use this file except in compliance with the License.
+#     You may obtain a copy of the License at
+#       http://www.apache.org/licenses/LICENSE-2.0
+#     Unless required by applicable law or agreed to in writing, software
+#     distributed under the License is distributed on an "AS IS" BASIS,
+#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#     See the License for the specific language governing permissions and
+#     limitations under the License.#
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 use warnings;
 use strict;
+
 use HTTP::Request;
 use LWP::UserAgent;
 use Data::Dumper;
@@ -47,7 +47,7 @@ if ( $opts->{verbose} ) {
 else {
   Log::Log4perl->easy_init($INFO);
 }
-my $logger = get_logger();
+my $logger = Log::Log4perl->get_logger();
 
 $opts->{uri}        ||= 'http://gti-es-0.ebi.ac.uk:8080/api/genes';
 $opts->{es_uri}     ||= 'http://gti-es-0.ebi.ac.uk:9200';

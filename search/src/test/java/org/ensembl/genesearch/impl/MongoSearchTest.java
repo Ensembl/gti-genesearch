@@ -1,27 +1,18 @@
 /*
- * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.ensembl.genesearch.impl;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.ensembl.genesearch.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
@@ -30,10 +21,18 @@ import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.MongoTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link MongoSearch}
@@ -45,13 +44,15 @@ public class MongoSearchTest {
 
 	static Logger log = LoggerFactory.getLogger(MongoSearchTest.class);
 
-	static MongoTestServer testServer = new MongoTestServer();
-	static MongoSearch search = new MongoSearch(testServer.getCollection(),
-			DataTypeInfo.fromResource("/mongo_variants_datatype_info.json"));
+	static MongoTestServer testServer;
+	static MongoSearch search;
 
 	@BeforeClass
 	public static void setUp() throws IOException {
 		// index a sample of JSON
+        testServer = new MongoTestServer();
+        search = new MongoSearch(testServer.getCollection(),
+                DataTypeInfo.fromResource("/datatypes/mongo_variants_datatype_info.json"));
 		log.info("Reading documents");
 		String json = DataUtils.readGzipResource("/variants.json.gz");
 		log.info("Creating test index");
@@ -116,4 +117,9 @@ public class MongoSearchTest {
 		assertTrue("", result.getResults().stream().allMatch(r -> r.get("chr").equals("Chr1")));
 	}
 
+	@AfterClass
+	public static void tearDown() {
+		log.info("Disconnecting server");
+		testServer.disconnect();
+	}
 }

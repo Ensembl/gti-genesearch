@@ -1,17 +1,15 @@
 /*
- * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.ensembl.genesearch.impl;
@@ -22,6 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +51,7 @@ public class EnsemblRestSequenceSearchTest {
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
     
-    static DataTypeInfo sequenceInfo = DataTypeInfo.fromResource("/sequences_datatype_info.json");
+    static DataTypeInfo sequenceInfo = DataTypeInfo.fromResource("/datatypes/sequences_datatype_info.json");
     private static EnsemblRestSequenceSearch search;
     
     @BeforeClass
@@ -133,7 +132,7 @@ public class EnsemblRestSequenceSearchTest {
     }
 
     private List<String> getIds(String name) throws IOException {
-        return IOUtils.readLines(this.getClass().getResourceAsStream(name));
+        return IOUtils.readLines(this.getClass().getResourceAsStream(name), Charset.forName("UTF-8"));
     }
 
     @Test

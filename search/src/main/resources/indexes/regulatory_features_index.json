@@ -1,0 +1,131 @@
+{
+  "settings": {
+    "number_of_shards": "SHARDN",
+    "number_of_replicas": 0,
+    "max_result_window": 50000,
+    "analysis": {
+      "analyzer": {
+        "string_lowercase": {
+          "type":      "custom",
+          "tokenizer": "standard",
+          "char_filter": [
+            "html_strip"
+          ],
+          "filter": [
+            "lowercase",
+            "asciifolding"
+          ]
+        }
+      },
+      "normalizer": {
+        "keyword_lowercase": {
+          "type": "custom",
+          "filter": ["lowercase"]
+        }
+      }
+    }
+  },
+  "aliases": {
+    "regulatory_features": {}
+  },
+  "mappings": {
+    "regulatory_features": {
+      "dynamic": "false",
+      "properties": {
+        "seq_region_name": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "stable_id": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "feature_type": {
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "description": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "SO_accession": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "SO_name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "transcription_factors": {
+              "type": "nested",
+              "properties": {
+                "name": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "complexes": {
+                  "type": "nested",
+                  "properties": {
+                    "name": {
+                      "type": "keyword",
+                      "index": true,
+                      "norms": false
+                    },
+                    "binding_matrix": {
+                      "properties": {
+                        "name": {
+                          "type": "keyword",
+                          "index": true,
+                          "norms": false
+                        },
+                        "source": {
+                          "type": "keyword",
+                          "index": true,
+                          "norms": false
+                        },
+                        "stable_id": {
+                          "type": "keyword",
+                          "index": true,
+                          "norms": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "motif_features": {
+              "type": "nested",
+              "properties": {
+                "seq_region_id": {
+                  "type": "double",
+                  "index": true,
+                  "norms": false
+                },
+                "score": {
+                  "type": "double",
+                  "index": true,
+                  "norms": false
+                },
+                "stable_id": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

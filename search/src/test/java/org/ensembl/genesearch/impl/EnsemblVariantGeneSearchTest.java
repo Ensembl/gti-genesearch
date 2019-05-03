@@ -1,11 +1,21 @@
+/*
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
@@ -19,24 +29,31 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+@RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
+@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class EnsemblVariantGeneSearchTest {
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
 
+    static ESTestServer testServer;
     static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
     static GeneSearch geneSearch;
 
     @BeforeClass
     public static void setUp() throws IOException {
 
-        ESTestServer testServer = new ESTestServer();
+        testServer = new ESTestServer();
         // index a sample of JSON for use in search genomes
         log.info("Reading documents");
         {
@@ -45,11 +62,11 @@ public class EnsemblVariantGeneSearchTest {
             testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         }
         ESSearch ensemblGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
-                DataTypeInfo.fromResource("/genes_datatype_info.json"));
+                DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json"));
 
         String url = wireMockRule.url(StringUtils.EMPTY);
         EnsemblVariantSearch variantSearch = new EnsemblVariantSearch(url,
-                DataTypeInfo.fromResource("/evavariants_datatype_info.json"));
+                DataTypeInfo.fromResource("/datatypes/evavariants_datatype_info.json"));
 
         SearchRegistry provider = new SearchRegistry();
         provider.registerSearch(SearchType.GENES, ensemblGeneSearch);

@@ -1,0 +1,113 @@
+{
+  "settings": {
+    "number_of_shards": "SHARDN",
+    "number_of_replicas": 0,
+    "max_result_window": 50000,
+    "analysis": {
+      "analyzer": {
+        "string_lowercase": {
+          "type":      "custom",
+          "tokenizer": "standard",
+          "char_filter": [
+            "html_strip"
+          ],
+          "filter": [
+            "lowercase",
+            "asciifolding"
+          ]
+        }
+      },
+      "normalizer": {
+        "keyword_lowercase": {
+          "type": "custom",
+          "filter": ["lowercase"]
+        }
+      }
+    }
+  },
+  "aliases": {
+    "genomes": {}
+  },
+  "mappings": {
+    "genome": {
+      "dynamic": "false",
+      "properties": {
+        "assembly": {
+          "properties": {
+            "accession": {
+              "type": "keyword",
+              "index": true
+            },
+            "level": {
+              "type": "keyword",
+              "index": true
+            },
+            "name": {
+              "type": "keyword",
+              "index": true
+            }
+          }
+        },
+        "division": {
+          "type": "keyword",
+          "index": true
+        },
+        "id": {
+          "type": "keyword",
+          "index": true
+        },
+        "organism": {
+          "properties": {
+            "display_name": {
+              "type": "keyword",
+              "normalizer": "keyword_lowercase"
+            },
+            "aliases": {
+              "type": "keyword",
+              "index": true
+            },
+            "name": {
+              "type": "keyword",
+              "normalizer": "keyword_lowercase"
+            },
+            "species_taxonomy_id": {
+              "type": "keyword",
+              "index": true
+            },
+            "taxonomy_id": {
+              "type": "keyword",
+              "index": true
+            },
+            "serotype": {
+              "type": "keyword",
+              "index": true
+            },
+            "strain": {
+              "type": "keyword",
+              "normalizer": "keyword_lowercase"
+            },
+            "lineage": {
+              "type": "keyword",
+              "index": true
+            }
+          }
+        },
+        "dbname": {
+          "type": "keyword",
+          "index": true
+        },
+        "species_id": {
+          "type": "keyword",
+          "index": true
+        },
+        "is_reference": {
+          "type": "boolean"
+        },
+        "GO_genome": {
+          "type": "keyword",
+          "index": true
+        }
+      }
+    }
+  }
+}

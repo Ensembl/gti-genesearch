@@ -1,31 +1,21 @@
 /*
- * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.ensembl.gti.genesearch.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
@@ -38,9 +28,9 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -50,43 +40,48 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * @author dstaines
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(Application.class)
-@WebIntegrationTest
+@SpringBootTest(classes=Application.class, webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 public class EndpointTests {
 
-    private static final String API_BASE = "http://localhost:8080/api";
-    private static final String GENES_FETCH = API_BASE + "/genes/fetch";
-    private static final String GENES_QUERY = API_BASE + "/genes/query";
-    private static final String GENOMES_FETCH = API_BASE + "/genomes/fetch";
-    private static final String GENOMES_QUERY = API_BASE + "/genomes/query";
-    private static final String GENOMES_SELECT = API_BASE + "/genomes/select";
-    private static final String TRANSCRIPTS_FETCH = API_BASE + "/transcripts/fetch";
-    private static final String TRANSCRIPTS_QUERY = API_BASE + "/transcripts/query";
-    private static final String INFO = API_BASE + "/genes/info";
+    @LocalServerPort
+    private int port;
 
-    static Logger log = LoggerFactory.getLogger(EndpointTests.class);
+    private String API_BASE;
+    private String GENES_FETCH = "/genes/fetch";
+    private String GENES_QUERY = "/genes/query";
+    private String GENOMES_FETCH = "/genomes/fetch";
+    private String GENOMES_QUERY = "/genomes/query";
+    private String GENOMES_SELECT = "/genomes/select";
+    private String TRANSCRIPTS_FETCH = "/transcripts/fetch";
+    private String TRANSCRIPTS_QUERY = "/transcripts/query";
+    private String INFO = "/genes/info";
+
+    private static Logger log = LoggerFactory.getLogger(EndpointTests.class);
+    private static ESTestServer esTestServer;
+
     static ESSearch geneSearch;
     static ESSearch genomeSearch;
-    static ESTestServer esTestServer;
 
     @BeforeClass
     public static void setUp() throws IOException {
         // create our ES test server once only
-        log.info("Setting up");
+        log.info("Setting up ");
         esTestServer = new ESTestServer();
-        // index a sample of JSON
         log.info("Reading documents");
         String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
-        log.info("Creating test index");
         String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
         log.info("Creating test index");
         esTestServer.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
@@ -97,14 +92,16 @@ public class EndpointTests {
     @Autowired
     EndpointSearchProvider provider;
 
-    public static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {
-    };
-    public static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {
-    };
-    public static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {
-    };
+    static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {};
+    static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {};
+    static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {};
 
-    RestTemplate restTemplate = new TestRestTemplate();
+    private RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
+
+    private String createURLWithPort(String uri) {
+        log.info("Setting up " + port);
+        return "http://localhost:" + port + "/api" + uri;
+    }
 
     @Before
     public void injectSearch() {
@@ -114,7 +111,7 @@ public class EndpointTests {
 
     @Test
     public void testQueryGetEndpoint() {
-        Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, GENES_QUERY);
+        Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, createURLWithPort(GENES_QUERY));
         assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
         assertEquals("Checking limited results retrieved", 10, ((List<?>) result.get("results")).size());
         List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));

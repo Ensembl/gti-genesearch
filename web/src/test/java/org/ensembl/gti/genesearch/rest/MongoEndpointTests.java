@@ -1,33 +1,23 @@
 /*
- * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.ensembl.gti.genesearch.rest;
 
-import static org.ensembl.gti.genesearch.rest.EndpointTests.MAP_REF;
-import static org.ensembl.gti.genesearch.rest.EndpointTests.getUrlToObject;
-import static org.ensembl.gti.genesearch.rest.EndpointTests.postUrlToObject;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
+import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.ensembl.genesearch.impl.ESSearch;
+import org.ensembl.genesearch.impl.MongoSearch;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.test.MongoTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
@@ -41,24 +31,27 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.web.client.RestTemplate;
 
-import com.mongodb.client.MongoCollection;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import static org.ensembl.gti.genesearch.rest.EndpointTests.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author dstaines
- *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(Application.class)
-@WebIntegrationTest({"spring.profiles.active=eva_mongo"})
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("eva_mongo")
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 public class MongoEndpointTests {
@@ -73,6 +66,8 @@ public class MongoEndpointTests {
     static ESTestServer esTestServer;
     static MongoCollection<Document> mongoCollection;
     static MongoTestServer mongoTestServer;
+    static MongoSearch search;
+
 
     @BeforeClass
     public static void setUp() throws IOException {
@@ -84,18 +79,18 @@ public class MongoEndpointTests {
         String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
         log.info("Creating test index");
         String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
-        log.info("Creating test index");
         esTestServer.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         esTestServer.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         String variantJson = DataUtils.readGzipResource("/variants.json.gz");
         mongoTestServer = new MongoTestServer();
+        log.info("Creating MongoDB test index");
         mongoTestServer.indexData(variantJson);
     }
 
     @Autowired
     EndpointSearchProvider provider;
 
-    RestTemplate restTemplate = new TestRestTemplate();
+    RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
 
     @Before
     public void injectSearch() {

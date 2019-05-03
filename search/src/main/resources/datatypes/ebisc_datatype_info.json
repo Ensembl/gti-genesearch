@@ -1,0 +1,599 @@
+{
+  "name": "variants",
+  "fieldInfo": [
+    {
+      "type": "NUMBER",
+      "name": "zero_mapping_q",
+      "displayName": "zero_mapping_q",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "name": "depth",
+      "displayName": "Depth",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "name": "allele_count",
+      "displayName": "Allele count",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Reference allele",
+      "name": "ref_allele",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "displayName": "Consequences",
+      "name": "consequences",
+      "type": "NESTED",
+      "search": "false",
+      "facet": "false",
+      "display": "true",
+      "sort": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.Feature",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.SOURCE",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.Consequence",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.INTRON",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.Allele",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.Feature_type",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.IMPACT",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.BIOTYPE",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.SYMBOL",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.STRAND",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.USED_REF",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.SYMBOL_SOURCE",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.Gene",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "",
+      "name": "consequences.GIVEN_REF",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "name": "start",
+      "displayName": "Start",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "LOCATION",
+      "name": "location",
+      "displayName": "Location",
+      "sort": "false",
+      "facet": "false",
+      "display": "false",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "name": "quality",
+      "displayName": "Quality",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "name": "seq_region_name",
+      "displayName": "Sequence region name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "name": "id",
+      "displayName": "ID",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "name": "alt_allele",
+      "displayName": "Alternative allele",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "name": "filter",
+      "displayName": "Filter",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "name": "allele_freq",
+      "displayName": "Allele frequency",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "name": "mapping_q",
+      "displayName": "Mapping quality",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "displayName": "Genotypes",
+      "name": "genotypes",
+      "type": "NESTED",
+      "search": "false",
+      "facet": "false",
+      "display": "true",
+      "sort": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "PL",
+      "name": "genotypes.PL",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Genotype",
+      "name": "genotypes.genotype",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Sample ID",
+      "name": "genotypes.id",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "AD",
+      "name": "genotypes.AD",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "name": "genotypes.depth",
+      "displayName": "Depth",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "name": "genotypes.genotype_q",
+      "displayName": "Genotype Q",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "displayName": "Cell line",
+      "name": "genotypes.cell_line",
+      "type": "NESTED",
+      "search": "false",
+      "facet": "false",
+      "display": "true",
+      "sort": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "genotypes.cell_line.alternative_names",
+      "name": "Alternative names",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Availability",
+      "name": "genotypes.cell_line.availability",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "ID",
+      "name": "genotypes.cell_line.biosamples_id",
+      "displayName": "BioSamples ID",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Depositor name",
+      "name": "genotypes.cell_line.depositor_name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NESTED",
+      "displayName": "Donor",
+      "name": "genotypes.cell_line.donor",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "genotypes.cell_line.donor.biosamples_id",
+      "name": "donor.biosamples_id",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor country of origin",
+      "name": "genotypes.cell_line.donor.country_of_origin",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NESTED",
+      "displayName": "Donor disease",
+      "name": "genotypes.cell_line.donor.diseases",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease affected status",
+      "name": "genotypes.cell_line.donor.diseases.affected_status",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease carrier",
+      "name": "genotypes.cell_line.donor.diseases_carrier",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease stage",
+      "name": "genotypes.cell_line.donor.diseases.disease_stage",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease name (free text)",
+      "name": "genotypes.cell_line.donor.diseases.free_text_name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease name",
+      "name": "genotypes.cell_line.donor.diseases.name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease notes",
+      "name": "genotypes.cell_line.donor.diseases.notes",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor primary disease",
+      "name": "genotypes.cell_line.donor.diseases.primary_disease",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease URL",
+      "name": "genotypes.cell_line.donor.diseases.purl",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease synonyms",
+      "name": "genotypes.cell_line.donor.diseases.synonyms",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor ethnicity",
+      "name": "genotypes.cell_line.donor.ethnicity",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor gender",
+      "name": "genotypes.cell_line.donor.gender",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "displayName": "Donor age",
+      "name": "genotypes.cell_line.donor.donor_age",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor GWAS",
+      "name": "genotypes.cell_line.donor.genome_wide_analysis",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor internal IDs",
+      "name": "genotypes.cell_line.donor.internal_donor_ids",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor karyotype",
+      "name": "genotypes.cell_line.donor.karyotype",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "ECACC catalogue number",
+      "name": "genotypes.cell_line.ecacc_cat_no",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Name",
+      "name": "genotypes.cell_line.name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Non-disease associated phenotypes",
+      "name": "genotypes.cell_line.non_disease_associated_phenotypes",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Primary cell type",
+      "name": "genotypes.cell_line.primary_cell_type.name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Primary disease name",
+      "name": "genotypes.cell_line.primary_disease.name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Primary disease URL",
+      "name": "primary_disease.purl",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Primary disease synonyms",
+      "name": "primary_disease.synonyms",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    }
+  ]
+}

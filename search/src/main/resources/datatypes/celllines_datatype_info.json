@@ -1,0 +1,257 @@
+{
+  "name": "cell_lines",
+  "fieldInfo": [
+    {
+      "type": "TERM",
+      "displayName": "alternative_names",
+      "name": "Alternative names",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "availability",
+      "name": "Availability",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "ID",
+      "displayName": "biosamples_id",
+      "name": "BioSamples ID",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Depositor name",
+      "name": "depositor.name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NESTED",
+      "displayName": "Donor",
+      "name": "donor",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "donor.biosamples_id",
+      "name": "donor.biosamples_id",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "donor.country_of_origin",
+      "name": "donor.country_of_origin",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NESTED",
+      "displayName": "Donor disease",
+      "name": "donor.diseases",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease affected status",
+      "name": "donor.diseases.affected_status",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease carrier",
+      "name": "donor.diseases.carrier",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease stage",
+      "name": "donor.diseases.disease_stage",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease name (free text)",
+      "name": "donor.diseases.free_text_name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease name",
+      "name": "donor.diseases.name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease notes",
+      "name": "donor.diseases.notes",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor primary disease",
+      "name": "donor.diseases.primary_disease",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease URL",
+      "name": "donor.diseases.purl",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease synonyms",
+      "name": "donor.diseases.synonyms",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor ethnicity",
+      "name": "donor.ethnicity",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor gender",
+      "name": "donor.gender",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor age",
+      "name": "donor.donor_age",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "ECACC catalogue number",
+      "name": "ecacc_cat_no",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Name",
+      "name": "name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Non-disease associated phenotypes",
+      "name": "non_disease_associated_phenotypes",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Primary cell type",
+      "name": "primary_cell_type.name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NESTED",
+      "displayName": "Primary disease",
+      "name": "primary_disease",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Primary disease name",
+      "name": "primary_disease.name",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Primary disease URL",
+      "name": "primary_disease.purl",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Primary disease synonyms",
+      "name": "primary_disease.synonyms",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    }
+  ]
+}

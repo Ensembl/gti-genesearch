@@ -1,19 +1,16 @@
 /*
- * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-
 package org.ensembl.genesearch.impl;
 
 import java.util.Arrays;
@@ -46,9 +43,9 @@ import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.NestedSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.elasticsearch.search.sort.SortParseElement;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
@@ -64,22 +61,21 @@ import com.beust.jcommander.internal.Lists;
 /**
  * Implementation of {@link Search} that uses Elasticsearch to store genes and
  * other features as nested documents.
- * 
+ * <p>
  * {@link Query} and {@link QueryOutput} objects are translated into an Elastic
  * request using {@link ESSearchBuilder}. Large-scale retrieval via
  * {@link #fetch(List, QueryOutput)} is supported by using Elastic
  * scan-and-scroll for efficient retrieval without manual pagination.
- * 
+ * <p>
  * Note that currently the native Elastic client is used. Elastic recommend that
  * from 6.0 onwards, the REST client is used. The interface should be the same,
  * but will require testing etc. and construction in a different way.
- * 
- * @author dstaines
  *
+ * @author dstaines
  */
 public class ESSearch implements Search {
 
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger log = LoggerFactory.getLogger(ESSearch.class);
 
     /*
      * Default fields
@@ -90,8 +86,8 @@ public class ESSearch implements Search {
     /*
      * defaults for interacting with Elastic
      */
-    public static final int DEFAULT_SCROLL_SIZE = 50000;
-    public static final int DEFAULT_SCROLL_TIMEOUT = 60000;
+    public static final int DEFAULT_SCROLL_SIZE = 5000;
+    public static final int DEFAULT_SCROLL_TIMEOUT = 6000;
     private static final int DEFAULT_AGGREGATION_SIZE = 10;
 
     /*
@@ -103,6 +99,8 @@ public class ESSearch implements Search {
     public static final String GENE_ESTYPE = "gene";
     public static final String GENOME_ESTYPE = "genome";
     public static final String VARIANT_ESTYPE = "variant";
+    public static final String REGULATORY_FEATURES_ESTYPE = "regulatory_feature";
+    public static final String PROBESET_ESTYPE = "probeset";
 
     private final Client client;
     private final String index;
@@ -110,14 +108,10 @@ public class ESSearch implements Search {
     private final DataTypeInfo dataType;
 
     /**
-     * @param client
-     *            Elastic client
-     * @param index
-     *            name of elastic index
-     * @param type
-     *            name of object type within the index
-     * @param dataType
-     *            metadata about data type being searched
+     * @param client   Elastic client
+     * @param index    name of elastic index
+     * @param type     name of object type within the index
+     * @param dataType metadata about data type being searched
      */
     public ESSearch(Client client, String index, String type, DataTypeInfo dataType) {
         this(client, index, type, dataType,
@@ -129,21 +123,15 @@ public class ESSearch implements Search {
     private final int scrollTimeout;
 
     /**
-     * @param client
-     *            Elastic client
-     * @param index
-     *            name of elastic index
-     * @param type
-     *            name of object type within the index
-     * @param dataType
-     *            metadata about data type being searched
-     * @param scrollSize
-     *            number of documents to retrieve during one scroll operation
-     * @param scrollTimeout
-     *            length of time to keep scroll open during retrieval
+     * @param client        Elastic client
+     * @param index         name of elastic index
+     * @param type          name of object type within the index
+     * @param dataType      metadata about data type being searched
+     * @param scrollSize    number of documents to retrieve during one scroll operation
+     * @param scrollTimeout length of time to keep scroll open during retrieval
      */
     public ESSearch(Client client, String index, String type, DataTypeInfo dataType, int scrollSize,
-            int scrollTimeout) {
+                    int scrollTimeout) {
         this.client = client;
         this.index = index;
         this.type = type;
@@ -154,7 +142,7 @@ public class ESSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
      * java.util.List, org.ensembl.genesearch.QueryOutput)
      */
@@ -193,12 +181,13 @@ public class ESSearch implements Search {
         log.info("Building fetch query");
         QueryBuilder query = ESSearchBuilder.buildQuery(type, queries.toArray(new Query[queries.size()]));
 
-        log.debug(query.toString());
+        log.info(query.toString());
 
         SearchRequestBuilder request = client.prepareSearch(index).setQuery(query).setTypes(type);
 
         // force _doc order for more efficiency
-        request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
+        // FIXME check if still needed
+        //request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
 
         if (fieldNames.contains(ALL_FIELDS) || fieldNames.isEmpty()) {
             fieldNames = Arrays.asList(ALL_FIELDS);
@@ -211,7 +200,7 @@ public class ESSearch implements Search {
         log.info("Executing fetch request");
         log.debug(request.toString());
         SearchResponse response = request.execute().actionGet();
-        log.info("Retrieved " + response.getHits().totalHits() + " in " + response.getTookInMillis() + " ms");
+        log.info("Retrieved " + response.getHits().getTotalHits() + " in " + response.getTook().getMillis() + " ms");
         watch.start();
         consumeAllHits(consumer, response);
         watch.stop();
@@ -223,7 +212,7 @@ public class ESSearch implements Search {
      * calculate a scroll size based on what we're retrieving this is to try and
      * balance speed and memory usage. The more fields we retrieve, the smaller
      * the number of documents per scroll
-     * 
+     *
      * @param fieldNames
      * @return scroll size
      */
@@ -251,11 +240,9 @@ public class ESSearch implements Search {
     /**
      * Process hits from a response using scan/scroll and write to a consumer
      * using {@link #consumeHits(Consumer, SearchResponse)}
-     * 
-     * @param consumer
-     *            destination for hits
-     * @param response
-     *            initial response for hit processing
+     *
+     * @param consumer destination for hits
+     * @param response initial response for hit processing
      * @return current response (replaced during subsequent scrolls)
      */
     protected SearchResponse consumeAllHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
@@ -282,11 +269,9 @@ public class ESSearch implements Search {
 
     /**
      * Process the current set of hits using the specified consumer
-     * 
-     * @param consumer
-     *            destination for hits
-     * @param response
-     *            response containing current hits
+     *
+     * @param consumer destination for hits
+     * @param response response containing current hits
      */
     protected void consumeHits(Consumer<Map<String, Object>> consumer, SearchResponse response) {
         SearchHit[] hits = response.getHits().getHits();
@@ -302,14 +287,14 @@ public class ESSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#query(java.util.List,
      * org.ensembl.genesearch.QueryOutput, java.util.List, int, int,
      * java.util.List)
      */
     @Override
     public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
-            List<String> sorts) {
+                             List<String> sorts) {
 
         List<String> fieldNames = output.getPaths();
 
@@ -317,11 +302,13 @@ public class ESSearch implements Search {
         // create an elastic querybuilder object from our queries
         QueryBuilder query = ESSearchBuilder.buildQuery(type, queries.toArray(new Query[queries.size()]));
 
-        log.info(query.toString());
+        log.info("QueryBuilder: ", query.toString());
 
         // prepare a search request object using the query, fields, limits etc.
         SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
-                .setFetchSource(fieldNames.toArray(new String[fieldNames.size()]), null).setSize(limit).setFrom(offset)
+                .setFetchSource(fieldNames.toArray(new String[fieldNames.size()]), null)
+                .setSize(limit)
+                .setFrom(offset)
                 .setTypes(type);
 
         setFields(fieldNames, request);
@@ -334,8 +321,8 @@ public class ESSearch implements Search {
         log.info("Query " + request.toString());
 
         SearchResponse response = request.execute().actionGet();
-        log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
-                + response.getTookInMillis() + " ms");
+        log.info("Retrieved " + response.getHits().getHits().length + "/" + response.getHits().getTotalHits() + " in "
+                + response.getTook().getMillis() + " ms");
 
         return new QueryResult(response.getHits().getTotalHits(), offset, limit, getFieldInfo(output),
                 processResults(response), processAggregations(response));
@@ -346,7 +333,7 @@ public class ESSearch implements Search {
      * Set fields to retrieve based on the output specified. Note that if no
      * fields are added, only the ID will be retrieved. '*' can be used to
      * specify all fields.
-     * 
+     *
      * @param output
      * @param request
      */
@@ -361,7 +348,7 @@ public class ESSearch implements Search {
     /**
      * Set aggregations on a {@link SearchRequestBuilder}. Used by
      * {@link #query(List, QueryOutput, List, int, int, List)}
-     * 
+     *
      * @param facets
      * @param request
      */
@@ -378,12 +365,10 @@ public class ESSearch implements Search {
      * Adds sort directives to a {@link SearchRequestBuilder} given a list of
      * field names. Used by
      * {@link #query(List, QueryOutput, List, int, int, List)}
-     * 
-     * @param sorts
-     *            list of fields to sort on (optionally prefix with +/- to
-     *            indicate sort direction)
-     * @param request
-     *            request to add sorts to
+     *
+     * @param sorts   list of fields to sort on (optionally prefix with +/- to
+     *                indicate sort direction)
+     * @param request request to add sorts to
      */
     private void addSorts(List<String> sorts, SearchRequestBuilder request) {
         for (String sortStr : sorts) {
@@ -391,9 +376,8 @@ public class ESSearch implements Search {
             log.info("Adding " + sort.direction + " sort on '" + sort.name + "'");
             FieldSortBuilder missing = SortBuilders.fieldSort(sort.name).order(sort.direction).missing("_last");
             if (sort.path != null) {
-                missing.setNestedPath(sort.path);
-                // TODO support for nested filter but would need to reparse the
-                // query as QueryBuilder is not readable
+                missing.setNestedSort(new NestedSortBuilder(sort.path));
+                // TODO support for nested filter but would need to reparse the query as QueryBuilder is not readable
             }
             request.addSort(missing);
         }
@@ -404,7 +388,7 @@ public class ESSearch implements Search {
      * {@link List} of {@link Map}s. Used by
      * {@link #query(List, QueryOutput, List, int, int, List)} where
      * scans/scroll not required.
-     * 
+     *
      * @param response
      * @return collection representation of hit
      */
@@ -414,25 +398,23 @@ public class ESSearch implements Search {
 
     /**
      * Transform an instance of {@link SearchHit} into a generic {@link Map}
-     * 
-     * @param hit
-     *            ES hit to process
+     *
+     * @param hit ES hit to process
      * @return map representation of hit
      */
     protected Map<String, Object> hitToMap(SearchHit hit) {
         Map<String, Object> map = new HashMap<>();
         map.put("id", hit.getId());
-        if (hit.getSource() != null)
-            map.putAll(hit.getSource());
+        if (hit.getSourceAsMap() != null)
+            map.putAll(hit.getSourceAsMap());
         return map;
     }
 
     /**
      * Transform aggregation results from a {@link SearchResponse} into a
      * generic collection
-     * 
-     * @param response
-     *            ES response from a search
+     *
+     * @param response ES response from a search
      * @return generic collection of objects.
      */
     protected Map<String, Map<String, Long>> processAggregations(SearchResponse response) {
@@ -451,7 +433,7 @@ public class ESSearch implements Search {
 
     /**
      * Determine the field name from an aggregation.
-     * 
+     *
      * @param aggregation
      * @param path
      * @return name to use for aggregation
@@ -473,7 +455,7 @@ public class ESSearch implements Search {
     /**
      * Process a single {@link Aggregation} object into a Map of counts keyed by
      * value
-     * 
+     *
      * @param facetResults
      * @param aggregation
      */
@@ -496,9 +478,8 @@ public class ESSearch implements Search {
 
     /**
      * Helper to parse strings of the form +field, -field, field
-     * 
-     * @author dstaines
      *
+     * @author dstaines
      */
     private final class Sort {
         private final Pattern sortPattern = Pattern.compile("([+-])(.*)");
@@ -528,7 +509,7 @@ public class ESSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#fetchByIds(java.util.List,
      * java.lang.String[])
      */
@@ -537,7 +518,7 @@ public class ESSearch implements Search {
         SearchRequestBuilder request = client.prepareSearch(index)
                 .setQuery(new ConstantScoreQueryBuilder(QueryBuilders.idsQuery(type).addIds(ids)));
         if (!fields.getFields().isEmpty()) {
-            request.setFetchSource(fields.getFields().toArray(new String[] {}), new String[] {});
+            request.setFetchSource(fields.getFields().toArray(new String[]{}), new String[]{});
         }
         SearchResponse response = request.execute().actionGet();
         return processResults(response);
@@ -545,7 +526,7 @@ public class ESSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.ensembl.genesearch.Search#fetchByIds(java.util.function.Consumer,
      * java.lang.String[])
@@ -561,7 +542,7 @@ public class ESSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#select(java.lang.String, int, int)
      */
     @Override
@@ -573,39 +554,35 @@ public class ESSearch implements Search {
         if (ESSearch.GENOME_ESTYPE.equals(type)) {
             query = QueryBuilders.functionScoreQuery(
                     QueryBuilders.boolQuery()
-                            .should(QueryBuilders.matchPhrasePrefixQuery("organism.display_name", name).slop(10)
-                                    .maxExpansions(limit).boost(4))
-                            .should(QueryBuilders.matchPhrasePrefixQuery("organism.scientific_name", name).slop(10)
-                                    .maxExpansions(limit).boost(2))
-                            .should(QueryBuilders.matchPhrasePrefixQuery("organism.aliases", name).maxExpansions(limit)
-                                    .slop(10))
-                            .should(QueryBuilders.matchPhrasePrefixQuery("organism.strain", name).maxExpansions(limit)
-                                    .slop(10))
-                            .should(QueryBuilders.matchPhrasePrefixQuery("organism.serotype", name).maxExpansions(limit)
-                                    .slop(10)),
+                            .should(QueryBuilders.matchPhrasePrefixQuery("organism.display_name", name).slop(10).maxExpansions(limit).boost(4))
+                            .should(QueryBuilders.matchPhrasePrefixQuery("organism.scientific_name", name).slop(10).maxExpansions(limit).boost(2))
+                            .should(QueryBuilders.matchPhrasePrefixQuery("organism.aliases", name).maxExpansions(limit).slop(10))
+                            .should(QueryBuilders.matchPhrasePrefixQuery("organism.strain", name).maxExpansions(limit).slop(10))
+                            .should(QueryBuilders.matchPhrasePrefixQuery("organism.serotype", name).maxExpansions(limit).slop(10)),
                     ScoreFunctionBuilders.fieldValueFactorFunction("is_reference").factor(2).modifier(Modifier.LOG1P));
 
-            fields = new String[] { "id", "organism.display_name", "organism.scientific_name" };
+            fields = new String[]{"id", "organism.display_name", "organism.scientific_name"};
         } else {
+            // TODO check if updates needed for other types ?
             throw new UnsupportedOperationException("select not implemented for " + type);
 
         }
 
-        log.debug("Building query");
+        log.info("Building query");
 
-        log.info(query.toString());
+        log.debug(query.toString());
 
         SearchRequestBuilder request = client.prepareSearch(index).setQuery(query)
-                .setFetchSource(fields, new String[] {}).setSize(limit).setFrom(offset)
+                .setFetchSource(fields, new String[]{}).setSize(limit).setFrom(offset)
                 .setTypes(ESSearch.GENOME_ESTYPE);
 
         log.info("Starting query");
         log.debug("Query " + request.toString());
 
         SearchResponse response = request.execute().actionGet();
-        log.info("Retrieved " + response.getHits().getHits().length + "/" + +response.getHits().totalHits() + " in "
-                + response.getTookInMillis() + " ms");
-
+        log.info("Retrieved " + response.getHits().getHits().length + "/" + response.getHits().getTotalHits() + " in "
+                + response.getTook().getMillis() + " ms");
+        log.trace(response.toString());
         return new QueryResult(response.getHits().getTotalHits(), offset, limit,
                 getFieldInfo(QueryOutput.build(Arrays.asList(fields))), processResults(response),
                 processAggregations(response));
@@ -614,7 +591,7 @@ public class ESSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#getFieldInfo(org.ensembl.genesearch.
      * QueryOutput)
      */
@@ -631,7 +608,7 @@ public class ESSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#getIdField()
      */
     @Override
@@ -642,7 +619,7 @@ public class ESSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#getDataType()
      */
     @Override
@@ -652,7 +629,7 @@ public class ESSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#up()
      */
     @Override

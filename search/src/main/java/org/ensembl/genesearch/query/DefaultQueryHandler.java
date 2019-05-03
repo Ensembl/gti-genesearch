@@ -1,17 +1,15 @@
 /*
- * Copyright [1999-2016] EMBL-European Bioinformatics Institute
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.ensembl.genesearch.query;
@@ -87,9 +85,6 @@ public class DefaultQueryHandler implements QueryHandler {
         for (Entry<String, Object> query : queryObj.entrySet()) {
             String fieldName = query.getKey();
             String newPath = query.getKey();
-            if(!StringUtils.isEmpty(path)) {
-                newPath = path + "." + newPath;
-            }
             boolean not;
             if (fieldName.charAt(0) == '!') {
                 not = true;
@@ -99,6 +94,10 @@ public class DefaultQueryHandler implements QueryHandler {
             }
             FieldType type = getFieldType(newPath, query.getValue());
             if (type == FieldType.NESTED) {
+                // only append path for nested field
+                if (!StringUtils.isEmpty(path)) {
+                    newPath = path + "." + newPath;
+                }
                 List<Query> subQs = parseQuery(newPath, (Map<String, Object>) query.getValue());
                 queries.add(new Query(type, fieldName, not, subQs.toArray(new Query[subQs.size()])));
             } else if (isList(query.getValue())) {
@@ -125,16 +124,22 @@ public class DefaultQueryHandler implements QueryHandler {
      * @return
      */
     protected FieldType getFieldType(String key, Object value) {
+        log.trace("Field type for " + key + " obj:" + value);
         if ("location".equals(key)) {
+            log.trace("Location found");
             return FieldType.LOCATION;
         } else if (Map.class.isAssignableFrom(value.getClass())) {
+            log.trace("Map (i.e nested) found");
             return FieldType.NESTED;
         } else {
             if (isList(value)) {
+                log.trace("List found");
                 return FieldType.TERM;
             } else if (NUMBER_PATTERN.matcher(String.valueOf(value)).matches()) {
+                log.trace("Number found");
                 return FieldType.NUMBER;
             } else {
+                log.trace("Default TERM found");
                 return FieldType.TERM;
             }
         }
