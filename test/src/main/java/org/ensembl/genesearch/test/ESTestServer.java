@@ -17,12 +17,16 @@ package org.ensembl.genesearch.test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.transport.ConnectTransportException;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,28 +49,36 @@ import java.util.Map;
  */
 public class ESTestServer {
 
-    private final Client client;
+    private Client client;
     private String clusterName;
     static Logger log = LoggerFactory.getLogger(ESTestServer.class);
     private static ElasticsearchContainer container;
 
     public ESTestServer() {
         TransportAddress transportAddress;
+        Settings settings;
         try {
             log.info("Try to connect to existing test ES");
             // look for a accessible Test ES server available locally
             transportAddress = new TransportAddress(InetAddress.getByName("gti-es-test.ebi.ac.uk"), 9300);
             clusterName = "genesearch";
+            settings = Settings.builder().put("cluster.name", clusterName).build();
+            client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
+            ClusterHealthResponse healthResponse = client.admin().cluster().prepareHealth()
+                    .setTimeout(TimeValue.timeValueMinutes(1)).execute().actionGet();
+            if (healthResponse.isTimedOut()) {
+                throw new NoNodeAvailableException("Service Not available");
+            }
             log.info("Connected to ES Integration test server ");
-        } catch (UnknownHostException e) {
-            log.info("gti-es-test not found");
+        } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
+            log.info("gti-es-test not found / not available: " + e.getMessage());
             container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.6.1");
             container.start();
             clusterName = "docker-cluster";
+            settings = Settings.builder().put("cluster.name", clusterName).build();
             transportAddress = new TransportAddress(container.getTcpHost());
+            client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
         }
-        Settings settings = Settings.builder().put("cluster.name", clusterName).build();
-        client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
         // only create index when using docker, local test server should be up and set up already
         createIndex("genes", "gene");
         createIndex("genomes", "genome");
