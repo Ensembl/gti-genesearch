@@ -89,7 +89,7 @@ public class TranscriptSearchTest {
 				.build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
 		SearchResult result = search.fetch(q, o);
 		List<Map<String, Object>> transcripts = result.getResults();
-        //System.out.println(transcripts.get(0));
+		//System.out.println(transcripts.get(0));
 		log.info("Fetched " + transcripts.size() + " transcripts");
 		transcripts.stream().allMatch(r -> r.get("genes.genome").equals("nanoarchaeum_equitans_kin4_m"));
 		transcripts.stream().allMatch(r -> r.get("biotype").equals("protein_coding"));
@@ -147,7 +147,7 @@ public class TranscriptSearchTest {
 		long last = Long.MAX_VALUE;
 		int n = 1;
 		for (Map<String, Object> t : transcripts) {
-            //System.out.println(t);
+			//System.out.println(t);
 			long current = Long.parseLong(t.get("start").toString());
 			assertTrue("Checking start of transcript " + (n++) + " " + last + " vs " + current, last > current);
 			last = current;

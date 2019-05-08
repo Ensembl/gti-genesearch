@@ -65,7 +65,7 @@ public class ESGenomeSearchTest {
 
     @Test
     public void fetchGenomeById() {
-        log.info("Fetching  genomes from genome");
+        log.info("Fetching genomes from genome");
         SearchResult result = search.fetch(Collections.singletonList(new Query(FieldType.TERM, "id", "homo_sapiens")),
                 QueryOutput.build(Collections.singletonList("_id")));
         List<Map<String, Object>> ids = result.getResults();

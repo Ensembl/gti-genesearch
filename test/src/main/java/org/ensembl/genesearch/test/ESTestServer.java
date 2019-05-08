@@ -162,7 +162,8 @@ public class ESTestServer {
      */
     protected void indexTestDoc(Map<String, Object> doc, String index, String type) throws JsonProcessingException {
         String id = String.valueOf(doc.get("id"));
-        client.prepareIndex(index, type, id).setSource(mapper.writeValueAsString(doc), XContentType.JSON).get();
+        log.info("Id used " + id);
+        client.prepareIndex(index, type, id).setSource(mapper.writeValueAsString(doc), XContentType.JSON).execute().actionGet();
     }
 
     /**
