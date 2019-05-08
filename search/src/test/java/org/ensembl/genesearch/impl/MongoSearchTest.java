@@ -100,7 +100,7 @@ public class MongoSearchTest {
 	public void testQuerySub() {
 		QueryResult result = search.query(QueryHandlerTest.build("{\"annot\":{\"ct-list\":{\"ensg\":\"OS01G0100100\"}}}"),
 				QueryOutput.build("[\"chr\",\"annot\"]"), Collections.emptyList(), 0, 5, Collections.emptyList());
-		System.out.println(result.getResults());
+        //System.out.println(result.getResults());
 		assertEquals("Checking for result fields", 3, result.getFields().size());
 		assertEquals("Checking for correct rows", 5, result.getResults().size());
 		assertTrue("", result.getResults().stream().allMatch(r -> r.get("chr").equals("Chr1")));
@@ -111,7 +111,7 @@ public class MongoSearchTest {
 		QueryResult result = search.query(
 				QueryHandlerTest.build("{\"annot\":{\"ct-list\":{\"ensg\":\"OS01G0100100\",\"so\":1631}}}"),
 				QueryOutput.build("[\"chr\",\"annot\"]"), Collections.emptyList(), 0, 5, Collections.emptyList());
-		System.out.println(result.getResults());
+        //System.out.println(result.getResults());
 		assertEquals("Checking for result fields", 3, result.getFields().size());
 		assertEquals("Checking for correct rows", 5, result.getResults().size());
 		assertTrue("", result.getResults().stream().allMatch(r -> r.get("chr").equals("Chr1")));

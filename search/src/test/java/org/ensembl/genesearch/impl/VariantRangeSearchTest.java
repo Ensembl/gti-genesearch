@@ -92,7 +92,7 @@ public class VariantRangeSearchTest {
 		QueryResult result = geneSearch.query(Collections.emptyList(),
 				QueryOutput.build("\"id\",{\"variants\":[\"count\"]}"), Collections.emptyList(), 0, 10,
 				Collections.emptyList());
-		System.out.println(result.getResults());
+        //System.out.println(result.getResults());
 		assertEquals("Checking for correct rows", 2, result.getResults().size());
 		Map<String, Object> gene = result.getResults().stream().filter(g -> g.get("id").equals("EPlOSAG00000002326")).findFirst().get();
 		assertTrue("ID found", gene.containsKey("id"));

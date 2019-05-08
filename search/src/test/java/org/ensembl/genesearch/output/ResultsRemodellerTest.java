@@ -115,7 +115,7 @@ public class ResultsRemodellerTest {
 	public void testSimpleTopLevel() {
 		String input = "{\"a\":\"1\",\"b\":[{\"c\":\"1\"},{\"c\":\"2\"}]}";
 		List<Map<String, Object>> flatten = ResultsRemodeller.flatten(parseInput(input), "b", "top");
-		System.out.println(flatten);
+        //System.out.println(flatten);
 		assertEquals("2 flattened rows", 2, flatten.size());
 		assertEquals("1",flatten.get(0).get("top.a").toString());
 		assertEquals("1",flatten.get(0).get("c"));

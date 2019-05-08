@@ -50,7 +50,7 @@ public class MongoSearchBuilderTest {
 	public void testNested() {
 		List<Query> q = QueryHandlerTest.build("{\"A\":{\"B\":\"C\"}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
-		System.out.println(doc.toJson());
+        //System.out.println(doc.toJson());
 		Object subDoc = doc.get("A.B");
 		assertNotNull("A.B found", subDoc);
 		assertEquals("B:C found", "C", subDoc);
@@ -60,7 +60,7 @@ public class MongoSearchBuilderTest {
 	public void testNestedArray() {
 		List<Query> q = QueryHandlerTest.build("{\"A-list\":{\"B\":\"C\"}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
-		System.out.println(doc.toJson());
+        //System.out.println(doc.toJson());
 		Object subDoc = doc.get("A");
 		assertNotNull("A found", subDoc);
 		assertTrue("A is a Document", Document.class.isAssignableFrom(subDoc.getClass()));
@@ -74,7 +74,7 @@ public class MongoSearchBuilderTest {
 	public void testNestedArrayDouble() {
 		List<Query> q = QueryHandlerTest.build("{\"A-list\":{\"B\":\"C\",\"D\":\"E\"}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
-		System.out.println(doc.toJson());
+        //System.out.println(doc.toJson());
 		Object subDoc = doc.get("A");
 		assertNotNull("A found", subDoc);
 		assertTrue("A is a Document", Document.class.isAssignableFrom(subDoc.getClass()));
@@ -89,7 +89,7 @@ public class MongoSearchBuilderTest {
 	public void testNestedSubArray() {
 		List<Query> q = QueryHandlerTest.build("{\"top\":{\"A-list\":{\"B\":\"C\"}}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
-		System.out.println(doc.toJson());
+        //System.out.println(doc.toJson());
 		Object subDoc = doc.get("top.A");
 		assertNotNull("top.A found", subDoc);
 		assertTrue("top.A is a Document", Document.class.isAssignableFrom(subDoc.getClass()));
@@ -103,7 +103,7 @@ public class MongoSearchBuilderTest {
 	public void testNestedSubArrayDouble() {
 		List<Query> q = QueryHandlerTest.build("{\"top\":{\"A-list\":{\"B\":\"C\"},\"X-list\":{\"Y\":\"Z\"}}}");
 		Document doc = MongoSearchBuilder.buildQuery(q);
-		System.out.println(doc.toJson());
+        //System.out.println(doc.toJson());
 		{
 			Object subDoc = doc.get("top.A");
 			assertNotNull("top.A found", subDoc);

@@ -67,7 +67,7 @@ public class ESTranscriptSearchTest {
                 o2.getFields().stream().anyMatch(f -> f.equals("transcripts.biotype")));
         assertTrue("Fields contains name", o2.getFields().stream().anyMatch(f -> f.equals("name")));
         assertTrue("Fields contains description", o2.getFields().stream().anyMatch(f -> f.equals("description")));
-        System.out.println(o2);
+        //System.out.println(o2);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class ESTranscriptSearchTest {
         List<Query> qs = QueryHandlerTest
                 .build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
         List<Query> qs2 = search.transformQueries(qs);
-        System.out.println(qs2);
+        //System.out.println(qs2);
         assertTrue("genome at top level", qs2.stream().anyMatch(q -> q.getFieldName().equals("genome")));
         Optional<Query> transcripts = qs2.stream().filter(q -> q.getFieldName().equals("transcripts")).findFirst();
         assertTrue("transcripts found", transcripts.isPresent());
@@ -90,7 +90,7 @@ public class ESTranscriptSearchTest {
         assertTrue("genome found", newFields.contains("genome"));
         assertTrue("transcripts.biotype found", newFields.contains("-transcripts.start"));
         assertTrue("genome found", newFields.contains("-end"));
-        System.out.println(newFields);
+        //System.out.println(newFields);
     }
 
     @Test
@@ -111,7 +111,7 @@ public class ESTranscriptSearchTest {
         assertTrue("Xrefs present", transcripts.stream().allMatch(r -> r.containsKey("xrefs")));
         assertTrue("Genes ID present", transcripts.stream().allMatch(r -> r.containsKey("genes.id")));
         List<FieldInfo> fields = result.getFields();
-        System.out.println(fields);
+        //System.out.println(fields);
         assertEquals("Number of fields", 6, fields.size());
     }
 
@@ -124,7 +124,7 @@ public class ESTranscriptSearchTest {
                 .build("{\"biotype\":\"protein_coding\", \"genes\":{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}}");
         SearchResult result = search.fetch(q, o);
         List<Map<String, Object>> transcripts = result.getResults();
-        System.out.println(transcripts.get(0));
+        //System.out.println(transcripts.get(0));
         log.info("Fetched " + transcripts.size() + " transcripts");
         assertEquals("Number of transcripts", 536, transcripts.size());
         assertTrue("Genome present",
@@ -183,7 +183,7 @@ public class ESTranscriptSearchTest {
         long last = Long.MAX_VALUE;
         int n = 1;
         for (Map<String, Object> t : transcripts) {
-            System.out.println(t);
+            //System.out.println(t);
             long current = Long.parseLong(t.get("start").toString());
             assertTrue("Checking start of transcript " + (n++) + " " + last + " vs " + current, last > current);
             last = current;

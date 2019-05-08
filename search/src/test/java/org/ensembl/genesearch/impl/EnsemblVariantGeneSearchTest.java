@@ -79,7 +79,7 @@ public class EnsemblVariantGeneSearchTest {
         QueryResult result = geneSearch.query(Arrays.asList(new Query(FieldType.TERM, "id", "ENSG00000270921")),
                 QueryOutput.build("\"id\",{\"variants\":[\"id\",\"seq_region_name\",\"start\",\"alleles\"]}"),
                 Collections.emptyList(), 0, 10, Collections.emptyList());
-        System.out.println(result.getResults());
+        //System.out.println(result.getResults());
         Assert.assertEquals("Checking for correct rows", 1, result.getResults().size());
         Map<String, Object> gene = result.getResults().stream().filter(g -> g.get("id").equals("ENSG00000270921"))
                 .findFirst().get();
@@ -110,7 +110,7 @@ public class EnsemblVariantGeneSearchTest {
         Assert.assertTrue("Variants found", gene.containsKey("variants"));
         List<Map<String, Object>> variants = (List) gene.get("variants");
         Assert.assertEquals("Checking for correct rows", 2, variants.size());
-        System.out.println(variants);
+        //System.out.println(variants);
         Assert.assertTrue("Only reference G not found",
                 variants.stream().allMatch(v -> "intron_variant".equals(v.get("consequence_type"))));
     }

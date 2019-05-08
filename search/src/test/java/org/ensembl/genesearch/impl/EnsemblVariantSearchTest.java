@@ -86,7 +86,7 @@ public class EnsemblVariantSearchTest {
                         new Query(FieldType.TERM, "consequence_type", "missense_variant"),
                         new Query(FieldType.TERM, EnsemblVariantSearch.GENOME_FIELD, "homo_sapiens")),
                 QueryOutput.build("[\"id\",\"consequence_type\"]"), Collections.emptyList(), 0, 500, Collections.emptyList());
-        System.out.println(res.getResults());
+        //System.out.println(res.getResults());
         Assert.assertEquals("102 results found", 102, res.getResults().size());
         Assert.assertTrue(res.getResults().stream().anyMatch(v -> {return String.valueOf(v.get("consequence_type")).matches("missense_variant");}));
         Assert.assertFalse(res.getResults().stream().anyMatch(v -> {return String.valueOf(v.get("consequence_type")).matches("intron_variant");}));

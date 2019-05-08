@@ -343,7 +343,7 @@ public class ESGeneSearchTest {
         QueryResult result = search.query(Collections.emptyList(),
                 QueryOutput.build(Arrays.asList("id", "name", "start", "transcripts.start")), Collections.emptyList(),
                 0, 5, Collections.singletonList("+transcripts.start"));
-        System.out.println(result.getResults());
+        //System.out.println(result.getResults());
         assertEquals("Total hits", 598, result.getResultCount());
         assertEquals("Fetched hits", 5, result.getResults().size());
         assertEquals("Total facets", 0, result.getFacets().size());
@@ -356,7 +356,7 @@ public class ESGeneSearchTest {
         QueryResult result = search.query(Collections.emptyList(),
                 QueryOutput.build(Arrays.asList("id", "name", "start", "transcripts.start")), Collections.emptyList(),
                 0, 5, Collections.singletonList("-transcripts.start"));
-        System.out.println(result.getResults());
+        //System.out.println(result.getResults());
         assertEquals("Total hits", 598, result.getResultCount());
         assertEquals("Fetched hits", 5, result.getResults().size());
         assertEquals("Total facets", 0, result.getFacets().size());
@@ -369,7 +369,7 @@ public class ESGeneSearchTest {
         QueryResult result = search.query(QueryHandlerTest.build("{\"transcripts\":{\"biotype\":\"protein_coding\"}}"),
                 QueryOutput.build(Arrays.asList("id", "name", "start", "transcripts.start")), Collections.emptyList(),
                 0, 5, Collections.singletonList("+transcripts.start"));
-        System.out.println(result.getResults());
+        //System.out.println(result.getResults());
         assertEquals("Total hits", 536, result.getResultCount());
         assertEquals("Fetched hits", 5, result.getResults().size());
         assertEquals("Total facets", 0, result.getFacets().size());

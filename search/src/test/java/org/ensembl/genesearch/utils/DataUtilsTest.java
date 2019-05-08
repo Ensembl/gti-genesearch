@@ -45,7 +45,7 @@ public class DataUtilsTest {
 	public void testGetObjsForKeyNested() {
 		Map<String, Object> data = jsonToMap("{\"a\":{\"b\":\"one\", \"c\":\"two\"}}");
 		Map<String, Map<String,Object>> values = getObjsForKey(data, "a.b");
-		System.out.println(values);
+		//System.out.println(values);
 		Assert.assertTrue("one found", values.containsKey("one"));
 		Map<String, Object> oneMap =  values.get("one");
 		Assert.assertEquals("Map contains a:one", "one", oneMap.get("b"));
@@ -56,7 +56,7 @@ public class DataUtilsTest {
 	public void testGetObjsForKeyList() {
 		Map<String, Object> data = jsonToMap("{\"a\":[{\"b\":\"one\", \"c\":\"two\"},{\"b\":\"three\", \"c\":\"four\"}]}");
 		Map<String, Map<String,Object>> values = getObjsForKey(data, "a.b");
-		System.out.println(values);
+		//System.out.println(values);
 		Assert.assertTrue("one found", values.containsKey("one"));
 		Assert.assertTrue("three found", values.containsKey("three"));
 		Map<String, Object> oneMap = values.get("one");
@@ -71,7 +71,7 @@ public class DataUtilsTest {
 	@Test
 	public void testGetObjValsForKeyList() {
 		Map<String, Object> data = jsonToMap("{\"a\":[{\"b\":\"one\", \"c\":\"two\"},{\"b\":\"three\", \"c\":\"four\"}]}");
-		System.out.println(data);
+		//System.out.println(data);
 		Set<String> values = getObjValsForKey(data, "a.b");
 		Assert.assertTrue("one found", values.contains("one"));
 		Assert.assertTrue("three found", values.contains("three"));
