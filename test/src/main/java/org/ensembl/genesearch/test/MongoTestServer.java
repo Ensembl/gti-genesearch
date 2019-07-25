@@ -15,21 +15,27 @@
 package org.ensembl.genesearch.test;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoServerException;
+import com.mongodb.ServerAddress;
+import de.bwaldvogel.mongo.MongoServer;
+import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.fakemongo.Fongo;
+// import com.github.fakemongo.Fongo;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
 /**
  * Utility to create and load an in-memory Mongo test server using
- * {@link Fongo}. Note that this is included in the main source folder to allow
+ * {@link MongoServer}. Note that this is included in the main source folder to allow
  * reuse in downstream projects e.g. REST server.
  *
  * @author dstaines
@@ -40,13 +46,26 @@ public class MongoTestServer {
 
     private final MongoCollection<Document> collection;
 
+    private MongoClient mongoClient;
+    private MongoServer mongoServer;
+
+    private InetSocketAddress serverAddress;
+
     public MongoTestServer() {
         log.info("Starting Fongo server");
-        Fongo fongo = new Fongo("testMongo");
-        MongoDatabase database = fongo.getDatabase(MongoTestServer.class.getSimpleName());
+
+        mongoServer = new MongoServer(new MemoryBackend());
+        serverAddress = mongoServer.bind();
+        // MongoDatabase database = fongo.getDatabase(MongoTestServer.class.getSimpleName());
+        mongoClient = new MongoClient(new ServerAddress(serverAddress));
         String collectionName = MongoTestServer.class.getSimpleName() + "_col";
-        collection = database.getCollection(collectionName);
+        collection = mongoClient.getDatabase("testMongo").getCollection(collectionName);
         log.info("Retrieved Fongo collection " + collectionName);
+    }
+
+
+    public InetSocketAddress getServerAddress() {
+        return serverAddress;
     }
 
     /**

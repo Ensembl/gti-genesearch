@@ -23,22 +23,22 @@ use List::MoreUtils qw/natatime/;
 use Bio::EnsEMBL::GTI::GeneSearch::VariantAppender;
 
 sub run {
-  my $self = shift @_;
-  $self->log("Finding genes for genomes");
-  my $indexer =
-    Bio::EnsEMBL::GTI::GeneSearch::VariantAppender->new(
-                         url           => $self->param_required("es_url"),
-                         index         => $self->param_required('index'),
-                         variant_index => $self->param_required('variant_index')
-    );
-  my $genes = $indexer->get_genes( $self->param_required('genome') );
-  $self->log->info( "Retrieved " . scalar(@$genes) . " genes" );
-  my $it = natatime( 1000, @$genes );
-  while ( my @ids = $it->() ) {
-    $self->log->info("Flowing ".scalar(@ids)." gene IDs");
-    $self->dataflow_output_id( { gene_ids => \@ids }, 2 );
-  }
-  return;
+    my $self = shift @_;
+    $self->log("Finding genes for genomes");
+    my $indexer =
+        Bio::EnsEMBL::GTI::GeneSearch::VariantAppender->new(
+            url           => $self->param_required("es_url"),
+            index         => $self->param_required('index'),
+            variant_index => $self->param_required('variant_index')
+        );
+    my $genes = $indexer->get_genes($self->param_required('genome'));
+    $self->log->info("Retrieved " . scalar(@$genes) . " genes");
+    my $it = natatime(1000, @$genes);
+    while (my @ids = $it->()) {
+        $self->log->info("Flowing " . scalar(@ids) . " gene IDs");
+        $self->dataflow_output_id({ gene_ids => \@ids }, 2);
+    }
+    return;
 }
 
 1;

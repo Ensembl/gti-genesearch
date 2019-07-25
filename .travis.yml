@@ -12,4 +12,5 @@ install:
 
 script:
   - ./gradlew clean check -i
-  - ./gradlew :search:cleanTest :search:test --tests org.ensembl.genesearch.* -ea -Dtests.security.manager=false
+  - ./gradlew :search:cleanTest :search:test --tests org.ensembl.genesearch.*
+  - ./gradlew :web:cleanTest :web:test

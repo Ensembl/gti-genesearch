@@ -23,25 +23,25 @@ use Bio::EnsEMBL::GTI::GeneSearch::VariantAppender;
 use Data::Dumper;
 
 sub run {
-  my $self = shift @_;
-  
+    my $self = shift @_;
+
     my $indexer =
-    Bio::EnsEMBL::GTI::GeneSearch::VariantAppender->new(
-                                 url => $self->param_required("es_url"),
-                                 index => $self->param_required('index'),
-                                 variant_index => $self->param_required('variant_index')
-    );
+        Bio::EnsEMBL::GTI::GeneSearch::VariantAppender->new(
+            url           => $self->param_required("es_url"),
+            index         => $self->param_required('index'),
+            variant_index => $self->param_required('variant_index')
+        );
 
-  # gene IDs
-  my $gene_ids = $self->param_required("gene_ids");
+    # gene IDs
+    my $gene_ids = $self->param_required("gene_ids");
 
-for my $id (@$gene_ids) {
-    $self->log->info("Updating gene $id");
-    $indexer->add_variation_to_gene($id);  
-}
-$indexer->bulk()->flush();
- 
-  return;
+    for my $id (@$gene_ids) {
+        $self->log->info("Updating gene $id");
+        $indexer->add_variation_to_gene($id);
+    }
+    $indexer->bulk()->flush();
+
+    return;
 
 } ## end sub run
 

@@ -45,8 +45,7 @@ sub pipeline_analyses {
     return [
         {
             -logic_name  => 'JsonFileFactory',
-            -module      =>
-                'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::JsonFileFactory',
+            -module      => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::JsonFileFactory',
             -meadow_type => 'LOCAL',
             -input_ids   => [ { dumps_dir => $self->o('dumps_dir') } ],
             -parameters  => { blacklist => $self->o('blacklist') },
@@ -54,11 +53,11 @@ sub pipeline_analyses {
                 '2' => [ 'IndexGenomeJsonFile' ],
                 '3' => [ 'IndexGenesJsonFile' ],
                 '4' => [ 'IndexVariantsJsonFile' ]
-            } },
+            }
+        },
         {
             -logic_name    => 'IndexGenomeJsonFile',
-            -module        =>
-                'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
+            -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
             -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
@@ -72,8 +71,7 @@ sub pipeline_analyses {
         },
         {
             -logic_name    => 'IndexGenesJsonFile',
-            -module        =>
-                'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
+            -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
             -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
@@ -87,8 +85,7 @@ sub pipeline_analyses {
         },
         {
             -logic_name    => 'IndexVariantsJsonFile',
-            -module        =>
-                'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
+            -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
             -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',

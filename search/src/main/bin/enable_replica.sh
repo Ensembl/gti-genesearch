@@ -16,7 +16,7 @@
 dir=$(dirname $0)
 url=$1
 n=$2
-if [ -z "$n" ]; then
+if [[ -z "$n" ]]; then
     n=1
 fi
 echo "Setting up $n replicas for $url"

@@ -12,6 +12,27 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
+=head1 CONTACT
+
+  Please email comments or questions to the public Ensembl
+  developers list at <dev@ensembl.org>.
+
+  Questions may also be sent to the Ensembl help desk at
+  <helpdesk@ensembl.org>
+
+=head1 NAME
+
+Bio::EnsEMBL::GTI::GeneSearch::Pipeline::AddVariation_conf
+
+=head1 DESCRIPTION
+
+Add Variation Hive Pipeline configuration files: Add Variation info to existing genomes in ES.
+
+=head1 AUTHORS
+
+Dan Staines
+Marc Chakiachvili
+
 =cut
 
 package Bio::EnsEMBL::GTI::GeneSearch::Pipeline::AddVariation_conf;
@@ -22,59 +43,71 @@ use warnings;
 use base ('Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf');
 
 sub resource_classes {
-  my ($self) = @_;
-  return {
-    'default' => { 'LSF' => '-q production-rh6' },
-    'himem' => { 'LSF' => '-q production-rh6 -M  16000 -R "rusage[mem=16000]"' }
-  };
+    my ($self) = @_;
+    return {
+        'default' => { 'LSF' => '-q production-rh6' },
+        'himem'   => { 'LSF' => '-q production-rh6 -M  16000 -R "rusage[mem=16000]"' }
+    };
 }
 
 sub default_options {
-  my ($self) = @_;
-  return { %{ $self->SUPER::default_options() },
-           es_url        => 'http://gti-es-0.ebi.ac.uk:9200/',
-           index         => 'genes',
-           variant_index => 'variants' };
+    my ($self) = @_;
+    return { %{$self->SUPER::default_options()},
+        es_url        => 'http://gti-es-0.ebi.ac.uk:9200/',
+        index         => 'genes',
+        variant_index => 'variants' };
 }
 
 sub pipeline_analyses {
-  my ($self) = @_;
-  return [ {
-      -logic_name => 'VariationFactory',
-      -module => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::VariationFactory',
-      -meadow_type => 'LOCAL',
-      -input_ids   => [ {} ],
-      -parameters  => {es_url        => $self->o('es_url'),
-                       index         => $self->o('index'),
-                       variant_index => $self->o('variant_index') },
-      -flow_into => { '2' => ['GeneFactory'] } }, {
-      -logic_name  => 'GeneFactory',
-      -module      => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::GeneFactory',
-      -meadow_type => 'LOCAL',
-      -parameters  => {
-                 es_url        => $self->o('es_url'),
-                 index         => $self->o('index'),
-                 variant_index => $self->o('variant_index')
-      },
-      -flow_into => { '2' => ['UpdateVariation'] } },
-
-    { -logic_name => 'UpdateVariation',
-      -module     => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::UpdateVariation',
-      -hive_capacity => 25,
-      -rc_name       => 'default',
-      -flow_into     => { -1 => 'UpdateVariationHiMem', },
-      -parameters    => {
-                       'es_url'      => $self->o('es_url'),
-                       index         => $self->o('index'),
-                       variant_index => $self->o('variant_index') } }, {
-      -logic_name => 'UpdateVariationHiMem',
-      -module     => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::UpdateVariation',
-      -hive_capacity => 25,
-      -rc_name       => 'himem',
-      -parameters    => {
-                       'es_url'      => $self->o('es_url'),
-                       index         => $self->o('index'),
-                       variant_index => $self->o('variant_index') } } ];
+    my ($self) = @_;
+    return [
+        {
+            -logic_name  => 'VariationFactory',
+            -module      => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::VariationFactory',
+            -meadow_type => 'LOCAL',
+            -input_ids   => [ {} ],
+            -parameters  => { es_url => $self->o('es_url'),
+                index                => $self->o('index'),
+                variant_index        => $self->o('variant_index') },
+            -flow_into   => {
+                '2' => [ 'GeneFactory' ]
+            }
+        },
+        {
+            -logic_name  => 'GeneFactory',
+            -module      => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::GeneFactory',
+            -meadow_type => 'LOCAL',
+            -parameters  => {
+                es_url        => $self->o('es_url'),
+                index         => $self->o('index'),
+                variant_index => $self->o('variant_index')
+            },
+            -flow_into   => {
+                '2' => [ 'UpdateVariation' ]
+            }
+        },
+        {
+            -logic_name    => 'UpdateVariation',
+            -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::UpdateVariation',
+            -hive_capacity => 25,
+            -rc_name       => 'default',
+            -flow_into     => { -1 => 'UpdateVariationHiMem', },
+            -parameters    => {
+                'es_url'      => $self->o('es_url'),
+                index         => $self->o('index'),
+                variant_index => $self->o('variant_index') }
+        },
+        {
+            -logic_name    => 'UpdateVariationHiMem',
+            -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::UpdateVariation',
+            -hive_capacity => 25,
+            -rc_name       => 'himem',
+            -parameters    => {
+                'es_url'      => $self->o('es_url'),
+                index         => $self->o('index'),
+                variant_index => $self->o('variant_index') }
+        }
+    ];
 } ## end sub pipeline_analyses
 
 1;
