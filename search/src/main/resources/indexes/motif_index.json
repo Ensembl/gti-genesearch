@@ -26,10 +26,10 @@
     }
   },
   "aliases": {
-    "regulatory_features": {}
+    "binding_motifs": {}
   },
   "mappings": {
-    "regulatory_feature": {
+    "binding_motif": {
       "dynamic": "false",
       "properties": {
         "genome": {
@@ -42,47 +42,32 @@
           "index": true,
           "norms": false
         },
-        "start": {
+        "seq_region_start": {
           "type": "keyword",
           "index": true,
           "norms": false
         },
-        "end": {
+        "seq_region_end": {
           "type": "keyword",
           "index": true,
           "norms": false
         },
-        "id": {
+        "seq_region_strand": {
           "type": "keyword",
           "index": true,
           "norms": false
         },
-        "feature_name": {
+        "score": {
+          "type": "double",
+          "index": true,
+          "norms": false
+        },
+        "stable_id": {
           "type": "keyword",
           "index": true,
           "norms": false
         },
-        "description": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
-        "so_accession": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
-        "so_name": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
-        "epigenome_name": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
-        "epigenome_description": {
+        "display_label": {
           "type": "keyword",
           "index": true,
           "norms": false

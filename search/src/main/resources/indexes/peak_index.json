@@ -26,10 +26,10 @@
     }
   },
   "aliases": {
-    "regulatory_features": {}
+    "peaks": {}
   },
   "mappings": {
-    "regulatory_feature": {
+    "peak": {
       "dynamic": "false",
       "properties": {
         "genome": {
@@ -52,11 +52,6 @@
           "index": true,
           "norms": false
         },
-        "id": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
         "feature_name": {
           "type": "keyword",
           "index": true,
@@ -73,6 +68,11 @@
           "norms": false
         },
         "so_name": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "class": {
           "type": "keyword",
           "index": true,
           "norms": false

@@ -1,0 +1,177 @@
+{
+  "settings": {
+    "number_of_shards": "SHARDN",
+    "number_of_replicas": 0,
+    "max_result_window": 50000,
+    "analysis": {
+      "analyzer": {
+        "string_lowercase": {
+          "type":      "custom",
+          "tokenizer": "standard",
+          "char_filter": [
+            "html_strip"
+          ],
+          "filter": [
+            "lowercase",
+            "asciifolding"
+          ]
+        }
+      },
+      "normalizer": {
+        "keyword_lowercase": {
+          "type": "custom",
+          "filter": ["lowercase"]
+        }
+      }
+    }
+  },
+  "aliases": {
+    "probesets": {}
+  },
+  "mappings": {
+    "probeset": {
+      "dynamic": "false",
+      "properties": {
+        "genome": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "name": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "size": {
+          "type": "long",
+          "index": true
+        },
+        "family": {
+          "type": "keyword",
+          "index": true
+        },
+        "transcripts": {
+          "type": "nested",
+          "properties": {
+            "id": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "description": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            }
+          }
+        },
+          "probes": {
+          "type": "nested",
+          "properties": {
+            "genome": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "transcripts": {
+              "type": "nested",
+              "properties": {
+                "id": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "description": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                }
+              }
+            },
+            "name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "sequence": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "length": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "class": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "description": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "locations": {
+              "type": "nested",
+              "properties": {
+                "seq_region_name": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                },
+                "start": {
+                  "type": "long",
+                  "index": true
+                },
+                "end": {
+                  "type": "long",
+                  "index": true
+                },
+                "strand": {
+                  "type": "keyword",
+                  "index": true,
+                  "norms": false
+                }
+              }
+            },
+            "design_id": {
+              "type": "keyword",
+              "index": true
+            },
+            "array_chip": {
+              "type": "keyword",
+              "index": true
+            },
+            "array": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "array_format": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "array_vendor": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "array_class": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "array_type": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

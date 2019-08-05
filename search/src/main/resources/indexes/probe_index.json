@@ -26,16 +26,21 @@
     }
   },
   "aliases": {
-    "probesets": {}
+    "probes": {}
   },
   "mappings": {
-    "probes": {
+    "probe": {
       "dynamic": "false",
       "properties": {
-        "probe_transcripts": {
+        "genome": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "transcripts": {
           "type": "nested",
           "properties": {
-            "stable_id": {
+            "id": {
               "type": "keyword",
               "index": true,
               "norms": false
@@ -72,29 +77,7 @@
           "index": true,
           "norms": false
         },
-        "probe_set": {
-          "properties": {
-            "name": {
-              "type": "keyword",
-              "index": true,
-              "norms": false
-            },
-            "size": {
-              "type": "long",
-              "index": true
-            },
-            "family": {
-              "type": "keyword",
-              "index": true
-            },
-            "probeset_transcript": {
-              "type": "keyword",
-              "index": true,
-              "norms": false
-            }
-          }
-        },
-        "probes_features": {
+        "locations": {
           "type": "nested",
           "properties": {
             "seq_region_name": {
@@ -102,66 +85,53 @@
               "index": true,
               "norms": false
             },
-            "seq_region_start": {
+            "start": {
               "type": "long",
               "index": true
             },
-            "seq_region_end": {
+            "end": {
               "type": "long",
               "index": true
             },
-            "seq_region_strand": {
-              "type": "keyword",
-              "index": true,
-              "norms": false
-            },
-            "probe_feature": {
+            "strand": {
               "type": "keyword",
               "index": true,
               "norms": false
             }
           }
         },
+        "design_id": {
+          "type": "keyword",
+          "index": true
+        },
         "array_chip": {
-          "properties": {
-            "design_id": {
-              "type": "keyword",
-              "index": true
-            },
-            "name": {
-              "type": "keyword",
-              "index": true
-            },
-            "array": {
-              "properties": {
-                "name": {
-                  "type": "keyword",
-                  "index": true,
-                  "norms": false
-                },
-                "format": {
-                  "type": "keyword",
-                  "index": true,
-                  "norms": false
-                },
-                "vendor": {
-                  "type": "keyword",
-                  "index": true,
-                  "norms": false
-                },
-                "class": {
-                  "type": "keyword",
-                  "index": true,
-                  "norms": false
-                },
-                "array_type": {
-                  "type": "keyword",
-                  "index": true,
-                  "norms": false
-                }
-              }
-            }
-          }
+          "type": "keyword",
+          "index": true
+        },
+        "array": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "array_format": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "array_vendor": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "array_class": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "array_type": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
         }
       }
     }

@@ -94,14 +94,27 @@ public class ESSearch implements Search {
      * default values for searching different datatypes
      */
     public static final String GENES_INDEX = "genes";
+    public static final String PROBES_INDEX = "probes";
+    public static final String PROBESETS_INDEX = "probesets";
     public static final String GENOMES_INDEX = "genomes";
     public static final String VARIANTS_INDEX = "variants";
+    public static final String MOTIFS_INDEX = "motifs";
+    public static final String REGULATORY_FEATURES_INDEX = "regulatory_features";
+    public static final String EXTERNAL_FEATURES_INDEX = "external_features";
+    public static final String MIRNAS_INDEX = "mirnas";
+    public static final String PEAKS_INDEX = "peaks";
+    public static final String TRANSCRIPTION_FACTORS_INDEX = "transcription_factors";
     public static final String GENE_ESTYPE = "gene";
     public static final String GENOME_ESTYPE = "genome";
     public static final String VARIANT_ESTYPE = "variant";
-    public static final String REGULATORY_FEATURES_ESTYPE = "regulatory_feature";
+    public static final String PROBE_ESTYPE = "probe";
     public static final String PROBESET_ESTYPE = "probeset";
-
+    public static final String MOTIF_ESTYPE = "motif";
+    public static final String REGULATORY_FEATURE_ESTYPE = "regulatory_feature";
+    public static final String EXTERNAL_FEATURE_ESTYPE = "external_feature";
+    public static final String MIRNA_ESTYPE = "mirna";
+    public static final String PEAK_ESTYPE = "peak";
+    public static final String TRANSCRIPTION_FACTOR_ESTYPE = "transcription_factor";
     private final Client client;
     private final String index;
     private final String type;
