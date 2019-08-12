@@ -100,38 +100,43 @@
             }
           }
         },
-        "design_id": {
-          "type": "keyword",
-          "index": true
-        },
-        "array_chip": {
-          "type": "keyword",
-          "index": true
-        },
-        "array": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
-        "array_format": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
-        "array_vendor": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
-        "array_class": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
-        },
-        "array_type": {
-          "type": "keyword",
-          "index": true,
-          "norms": false
+        "arrays": {
+          "type": "nested",
+          "properties": {
+            "design_id": {
+              "type": "keyword",
+              "index": true
+            },
+            "array_chip": {
+              "type": "keyword",
+              "index": true
+            },
+            "array": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "array_format": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "array_vendor": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "array_class": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "array_type": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            }
+          }
         }
       }
     }

@@ -65,7 +65,27 @@
             }
           }
         },
-          "probes": {
+        "arrays": {
+          "type": "nested",
+          "properties": {
+            "array": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "array_chip": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "array_vendor": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            }
+          }
+        },
+        "probes": {
           "type": "nested",
           "properties": {
             "genome": {

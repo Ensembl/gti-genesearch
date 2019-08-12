@@ -67,7 +67,7 @@
           "index": true,
           "norms": false
         },
-        "display_label": {
+        "id": {
           "type": "keyword",
           "index": true,
           "norms": false

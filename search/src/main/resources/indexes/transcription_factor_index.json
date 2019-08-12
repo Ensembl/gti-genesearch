@@ -42,6 +42,11 @@
           "index": true,
           "norms": false
         },
+        "id": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
         "gene_stable_id": {
           "type": "keyword",
           "index": true,

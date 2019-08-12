@@ -57,6 +57,11 @@
           "index": true,
           "norms": false
         },
+        "id": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
         "description": {
           "type": "keyword",
           "index": true,
