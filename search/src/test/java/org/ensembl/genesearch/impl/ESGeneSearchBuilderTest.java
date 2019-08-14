@@ -18,7 +18,7 @@ import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.QueryHandlerTest;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;

@@ -12,8 +12,9 @@
  *  limitations under the License.
  */
 
-package org.ensembl.genesearch;
+package org.ensembl.genesearch.utils;
 
+import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.query.DefaultQueryHandler;
 import org.ensembl.genesearch.query.QueryHandler;

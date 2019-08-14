@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.bson.Document;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.QueryHandlerTest;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.junit.Test;
 
 /**
