@@ -62,3 +62,16 @@ allprojects {
         options.deprecation = true
     }
 }
+
+project(':test') {
+    version = "1.0"
+    jar
+}
+
+project(':search'){
+    version = "0.2"
+}
+
+project(':web') {
+    version = "0.1"
+}

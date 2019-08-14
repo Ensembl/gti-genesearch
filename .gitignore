@@ -27,3 +27,10 @@ web/build
 .idea/
 *.iml
 /_Deparsed_XSubs.pm
+/test/build/classes/java/main/org/elasticsearch/bootstrap/JarHell.class
+/test/build/classes/java/main/org/ensembl/genesearch/test/ESTestServer$1.class
+/test/build/classes/java/main/org/ensembl/genesearch/test/ESTestServer$2.class
+/test/build/classes/java/main/org/ensembl/genesearch/test/ESTestServer.class
+/test/build/classes/java/main/org/ensembl/genesearch/test/MongoTestServer.class
+/test/build/libs/test-1.0.jar
+/test/build/tmp/jar/MANIFEST.MF

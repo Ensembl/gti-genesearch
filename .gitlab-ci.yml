@@ -1,3 +1,4 @@
+
 image: java:8-jdk
 
 stages:
@@ -6,8 +7,8 @@ stages:
   - deploy
 
 before_script:
-  #  - echo `pwd` # debug
-  #  - echo "$CI_BUILD_NAME, $CI_BUILD_REF_NAME $CI_BUILD_STAGE" # debug
+  - echo `pwd`
+  - echo "$CI_BUILD_NAME, $CI_BUILD_REF_NAME $CI_BUILD_STAGE"
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
 cache:
@@ -29,12 +30,15 @@ build:
 test:
   stage: test
   script:
-    - ./gradlew check
+    - ./gradlew search:cleanTest search:test
+    - ./gradlew web:cleanTest web:test
 
 deploy:
   stage: deploy
   script:
     - ./deploy
+  only:
+    - master
 
 after_script:
   - echo "End CI"
