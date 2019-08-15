@@ -14,44 +14,30 @@
 package org.ensembl.genesearch.impl;
 
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
-import org.ensembl.genesearch.*;
+import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.info.FieldType;
-import org.ensembl.genesearch.query.DefaultQueryHandler;
-import org.ensembl.genesearch.query.QueryHandler;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.*;
+import java.util.Collections;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class ESTranscriptionFactorSearchTest {
-
-    static Logger log = LoggerFactory.getLogger(ESTranscriptionFactorSearchTest.class);
+public class ESTranscriptionFactorSearchTest extends AbstractESTestCase {
 
     static ESSearch search;
-    static ESTestServer testServer;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void initData() throws IOException {
         // index a sample of JSON
-        testServer = new ESTestServer();
-        search = new ESSearch(testServer.getClient(), ESSearch.TRANSCRIPTION_FACTORS_INDEX, ESSearch.TRANSCRIPTION_FACTOR_ESTYPE, DataTypeInfo.fromResource("/datatypes/transcription_factors_datatype_info.json"));
+        search = new ESSearch(esTestClient.getClient(), ESSearch.TRANSCRIPTION_FACTORS_INDEX, ESSearch.TRANSCRIPTION_FACTOR_ESTYPE, DataTypeInfo.fromResource("/datatypes/transcription_factors_datatype_info.json"));
         log.info("Reading documents");
         String json = DataUtils.readGzipResource("/human_transcription_factors.json.gz");
         log.info("Creating test index");
-        testServer.indexTestDocs(json, ESSearch.TRANSCRIPTION_FACTORS_INDEX, ESSearch.TRANSCRIPTION_FACTOR_ESTYPE);
+        esTestClient.indexTestDocs(json, ESSearch.TRANSCRIPTION_FACTORS_INDEX, ESSearch.TRANSCRIPTION_FACTOR_ESTYPE);
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -59,12 +45,4 @@ public class ESTranscriptionFactorSearchTest {
         log.info("Fetching all the Transcription factors");
         search.fetch(Collections.emptyList(), QueryOutput.build(Collections.singletonList("_id")));
     }
-
-    @AfterClass
-    public static void tearDown() {
-        log.info("Disconnecting server");
-        testServer.disconnect();
-        testServer = null;
-    }
-
 }

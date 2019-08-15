@@ -14,7 +14,10 @@
 package org.ensembl.genesearch.impl;
 
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
-import org.ensembl.genesearch.*;
+import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryOutput;
+import org.ensembl.genesearch.QueryResult;
+import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
 import org.ensembl.genesearch.utils.DataUtils;
