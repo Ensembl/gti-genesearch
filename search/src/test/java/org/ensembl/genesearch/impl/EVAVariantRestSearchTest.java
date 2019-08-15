@@ -24,7 +24,10 @@ import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.utils.DataUtils;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;

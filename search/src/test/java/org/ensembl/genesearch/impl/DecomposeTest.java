@@ -14,26 +14,24 @@
 
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.List;
-
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.impl.JoinMergeSearch.SubSearchParams;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.utils.DataUtils;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author dstaines

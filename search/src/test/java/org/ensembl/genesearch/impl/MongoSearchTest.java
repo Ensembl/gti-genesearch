@@ -14,13 +14,13 @@
 
 package org.ensembl.genesearch.impl;
 
-import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.MongoTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

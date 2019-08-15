@@ -13,10 +13,8 @@
  */
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
@@ -31,8 +29,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class EnsemblVariantSearchTest {
 

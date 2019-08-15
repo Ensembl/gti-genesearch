@@ -14,16 +14,14 @@
 
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
 import org.bson.Document;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author dstaines

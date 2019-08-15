@@ -13,10 +13,6 @@
  */
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
@@ -27,6 +23,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class CellLineRestSearchTest {
 
