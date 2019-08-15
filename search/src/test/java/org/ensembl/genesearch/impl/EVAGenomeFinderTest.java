@@ -18,41 +18,34 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class EVAGenomeFinderTest {
+public class EVAGenomeFinderTest extends AbstractESTestCase {
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
 
-    static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
-
-    static ESTestServer testServer;
     private static ESSearch ensemblGenomeSearch;
     private static EVAGenomeFinder finder;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void initData() throws IOException {
         // index a sample of JSON
         log.info("Reading documents");
-        testServer = new ESTestServer();
-        ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
+        ensemblGenomeSearch = new ESSearch(esTestClient.getClient(), ESSearch.GENOMES_INDEX,
                 ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
         String json = DataUtils.readGzipResource("/eva_genomes.json.gz");
         log.info("Creating test index");
-        testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
+        esTestClient.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         finder = new EVAGenomeFinder(new EVAGenomeRestSearch(wireMockRule.url(StringUtils.EMPTY),
                 DataTypeInfo.fromResource("/datatypes/evagenomes_datatype_info.json")), ensemblGenomeSearch);
     }

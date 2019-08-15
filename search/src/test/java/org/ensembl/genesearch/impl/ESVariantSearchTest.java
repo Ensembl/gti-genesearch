@@ -13,47 +13,39 @@
  */
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.Collections;
-
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
 import org.ensembl.genesearch.utils.DataUtils;
-import org.ensembl.genesearch.test.ESTestServer;
-import org.junit.AfterClass;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Collections;
+
+import static org.junit.Assert.fail;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class ESVariantSearchTest {
+public class ESVariantSearchTest extends AbstractESTestCase {
 
-    static Logger log = LoggerFactory.getLogger(ESVariantSearchTest.class);
-
-    static ESTestServer testServer;
     static ESSearch search;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void initData() throws IOException {
         // index a sample of JSON
-        testServer = new ESTestServer();
         log.info("Reading documents");
-        search = new ESSearch(testServer.getClient(), ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE,
+        search = new ESSearch(esTestClient.getClient(), ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE,
                 DataTypeInfo.fromResource("/datatypes/es_variants_datatype_info.json"));
         String json = DataUtils.readGzipResource("/es_variants.json.gz");
         log.info("Creating test index");
-        testServer.indexTestDocs(json, ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
+        esTestClient.indexTestDocs(json, ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
     }
 
     @Test
@@ -81,11 +73,4 @@ public class ESVariantSearchTest {
                 QueryOutput.build("[\"_id\"]"), Collections.emptyList(), 0, 50, Collections.emptyList());
         Assert.assertEquals("59 results found", 59, res.getResultCount());
     }
-
-    @AfterClass
-    public static void tearDown() {
-        log.info("Disconnecting server");
-        testServer.disconnect();
-    }
-
 }

@@ -23,15 +23,12 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -41,27 +38,23 @@ import java.util.Map;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class EnsemblVariantGeneSearchTest {
+public class EnsemblVariantGeneSearchTest extends AbstractESTestCase {
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
 
-    static ESTestServer testServer;
-    static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
     static GeneSearch geneSearch;
 
     @BeforeClass
-    public static void setUp() throws IOException {
-
-        testServer = new ESTestServer();
+    public static void initData() throws IOException {
         // index a sample of JSON for use in search genomes
         log.info("Reading documents");
         {
             String json = DataUtils.readGzipResource("/eva_genes.json.gz");
             log.info("Creating test index for genes");
-            testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+            esTestClient.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         }
-        ESSearch ensemblGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
+        ESSearch ensemblGeneSearch = new ESSearch(esTestClient.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
                 DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json"));
 
         String url = wireMockRule.url(StringUtils.EMPTY);

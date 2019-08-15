@@ -1,6 +1,7 @@
 language: java
+
 jdk:
-  - oraclejdk8
+  - openjdk8
 
 sudo: required
 
@@ -12,7 +13,7 @@ install:
 
 script:
   - ./gradlew clean compileJava compileTestJava -i
-  - ./gradlew search:cleanTest search:test --tests org.ensembl.genesearch.utils.*
-  - ./gradlew search:cleanTest search:test --tests org.ensembl.genesearch.info.*
-  - ./gradlew search:cleanTest search:test --tests org.ensembl.genesearch.output.*
-  - ./gradlew web:cleanTest web:test --tests org.ensembl.gti.genesearch.rest.MapXmlWriterTest
+  - ./gradlew search:cleanTest search:test --tests org.ensembl.genesearch.*
+  # - ./gradlew search:cleanTest search:test --tests org.ensembl.genesearch.info.*
+  # - ./gradlew search:cleanTest search:test --tests org.ensembl.genesearch.output.*
+  # - ./gradlew web:cleanTest web:test --tests org.ensembl.gti.genesearch.rest.MapXmlWriterTest

@@ -16,7 +16,6 @@ package org.ensembl.genesearch.impl;
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.ensembl.genesearch.*;
 import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.test.MongoTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.ensembl.genesearch.utils.QueryHandlerTest;
@@ -24,8 +23,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -38,14 +35,10 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class VariantRangeSearchTest {
-
-	static Logger log = LoggerFactory.getLogger(VariantRangeSearchTest.class);
+public class VariantRangeSearchTest extends AbstractESTestCase {
 
 	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
     static DataTypeInfo variantInfo = DataTypeInfo.fromResource("/datatypes/variants_datatype_info.json");
-
-    static ESTestServer testServer;
     static ESSearch esGeneSearch;
 	static MongoTestServer mongoTestServer;
 	static Search mSearch;
@@ -54,11 +47,10 @@ public class VariantRangeSearchTest {
 	static Search geneSearch;
 
 	@BeforeClass
-	public static void setUp() throws IOException {
+	public static void initData() throws IOException {
 		// index a sample of JSON
-        testServer = new ESTestServer();
         mongoTestServer = new MongoTestServer();
-        esGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
+        esGeneSearch = new ESSearch(esTestClient.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
         mSearch = new MongoSearch(mongoTestServer.getCollection(), variantInfo);
         provider = new SearchRegistry().registerSearch(SearchType.VARIANTS, mSearch)
                 .registerSearch(SearchType.GENES, esGeneSearch);
@@ -68,7 +60,7 @@ public class VariantRangeSearchTest {
 		String variantJson = DataUtils.readGzipResource("/variants.json.gz");
 		mongoTestServer.indexData(variantJson);
 		String geneData = DataUtils.readGzipResource("/rice_genes.json.gz");
-		testServer.indexTestDocs(geneData, ESSearch.GENES_INDEX,ESSearch.GENE_ESTYPE);
+		esTestClient.indexTestDocs(geneData, ESSearch.GENES_INDEX,ESSearch.GENE_ESTYPE);
 	}
 
 
@@ -149,10 +141,9 @@ public class VariantRangeSearchTest {
 	}
 	
 	@AfterClass
-	public static void tearDown() {
-		log.info("Disconnecting server");
+	public static void tearDownMongo() {
+		log.info("Disconnecting Mongo server");
 		mongoTestServer.disconnect();
-		testServer.disconnect();
 	}
 
 }

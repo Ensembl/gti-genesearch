@@ -20,13 +20,10 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -39,22 +36,18 @@ import static org.junit.Assert.*;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class ESGenomeSearchTest {
+public class ESGenomeSearchTest extends AbstractESTestCase {
 
-    static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
-
-    static ESTestServer testServer;
     static ESSearch search;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void initData() throws IOException {
         // index a sample of JSON
-        testServer = new ESTestServer();
-        search = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE,
+        search = new ESSearch(esTestClient.getClient(), ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE,
                 DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
         log.info("Reading documents");
         String json = DataUtils.readGzipResource("/genomes.json.gz");
-        testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
+        esTestClient.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
     }
 
     @Test(expected = UnsupportedOperationException.class)

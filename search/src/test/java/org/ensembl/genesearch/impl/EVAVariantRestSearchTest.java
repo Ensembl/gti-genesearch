@@ -23,12 +23,9 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,25 +34,21 @@ import java.util.Map;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class EVAVariantRestSearchTest {
+public class EVAVariantRestSearchTest extends AbstractESTestCase {
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
-
-    static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
     static EVAVariantRestSearch search;
-    static ESTestServer testServer;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void initData() throws IOException {
 
-        testServer = new ESTestServer();
         // index a sample of JSON for use in search genomes
         log.info("Reading documents");
         String json = DataUtils.readGzipResource("/eva_genomes.json.gz");
         log.info("Creating test index for genomes");
-        testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
-        ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
+        esTestClient.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
+        ESSearch ensemblGenomeSearch = new ESSearch(esTestClient.getClient(), ESSearch.GENOMES_INDEX,
                 ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
 
         // build a finder using the test ES server and a wiremock REST
@@ -148,11 +141,5 @@ public class EVAVariantRestSearchTest {
                 DataUtils.getObjValsForKey(v, "annotation.xrefs.src").isEmpty());
         Assert.assertTrue("annotation.xrefs.id not found",
                 DataUtils.getObjValsForKey(v, "annotation.xrefs.id").isEmpty());
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        log.info("Disconnecting server");
-        testServer.disconnect();
     }
 }
