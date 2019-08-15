@@ -156,7 +156,7 @@ public abstract class ObjectService extends SearchBasedService {
 						@Override
 						public void accept(Map<String, Object> t) {
 							try {
-								writer.writeObject(name, t);
+								writer.writeData(name, t);
 							} catch (XMLStreamException e) {
 								e.printStackTrace();
 							}

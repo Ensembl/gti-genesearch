@@ -237,7 +237,7 @@ public abstract class FetchService extends SearchBasedService {
 					MapXmlWriter writer = new MapXmlWriter(xsw);
 					getSearch().fetch(t -> {
 							try {
-								writer.writeObject(name, t);
+								writer.writeData(name, t);
 							} catch (XMLStreamException e) {
 								throw new WebApplicationException(e);
 							}

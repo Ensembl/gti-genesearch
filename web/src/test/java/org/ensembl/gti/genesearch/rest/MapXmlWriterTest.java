@@ -44,10 +44,10 @@ public class MapXmlWriterTest {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
 		MapXmlWriter writer = new MapXmlWriter(xsw);
-		writer.writeObject("test", map);
+		writer.writeData("test", map);
 		String xml = new String(os.toByteArray(), "UTF-8");
 		log.debug("xml" + os.toString());
-		assertEquals("Correct XML", "<test 1=\"one\" 2=\"two\"></test>", xml);
+		assertEquals("Correct XML", "<?xml version='1.0' encoding='UTF-8'?><test 1=\"one\" 2=\"two\"/>", xml);
 	}
 
 	@Test
@@ -64,11 +64,11 @@ public class MapXmlWriterTest {
 		log.debug("outputStream:" + os.toString());
 		XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
 		MapXmlWriter writer = new MapXmlWriter(xsw);
-		writer.writeObject("test", map);
+		writer.writeData("test", map);
 		String xml = new String(os.toByteArray(), "UTF-8");
 		log.debug(xml);
 		assertEquals("Correct XML",
-				"<test 1=\"one\" 2=\"two\" 5=\"five\"><test2 3=\"three\" 4=\"four\"></test2></test>", xml);
+				"<?xml version='1.0' encoding='UTF-8'?><test 1=\"one\" 2=\"two\" 5=\"five\"><test2 3=\"three\" 4=\"four\"/></test>", xml);
 	}
 
 	@Test
@@ -79,10 +79,10 @@ public class MapXmlWriterTest {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
 		MapXmlWriter writer = new MapXmlWriter(xsw);
-		writer.writeObject("tests", list);
+		writer.writeData("tests", list);
 		String xml = new String(os.toByteArray(), "UTF-8");
 		log.debug(xml);
-		assertEquals("Correct XML", "<tests><test>three</test><test>four</test></tests>", xml);
+		assertEquals("Correct XML", "<?xml version='1.0' encoding='UTF-8'?><tests><test>three</test><test>four</test></tests>", xml);
 	}
 
 	@Test
@@ -97,11 +97,11 @@ public class MapXmlWriterTest {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		XMLStreamWriter xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(os);
 		MapXmlWriter writer = new MapXmlWriter(xsw);
-		writer.writeObject("test", map);
+		writer.writeData("test", map);
 		String xml = new String(os.toByteArray(), "UTF-8");
 		log.debug(xml);
 		assertEquals("Correct XML",
-				"<test 1=\"one\" 2=\"two\"><test2><test2_elem>three</test2_elem><test2_elem>four</test2_elem></test2></test>",
+				"<?xml version='1.0' encoding='UTF-8'?><test 1=\"one\" 2=\"two\"><test2><test2_elem>three</test2_elem><test2_elem>four</test2_elem></test2></test>",
 				xml);
 	}
 

@@ -4,4 +4,3 @@ rootProject.name = "genesearch"
 include 'web'
 include 'search'
 include 'test'
-

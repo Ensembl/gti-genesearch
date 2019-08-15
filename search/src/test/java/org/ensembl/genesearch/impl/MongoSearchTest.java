@@ -14,7 +14,7 @@
 
 package org.ensembl.genesearch.impl;
 
-import org.ensembl.genesearch.QueryHandlerTest;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchResult;

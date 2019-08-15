@@ -12,7 +12,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-=cutt
+=cut
 
 package Bio::EnsEMBL::GTI::GeneSearch::Pipeline::VariationFactory;
 use warnings;
@@ -22,19 +22,19 @@ use base ('Bio::EnsEMBL::Production::Pipeline::Common::Base');
 use Bio::EnsEMBL::GTI::GeneSearch::VariantAppender;
 
 sub run {
-  my $self = shift @_;
-  $self->log("Finding genomes with variants");
-  my $indexer =
-    Bio::EnsEMBL::GTI::GeneSearch::VariantAppender->new(
-                         url           => $self->param_required("es_url"),
-                         index         => $self->param_required('index'),
-                         variant_index => $self->param_required('variant_index')
-    );
-  my $genomes = $indexer->get_variation_genomes();
-  # flow 1 job per genome
-  my $genome_jobs = [ map { { genome => $_ } } @$genomes ];
-  $self->dataflow_output_id( $genome_jobs, 2 );
-  return;
+    my $self = shift @_;
+    $self->log("Finding genomes with variants");
+    my $indexer =
+        Bio::EnsEMBL::GTI::GeneSearch::VariantAppender->new(
+            url           => $self->param_required("es_url"),
+            index         => $self->param_required('index'),
+            variant_index => $self->param_required('variant_index')
+        );
+    my $genomes = $indexer->get_variation_genomes();
+    # flow 1 job per genome
+    my $genome_jobs = [ map {{ genome => $_ }} @$genomes ];
+    $self->dataflow_output_id($genome_jobs, 2);
+    return;
 }
 
 1;

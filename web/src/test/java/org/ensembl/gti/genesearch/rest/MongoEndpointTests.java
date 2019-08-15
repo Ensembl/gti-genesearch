@@ -31,6 +31,9 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -38,6 +41,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.web.client.RestTemplate;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -52,13 +56,16 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @ActiveProfiles("eva_mongo")
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 public class MongoEndpointTests {
 
-    private static final String API_BASE = "http://localhost:8080/api";
-    private static final String VARIANTS_FETCH = API_BASE + "/variants/fetch";
-    private static final String VARIANTS_QUERY = API_BASE + "/variants/query";
+    @Value("${local.server.port}")
+    int port;
+
+    private final String VARIANTS_FETCH = "variants/fetch";
+    private final String VARIANTS_QUERY = "variants/query";
 
     static Logger log = LoggerFactory.getLogger(MongoEndpointTests.class);
     static ESSearch geneSearch;
@@ -83,7 +90,6 @@ public class MongoEndpointTests {
         esTestServer.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         String variantJson = DataUtils.readGzipResource("/variants.json.gz");
         mongoTestServer = new MongoTestServer();
-        log.info("Creating MongoDB test index");
         mongoTestServer.indexData(variantJson);
     }
 
@@ -91,6 +97,15 @@ public class MongoEndpointTests {
     EndpointSearchProvider provider;
 
     RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
+
+    protected String getServiceUrl(String extension) {
+        String base_path = "http://localhost:" + port;
+        if (extension == null)
+            return base_path;
+        else
+            return base_path + "/api/" + extension;
+
+    }
 
     @Before
     public void injectSearch() {
@@ -101,7 +116,7 @@ public class MongoEndpointTests {
 
     @Test
     public void testVariantQueryGetEndpoint() {
-        Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, VARIANTS_QUERY);
+        Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, getServiceUrl(VARIANTS_QUERY));
         assertEquals("Checking limited results retrieved", 10, ((List<?>) result.get("results")).size());
         List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
         assertTrue("ID found", results.get(0).containsKey("_id"));
@@ -109,7 +124,7 @@ public class MongoEndpointTests {
 
     @Test
     public void testVariantQueryPostEndpoint() {
-        Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, VARIANTS_QUERY, "{}");
+        Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, getServiceUrl(VARIANTS_QUERY), "{}");
         List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
         assertEquals("Checking limited results retrieved", 10, results.size());
         assertTrue("ID found", results.get(0).containsKey("_id"));
@@ -117,7 +132,7 @@ public class MongoEndpointTests {
 
     @Test
     public void testVariantFetchGetEndpoint() {
-        Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, VARIANTS_FETCH);
+        Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, getServiceUrl(VARIANTS_FETCH));
         List<Map<String, Object>> result = (List<Map<String, Object>>) results.get("results");
         assertEquals("Checking all results found", 10, result.size());
         assertTrue("ID found", result.get(0).containsKey("_id"));
@@ -125,7 +140,7 @@ public class MongoEndpointTests {
 
     @Test
     public void testVariantFetchPostEndpoint() {
-        Map<String, Object> results = postUrlToObject(MAP_REF, restTemplate, VARIANTS_FETCH, "{}");
+        Map<String, Object> results = postUrlToObject(MAP_REF, restTemplate, getServiceUrl(VARIANTS_FETCH), "{}");
         List<Map<String, Object>> result = (List<Map<String, Object>>) results.get("results");
         assertEquals("Checking all results found", 10, result.size());
         assertTrue("ID found", result.get(0).containsKey("_id"));

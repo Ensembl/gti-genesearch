@@ -11,5 +11,8 @@ install:
   - ./gradlew assemble
 
 script:
-  - ./gradlew clean check -i
-  - ./gradlew :search:cleanTest :search:test --tests org.ensembl.genesearch.* -ea -Dtests.security.manager=false
+  - ./gradlew clean compileJava compileTestJava -i
+  - ./gradlew search:cleanTest search:test --tests org.ensembl.genesearch.utils.*
+  - ./gradlew search:cleanTest search:test --tests org.ensembl.genesearch.info.*
+  - ./gradlew search:cleanTest search:test --tests org.ensembl.genesearch.output.*
+  - ./gradlew web:cleanTest web:test --tests org.ensembl.gti.genesearch.rest.MapXmlWriterTest

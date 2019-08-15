@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 
 import org.apache.solr.client.solrj.SolrQuery;
-import org.ensembl.genesearch.QueryHandlerTest;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.junit.Test;
 
 /**

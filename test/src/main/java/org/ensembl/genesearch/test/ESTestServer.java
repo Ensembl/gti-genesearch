@@ -57,10 +57,11 @@ public class ESTestServer {
     public ESTestServer() {
         TransportAddress transportAddress;
         Settings settings;
+        System.setProperty("es.set.netty.runtime.available.processors", "false");
         try {
             log.info("Try to connect to existing test ES");
             // look for a accessible Test ES server available locally
-            transportAddress = new TransportAddress(InetAddress.getByName("gti-es-test.ebi.ac.uk"), 9300);
+            transportAddress = new TransportAddress(InetAddress.getByName("gti-elastic-test.ebi.ac.uk"), 9300);
             clusterName = "genesearch";
             settings = Settings.builder().put("cluster.name", clusterName).build();
             client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
@@ -71,8 +72,8 @@ public class ESTestServer {
             }
             log.info("Connected to ES Integration test server ");
         } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
-            log.info("gti-es-test not found / not available: " + e.getMessage());
-            container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.6.1");
+            log.info("gti-elastic-test not found / not available: " + e.getMessage());
+            container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.8.1");
             container.start();
             clusterName = "docker-cluster";
             settings = Settings.builder().put("cluster.name", clusterName).build();
