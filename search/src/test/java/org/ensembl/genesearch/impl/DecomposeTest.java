@@ -14,30 +14,24 @@
 
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.List;
-
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.impl.JoinMergeSearch.SubSearchParams;
 import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
-import org.junit.AfterClass;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author dstaines
@@ -45,11 +39,8 @@ import org.slf4j.LoggerFactory;
  */
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class DecomposeTest {
+public class DecomposeTest extends AbstractESTestCase {
 
-	static Logger log = LoggerFactory.getLogger(ESGeneSearchTest.class);
-
-	static ESTestServer testServer;
 	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
 	static DataTypeInfo genomeInfo = DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json");
 	static DataTypeInfo homologueInfo = DataTypeInfo.fromResource("/datatypes/homologues_datatype_info.json");
@@ -63,18 +54,16 @@ public class DecomposeTest {
 	static JoinMergeSearch geneSearch;
 
 	@BeforeClass
-	public static void setUp() throws IOException {
-		// index a sample of JSON
-		testServer = new ESTestServer();
-		search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
-		gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE, genomeInfo);
+	public static void initData() throws IOException {
+		search = new ESSearch(esTestClient.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
+		gSearch = new ESSearch(esTestClient.getClient(), ESSearch.GENES_INDEX, ESSearch.GENOME_ESTYPE, genomeInfo);
 		provider = new SearchRegistry().registerSearch(SearchType.GENES, search)
 				.registerSearch(SearchType.HOMOLOGUES, search).registerSearch(SearchType.GENOMES, gSearch);
 		geneSearch = new GeneSearch(provider);
 		log.info("Reading documents");
 		String json = DataUtils.readGzipResource("/es_variants.json.gz");
 		log.info("Creating test index");
-		testServer.indexTestDocs(json, ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
+		esTestClient.indexTestDocs(json, ESSearch.VARIANTS_INDEX, ESSearch.VARIANT_ESTYPE);
 	}
 
 	@Test
@@ -173,11 +162,4 @@ public class DecomposeTest {
 				to.queries.stream().anyMatch(f -> f.getFieldName().equals("display_name")));
 		assertEquals("To key is id", "id", to.keys[0]);
 	}
-
-	@AfterClass
-	public static void tearDown() throws IOException {
-		log.info("Disconnecting server");
-		testServer.disconnect();
-	}
-
 }

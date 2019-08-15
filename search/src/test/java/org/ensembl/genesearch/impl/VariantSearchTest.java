@@ -13,8 +13,16 @@
  */
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
+import org.ensembl.genesearch.*;
+import org.ensembl.genesearch.info.DataTypeInfo;
+import org.ensembl.genesearch.test.MongoTestServer;
+import org.ensembl.genesearch.utils.DataUtils;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -22,43 +30,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
-import org.ensembl.genesearch.utils.QueryHandlerTest;
-import org.ensembl.genesearch.QueryOutput;
-import org.ensembl.genesearch.QueryResult;
-import org.ensembl.genesearch.Search;
-import org.ensembl.genesearch.SearchResult;
-import org.ensembl.genesearch.SearchType;
-import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.utils.DataUtils;
-import org.ensembl.genesearch.test.ESTestServer;
-import org.ensembl.genesearch.test.MongoTestServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class VariantSearchTest {
-
-    static Logger log = LoggerFactory.getLogger(VariantSearchTest.class);
+public class VariantSearchTest extends AbstractESTestCase {
 
     private static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
     private static DataTypeInfo variantInfo = DataTypeInfo.fromResource("/datatypes/mongo_variants_datatype_info.json");
 
-    static ESTestServer testServer;
     private static MongoTestServer mongoTestServer;
     static Search search;
     private static Search geneSearch;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void initData() throws IOException {
         // index a sample of JSON
-        testServer = new ESTestServer();
-        ESSearch esGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
+        ESSearch esGeneSearch = new ESSearch(esTestClient.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
         mongoTestServer = new MongoTestServer();
 
         Search mSearch = new MongoSearch(mongoTestServer.getCollection(), variantInfo);
@@ -70,7 +59,7 @@ public class VariantSearchTest {
         String variantJson = DataUtils.readGzipResource("/variants.json.gz");
         mongoTestServer.indexData(variantJson);
         String geneData = DataUtils.readGzipResource("/rice_genes.json.gz");
-        testServer.indexTestDocs(geneData, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+        esTestClient.indexTestDocs(geneData, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
     }
 
     @Test
@@ -204,10 +193,9 @@ public class VariantSearchTest {
     }
 
     @AfterClass
-    public static void tearDown() {
-        log.info("Disconnecting server");
+    public static void tearDownMongo() {
+        log.info("Disconnecting Mongo server");
         mongoTestServer.disconnect();
-        testServer.disconnect();
     }
 
 }

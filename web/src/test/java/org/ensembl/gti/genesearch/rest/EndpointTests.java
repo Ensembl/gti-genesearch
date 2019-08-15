@@ -17,10 +17,11 @@ package org.ensembl.gti.genesearch.rest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ensembl.genesearch.impl.ESSearch;
-import org.ensembl.genesearch.test.ESTestServer;
+import org.ensembl.genesearch.test.ESTestClient;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.ensembl.gti.genesearch.services.Application;
 import org.ensembl.gti.genesearch.services.EndpointSearchProvider;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,7 +40,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.web.client.RestTemplate;
 
@@ -75,7 +75,7 @@ public class EndpointTests {
     private String INFO = "genes/info";
 
     private static Logger log = LoggerFactory.getLogger(EndpointTests.class);
-    private static ESTestServer esTestServer;
+    private static ESTestClient esTestClient;
 
     static ESSearch geneSearch;
     static ESSearch genomeSearch;
@@ -84,13 +84,13 @@ public class EndpointTests {
     public static void setUp() throws IOException {
         // create our ES test server once only
         log.info("Setting up ");
-        esTestServer = new ESTestServer();
+        esTestClient = new ESTestClient();
         log.info("Reading documents");
         String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
         String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
         log.info("Creating test index");
-        esTestServer.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
-        esTestServer.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
+        esTestClient.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+        esTestClient.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
 
     }
 
@@ -110,8 +110,8 @@ public class EndpointTests {
     @Before
     public void injectSearch() {
         // ensure we always use our test instances
-        log.info("Inject search " + esTestServer.getClient());
-        provider.setESClient(esTestServer.getClient());
+        log.info("Inject search " + esTestClient.getClient());
+        provider.setESClient(esTestClient.getClient());
     }
 
     @Test
@@ -563,4 +563,9 @@ public class EndpointTests {
 
     }
 
+    @AfterClass
+    public static void tearDown() {
+        log.info("Disconnecting server");
+        esTestClient.disconnect();
+    }
 }

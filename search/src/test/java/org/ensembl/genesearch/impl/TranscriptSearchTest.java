@@ -16,15 +16,11 @@ package org.ensembl.genesearch.impl;
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.ensembl.genesearch.*;
 import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.ensembl.genesearch.utils.QueryHandlerTest;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,11 +33,8 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class TranscriptSearchTest {
+public class TranscriptSearchTest extends AbstractESTestCase {
 
-	static Logger log = LoggerFactory.getLogger(TranscriptSearchTest.class);
-
-	static ESTestServer testServer;
 	static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
 	static DataTypeInfo transcriptsInfo = DataTypeInfo.fromResource("/datatypes/transcripts_datatype_info.json");
 	static ESSearchFlatten search;
@@ -52,15 +45,14 @@ public class TranscriptSearchTest {
 			.registerSearch(SearchType.GENES, gSearch);
 
 	@BeforeClass
-	public static void setUp() throws IOException {
-		testServer = new ESTestServer();
-		search = new ESSearchFlatten(testServer.getClient(), ESSearch.GENES_INDEX,
+	public static void initData() throws IOException {
+		search = new ESSearchFlatten(esTestClient.getClient(), ESSearch.GENES_INDEX,
 				ESSearch.GENE_ESTYPE, "transcripts", "genes", transcriptsInfo);
-		gSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
+		gSearch = new ESSearch(esTestClient.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
 		// index a sample of JSON
 		log.info("Creating test index");
-		testServer.indexTestDocs(DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz"), ESSearch.GENES_INDEX,ESSearch.GENE_ESTYPE);
-        testServer.indexTestDocs(DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genome.json.gz"), ESSearch.GENOMES_INDEX,ESSearch.GENOME_ESTYPE);
+		esTestClient.indexTestDocs(DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz"), ESSearch.GENES_INDEX,ESSearch.GENE_ESTYPE);
+        esTestClient.indexTestDocs(DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genome.json.gz"), ESSearch.GENOMES_INDEX,ESSearch.GENOME_ESTYPE);
 	}
 
 	@Test
@@ -154,11 +146,4 @@ public class TranscriptSearchTest {
 			last = current;
 		}
 	}	
-
-	@AfterClass
-	public static void tearDown() throws IOException {
-		log.info("Disconnecting server");
-		testServer.disconnect();
-	}
-
 }

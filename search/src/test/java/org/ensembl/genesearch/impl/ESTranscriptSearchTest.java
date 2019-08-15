@@ -14,18 +14,17 @@
 package org.ensembl.genesearch.impl;
 
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
-import org.ensembl.genesearch.*;
+import org.ensembl.genesearch.Query;
+import org.ensembl.genesearch.QueryOutput;
+import org.ensembl.genesearch.QueryResult;
+import org.ensembl.genesearch.SearchResult;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.ensembl.genesearch.utils.QueryHandlerTest;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -35,18 +34,14 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class ESTranscriptSearchTest {
+public class ESTranscriptSearchTest extends AbstractESTestCase {
 
-    static Logger log = LoggerFactory.getLogger(ESTranscriptSearchTest.class);
-
-    static ESTestServer testServer;
     static ESSearchFlatten search;
 
     @BeforeClass
-    public static void setUp() throws IOException {
-        testServer = new ESTestServer();
+    public static void initData() throws IOException {
         // index a sample of JSON
-        search = new ESSearchFlatten(testServer.getClient(),
+        search = new ESSearchFlatten(esTestClient.getClient(),
                 ESSearch.GENES_INDEX,
                 ESSearch.GENE_ESTYPE,
                 "transcripts",
@@ -55,7 +50,7 @@ public class ESTranscriptSearchTest {
         log.info("Reading documents");
         String json = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
         log.info("Creating test index");
-        testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+        esTestClient.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
     }
 
     @Test
@@ -190,11 +185,4 @@ public class ESTranscriptSearchTest {
             last = current;
         }
     }
-
-    @AfterClass
-    public static void tearDown() throws IOException {
-        log.info("Disconnecting server");
-        testServer.disconnect();
-    }
-
 }

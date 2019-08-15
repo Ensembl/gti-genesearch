@@ -14,13 +14,13 @@
 
 package org.ensembl.genesearch.impl;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-
 import org.apache.solr.client.solrj.SolrQuery;
 import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.junit.Test;
+
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author dstaines

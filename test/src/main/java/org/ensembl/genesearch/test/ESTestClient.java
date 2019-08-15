@@ -47,17 +47,17 @@ import java.util.Map;
  *
  * @author dstaines
  */
-public class ESTestServer {
+public class ESTestClient {
 
     private Client client;
     private String clusterName;
-    static Logger log = LoggerFactory.getLogger(ESTestServer.class);
+    static Logger log = LoggerFactory.getLogger(ESTestClient.class);
     private static ElasticsearchContainer container;
 
-    public ESTestServer() {
+    public ESTestClient() {
         TransportAddress transportAddress;
         Settings settings;
-        System.setProperty("es.set.netty.runtime.available.processors", "false");
+        // System.setProperty("es.set.netty.runtime.available.processors", "false");
         try {
             log.info("Try to connect to existing test ES");
             // look for a accessible Test ES server available locally
@@ -98,7 +98,7 @@ public class ESTestServer {
         try {
             log.info("Reading " + index + " mapping");
             // slurp the mapping file into memory
-            String geneMapping = IOUtils.toString(ESTestServer.class.getResourceAsStream("/indexes/" + type + "_index.json"), Charset.defaultCharset());
+            String geneMapping = IOUtils.toString(ESTestClient.class.getResourceAsStream("/indexes/" + type + "_index.json"), Charset.defaultCharset());
             geneMapping = geneMapping.replaceAll("SHARDN", "1");
             Map<String, Object> geneIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {
             });

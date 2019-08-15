@@ -23,12 +23,9 @@ import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -38,35 +35,32 @@ import java.util.Map;
 
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class EVAVariantGeneSearchTest {
+public class EVAVariantGeneSearchTest extends AbstractESTestCase {
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(WireMockConfiguration.options().dynamicPort());
 
-    static Logger log = LoggerFactory.getLogger(ESGenomeSearchTest.class);
     static GeneSearch geneSearch;
-    static ESTestServer testServer;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void initData() throws IOException {
 
-        testServer = new ESTestServer();
         // index a sample of JSON for use in search genomes
         log.info("Reading documents");
         {
             String json = DataUtils.readGzipResource("/eva_genomes.json.gz");
             log.info("Creating test index for genomes");
-            testServer.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
+            esTestClient.indexTestDocs(json, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
         }
         {
             String json = DataUtils.readGzipResource("/eva_genes.json.gz");
             log.info("Creating test index for genomes");
-            testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+            esTestClient.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         }
-        ESSearch ensemblGenomeSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX,
+        ESSearch ensemblGenomeSearch = new ESSearch(esTestClient.getClient(), ESSearch.GENOMES_INDEX,
                 ESSearch.GENOME_ESTYPE, DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json"));
 
-        ESSearch ensemblGeneSearch = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
+        ESSearch ensemblGeneSearch = new ESSearch(esTestClient.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE,
                 DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json"));
 
         // build a finder using the test ES server and a wiremock REST
@@ -97,10 +91,10 @@ public class EVAVariantGeneSearchTest {
         Assert.assertTrue("Variants found", gene.containsKey("variants"));
         List<Map<String, Object>> variants = (List) gene.get("variants");
         Assert.assertEquals("Checking for correct rows", 30, variants.size());
-        for (String key : new String[] { "ids", "chromosome", "start", "reference" }) {
+        for (String key : new String[]{"ids", "chromosome", "start", "reference"}) {
             Assert.assertTrue(key + " found", variants.stream().allMatch(v -> v.containsKey(key)));
         }
-        for (String key : new String[] { "alternate" }) {
+        for (String key : new String[]{"alternate"}) {
             Assert.assertFalse(key + " not found", variants.stream().allMatch(v -> v.containsKey(key)));
         }
     }
@@ -120,7 +114,7 @@ public class EVAVariantGeneSearchTest {
         //System.out.println(variants);
         Assert.assertTrue("Only reference G not found", variants.stream().allMatch(v -> "G".equals(v.get("reference"))));
     }
-    
+
     @Test
     public void testQueryJoinToSingleServerFilterQuery() {
         QueryResult result = geneSearch.query(Arrays.asList(new Query(FieldType.TERM, "id", "ENSG00000270921"), new Query(FieldType.NESTED, "variants", new Query(FieldType.TERM, "annot-ct", "SO:0001627"))),
@@ -136,7 +130,7 @@ public class EVAVariantGeneSearchTest {
         //System.out.println(variants);
         Assert.assertTrue("Only reference G not found", variants.stream().allMatch(v -> DataUtils.getObjValsForKey(v, "annotation.consequenceTypes.soTerms.soAccession").contains("SO:0001627")));
     }
-    
+
     @Test
     public void testQueryJoinToMultiple() {
         QueryResult result = geneSearch.query(Collections.emptyList(),
@@ -160,6 +154,6 @@ public class EVAVariantGeneSearchTest {
     @AfterClass
     public static void tearDown() {
         log.info("Disconnecting server");
-        testServer.disconnect();
+        esTestClient.disconnect();
     }
 }

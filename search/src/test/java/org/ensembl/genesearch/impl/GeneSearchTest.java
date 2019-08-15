@@ -17,18 +17,17 @@ package org.ensembl.genesearch.impl;
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.ensembl.genesearch.*;
 import org.ensembl.genesearch.info.DataTypeInfo;
-import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.ensembl.genesearch.utils.QueryHandlerTest;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -38,11 +37,8 @@ import static org.junit.Assert.*;
  */
 @RunWith(com.carrotsearch.randomizedtesting.RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class GeneSearchTest {
+public class GeneSearchTest extends AbstractESTestCase{
 
-    static Logger log = LoggerFactory.getLogger(ESGeneSearchTest.class);
-
-    static ESTestServer testServer;
     static DataTypeInfo geneInfo = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
     static DataTypeInfo genomeInfo = DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json");
     static DataTypeInfo homologueInfo = DataTypeInfo.fromResource("/datatypes/homologues_datatype_info.json");
@@ -56,11 +52,10 @@ public class GeneSearchTest {
     static GeneSearch geneSearch;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void initData() throws IOException {
         // index a sample of JSON
-        testServer = new ESTestServer();
-        search = new ESSearch(testServer.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
-        gSearch = new ESSearch(testServer.getClient(), ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE,
+        search = new ESSearch(esTestClient.getClient(), ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE, geneInfo);
+        gSearch = new ESSearch(esTestClient.getClient(), ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE,
                 genomeInfo);
         provider = new SearchRegistry().registerSearch(SearchType.GENES, search)
                 .registerSearch(SearchType.GENOMES, gSearch).registerSearch(SearchType.HOMOLOGUES, search);
@@ -71,10 +66,10 @@ public class GeneSearchTest {
         String json3 = DataUtils.readGzipResource("/wolbachia_endosymbiont_of_drosophila_melanogaster_genes.json.gz");
         String gJson = DataUtils.readGzipResource("/genomes.json.gz");
         log.info("Creating test indices");
-        testServer.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
-        testServer.indexTestDocs(json2, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
-        testServer.indexTestDocs(json3, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
-        testServer.indexTestDocs(gJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
+        esTestClient.indexTestDocs(json, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+        esTestClient.indexTestDocs(json2, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+        esTestClient.indexTestDocs(json3, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+        esTestClient.indexTestDocs(gJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
     }
 
     @Test
@@ -309,11 +304,4 @@ public class GeneSearchTest {
         SearchResult result = geneSearch.fetch(q, o);
         assertEquals("Fetched hits", 0, result.getResults().size());
     }
-
-    @AfterClass
-    public static void tearDown() {
-        log.info("Disconnecting server");
-        testServer.disconnect();
-    }
-
 }
