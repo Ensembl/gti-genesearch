@@ -153,10 +153,12 @@ curl -H "Content-Type: application/json" -X POST --data '["NEQ392","NEQ393"]' ht
 ```
 
 # Implementation notes
+
 See [implementation.md] for more information on implementation and design.
 
 # Copyright and Licensing
-Copyright 1999-2016 EMBL-European Bioinformatics Institute
+
+Copyright 1999-2019 EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 

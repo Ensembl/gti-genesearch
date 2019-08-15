@@ -17,11 +17,11 @@ url=$1
 type=$2
 name=$3
 n=$4
-if [ -z "$n" ]; then
+if [[ -z "$n" ]]; then
     n=8
 fi
 
-if [ -z "$url" ] || [ -z "$type" ] || [ -z "$name" ]; then
+if [[ -z "$url" ]] || [[ -z "$type" ]] || [[ -z "$name" ]]; then
     echo "Usage: $0 <url> <type> <name> [shardN]" 1>&2 
     exit 1
 fi

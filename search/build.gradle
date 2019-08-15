@@ -1,10 +1,24 @@
-apply plugin: 'application'
+// Search Engin system dependencies
+apply plugin: "application"
 
 test {
     systemProperty "tests.security.manager", false
     minHeapSize = "512m"
     maxHeapSize = "4096m"
 }
- 
-mainClassName = 'org.ensembl.genesearch.clients.IdLookupClient'
 
+mainClassName = "org.ensembl.genesearch.clients.IdLookupClient"
+
+dependencies {
+    compile "org.codelibs.elasticsearch.module:analysis-common:$elasticStackVersion"
+    compile "org.apache.commons:commons-lang3:3.4"
+    compile "commons-io:commons-io:2.4"
+    compile "com.google.guava:guava:16+"
+    compile "org.apache.commons:commons-collections4:4.1"
+    compile "com.github.samtools:htsjdk:2.13.2"
+    compile "com.beust:jcommander:1.48"
+    compile "org.springframework:spring-web:$springStackVersion"
+
+    testCompile "com.github.tomakehurst:wiremock-standalone:2.9.0"
+    testCompile "com.carrotsearch.randomizedtesting:randomizedtesting-runner:2.7.2"
+}

@@ -5,7 +5,7 @@ This project supports the indexing and retrieval of gene-centric information at 
 This project contains code for indexing data and then searching the finished database - please read the documentation in [indexing](index.md) and [searching](search.md) for more details.
 
 ## Copyright and Licensing
-Copyright 1999-2016 EMBL-European Bioinformatics Institute
+Copyright 1999-2019 EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 

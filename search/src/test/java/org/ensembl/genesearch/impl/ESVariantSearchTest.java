@@ -20,7 +20,7 @@ import java.util.Collections;
 
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.QueryHandlerTest;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
 import org.ensembl.genesearch.info.DataTypeInfo;

@@ -27,3 +27,4 @@ web/build
 .idea/
 *.iml
 /_Deparsed_XSubs.pm
+/test/build/

@@ -19,6 +19,7 @@ import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.test.ESTestServer;
 import org.ensembl.genesearch.test.MongoTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
+import org.ensembl.genesearch.utils.QueryHandlerTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

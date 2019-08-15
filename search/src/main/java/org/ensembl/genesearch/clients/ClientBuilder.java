@@ -64,9 +64,9 @@ public class ClientBuilder {
     public static Client buildClient(ClientParams params) {
         Client client = null;
         if (params.joinCluster) {
-            // client = buildClusterClient(params.clusterName, params.hostName);
+            client = buildClusterClient(params.clusterName, params.hostName);
         } else if (!isEmpty(params.clusterName)) {
-            // client = buildTransportClient(params.clusterName, params.hostName, params.port);
+            client = buildTransportClient(params.clusterName, params.hostName, params.port);
         }
         return client;
     }
@@ -75,41 +75,12 @@ public class ClientBuilder {
         // on startup
         log.info("Joining cluster " + clusterName);
         try {
-
-            Path tempDir = Files.createTempDirectory("esgenesearch_");
-
-            Settings settings = Settings.builder().put("http.enabled", "false").put("transport.tcp.port", "9300-9400")
-                    .put("discovery.zen.ping.multicast.enabled", "false")
-                    .put("discovery.zen.ping.unicast.hosts", hostName).put("path.home", tempDir.toString()).build();
-            Node node = new Node(settings) {
-
-                @Override
-                protected void registerDerivedNodeNameWithLogger(String nodeName) {
-
-                }
-            };
-            return node.client();
-            /*
-            log.debug(settings.toDelimitedString(','));
-
-            Node node = nodeBuilder().data(false).client(true).clusterName(clusterName).settings(settings).build()
-                    .start();
-            Node node = new Node(settings) {
-                @Override
-                protected void registerDerivedNodeNameWithLogger(String nodeName) {
-
-                }
-            };
-            // close the node when we're shutdown
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                try {
-                    node.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }));
-            return node.client();
-             */
+            boolean sniff = Boolean.parseBoolean(System.getProperty("es.sniff", "true"));
+            Settings settings = Settings.builder().put("cluster.name", clusterName)
+                    .put("client.transport.sniff", sniff)
+                    .build();
+            return new PreBuiltTransportClient(settings)
+                    .addTransportAddress(new TransportAddress(InetAddress.getByName(hostName), 9300));
         } catch (IOException e) {
             throw new ClientBuilderException(e.getMessage(), e);
         }
