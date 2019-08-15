@@ -1,0 +1,110 @@
+{
+  "settings": {
+    "number_of_shards": "SHARDN",
+    "number_of_replicas": 0,
+    "max_result_window": 50000,
+    "analysis": {
+      "analyzer": {
+        "string_lowercase": {
+          "type":      "custom",
+          "tokenizer": "standard",
+          "char_filter": [
+            "html_strip"
+          ],
+          "filter": [
+            "lowercase",
+            "asciifolding"
+          ]
+        }
+      },
+      "normalizer": {
+        "keyword_lowercase": {
+          "type": "custom",
+          "filter": ["lowercase"]
+        }
+      }
+    }
+  },
+  "aliases": {
+    "mirna": {}
+  },
+  "mappings": {
+    "mirna": {
+      "dynamic": "false",
+      "properties": {
+        "genome": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
+        "name": {
+          "type": "keyword",
+          "index": true
+        },
+        "accession": {
+          "type": "keyword",
+          "index": true
+        },
+        "method": {
+          "type": "keyword",
+          "index": true
+        },
+        "evidence": {
+          "type": "keyword",
+          "index": true
+        },
+        "feature_name": {
+          "type": "keyword",
+          "index": true
+        },
+        "display_label": {
+          "type": "keyword",
+          "index": true
+        },
+        "description": {
+          "type": "keyword",
+          "index": true
+        },
+        "class": {
+          "type": "keyword",
+          "index": true
+        },
+        "set_name": {
+          "type": "keyword",
+          "index": true
+        },
+        "locations": {
+          "type": "nested",
+          "properties": {
+            "seq_region_name": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "start": {
+              "type": "long",
+              "index": true
+            },
+            "end": {
+              "type": "long",
+              "index": true
+            },
+            "strand": {
+              "type": "keyword",
+              "index": true,
+              "norms": false
+            },
+            "supporting_information": {
+              "type": "keyword",
+              "index": true
+            },
+            "gene_stable_id": {
+              "type": "keyword",
+              "index": true
+            }
+          }
+        }
+      }
+    }
+  }
+}
