@@ -54,37 +54,42 @@ public class ESTestClient {
     static Logger log = LoggerFactory.getLogger(ESTestClient.class);
     private static ElasticsearchContainer container;
 
-    public ESTestClient() {
+    public ESTestClient() throws RuntimeException {
         TransportAddress transportAddress;
         Settings settings;
         // System.setProperty("es.set.netty.runtime.available.processors", "false");
-        try {
-            log.info("Try to connect to existing test ES");
-            // look for a accessible Test ES server available locally
-            transportAddress = new TransportAddress(InetAddress.getByName("gti-elastic-test.ebi.ac.uk"), 9300);
-            clusterName = "genesearch";
-            settings = Settings.builder().put("cluster.name", clusterName).build();
-            client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
-            ClusterHealthResponse healthResponse = client.admin().cluster().prepareHealth()
-                    .setTimeout(TimeValue.timeValueMinutes(1)).execute().actionGet();
-            if (healthResponse.isTimedOut()) {
-                throw new NoNodeAvailableException("Service Not available");
-            }
-            log.info("Connected to ES Integration test server ");
-        } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
-            log.info("gti-elastic-test not found / not available: " + e.getMessage());
+        String testProfile = System.getenv("TEST_PROFILE");
+
+        if (testProfile == null || testProfile.equals("local")) {
             container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.8.1");
             container.start();
             clusterName = "docker-cluster";
-            settings = Settings.builder().put("cluster.name", clusterName).build();
             transportAddress = new TransportAddress(container.getTcpHost());
-            client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
+
+        } else if (testProfile.equals("integration")) {
+
+            try {
+                log.info("Try to connect to existing test ES");
+                // look for a accessible Test ES server available locally
+                String elasticHost = System.getenv("elastic-host");
+                transportAddress = new TransportAddress(InetAddress.getByName(elasticHost != null ? elasticHost : "localhost"), 9300);
+                clusterName = "test-genesearch";
+            } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
+                log.info("Elastic test server connection error " + e.getMessage());
+                throw new RuntimeException("Unable to connect to integration server");
+            }
+        } else {
+            throw new RuntimeException("Unknown configuration profile");
         }
-        // only create index when using docker, local test server should be up and set up already
-        createIndex("genes", "gene");
-        createIndex("genomes", "genome");
-        createIndex("variants", "variant");
-        log.debug("Created indexes ");
+        settings = Settings.builder().put("cluster.name", clusterName).build();
+        client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
+
+        ClusterHealthResponse healthResponse = client.admin().cluster().prepareHealth()
+                .setTimeout(TimeValue.timeValueMinutes(1)).execute().actionGet();
+        if (healthResponse.isTimedOut()) {
+            throw new RuntimeException("ES Service Not available");
+        }
+        log.info(String.format("Connected to ES %s test server", testProfile));
     }
 
     /**
@@ -94,29 +99,33 @@ public class ESTestClient {
      * @param index name of index to create
      * @param type  mapping file type
      */
-    private void createIndex(String index, String type) {
+    public void createIndex(String index, String type) {
         try {
             log.info("Reading " + index + " mapping");
             // slurp the mapping file into memory
             String geneMapping = IOUtils.toString(ESTestClient.class.getResourceAsStream("/indexes/" + type + "_index.json"), Charset.defaultCharset());
             geneMapping = geneMapping.replaceAll("SHARDN", "1");
+            geneMapping = geneMapping.replaceAll("REPLICAS", "0");
             Map<String, Object> geneIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {
             });
 
             if (client.admin().indices().prepareExists(index).execute().actionGet().isExists()) {
-                log.info("Deleting index");
+                log.info("Index exists... Resetting");
                 client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
+            } else {
+                log.info("Creating index");
             }
-            log.info("Creating index");
             // create an index with mapping
             Map<String, Object> mappingObj = (Map<String, Object>) geneIndexObj.get("mappings");
             client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>) geneIndexObj.get("settings")).get();
             client.admin().indices().preparePutMapping(index).setType(type).setSource(mapper.writeValueAsString(mappingObj.get(type)), XContentType.JSON).get();
             log.info("Index created");
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     public Client getClient() {
         return client;
@@ -161,10 +170,15 @@ public class ESTestClient {
      * @param type
      * @throws JsonProcessingException
      */
-    protected void indexTestDoc(Map<String, Object> doc, String index, String type) throws JsonProcessingException {
+    protected void indexTestDoc(Map<String, Object> doc, String index, String type) throws
+            JsonProcessingException {
         String id = String.valueOf(doc.get("id"));
         log.info("Id used " + id);
         client.prepareIndex(index, type, id).setSource(mapper.writeValueAsString(doc), XContentType.JSON).execute().actionGet();
+    }
+
+    protected boolean hasContainer() {
+        return (container != null);
     }
 
     /**

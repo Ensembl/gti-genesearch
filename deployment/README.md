@@ -5,7 +5,7 @@ This document describes how to use `ansible` to deploy a cluster of Elastic node
 `ansible` is best deployed in your own virtual environment to avoid clashes with the EBI farm e.g.
 ```
 virtualenv .
-. bin/activate
+source ./bin/activate
 ```
 
 # Configuration
@@ -14,7 +14,7 @@ To use ansible, you need the following files:
     * `es-data` - nodes hosting Elastic data
     * `es-head` - a non-data nodes that acts as entry point to the cluster
     * `web-head` - the web application
-* `vars.yml` - variables used in deployment and to generate an `application.properties` file. See `vars.yml.example`
+* `vars.yml` - v;wqariables used in deployment and to generate an `application.properties` file. See `vars.yml.example`
 
 # Deployment
 To roll out ES and web across the hosts in `hosts`:

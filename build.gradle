@@ -65,7 +65,12 @@ allprojects {
 
 project(':test') {
     version = "1.0"
-    jar
+    dependencies {
+        compile 'com.github.fakemongo:fongo:2.0.9'
+        compile "org.testcontainers:elasticsearch:1.11.1"
+        testCompile 'com.github.stefanbirkner:system-rules:1.19.0'
+        testCompile project(":search")
+    }
 }
 
 project(':search'){

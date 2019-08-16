@@ -21,17 +21,18 @@
     - common
     - es_configure
 - hosts: es-head
-  remote_user : ensprod  
+  remote_user : "{{ remote_user_name }}"
   vars_files:
     - vars.yml
     - es-head-vars.yml
   roles:
     - common
     - es_configure
-- hosts: web-head
-  remote_user : "{{ remote_user_name }}"
-  vars_files:
-    - vars.yml
-  roles:
-    - restart_web
+# TODO activate restart web in ansible (not  Working for 0.2)
+#- hosts: web-head
+#  remote_user : "{{ remote_user_name }}"
+#  vars_files:
+#    - vars.yml
+#  roles:
+#    - restart_web
 

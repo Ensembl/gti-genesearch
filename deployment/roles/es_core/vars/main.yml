@@ -9,6 +9,9 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
-#
-es_url : https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.3/elasticsearch-2.3.3.tar.gz
 
+#  Go to this page to check urls for updates in case ES version change: https://www.elastic.co/downloads/past-releases/
+#
+es_version : "6.8.1"
+es_archive : "elasticsearch-{{ es_version }}.tar.gz"
+es_url : "https://artifacts.elastic.co/downloads/elasticsearch/{{ es_archive }}"

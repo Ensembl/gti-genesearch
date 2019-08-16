@@ -10,5 +10,18 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-java_dir : "{{ base_dir }}/java"
-java_url : https://download.java.net/openjdk/jdk8u40/ri/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
+---
+- hosts: es-head
+  remote_user : "{{ remote_user_name }}"
+  vars:
+    deploy_target: "test"
+  vars_files:
+    - vars.yml
+    - es-head-vars.yml
+  roles:
+    - common
+    - java
+    - es_core
+    - es_configure
+  environment:
+    http_proxy: "{{ cache_proxy }}"
