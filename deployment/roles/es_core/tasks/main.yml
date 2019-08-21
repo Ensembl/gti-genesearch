@@ -39,4 +39,3 @@
     src: elastic.sh.j2
     dest: "{{ es_dir }}/elastic.sh"
     mode: 0700
-

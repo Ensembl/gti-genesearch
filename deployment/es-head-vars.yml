@@ -12,4 +12,4 @@
 #
 es_template: head_elasticsearch.yml.j2
 es_node_data: false
-es_node_master: false
+es_node_master: true

@@ -12,6 +12,5 @@
 
 #  Go to this page to check urls for updates in case ES version change: https://www.elastic.co/downloads/past-releases/
 #
-es_version : "6.8.1"
 es_archive : "elasticsearch-{{ es_version }}.tar.gz"
 es_url : "https://artifacts.elastic.co/downloads/elasticsearch/{{ es_archive }}"
