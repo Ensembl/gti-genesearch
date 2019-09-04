@@ -15,6 +15,9 @@
   stat:
     path: "{{ base_dir }}"
   register: basedirstat
+- name: Display Env
+  debug:
+    var: env
 - name: Create base directory
   file:
     path: "{{ base_dir }}"

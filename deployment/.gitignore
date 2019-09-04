@@ -3,3 +3,4 @@ java.tar.gz
 vars.yml
 *.retry
 hosts
+ansible.cfg

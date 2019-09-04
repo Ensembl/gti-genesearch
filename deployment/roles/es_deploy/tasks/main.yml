@@ -11,25 +11,34 @@
 #     limitations under the License.#
 #
 ---
-- name: Create ES directory
+- name: Create base ES directory
   file:
     path: "{{ es_dir }}"
     state: directory
     recurse: yes
-- name: Create ES logs directory
+- name: Create Genesearch logs directory
   file:
     path: "{{ base_dir }}/es_logs"
     state: directory
     recurse: yes
+- name: Create bin directory
+  file:
+    path: "{{ base_dir }}/bin"
+    state: directory
+    recurse: yes
+#- name: Remove existing
+#  file:
+#    state: absent
+#    path: "{{ es_dir }}/*"
 - name: Download ES
   local_action:
-    module: command wget "{{ es_url }}" --directory-prefix={{ es_dir }}
+    module: command wget "{{ es_url }}" --directory-prefix={{ base_dir }}
     args:
       warn: "false"
       creates: "{{ es_archive }}"
 - name: Unpack Elastic
   unarchive:
-    src: "{{ es_dir }}/{{ es_archive }}"
+    src: "{{ base_dir }}/{{ es_archive }}"
     dest: "{{ es_dir }}"
     remote_src: yes
     extra_opts: ['--strip-components=1']
@@ -37,5 +46,5 @@
 - name: Install control script
   template:
     src: elastic.sh.j2
-    dest: "{{ es_dir }}/elastic.sh"
+    dest: "{{ base_dir }}/bin/elastic.sh"
     mode: 0700

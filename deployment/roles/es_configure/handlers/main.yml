@@ -11,9 +11,9 @@
 #     limitations under the License.#
 #
 ---
-- name: start web
-  shell: "{{ web_dir }}/webapp.sh start"
-- name: stop web
-  shell: "{{ web_dir }}/webapp.sh stop"
-- name: restart web
-  shell: "{{ web_dir }}/webapp.sh restart"
+- name: start es
+  shell: "{{ es_dir }}/elastic.sh start"
+- name: stop es
+  shell: "{{ es_dir }}/elastic.sh stop"
+- name: restart es
+  shell: "{{ es_dir }}/elastic.sh restart"

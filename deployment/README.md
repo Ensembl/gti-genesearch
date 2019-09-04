@@ -14,7 +14,7 @@ To use ansible, you need the following files:
     * `es-data` - nodes hosting Elastic data
     * `es-head` - a non-data nodes that acts as entry point to the cluster
     * `web-head` - the web application
-* `vars.yml` - v;wqariables used in deployment and to generate an `application.properties` file. See `vars.yml.example`
+* `vars.yml` - variables used in deployment and to generate an `application.properties` file. See `vars.yml.example`
 
 # Deployment
 To roll out ES and web across the hosts in `hosts`:
@@ -41,7 +41,7 @@ Note that older versions of the playbook installed the Elasticsearch `head` plug
 
 ## Known issues
 ### Java downloads
-Oracle will only allow downloads of Java with a clickthrough agreement. This is a pain for command line access, so this ansible project uses `curl` to pass a cookie to Oracle to allow download. Note that the URLs are somewhat cryptic and may need updating over time. You can find the URL used in [roles/java/vars/main.yml](roles/java/vars/main.yml). You can find the current URLs from http://www.oracle.com/technetwork/java/javase/downloads/index.html and this topic is discussed more online e.g. https://gist.github.com/hgomez/4697585
+Oracle will only allow downloads of Java with a click through agreement. This is a pain for command line access, so this ansible project uses `curl` to pass a cookie to Oracle to allow download. Note that the URLs are somewhat cryptic and may need updating over time. You can find the URL used in [roles/java/vars/main.yml](roles/java/vars/main.yml). You can find the current URLs from http://www.oracle.com/technetwork/java/javase/downloads/index.html and this topic is discussed more online e.g. https://gist.github.com/hgomez/4697585
 
 An alternative is to use OpenJDK Java. However, any change of JDK needs careful testing as performance and functionality can reportedly be different (this was certainly true in the past).
 

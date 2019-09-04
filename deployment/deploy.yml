@@ -10,26 +10,51 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-# create a fresh config file and restart each server
 ---
-- hosts: es-data
-  remote_user : "{{ remote_user_name }}"
-  vars_files:
-    - vars.yml
-  roles:
-    - common
-    - es_configure
 - hosts: es-head
-  remote_user : "{{ remote_user_name }}"
+  remote_user: "{{ remote_user_name }}"
+  tasks:
+    - name: Display all variables
+      debug:
+        var: hostvars[inventory_hostname]
+        verbosity: 4
   vars_files:
     - vars.yml
   roles:
     - common
+    - java
+    - es_deploy
     - es_configure
-- hosts: web-head
-  remote_user : "{{ remote_user_name }}"
+  environment:
+    http_proxy: "{{ cache_proxy }}"
+- hosts: es-data
+  tasks:
+    - name: Display all variables
+      debug:
+        var: hostvars[inventory_hostname]
+        verbosity: 4
+  remote_user: "{{ remote_user_name }}"
   vars_files:
     - vars.yml
   roles:
-    - restart_web
-
+    - common
+    - java
+    - es_deploy
+    - es_configure
+  environment:
+    http_proxy: "{{ cache_proxy }}"
+- hosts: web-head
+  tasks:
+    - name: Display all variables
+      debug:
+        var: hostvars[inventory_hostname]
+        verbosity: 4
+  remote_user: "{{ remote_user_name }}"
+  vars_files:
+    - vars.yml
+  roles:
+    - common
+    - java
+    - webapp
+  environment:
+    http_proxy: "{{ cache_proxy }}"

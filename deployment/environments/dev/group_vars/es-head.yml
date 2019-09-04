@@ -10,10 +10,7 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
----
-- name: start web
-  shell: "{{ web_dir }}/webapp.sh start"
-- name: stop web
-  shell: "{{ web_dir }}/webapp.sh stop"
-- name: restart web
-  shell: "{{ web_dir }}/webapp.sh restart"
+# Override ES template for local dev install
+es_template: "environments/dev/templates/elasticsearch.yml.j2"
+es_node_data: false
+es_node_master: true

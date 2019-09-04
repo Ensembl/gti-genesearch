@@ -16,6 +16,4 @@
     src: "{{ es_template }}"
     dest: "{{ es_dir }}/config/elasticsearch.yml"
     mode: 0700
-- name: Trigger ES restart
-  command: /bin/true
   notify: restart es

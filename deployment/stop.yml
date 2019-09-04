@@ -17,7 +17,7 @@
     - vars.yml
   roles:
     - common
-    - stop_es
+    - role: 'roles/elastic/stop'
 - hosts: web-head
   remote_user : "{{ remote_user_name }}"
   vars_files:
