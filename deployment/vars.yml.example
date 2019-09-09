@@ -15,7 +15,7 @@ es_cluster : genesearch
 es_dir : "{{ base_dir }}/es"
 es_pid_file : {{ base_dir }}/es.pid
 # list of hosts that make up the ES cluster
-es_hosts: "{{ groups['es-head'] + groups['es-data'] }}"   
+es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"
 # should be total_nodes/2+1
 min_masters : 5
 es_heap : 16g

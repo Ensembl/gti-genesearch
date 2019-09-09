@@ -10,6 +10,6 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-es_template: data_elasticsearch.yml.j2
+es_template: "{{ env }}/data_elasticsearch.yml.j2"
 es_node_data: true
 es_node_master: true

@@ -11,9 +11,9 @@ source ./bin/activate
 # Configuration
 To use ansible, you need the following files:
 * `hosts` - groups of hosts that play different roles. The groups are:
-    * `es-data` - nodes hosting Elastic data
-    * `es-head` - a non-data nodes that acts as entry point to the cluster
-    * `web-head` - the web application
+    * `es_data` - nodes hosting Elastic data
+    * `es_head` - a non-data nodes that acts as entry point to the cluster
+    * `web_head` - the web application
 * `vars.yml` - variables used in deployment and to generate an `application.properties` file. See `vars.yml.example`
 
 # Deployment

@@ -11,7 +11,8 @@
 #     limitations under the License.#
 #
 ---
-- hosts: es-head
+- hosts: es_head
+  name: Deploy ES Head node
   remote_user: "{{ remote_user_name }}"
   tasks:
     - name: Display all variables
@@ -27,7 +28,8 @@
     - es_configure
   environment:
     http_proxy: "{{ cache_proxy }}"
-- hosts: es-data
+- hosts: es_data:!localhost
+  name: Deploy ES Data node
   tasks:
     - name: Display all variables
       debug:
@@ -43,7 +45,7 @@
     - es_configure
   environment:
     http_proxy: "{{ cache_proxy }}"
-- hosts: web-head
+- hosts: web_head
   tasks:
     - name: Display all variables
       debug:

@@ -11,14 +11,14 @@
 #     limitations under the License.#
 #
 ---
-- hosts: es-data:es-head
+- hosts: es_data:es_head
   remote_user : "{{ remote_user_name }}"
   vars_files:
     - vars.yml
   roles:
     - common
     - role: 'roles/elastic/stop'
-- hosts: web-head
+- hosts: web_head
   remote_user : "{{ remote_user_name }}"
   vars_files:
     - vars.yml

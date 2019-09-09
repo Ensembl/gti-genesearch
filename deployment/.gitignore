@@ -2,5 +2,5 @@ checkout
 java.tar.gz
 vars.yml
 *.retry
-hosts
-ansible.cfg
+environments/prod/hosts
+environments/stage/hosts

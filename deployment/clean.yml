@@ -11,7 +11,7 @@
 #     limitations under the License.#
 #
 ---
-- hosts: es-data:es-head:web-head
+- hosts: es_data:es_head:web_head
   remote_user : "{{ remote_user_name }}"
   vars_files:
     - vars.yml
