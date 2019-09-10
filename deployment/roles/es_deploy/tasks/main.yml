@@ -11,39 +11,31 @@
 #     limitations under the License.#
 #
 ---
-- name: Create base ES directory
+- name: Create ElasticSearch sources directory
   file:
     path: "{{ es_dir }}"
     state: directory
     recurse: yes
-- name: Create Genesearch logs directory
+- name: Create ElasticSearch logs directory
   file:
-    path: "{{ base_dir }}/es_logs"
+    path: "{{ es_data }}"
     state: directory
     recurse: yes
-- name: Create bin directory
-  file:
-    path: "{{ base_dir }}/bin"
-    state: directory
-    recurse: yes
-#- name: Remove existing
-#  file:
-#    state: absent
-#    path: "{{ es_dir }}/*"
-- name: Download ES
-  local_action:
-    module: command wget "{{ es_url }}" --directory-prefix={{ base_dir }}
-    args:
-      warn: "false"
-      creates: "{{ es_archive }}"
+- name: Download Elastic Stack
+  get_url:
+    url: "{{ es_url }}"
+    dest: "{{ base_dir }}/src/"
+  register: es_download
 - name: Unpack Elastic
   unarchive:
-    src: "{{ base_dir }}/{{ es_archive }}"
-    dest: "{{ es_dir }}"
+    src: "{{ base_dir }}/src/{{ es_archive }}"
+    dest: "{{ base_dir }}/es/"
     remote_src: yes
     extra_opts: ['--strip-components=1']
     creates: "{{ es_dir }}/bin/elasticsearch"
-- name: Install control script
+  when:
+    es_download.changed
+- name: Install/Update control script
   template:
     src: elastic.sh.j2
     dest: "{{ base_dir }}/bin/elastic.sh"

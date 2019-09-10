@@ -2,15 +2,13 @@ cluster.name: {{ es_cluster }}
 path.data: {{ es_data }}
 path.logs: {{ es_logs }}
 
-{% if deploy_target and deploy_target != "test" %}
-
 node.name: ${HOSTNAME}
 network.host: ${HOSTNAME}
 
 # TODO double check this one
 # discovery.zen.ping.multicast.enabled: false
 discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
-discovery.zen.minimum_master_nodes: {{ min_masters }}
+discovery.zen.minimum_master_nodes: {{ es_min_masters }}
 
 node.max_local_storage_nodes: 1
 
@@ -21,5 +19,3 @@ bootstrap.system_call_filter: false
 thread_pool.bulk.size: {{ data_thread_pool.bulk.size }}
 thread_pool.bulk.queue_size: {{ data_thread_pool.bulk.queue_size }}
 thread_pool.write.size: {{ data_thread_pool.write.size }}
-
-{% endif %}

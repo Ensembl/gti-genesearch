@@ -13,21 +13,21 @@ es_logs : "{{ base_dir }}/es_logs"
 es_data : "{{ base_dir }}/es_data"
 es_cluster : genesearch
 es_dir : "{{ base_dir }}/es"
-es_pid_file : {{ base_dir }}/es.pid
+es_pid : {{ base_dir }}/es.pid
 # list of hosts that make up the ES cluster
 es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"
 # should be total_nodes/2+1
-min_masters : 5
-es_heap : 16g
+es_min_masters : 5
+java_heap : 16g
 
 ## WEBAPP
 web_dir : "{{ base_dir }}/web"
-web_pid_file : {{ base_dir }}/web.pid
+webapp_pid : {{ base_dir }}/web.pid
 webapp_port : 8080
 # git tag to use (must match gradle version)
 webapp_version: 0.1
 # RAM for head node
-java_opts : "-Xmx2g -Dhttps.proxyHost={{ proxy_host }} -Dhttps.proxyPort={{ proxy_port }}"
+webapp_java_opts : "-Xmx2g -Dhttps.proxyHost={{ proxy_host }} -Dhttps.proxyPort={{ proxy_port }}"
 # solr credentials
 solr_expression_url : TODO
 solr_experiments_url : TODO
@@ -42,6 +42,6 @@ ega_url : TODO
 keystore_name : keystore.p12
 key_alias : TODO
 key_password : TODO
-# active profile
-profile : default
+# active spring_profile
+spring_profile : default
 

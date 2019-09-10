@@ -1,1 +1,0 @@
-es_template: "{{ env }}/head_elasticsearch.yml.j2"

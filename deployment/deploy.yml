@@ -11,52 +11,48 @@
 #     limitations under the License.#
 #
 ---
+- hosts: all
+  name: Install Java src
+  vars_files:
+    - vars.yml
+  roles:
+    - common
+    - java
+  tags:
+    - common
 - hosts: es_head
   name: Deploy ES Head node
   remote_user: "{{ remote_user_name }}"
-  tasks:
-    - name: Display all variables
-      debug:
-        var: hostvars[inventory_hostname]
-        verbosity: 4
   vars_files:
     - vars.yml
   roles:
-    - common
-    - java
     - es_deploy
     - es_configure
   environment:
-    http_proxy: "{{ cache_proxy }}"
+    http_proxy: "{{ cache_proxy | default({}) }}"
+  tags:
+    - es_head
 - hosts: es_data:!localhost
   name: Deploy ES Data node
-  tasks:
-    - name: Display all variables
-      debug:
-        var: hostvars[inventory_hostname]
-        verbosity: 4
   remote_user: "{{ remote_user_name }}"
   vars_files:
     - vars.yml
   roles:
-    - common
-    - java
     - es_deploy
     - es_configure
+  tags:
+    - es_data
   environment:
-    http_proxy: "{{ cache_proxy }}"
+    http_proxy: "{{ cache_proxy | default({}) }}"
 - hosts: web_head
-  tasks:
-    - name: Display all variables
-      debug:
-        var: hostvars[inventory_hostname]
-        verbosity: 4
   remote_user: "{{ remote_user_name }}"
   vars_files:
     - vars.yml
   roles:
-    - common
-    - java
+#    - common
+#    - java
+    - webapp
+  tags:
     - webapp
   environment:
-    http_proxy: "{{ cache_proxy }}"
+    http_proxy: "{{ cache_proxy | default({}) }}"

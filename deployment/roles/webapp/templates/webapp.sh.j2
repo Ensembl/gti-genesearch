@@ -16,7 +16,7 @@ JAVA_HOME={{ java_dir }}
 export PATH=$JAVA_HOME/bin:$PATH
 
 cd {{ web_dir }}
-PID_FILE={{ web_pid_file }}
+PID_FILE={{ webapp_pid }}
 
 function stop_web {
   if [ -e "$PID_FILE" ]; then
@@ -44,7 +44,7 @@ function start_web {
 	echo "Web still running (pid file $PID_FILE)" 1>&2
 	exit 2
     fi
-    java {{ java_opts }} -jar {{ web_dir }}/{{jar_name}} >& webapp.log &
+    java {{ webapp_java_opts }} -jar {{ web_dir }}/{{jar_name}} >& {{ log_dir }}/webapp.log &
     PID=$!
     echo $PID > $PID_FILE
 }

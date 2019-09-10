@@ -14,9 +14,9 @@
 
 JAVA_HOME={{ java_home }}
 export PATH=$JAVA_HOME/bin:$PATH
-export ES_HEAP_SIZE={{ es_heap }}
+export ES_HEAP_SIZE={{ java_heap }}
 cd {{ es_dir }}
-PID_FILE={{ es_pid_file }}
+PID_FILE={{ es_pid }}
 
 function stop_es {
   if [ -e "$PID_FILE" ]; then

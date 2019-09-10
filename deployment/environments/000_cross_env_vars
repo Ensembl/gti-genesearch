@@ -10,5 +10,47 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-# Default cross environment variable setup
+# Default cross environment variable setup (can be override in global vars.yml)
+
+# Application root base dir
 base_dir: /srv/data/custom-download
+
+bin_dir: "{{ base_dir }}/bin"
+log_dir: "{{ base_dir }}/logs"
+src_dir: "{{ base_dir }}/src"
+
+# JAVA Options
+java_dir: "{{ src_dir }}/java"
+
+# Elastic search deployment
+es_version: 6.8.1
+es_dir: "{{ base_dir }}/src/es"
+es_logs: "{{ base_dir }}/logs/es_logs"
+es_data: "{{ base_dir }}/es_data"
+es_pid: "{{ bin_dir }}/es.pid"
+es_cluster: "genesearch"
+# should be total_nodes/2+1
+es_min_masters: 5
+java_heap: 4g
+
+# Remote platforms parameters
+# SOLR credentials
+solr_expression_url: TODO
+solr_experiments_url: TODO
+# EBISC details
+ebisc_user: TODO
+ebisc_token: TODO
+ebisc_accession: TODO
+# EGA details
+ega_url: TODO
+
+## WEBAPP configuration
+web_dir: "{{ base_dir }}/web"
+webapp_pid: "{{ bin_dir }}/web.pid"
+webapp_port: 8080
+webapp_java_opts: "-Xmx{{ java_heap}} -Dhttps.proxyHost={{ proxy_host }} -Dhttps.proxyPort={{ proxy_port }}"
+# ES head node to contact
+webapp_es_head: 127.0.0.1
+# git tag to use (MUST MATCH GRADLE VERSION)
+webapp_version: 0.2
+rest.url.ens: http://rest.ensembl.org/

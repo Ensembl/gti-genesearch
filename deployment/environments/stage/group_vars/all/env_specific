@@ -11,3 +11,5 @@
 #     limitations under the License.#
 #
 env: stage
+# list of hosts that make up the ES cluster
+es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"

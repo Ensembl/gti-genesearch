@@ -10,16 +10,34 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-env: live
-proxy_host: TODO
-http_proxy: TODO
-cache_proxy: TODO
-http_proxy: "http://{{ proxy_host }}:{{ proxy_port }}"
-
-
-# list of hosts that make up the ES cluster
-es_min_masters: 5
-java_heap: 16g
-es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"
-
-webapp_java_opts: "-Xmx{{ java_heap }} -Dhttps.proxyHost={{ proxy_host }} -Dhttps.proxyPort={{ proxy_port }}"
+- name: Display Env
+  debug:
+    var: env
+- name: Create base directory
+  file:
+    path: "{{ base_dir }}"
+    owner: "{{ remote_user_name }}"
+    state: directory
+    group: ensembl
+    mode: '0755'
+- name: Create bin directory
+  file:
+    path: "{{ bin_dir }}"
+    state: directory
+    owner: "{{ remote_user_name }}"
+    group: ensembl
+    mode: '0755'
+- name: Create logs directory
+  file:
+    path: "{{ log_dir }}"
+    state: directory
+    owner: "{{ remote_user_name }}"
+    group: ensembl
+    mode: '0755'
+- name: Create src directory
+  file:
+    path: "{{ src_dir }}"
+    state: directory
+    owner: "{{ remote_user_name }}"
+    group: ensembl
+    mode: '0755'
