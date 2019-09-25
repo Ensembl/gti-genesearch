@@ -10,7 +10,7 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-env: stage
+env: test
 # list of hosts that make up the ES cluster
 es_hosts: "{{ groups['es_head'] }}"
 es_min_masters: 1
