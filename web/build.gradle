@@ -1,6 +1,9 @@
 plugins {
     id "org.springframework.boot" version "2.1.6.RELEASE"
 }
+configurations {
+    all*.exclude module : 'spring-boot-starter-logging'
+}
 
 apply plugin: "io.spring.dependency-management"
 

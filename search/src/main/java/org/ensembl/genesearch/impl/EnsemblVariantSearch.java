@@ -86,13 +86,7 @@ public class EnsemblVariantSearch extends RestBasedSearch {
         return 100000;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.ensembl.genesearch.impl.RestBasedSearch#query(java.util.List,
-     * org.ensembl.genesearch.QueryOutput, java.util.List, int, int,
-     * java.util.List)
-     */
+
     /*
      * (non-Javadoc)
      * 

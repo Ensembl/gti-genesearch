@@ -146,7 +146,7 @@ public class EndpointSearchProvider {
 
     }
 
-    protected void registerExpressionSearches(SearchRegistry reg) {
+    private void registerExpressionSearches(SearchRegistry reg) {
         DataTypeInfo expressionType = DataTypeInfo.fromResource("/datatypes/expression_datatype_info.json");
         DataTypeInfo expressionExperimentsType = DataTypeInfo
                 .fromResource("/datatypes/expression_experiments_datatype_info.json");
@@ -162,7 +162,7 @@ public class EndpointSearchProvider {
         reg.registerSearch(SearchType.EXPRESSION, expressionSearch);
     }
 
-    protected void registerEnsemblRestSearches(SearchRegistry reg) {
+    private void registerEnsemblRestSearches(SearchRegistry reg) {
         // Ensembl REST searches
         DataTypeInfo seqType = DataTypeInfo.fromResource("/datatypes/sequences_datatype_info.json");
         Search seqSearch = new DivisionAwareSequenceSearch(registry.getSearch(SearchType.GENOMES), seqType,
@@ -170,7 +170,7 @@ public class EndpointSearchProvider {
         reg.registerSearch(SearchType.SEQUENCES, seqSearch);
     }
 
-    protected void registerESSearches(SearchRegistry reg) {
+    private void registerESSearches(SearchRegistry reg) {
         // Elastic based searches
         DataTypeInfo geneType = DataTypeInfo.fromResource("/datatypes/genes_datatype_info.json");
         DataTypeInfo genomeType = DataTypeInfo.fromResource("/datatypes/genomes_datatype_info.json");
