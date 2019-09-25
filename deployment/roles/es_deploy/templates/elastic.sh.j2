@@ -25,11 +25,11 @@ function stop_es {
     kill -SIGTERM $pid      
     timeout=60 
     while ps $pid >/dev/null; do
-      echo "Waiting for web to stop"
+      echo "Waiting for ES to stop"
       sleep 5
       ((timeout -= 5))    
       if [ "$timeout" -le "0" ]; then
-        echo "Killing web"
+        echo "Killing ES"
         kill -9 $1
       fi
     done

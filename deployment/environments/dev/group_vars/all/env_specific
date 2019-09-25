@@ -17,4 +17,4 @@ webapp_java_opts: "-Xmx4g"
 
 es_template: "{{ env }}/elasticsearch.yml.j2"
 es_hosts: "localhost"
-es_node_name: gti-genesearch-dev
+es_node_name: genesearch
