@@ -12,5 +12,5 @@
 #
 ---
 -  debug: msg="Shutdown web"
-   notify: webapp:stop web
+   notify: stop web
    changed_when: true

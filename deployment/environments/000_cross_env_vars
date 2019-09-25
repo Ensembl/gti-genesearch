@@ -24,7 +24,7 @@ java_dir: "{{ src_dir }}/java"
 
 # Elastic search deployment
 es_version: 6.8.1
-es_dir: "{{ base_dir }}/src/es"
+es_dir: "{{ base_dir }}/es"
 es_logs: "{{ base_dir }}/logs/es_logs"
 es_data: "{{ base_dir }}/es_data"
 es_pid: "{{ bin_dir }}/es.pid"
@@ -53,4 +53,4 @@ webapp_java_opts: "-Xmx{{ java_heap}} -Dhttps.proxyHost={{ proxy_host }} -Dhttps
 webapp_es_head: 127.0.0.1
 # git tag to use (MUST MATCH GRADLE VERSION)
 webapp_version: 0.2
-rest.url.ens: http://rest.ensembl.org/
+rest_url_ens: http://rest.ensembl.org/

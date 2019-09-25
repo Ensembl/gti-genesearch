@@ -10,23 +10,5 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
----
-- hosts: es_data:es_head
-  remote_user : "{{ remote_user_name }}"
-  vars_files:
-    - vars.yml
-  roles:
-    - common
-    - es_stop
-  tags:
-    - elastic
-- hosts: web_head
-  remote_user : "{{ remote_user_name }}"
-  vars_files:
-    - vars.yml
-  roles:
-    - common
-    - stop_web
-  tags:
-    - webapp
-
+# Default env for localhost deployment
+java_heap:  512M
