@@ -29,6 +29,8 @@ es_logs: "{{ base_dir }}/logs/es_logs"
 es_data: "{{ base_dir }}/es_data"
 es_pid: "{{ bin_dir }}/es.pid"
 es_cluster: "genesearch"
+es_node_name: "{{ inventory_hostname.split('.')[0] | lower }}"
+
 # should be total_nodes/2+1
 es_min_masters: 5
 java_heap: 4g

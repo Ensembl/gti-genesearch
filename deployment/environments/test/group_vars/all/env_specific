@@ -12,4 +12,6 @@
 #
 env: stage
 # list of hosts that make up the ES cluster
-es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"
+es_hosts: "{{ groups['es_head'] }}"
+es_min_masters: 1
+java_heap: 8g

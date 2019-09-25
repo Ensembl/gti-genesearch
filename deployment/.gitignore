@@ -3,4 +3,4 @@ java.tar.gz
 vars.yml
 *.retry
 environments/prod/hosts
-environments/stage/hosts
+environments/test/hosts

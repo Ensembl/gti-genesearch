@@ -73,7 +73,7 @@ public class ESTestClient {
                 // look for a accessible Test ES server available locally
                 String elasticHost = System.getenv("elastic-host");
                 transportAddress = new TransportAddress(InetAddress.getByName(elasticHost != null ? elasticHost : "localhost"), 9300);
-                clusterName = "test-genesearch";
+                clusterName = "genesearch";
             } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
                 log.info("Elastic test server connection error " + e.getMessage());
                 throw new RuntimeException("Unable to connect to integration server");
