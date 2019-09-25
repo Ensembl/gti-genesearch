@@ -33,5 +33,3 @@
     creates: "{{ jvm_dir.path }}/bin/java"
     remote_src: "{{ 'no' if inventory_hostname == 'localhost' else 'yes' }}"
   register: java_home
-  when:
-    jvm_download.changed
