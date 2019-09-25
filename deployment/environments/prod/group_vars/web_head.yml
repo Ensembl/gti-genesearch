@@ -12,7 +12,7 @@
 #
 # Production Specific webapp vars
 # ssl
-enable_ssl: true
+enable_ssl: "{{ enable_ssl }}"
 
 
 

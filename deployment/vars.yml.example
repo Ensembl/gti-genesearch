@@ -8,12 +8,12 @@ proxy_host : TODO
 proxy_port : TODO
 http_proxy : "http://{{ proxy_host }}:{{ proxy_port }}"
 
-## ES
+## ES defined in environments/XXX/000_cross_env_vars and environments/group_vars/
 es_logs : "{{ base_dir }}/es_logs"
 es_data : "{{ base_dir }}/es_data"
 es_cluster : genesearch
 es_dir : "{{ base_dir }}/es"
-es_pid : {{ base_dir }}/es.pid
+es_pid : "{{ base_dir }}/es.pid"
 # list of hosts that make up the ES cluster
 es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"
 # should be total_nodes/2+1

@@ -30,7 +30,7 @@
   unarchive:
     src: "{{ base_dir }}/src/{{ es_archive }}"
     dest: "{{ base_dir }}/es/"
-    remote_src: yes
+    remote_src: "{{ 'no' if inventory_hostname == 'localhost' else 'yes' }}"
     extra_opts: ['--strip-components=1']
     creates: "{{ es_dir }}/bin/elasticsearch"
 - name: Install/Update control script

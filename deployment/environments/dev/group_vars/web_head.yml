@@ -11,3 +11,4 @@
 #     limitations under the License.#
 #
 # Staging Specific webapp vars
+enable_ssl: false
