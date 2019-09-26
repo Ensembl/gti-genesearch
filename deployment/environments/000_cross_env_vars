@@ -33,7 +33,7 @@ es_node_name: "{{ inventory_hostname.split('.')[0] | lower }}"
 
 # should be total_nodes/2+1
 es_min_masters: 5
-java_heap: 4g
+web_java_heap: 4g
 
 # Remote platforms parameters
 # SOLR credentials
@@ -50,7 +50,7 @@ ega_url: TODO
 web_dir: "{{ base_dir }}/web"
 webapp_pid: "{{ bin_dir }}/web.pid"
 webapp_port: 8080
-webapp_java_opts: "-Xmx{{ java_heap}} -Dhttps.proxyHost={{ proxy_host }} -Dhttps.proxyPort={{ proxy_port }}"
+webapp_java_opts: "-Xmx{{ web_java_heap}} -Dhttps.proxyHost={{ proxy_host }} -Dhttps.proxyPort={{ proxy_port }}"
 # ES head node to contact
 webapp_es_head: 127.0.0.1
 # git tag to use (MUST MATCH GRADLE VERSION)

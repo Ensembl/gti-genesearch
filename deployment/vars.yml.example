@@ -58,7 +58,7 @@ web_pid: "{{ web_dir }}/web.pid"
 web_port: 8080
 web_proxy_host: None
 web_proxy_port: None
-web_java_xmx: "-Xmx{{ java_heap|default('2G')}}"
+web_java_xmx: "-Xmx{{ web_java_heap|default('2G')}}"
 web_java_proxy: "-Dhttps.proxyHost={{ web_proxy_host }} -Dhttps.proxyPort={{ web_proxy_port }}"
 web_java_opts: "{{ web_java_xmx }} {{ web_java_proxy if web_proxy_host is defined else '' }} "
 # ES head node to contact

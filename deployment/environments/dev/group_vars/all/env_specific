@@ -13,11 +13,6 @@
 env: dev
 base_dir: "{{ ansible_env.HOME }}/search"
 
-webapp_java_opts: "-Xmx4g"
-
-es_template: "{{ env }}/elasticsearch.yml.j2"
-es_hosts: "localhost"
-
+web_java_opts: "-Xmx4g"
 es_min_masters: 1
-java_heap: 512M
-enable_ssl: false
+web_java_heap: 2G

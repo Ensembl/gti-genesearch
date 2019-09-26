@@ -11,4 +11,4 @@
 #     limitations under the License.#
 #
 # Default env for localhost deployment
-java_heap:  512M
+web_java_heap:  512M

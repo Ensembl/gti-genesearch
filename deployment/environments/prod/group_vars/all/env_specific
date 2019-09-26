@@ -11,17 +11,11 @@
 #     limitations under the License.#
 #
 env: live
-proxy_host: TODO
-http_proxy: TODO
+base_dir: "{{ ansible_env.HOME }}/search"
+
+web_java_opts: "-Xmx4g"
+es_min_masters: 2
+web_java_heap: 32G
+web_proxy_host: TODO
+web_http_proxy: TODO
 cache_proxy: TODO
-http_proxy: "http://{{ proxy_host }}:{{ proxy_port }}"
-
-
-# list of hosts that make up the ES cluster
-es_min_masters: 5
-java_heap: 16g
-es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"
-
-webapp_java_opts: "-Xmx{{ java_heap }} -Dhttps.proxyHost={{ proxy_host }} -Dhttps.proxyPort={{ proxy_port }}"
-java_heap: 512M
-enable_ssl: false
