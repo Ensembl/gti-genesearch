@@ -71,7 +71,7 @@ public class ESTestClient {
             try {
                 log.info("Try to connect to existing test ES");
                 // look for a accessible Test ES server available locally
-                String elasticHost = System.getenv("elastic-host");
+                String elasticHost = System.getenv("ELASTIC_HOST");
                 transportAddress = new TransportAddress(InetAddress.getByName(elasticHost != null ? elasticHost : "localhost"), 9300);
                 clusterName = "genesearch";
             } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
@@ -81,7 +81,7 @@ public class ESTestClient {
         } else {
             throw new RuntimeException("Unknown configuration profile");
         }
-        settings = Settings.builder().put("cluster.name", clusterName).build();
+        settings = Settings.builder().put("cluster.name", clusterName).put("client.transport.sniff", true).build();
         client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
 
         ClusterHealthResponse healthResponse = client.admin().cluster().prepareHealth()
