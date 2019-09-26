@@ -12,8 +12,8 @@
 #
 ---
 - name: start es
-  shell: "{{ bin_dir }}/elastic.sh start"
+  shell: "{{ es_dir }}/elastic.sh start"
 - name: stop es
-  shell: "{{ bin_dir }}/elastic.sh stop"
+  shell: "{{ es_dir }}/elastic.sh stop"
 - name: restart es
-  shell: "{{ bin_dir }}/elastic.sh restart"
+  shell: "{{ es_dir }}/elastic.sh restart"

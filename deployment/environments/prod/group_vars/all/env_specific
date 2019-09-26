@@ -23,3 +23,5 @@ java_heap: 16g
 es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"
 
 webapp_java_opts: "-Xmx{{ java_heap }} -Dhttps.proxyHost={{ proxy_host }} -Dhttps.proxyPort={{ proxy_port }}"
+java_heap: 512M
+enable_ssl: false

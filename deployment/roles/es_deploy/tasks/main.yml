@@ -29,12 +29,12 @@
 - name: Unpack Elastic
   unarchive:
     src: "{{ base_dir }}/src/{{ es_archive }}"
-    dest: "{{ base_dir }}/es/"
+    dest: "{{ es_dir }}"
     remote_src: "{{ 'no' if inventory_hostname == 'localhost' else 'yes' }}"
     extra_opts: ['--strip-components=1']
     creates: "{{ es_dir }}/bin/elasticsearch"
 - name: Install/Update control script
   template:
     src: elastic.sh.j2
-    dest: "{{ bin_dir }}/elastic.sh"
+    dest: "{{ es_dir }}/elastic.sh"
     mode: 0700

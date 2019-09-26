@@ -11,7 +11,5 @@
 #     limitations under the License.#
 #
 env: test
-# list of hosts that make up the ES cluster
-es_hosts: "{{ groups['es_head'] }}"
 es_min_masters: 1
-java_heap: 8g
+java_heap: 8G

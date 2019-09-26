@@ -1,0 +1,49 @@
+# ---------------------------------- Cluster -----------------------------------
+#
+cluster.name: {{ es_cluster_name }}
+#
+# ------------------------------------ Node ------------------------------------
+#
+node.name: {{ es_node_name|default(localhost) }}
+node.max_local_storage_nodes: 1
+node.data: {{ es_node_data }}
+node.master: {{ es_node_master }}
+#
+# ----------------------------------- Paths ------------------------------------
+#
+#
+path.data: {{ es_data }}
+path.logs: {{ es_logs }}
+#
+# ----------------------------------- Memory -----------------------------------
+#
+#bootstrap.memory_lock: true
+bootstrap.system_call_filter: false
+#
+# ---------------------------------- Network -----------------------------------
+#
+network.host: ${HOSTNAME}
+#http.port: 9200
+#
+# --------------------------------- Discovery ----------------------------------
+#
+# The default list of hosts is ["127.0.0.1", "[::1]"]
+# discovery.zen.ping.unicast.hosts: ["host1", "host2"]
+discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
+# Prevent the "split brain" by configuring the majority of nodes (total number of master-eligible nodes / 2 + 1):
+discovery.zen.minimum_master_nodes: {{ es_min_masters|default(1) }}
+#
+# ---------------------------------- Gateway -----------------------------------
+#
+#gateway.recover_after_nodes: 3
+#
+# ---------------------------------- Various -----------------------------------
+#
+# action.destructive_requires_name: true
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+# Bulk pool
+thread_pool.bulk.type: {{ es_head_thread_pool_bulk_type|default('fixed') }}
+thread_pool.bulk.size: {{ es_head_thread_pool_bulk_size|default(5) }}
+thread_pool.bulk.queue_size: {{ es_head_thread_pool_bulk_queue_size|default(300) }}
+thread_pool.bulk.queue_size: {{ es_head_thread_pool_bulk_queue_size|default(300) }}

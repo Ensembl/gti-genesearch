@@ -20,16 +20,9 @@
     state: directory
     group: ensembl
     mode: '0755'
-- name: Create bin directory
-  file:
-    path: "{{ bin_dir }}"
-    state: directory
-    owner: "{{ remote_user_name }}"
-    group: ensembl
-    mode: '0755'
 - name: Create logs directory
   file:
-    path: "{{ log_dir }}"
+    path: "{{ base_dir }}/logs"
     state: directory
     owner: "{{ remote_user_name }}"
     group: ensembl

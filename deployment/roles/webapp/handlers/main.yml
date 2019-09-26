@@ -12,8 +12,8 @@
 #
 ---
 - name: start web
-  shell: "{{ bin_dir }}/webapp.sh start"
+  shell: "{{ web_dir }}/webapp.sh start"
 - name: stop web
-  shell: "{{ bin_dir }}/webapp.sh stop"
+  shell: "{{ web_dir }}/webapp.sh stop"
 - name: restart web
-  shell: "{{ bin_dir }}/webapp.sh restart"
+  shell: "{{ web_dir }}/webapp.sh restart"
