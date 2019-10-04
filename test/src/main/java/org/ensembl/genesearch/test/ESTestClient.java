@@ -58,9 +58,10 @@ public class ESTestClient {
         TransportAddress transportAddress;
         Settings settings;
         // System.setProperty("es.set.netty.runtime.available.processors", "false");
-        String testProfile = System.getenv("TEST_PROFILE");
+        String testProfile = System.getProperty("TEST_PROFILE", null);
 
-        if (testProfile == null || testProfile.equals("local")) {
+        if (testProfile.equals("local")) {
+
             container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.8.1");
             container.start();
             clusterName = "docker-cluster";
@@ -71,9 +72,10 @@ public class ESTestClient {
             try {
                 log.info("Try to connect to existing test ES");
                 // look for a accessible Test ES server available locally
-                String elasticHost = System.getenv("ELASTIC_HOST");
-                transportAddress = new TransportAddress(InetAddress.getByName(elasticHost != null ? elasticHost : "localhost"), 9300);
-                clusterName = "genesearch";
+                String elasticHost = System.getProperty("ELASTIC_HOST", "localhost");
+                clusterName = System.getProperty("ELASTIC_NAME", "genesearch");
+                int elasticPort = Integer.parseInt(System.getProperty("ELASTIC_PORT", "9300");)
+                transportAddress = new TransportAddress(InetAddress.getByName(elasticHost), elasticPort);
             } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
                 log.info("Elastic test server connection error " + e.getMessage());
                 throw new RuntimeException("Unable to connect to integration server");
@@ -81,7 +83,7 @@ public class ESTestClient {
         } else {
             throw new RuntimeException("Unknown configuration profile");
         }
-        settings = Settings.builder().put("cluster.name", clusterName).put("client.transport.sniff", true).build();
+        settings = Settings.builder().put("cluster.name", clusterName).build();
         client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
 
         ClusterHealthResponse healthResponse = client.admin().cluster().prepareHealth()

@@ -44,8 +44,7 @@ ES_STARTUP_SLEEP_TIME=5
 # When using Systemd, this setting is ignored and the LimitNOFILE defined in
 # /usr/lib/systemd/system/elasticsearch.service takes precedence
 {% if es_max_open_files is defined %}
-#MAX_OPEN_FILES
-MAX_OPEN_FILES={{es_max_open_files}}
+MAX_OPEN_FILES={{ es_max_open_files }}
 {% endif %}
 
 # The maximum number of bytes of memory that may be locked into RAM
