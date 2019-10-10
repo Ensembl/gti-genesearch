@@ -31,7 +31,7 @@ test:
   stage: test
   script:
     - ./gradlew search:cleanTest search:test
-    - ./gradlew web:cleanTest web:test
+#   - ./gradlew web:cleanTest web:test
 
 deploy:
   stage: deploy
