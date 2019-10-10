@@ -53,35 +53,24 @@ public class ESTestClient {
     private String clusterName;
     static Logger log = LoggerFactory.getLogger(ESTestClient.class);
     private static ElasticsearchContainer container;
+    private static TransportAddress transportAddress;
+    private static Settings settings;
 
     public ESTestClient() throws RuntimeException {
-        TransportAddress transportAddress;
-        Settings settings;
-        // System.setProperty("es.set.netty.runtime.available.processors", "false");
-        String testProfile = System.getProperty("TEST_PROFILE", null);
-
-        if (testProfile.equals("local")) {
-
-            container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.8.1");
-            container.start();
-            clusterName = "docker-cluster";
-            transportAddress = new TransportAddress(container.getTcpHost());
-
-        } else if (testProfile.equals("integration")) {
-
-            try {
-                log.info("Try to connect to existing test ES");
-                // look for a accessible Test ES server available locally
-                String elasticHost = System.getProperty("ELASTIC_HOST", "localhost");
-                clusterName = System.getProperty("ELASTIC_NAME", "genesearch");
-                int elasticPort = Integer.parseInt(System.getProperty("ELASTIC_PORT", "9300");)
-                transportAddress = new TransportAddress(InetAddress.getByName(elasticHost), elasticPort);
-            } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
-                log.info("Elastic test server connection error " + e.getMessage());
-                throw new RuntimeException("Unable to connect to integration server");
-            }
-        } else {
-            throw new RuntimeException("Unknown configuration profile");
+        /**
+         *
+         * REMOVED embedded cluster - prerequisites to test : either env var pointing to actual ES node or a local ES node from docker
+         * @see
+         */
+        try {
+            String elasticHost = System.getenv("ES_HOST") == null ? "localhost" : System.getenv("ES_HOST") ;
+            clusterName = System.getenv("ES_CLUSTER_NAME") == null ? "docker-cluster": System.getenv("ES_CLUSTER_NAME") ;
+            String port = System.getenv("ES_PORT") == null ? "9300" : System.getenv("ES_PORT");
+            log.info(String.format("Connection to ES %s:%s - %s ",  elasticHost, port, clusterName ));
+            transportAddress = new TransportAddress(InetAddress.getByName(elasticHost), Integer.parseInt(port));
+        } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
+            log.info("Elastic test server connection error " + e.getMessage());
+            throw new RuntimeException("Unable to connect to integration server");
         }
         settings = Settings.builder().put("cluster.name", clusterName).build();
         client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
@@ -91,7 +80,7 @@ public class ESTestClient {
         if (healthResponse.isTimedOut()) {
             throw new RuntimeException("ES Service Not available");
         }
-        log.info(String.format("Connected to ES %s test server", testProfile));
+        log.info(String.format("Connected to ES %s test server", clusterName));
     }
 
     /**
@@ -106,22 +95,23 @@ public class ESTestClient {
             log.info("Reading " + index + " mapping");
             // slurp the mapping file into memory
             String geneMapping = IOUtils.toString(ESTestClient.class.getResourceAsStream("/indexes/" + type + "_index.json"), Charset.defaultCharset());
-            geneMapping = geneMapping.replaceAll("SHARDN", "1");
+            geneMapping = geneMapping.replaceAll("SHARDN", "5");
             geneMapping = geneMapping.replaceAll("REPLICAS", "0");
-            Map<String, Object> geneIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {
+            Map<String, Object> elasticIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {
             });
 
             if (client.admin().indices().prepareExists(index).execute().actionGet().isExists()) {
-                log.info("Index exists... Resetting");
+                log.info("Index already exists... Resetting");
                 client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
+                log.info("Index cleaned up");
             } else {
                 log.info("Creating index");
+                // create an index with mapping
             }
-            // create an index with mapping
-            Map<String, Object> mappingObj = (Map<String, Object>) geneIndexObj.get("mappings");
-            client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>) geneIndexObj.get("settings")).get();
+            Map<String, Object> mappingObj = (Map<String, Object>) elasticIndexObj.get("mappings");
+            client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>) elasticIndexObj.get("settings")).get();
             client.admin().indices().preparePutMapping(index).setType(type).setSource(mapper.writeValueAsString(mappingObj.get(type)), XContentType.JSON).get();
-            log.info("Index created");
+            log.info("Mapping created");
 
         } catch (IOException e) {
             throw new RuntimeException(e);

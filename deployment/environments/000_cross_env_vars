@@ -23,7 +23,7 @@ src_dir: "{{ base_dir }}/src"
 java_dir: "{{ src_dir }}/java"
 
 # Elastic search deployment
-es_version: 6.8.1
+es_version: 6.8.3
 es_dir: "{{ base_dir }}/es"
 es_logs: "{{ base_dir }}/logs/es_logs"
 es_data: "{{ base_dir }}/es_data"

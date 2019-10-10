@@ -9,7 +9,7 @@ allprojects {
     ext {
         springStackVersion = "5.1.8.RELEASE"
         springBootStackVersion = "2.1.6.RELEASE"
-        elasticStackVersion = "6.8.1"
+        elasticStackVersion = "6.8.3"
     }
 
     sourceCompatibility = 1.8

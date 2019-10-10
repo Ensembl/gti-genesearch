@@ -86,7 +86,7 @@ public class ESSearch implements Search {
     /*
      * defaults for interacting with Elastic
      */
-    public static final int DEFAULT_SCROLL_SIZE = 5000;
+    public static final int DEFAULT_SCROLL_SIZE = 1000;
     public static final int DEFAULT_SCROLL_TIMEOUT = 6000;
     private static final int DEFAULT_AGGREGATION_SIZE = 10;
 

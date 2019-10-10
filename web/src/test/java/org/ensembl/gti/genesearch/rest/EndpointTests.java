@@ -52,7 +52,6 @@ import static org.junit.Assert.*;
 
 /**
  * @author dstaines
- *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class,
@@ -97,9 +96,12 @@ public class EndpointTests {
     @Autowired
     EndpointSearchProvider provider;
 
-    static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {};
-    static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {};
-    static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {};
+    static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {
+    };
+    static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {
+    };
+    static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {
+    };
 
     private RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
 
@@ -507,11 +509,9 @@ public class EndpointTests {
     /**
      * Helper method for invoking a URI as GET and parsing the result into a
      * hash
-     * 
-     * @param url
-     *            URL template
-     * @param params
-     *            bind parameters for URL
+     *
+     * @param url    URL template
+     * @param params bind parameters for URL
      * @return object retrieved from GET
      */
     public static <T> T getUrlToObject(TypeReference<T> type, RestTemplate restTemplate, String url, Object... params) {
@@ -534,18 +534,15 @@ public class EndpointTests {
     /**
      * Helper method to invoke a JSON POST method with the supplied object and
      * then return the resulting object
-     * 
+     *
      * @param restTemplate
-     * @param url
-     *            URL
-     * @param json
-     *            object to post
-     * @param params
-     *            URL bind params
+     * @param url          URL
+     * @param json         object to post
+     * @param params       URL bind params
      * @return object retrieved from POST
      */
     public static <T> T postUrlToObject(TypeReference<T> type, RestTemplate restTemplate, String url, String json,
-            Object... params) {
+                                        Object... params) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -566,6 +563,8 @@ public class EndpointTests {
     @AfterClass
     public static void tearDown() {
         log.info("Disconnecting server");
-        esTestClient.disconnect();
+        if (esTestClient != null) {
+            esTestClient.disconnect();
+        }
     }
 }

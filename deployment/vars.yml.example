@@ -32,7 +32,7 @@ enable_ssl: "{{ false if not keystore_name else true }}"
 ###############
 # ELASTIC CFG #
 ###############
-es_version: 6.8.1
+es_version: 6.8.3
 es_dir: "{{ base_dir }}/es"
 es_logs: "{{ base_dir }}/logs/es"
 es_data: "{{ base_dir }}/data"

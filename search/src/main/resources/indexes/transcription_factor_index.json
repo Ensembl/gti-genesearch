@@ -1,8 +1,8 @@
 {
   "settings": {
     "number_of_shards": "SHARDN",
-    "number_of_replicas": 0,
-    "max_result_window": 50000,
+    "number_of_replicas": "REPLICAS",
+    "max_result_window": 10000,
     "analysis": {
       "analyzer": {
         "string_lowercase": {
@@ -63,14 +63,9 @@
           "norms": false
         },
         "binding_matrix": {
-          "type": "nested",
-          "properties": {
-            "stable_id": {
-              "type": "keyword",
-              "index": true,
-              "norms": false
-            }
-          }
+          "type": "keyword",
+          "index":  true,
+          "norms": false
         }
       }
     }
