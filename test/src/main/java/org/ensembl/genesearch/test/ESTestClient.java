@@ -49,12 +49,9 @@ import java.util.Map;
  */
 public class ESTestClient {
 
-    private Client client;
-    private String clusterName;
-    static Logger log = LoggerFactory.getLogger(ESTestClient.class);
+    private static Client client;
+    private static Logger log = LoggerFactory.getLogger(ESTestClient.class);
     private static ElasticsearchContainer container;
-    private static TransportAddress transportAddress;
-    private static Settings settings;
 
     public ESTestClient() throws RuntimeException {
         /**
@@ -62,25 +59,33 @@ public class ESTestClient {
          * REMOVED embedded cluster - prerequisites to test : either env var pointing to actual ES node or a local ES node from docker
          * @see
          */
-        try {
-            String elasticHost = System.getenv("ES_HOST") == null ? "localhost" : System.getenv("ES_HOST") ;
-            clusterName = System.getenv("ES_CLUSTER_NAME") == null ? "docker-cluster": System.getenv("ES_CLUSTER_NAME") ;
-            String port = System.getenv("ES_PORT") == null ? "9300" : System.getenv("ES_PORT");
-            log.info(String.format("Connection to ES %s:%s - %s ",  elasticHost, port, clusterName ));
-            transportAddress = new TransportAddress(InetAddress.getByName(elasticHost), Integer.parseInt(port));
-        } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
-            log.info("Elastic test server connection error " + e.getMessage());
-            throw new RuntimeException("Unable to connect to integration server");
+        TransportAddress transportAddress;
+        Settings settings;
+        String elasticHost = System.getenv("ES_HOST") == null ? "localhost" : System.getenv("ES_HOST");
+        String clusterName = System.getenv("ES_CLUSTER_NAME") == null ? "docker-cluster" : System.getenv("ES_CLUSTER_NAME");
+        String port = System.getenv("ES_PORT") == null ? "9300" : System.getenv("ES_PORT");
+        log.info(String.format("Connection to ES %s:%s - %s ", elasticHost, port, clusterName));
+        if (client == null) {
+            try {
+                transportAddress = new TransportAddress(InetAddress.getByName(elasticHost), Integer.parseInt(port));
+                settings = Settings.builder().put("cluster.name", clusterName).build();
+                client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
+                client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMinutes(5)).execute().actionGet();
+            } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
+                log.info("ES server error: " + e.getMessage());
+                log.info("Create one with docker");
+                container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.8.1");
+                container.start();
+                settings = Settings.builder().put("cluster.name", "docker-cluster").build();
+                transportAddress = new TransportAddress(container.getTcpHost());
+                client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
+                client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMinutes(5)).execute().actionGet();
+            }
+            log.info(String.format("Connected to ES %s test server", clusterName));
+        } else {
+            log.info(String.format("Client already connected ES %s test server", clusterName));
         }
-        settings = Settings.builder().put("cluster.name", clusterName).build();
-        client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
 
-        ClusterHealthResponse healthResponse = client.admin().cluster().prepareHealth()
-                .setTimeout(TimeValue.timeValueMinutes(1)).execute().actionGet();
-        if (healthResponse.isTimedOut()) {
-            throw new RuntimeException("ES Service Not available");
-        }
-        log.info(String.format("Connected to ES %s test server", clusterName));
     }
 
     /**
@@ -97,20 +102,22 @@ public class ESTestClient {
             String geneMapping = IOUtils.toString(ESTestClient.class.getResourceAsStream("/indexes/" + type + "_index.json"), Charset.defaultCharset());
             geneMapping = geneMapping.replaceAll("SHARDN", "5");
             geneMapping = geneMapping.replaceAll("REPLICAS", "0");
-            Map<String, Object> elasticIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {
-            });
+            Map<String, Object> elasticIndexObj = mapper.readValue(geneMapping,
+                    new TypeReference<Map<String, Object>>() {
+                    }
+            );
 
             if (client.admin().indices().prepareExists(index).execute().actionGet().isExists()) {
                 log.info("Index already exists... Resetting");
-                client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
+                // client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
                 log.info("Index cleaned up");
             } else {
                 log.info("Creating index");
+                Map<String, Object> mappingObj = (Map<String, Object>) elasticIndexObj.get("mappings");
+                client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>) elasticIndexObj.get("settings")).get();
+                client.admin().indices().preparePutMapping(index).setType(type).setSource(mapper.writeValueAsString(mappingObj.get(type)), XContentType.JSON).get();
                 // create an index with mapping
             }
-            Map<String, Object> mappingObj = (Map<String, Object>) elasticIndexObj.get("mappings");
-            client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>) elasticIndexObj.get("settings")).get();
-            client.admin().indices().preparePutMapping(index).setType(type).setSource(mapper.writeValueAsString(mappingObj.get(type)), XContentType.JSON).get();
             log.info("Mapping created");
 
         } catch (IOException e) {
@@ -169,17 +176,19 @@ public class ESTestClient {
         client.prepareIndex(index, type, id).setSource(mapper.writeValueAsString(doc), XContentType.JSON).execute().actionGet();
     }
 
-    protected boolean hasContainer() {
-        return (container != null);
-    }
-
     /**
      * Close the client and shut down the ES node.
      */
     public void disconnect() {
-        client.close();
-        if (container != null)
-            container.close();
+        if (client != null) client.close();
+        if (container != null) container.close();
     }
 
+    public boolean hasContainer() {
+        return (container != null);
+    }
+
+    public boolean hasClient() {
+        return (client != null);
+    }
 }

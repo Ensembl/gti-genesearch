@@ -1,12 +1,14 @@
 package org.ensembl.genesearch.test;
 
-import org.ensembl.genesearch.test.ESTestClient;
+import org.elasticsearch.common.settings.Settings;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
-import org.junit.contrib.java.lang.system.ProvideSystemProperty;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Test behavior of test server according to system properties values
@@ -18,26 +20,17 @@ public class TestServerTest {
     public final EnvironmentVariables environ = new EnvironmentVariables();
 
     @Test
-    public void testDockerEnabled () {
-        environ.set("TEST_PROFILE", "local");
-        assertEquals("local", System.getenv("TEST_PROFILE"));
+    public void testNoEnvironmentSet() {
+        assumeTrue(System.getenv("ES_HOST") == null);
         ESTestClient testClient = new ESTestClient();
         assertTrue(testClient.hasContainer());
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testRemoteException () {
-        environ.set("TEST_PROFILE", "integration");
-        assertEquals("integration", System.getenv("TEST_PROFILE"));
+    @Test
+    public void testExternalRunning() {
+        assumeTrue(System.getenv("ES_HOST") != null);
         ESTestClient testClient = new ESTestClient();
-        assertTrue(testClient.hasContainer());
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testIntegrationNoDocker () {
-        environ.set("TEST_PROFILE", "integration");
-        assertEquals("integration", System.getenv("TEST_PROFILE"));
-        ESTestClient testClient = new ESTestClient();
+        // ES test server is "Outside" Test Client - no inner container set as expected
         assertFalse(testClient.hasContainer());
     }
 
