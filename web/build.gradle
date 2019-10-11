@@ -3,6 +3,7 @@ plugins {
 }
 configurations {
     all*.exclude module : 'spring-boot-starter-logging'
+    compile.exclude module: "spring-boot-starter-tomcat"
 }
 
 apply plugin: "io.spring.dependency-management"
@@ -22,6 +23,5 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-actuator:$springBootStackVersion")
     compile("org.springframework.boot:spring-boot-starter-jersey:$springBootStackVersion")
     compile("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider")
-
     testCompile("org.springframework.boot:spring-boot-starter-test:$springBootStackVersion")
 }

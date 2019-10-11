@@ -4,7 +4,7 @@ cluster.name: {{ es_cluster_name }}
 #
 # ------------------------------------ Node ------------------------------------
 #
-node.name: {{ es_node_name | default(${HOSTNAME}) }}
+node.name: {{ es_node_name | default(inventory_hostname) }}
 node.max_local_storage_nodes: {{ es_max_local_storage_nodes | default("1") }} 
 node.data: {{ es_node_data }}
 node.master: {{ es_node_master }}
