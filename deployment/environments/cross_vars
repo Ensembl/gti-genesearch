@@ -27,7 +27,7 @@ enable_ssl: "{{ false if not keystore_name else true }}"
 ###############
 es_version: 6.8.3
 es_dir: "{{ base_dir }}/es"
-es_logs: "{{ base_dir }}/logs/es"
+es_logs: "{{ base_dir }}/logs"
 es_data: "{{ base_dir }}/data"
 es_pid: "{{ es_dir }}/es.pid"
 es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"
