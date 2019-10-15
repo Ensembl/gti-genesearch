@@ -10,5 +10,5 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-# Default env for localhost deployment
+# Default dev.yml for localhost deployment
 web_java_heap:  512M

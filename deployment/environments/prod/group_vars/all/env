@@ -10,26 +10,22 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
----
-- name: Check/Create Java destination directories
-  file:
-    path: "{{ base_dir }}/jvm/"
-    state: directory
-    mode: 0755
-    recurse: yes
-  register: jvm_dir
-- name: Download JAVA
-  get_url:
-    url: "{{ java_url }}"
-    dest: "{{ src_dir }}/java.tar.gz"
-    headers:
-      Cookie: "oraclelicense+accept-securebackup-cookie"
-  register: jvm_download
-- name: Unpack Java
-  unarchive:
-    src: "{{ src_dir }}/java.tar.gz"
-    dest: "{{ jvm_dir.path }}"
-    extra_opts: ['--strip-components=1']
-    creates: "{{ jvm_dir.path }}/bin/java"
-    remote_src: "{{ 'no' if inventory_hostname == 'localhost' else 'yes' }}"
-  register: jvm_path
+env: dev
+
+#####################
+# ELASTIC LOCAL CFG #
+#####################
+es_java_heap: 16G
+es_cluster_name: "genesearch"
+es_max_local_storage_nodes: 5
+
+es_head_thread_pool_bulk_size: 60
+es_head_thread_pool_bulk_queue_size: 300
+
+##################
+# WEB APP CONFIG #
+##################
+web_java_heap: 8G
+web_proxy_host: None
+web_proxy_port: None
+

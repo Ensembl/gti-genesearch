@@ -10,12 +10,22 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-env: live
-base_dir: "{{ ansible_env.HOME }}/search"
+env: dev
 
-web_java_opts: "-Xmx4g"
-es_min_masters: 2
-web_java_heap: 32G
-web_proxy_host: TODO
-web_http_proxy: TODO
-cache_proxy: TODO
+#####################
+# ELASTIC LOCAL CFG #
+#####################
+es_java_heap: 8G
+es_cluster_name: "genesearch"
+es_max_local_storage_nodes: 5
+
+es_head_thread_pool_bulk_size: 30
+es_head_thread_pool_bulk_queue_size: 150
+
+##################
+# WEB APP CONFIG #
+##################
+web_java_heap: 4G
+web_proxy_host: None
+web_proxy_port: None
+

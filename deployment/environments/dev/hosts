@@ -1,5 +1,5 @@
 [es_data]
 [es_head]
-localhost
+localhost ansible_connection=local
 [web_head]
-localhost
+localhost ansible_connection=local

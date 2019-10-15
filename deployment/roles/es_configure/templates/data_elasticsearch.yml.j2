@@ -22,9 +22,8 @@ bootstrap.system_call_filter: false
 #
 # ---------------------------------- Network -----------------------------------
 #
-network.host: _site_
-transport.host: _site_
-# TODO deal with this parameter according to environment
+network.host: {{ inventory_hostname }}
+transport.host: {{ inventory_hostname }}
 {% if es_discovery_type is defined %}
 discovery.type: single-node
 {% endif %}
@@ -62,7 +61,5 @@ http.cors.enabled: true
 http.cors.allow-origin: "*"
 {% endif %}
 # Bulk pool
-{% if es_head_thread_pool_bulk_size is defined %}
-thread_pool.bulk.size: {{ es_head_thread_pool_bulk_size }}
+thread_pool.bulk.size: {{ es_head_thread_pool_bulk_size | default(60)}}
 thread_pool.bulk.queue_size: {{ es_head_thread_pool_bulk_queue_size|default(300) }}
-{% endif %}

@@ -10,27 +10,21 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-- name: Display Env
-  debug:
-    var: env
 - name: Create base directory
   file:
     path: "{{ base_dir }}"
     owner: "{{ remote_user_name }}"
     state: directory
-    group: ensembl
     mode: '0755'
 - name: Create logs directory
   file:
     path: "{{ base_dir }}/logs"
     state: directory
     owner: "{{ remote_user_name }}"
-    group: ensembl
     mode: '0755'
 - name: Create src directory
   file:
     path: "{{ src_dir }}"
     state: directory
     owner: "{{ remote_user_name }}"
-    group: ensembl
     mode: '0755'

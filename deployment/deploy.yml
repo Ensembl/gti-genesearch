@@ -11,8 +11,8 @@
 #     limitations under the License.#
 #
 ---
-- hosts: all
-  name: Install Java src
+- name: Install Java src
+  hosts: all
   vars_files:
     - vars.yml
   roles:

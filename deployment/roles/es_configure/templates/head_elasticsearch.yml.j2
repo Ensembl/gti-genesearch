@@ -5,7 +5,7 @@ cluster.name: {{ es_cluster_name }}
 # ------------------------------------ Node ------------------------------------
 #
 node.name: {{ es_node_name | default(inventory_hostname) }}
-node.max_local_storage_nodes: {{ es_max_local_storage_nodes | default("1") }} 
+node.max_local_storage_nodes: {{ es_max_local_storage_nodes | default("50") }}
 node.data: {{ es_node_data }}
 node.master: {{ es_node_master }}
 #
@@ -22,8 +22,10 @@ bootstrap.system_call_filter: false
 #
 # ---------------------------------- Network -----------------------------------
 #
-network.host: _site_
-transport.host: _site_
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+network.host: {{ inventory_hostname }}
+transport.host: {{ inventory_hostname }}
 # TODO deal with this parameter according to environment
 {% if es_discovery_type is defined %}
 discovery.type: single-node
@@ -36,7 +38,7 @@ transport.tcp.port:  {{ es_transport_port | default("9300") }}
 #TODO
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 # discovery.zen.ping.unicast.hosts: ["host1", "host2"]
-# discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
+discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
 # Prevent the "split brain" by configuring the majority of nodes (total number of master-eligible nodes / 2 + 1):
 # discovery.zen.minimum_master_nodes: {{ es_min_masters|default(1) }}
 #
@@ -47,12 +49,8 @@ transport.tcp.port:  {{ es_transport_port | default("9300") }}
 # ---------------------------------- Various -----------------------------------
 #
 # action.destructive_requires_name: true
-{% if es_cors_enabled is defined %}
-http.cors.enabled: true
-http.cors.allow-origin: "*"
-{% endif %}
 # Bulk pool
-{% if es_head_thread_pool_bulk_size is defined %}
-thread_pool.bulk.size: {{ es_head_thread_pool_bulk_size }}
-thread_pool.bulk.queue_size: {{ es_head_thread_pool_bulk_queue_size|default(300) }}
+{% if es_discovery_type is defined %}
+thread_pool.bulk.size: {{ es_head_thread_pool_bulk_size | default(60) }}
+thread_pool.bulk.queue_size: {{ es_head_thread_pool_bulk_queue_size| default(300) }}
 {% endif %}
