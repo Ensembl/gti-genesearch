@@ -65,27 +65,23 @@ public class ESTestClient {
         String clusterName = System.getenv("ES_CLUSTER_NAME") == null ? "docker-cluster" : System.getenv("ES_CLUSTER_NAME");
         String port = System.getenv("ES_PORT") == null ? "9300" : System.getenv("ES_PORT");
         log.info(String.format("Connection to ES %s:%s - %s ", elasticHost, port, clusterName));
-        if (client == null) {
-            try {
-                transportAddress = new TransportAddress(InetAddress.getByName(elasticHost), Integer.parseInt(port));
-                settings = Settings.builder().put("cluster.name", clusterName).build();
-                client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
-                client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMinutes(5)).execute().actionGet();
-            } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
-                log.info("ES server error: " + e.getMessage());
-                log.info("Create one with docker");
-                container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.8.1");
-                container.start();
-                settings = Settings.builder().put("cluster.name", "docker-cluster").build();
-                transportAddress = new TransportAddress(container.getTcpHost());
-                client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
-                client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMinutes(5)).execute().actionGet();
-            }
+        try {
+            transportAddress = new TransportAddress(InetAddress.getByName(elasticHost), Integer.parseInt(port));
+            settings = Settings.builder().put("cluster.name", clusterName).build();
+            client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
+            client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMinutes(5)).execute().actionGet();
             log.info(String.format("Connected to ES %s test server", clusterName));
-        } else {
-            log.info(String.format("Client already connected ES %s test server", clusterName));
+        } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
+            log.info("ES server error: " + e.getMessage());
+            log.info("Create one with docker");
+            container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.8.1");
+            container.start();
+            settings = Settings.builder().put("cluster.name", "docker-cluster").build();
+            transportAddress = new TransportAddress(container.getTcpHost());
+            client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
+            client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMinutes(5)).execute().actionGet();
+            log.info(String.format("Connected to embedded ES %s test server", clusterName));
         }
-
     }
 
     /**
@@ -108,17 +104,23 @@ public class ESTestClient {
             );
 
             if (client.admin().indices().prepareExists(index).execute().actionGet().isExists()) {
-                log.info("Index already exists... Resetting");
-                // client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
-                log.info("Index cleaned up");
+                log.info("Index already exists...");
+                if (Boolean.parseBoolean(System.getProperty("keep_index", "false"))) {
+                    log.info("Resetting...");
+                    client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
+                    log.info("Index cleaned up");
+                }
             } else {
-                log.info("Creating index");
+                log.info("Index doesn't exists...\nCreating...");
+            }
+            if (Boolean.parseBoolean(System.getProperty("keep_index", "false"))) {
+                // only recreate mapping if index has been reset
                 Map<String, Object> mappingObj = (Map<String, Object>) elasticIndexObj.get("mappings");
                 client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>) elasticIndexObj.get("settings")).get();
                 client.admin().indices().preparePutMapping(index).setType(type).setSource(mapper.writeValueAsString(mappingObj.get(type)), XContentType.JSON).get();
-                // create an index with mapping
+                log.info("Mapping created");
             }
-            log.info("Mapping created");
+
 
         } catch (IOException e) {
             throw new RuntimeException(e);

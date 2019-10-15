@@ -72,7 +72,7 @@ public class MongoEndpointTests extends WebAppTests {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        initSetUp();
+        // initSetUp();
         // Adding Variants
         String variantJson = DataUtils.readGzipResource("/variants.json.gz");
         mongoTestServer = new MongoTestServer();
