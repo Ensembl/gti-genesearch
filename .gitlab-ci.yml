@@ -4,11 +4,11 @@ image: java:8-jdk
 services:
   - name: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
     alias: elasticsearch
-    command: [ "bin/elasticsearch", "-Ediscovery.type=single-node" ]
+    command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
 stages:
-  - build
   - test
+  - build
   - deploy
 
 before_script:
@@ -35,6 +35,7 @@ build:
 test:
   stage: test
   script:
+    - curl "http://elasticsearch:9200/_cat/health"
     - ./gradlew test:cleanTest test:test
     - ./gradlew search:cleanTest search:test
     - ./gradlew web:cleanTest web:compileJava -x test

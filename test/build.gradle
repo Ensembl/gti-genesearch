@@ -1,4 +1,11 @@
 // Elastic Search and Mongo Test servers / associated with related dataset used in tests
+test {
+    systemProperty "tests.security.manager", false
+    testLogging.showStandardStreams = true
+    minHeapSize = "512m"
+    maxHeapSize = "4096m"
+}
+
 dependencies {
     compile "de.bwaldvogel:mongo-java-server:1.17.1"
     compile "org.testcontainers:elasticsearch:1.11.4"
