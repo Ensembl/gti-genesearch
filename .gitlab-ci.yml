@@ -1,6 +1,11 @@
 
 image: java:8-jdk
 
+services:
+  - name: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
+    alias: elasticsearch
+    command: [ "bin/elasticsearch", "-Ediscovery.type=single-node" ]
+
 stages:
   - build
   - test
@@ -41,6 +46,7 @@ deploy:
     - apt-get -qq install -y python python-virtualenv python-pip
     - virtualenv -p python3 .deployment
     - source ./.deployment/bin/activate
+    - pip install -U setuptools
     - pip install -r requirements.txt
   script:
     - cd deployment
@@ -57,6 +63,7 @@ deploy-stage:
     - apt-get -qq install -y python python-virtualenv python-pip
     - virtualenv -p python3 .deployment
     - source ./.deployment/bin/activate
+    - pip install -U setuptools
     - pip install -r requirements.txt
   script:
     - cd deployment
