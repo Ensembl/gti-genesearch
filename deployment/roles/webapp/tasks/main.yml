@@ -39,4 +39,4 @@
     src: "webapp.sh.j2"
     dest: "{{ web_dir }}/webapp.sh"
     mode: 0700
-  notify: start web
+  notify: restart web

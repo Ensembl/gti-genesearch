@@ -38,7 +38,7 @@ transport.tcp.port:  {{ es_transport_port | default("9300") }}
 #TODO
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 # discovery.zen.ping.unicast.hosts: ["host1", "host2"]
-{% if inventory_hostname != "localhost"%}
+{% if inventory_hostname != "localhost" %}
 discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
 {% endif %}
 # Prevent the "split brain" by configuring the majority of nodes (total number of master-eligible nodes / 2 + 1):
@@ -52,7 +52,5 @@ discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
 #
 # action.destructive_requires_name: true
 # Bulk pool
-{% if inventory_hostname != "localhost" %}
-thread_pool.bulk.size: {{ es_head_thread_pool_bulk_size | default(60) }}
-thread_pool.bulk.queue_size: {{ es_head_thread_pool_bulk_queue_size| default(300) }}
-{% endif %}
+# thread_pool.bulk.size: {{ es_head_thread_pool_bulk_size | default( ansible_processor_cores ) }}
+thread_pool.bulk.queue_size: {{ es_head_thread_pool_bulk_queue_size| default( ansible_processor_cores ) }}

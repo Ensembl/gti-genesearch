@@ -25,7 +25,7 @@ use Carp;
 
 has 'url' => (is => 'ro', isa => 'Str', required => 1);
 has 'index' => (is => 'ro', isa => 'Str', required => 1);
-has 'bulk' => (is => 'rw', isa => 'Search::Elasticsearch::Client::6_0::Bulk');
+has 'bulk' => (is => 'rw', isa => 'Search::Elasticsearch::Client::5_0::Bulk');
 has 'timeout' => (is => 'rw', isa => 'Int', default => 3600);
 
 sub BUILD {

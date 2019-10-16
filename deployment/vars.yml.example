@@ -10,7 +10,32 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-# Override ES template for local dev install
-es_template: "head_elasticsearch.yml.j2"
-es_node_data: "{{ true if env in ('test', 'dev') else false }}"
-es_node_master: true
+
+###############
+# GLOBAL  CFG #
+###############
+# remote_user
+remote_user_name: remoteusername
+# Remote Applications root base dir
+base_dir: /home/genesearch
+
+# SSL params if need be
+# keystore_name :
+# key_alias :
+# key_password :
+
+# Other remote platforms parameters
+# SOLR credentials
+solr_expression_url: TODO
+solr_experiments_url: TODO
+
+# EBISC details
+ebisc_user: TODO
+ebisc_token: TODO
+ebisc_accession: TODO
+
+# EGA details
+ega_url: TODO
+
+# EVA details
+eva_rest_url: TODO

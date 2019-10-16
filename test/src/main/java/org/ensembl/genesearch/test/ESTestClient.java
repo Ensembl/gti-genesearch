@@ -93,7 +93,7 @@ public class ESTestClient {
      */
     public void createIndex(String index, String type) {
         try {
-            log.info("Reading " + index + " mapping");
+            log.info("Reading " + index + " mapping (keep index " + System.getProperty("keep_index", "false") + ")");
             // slurp the mapping file into memory
             String geneMapping = IOUtils.toString(ESTestClient.class.getResourceAsStream("/indexes/" + type + "_index.json"), Charset.defaultCharset());
             geneMapping = geneMapping.replaceAll("SHARDN", "5");

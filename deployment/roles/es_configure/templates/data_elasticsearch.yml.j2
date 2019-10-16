@@ -57,5 +57,5 @@ discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
 #
 # action.destructive_requires_name: true
 # Bulk pool
-thread_pool.bulk.size: {{ es_head_thread_pool_bulk_size | default(60)}}
-thread_pool.bulk.queue_size: {{ es_head_thread_pool_bulk_queue_size|default(300) }}
+# thread_pool.bulk.size: {{ es_head_thread_pool_bulk_size | default( ansible_processor_cores) }}
+thread_pool.bulk.queue_size: {{ es_head_thread_pool_bulk_queue_size | default( ansible_processor_cores) }}

@@ -31,7 +31,7 @@ es_logs: "{{ base_dir }}/logs"
 es_data: "{{ base_dir }}/data"
 es_pid: "{{ es_dir }}/es.pid"
 es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"
-es_min_masters: "{{ (groups['es_data']|length + groups['es_head'])/2 + 1 }}"
+es_min_masters: "{{ (groups['es_data']|length + groups['es_head']|length)/2 + 1 }}"
 es_cluster_name: "genesearch"
 es_node_name: "{{ inventory_hostname.split('.')[0] | lower }}"
 
