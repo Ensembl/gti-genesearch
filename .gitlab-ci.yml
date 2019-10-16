@@ -43,7 +43,7 @@ deploy:
     - source ./.deployment/bin/activate
     - pip install -r requirements.txt
   script:
-    - cd deployement
+    - cd deployment
     - ansible-playbook deploy.xml -i environments/test
   only:
     - master
@@ -59,7 +59,7 @@ deploy-stage:
     - source ./.deployment/bin/activate
     - pip install -r requirements.txt
   script:
-    - cd deployement
+    - cd deployment
     - ansible-playbook deploy.xml -i environments/stage
   only:
     - master
