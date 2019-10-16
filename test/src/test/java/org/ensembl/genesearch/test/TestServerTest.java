@@ -29,6 +29,7 @@ public class TestServerTest {
     @Test
     public void testExternalRunning() {
         assumeTrue(System.getenv("ES_HOST") != null);
+        assumeTrue(System.getenv("ES_HOST") != null);
         ESTestClient testClient = new ESTestClient();
         // ES test server is "Outside" Test Client - no inner container set as expected
         assertFalse(testClient.hasContainer());
