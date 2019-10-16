@@ -105,7 +105,7 @@ public class ESTestClient {
 
             if (client.admin().indices().prepareExists(index).execute().actionGet().isExists()) {
                 log.info("Index already exists...");
-                if (Boolean.parseBoolean(System.getProperty("keep_index", "false"))) {
+                if (! Boolean.parseBoolean(System.getProperty("keep_index", "false"))) {
                     log.info("Resetting...");
                     client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
                     log.info("Index cleaned up");
@@ -113,7 +113,7 @@ public class ESTestClient {
             } else {
                 log.info("Index doesn't exists...\nCreating...");
             }
-            if (Boolean.parseBoolean(System.getProperty("keep_index", "false"))) {
+            if (! Boolean.parseBoolean(System.getProperty("keep_index", "false"))) {
                 // only recreate mapping if index has been reset
                 Map<String, Object> mappingObj = (Map<String, Object>) elasticIndexObj.get("mappings");
                 client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>) elasticIndexObj.get("settings")).get();
