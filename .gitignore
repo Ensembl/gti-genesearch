@@ -28,3 +28,4 @@ web/build
 *.iml
 /_Deparsed_XSubs.pm
 /test/build/
+hosts

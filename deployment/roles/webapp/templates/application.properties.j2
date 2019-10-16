@@ -1,13 +1,17 @@
 es.node=false
-es.host={{ es_head }}
-es.cluster={{ es_cluster }}
-rest.url.eg=http://rest.ensemblgenomes.org/
-rest.url.ens=http://rest.ensembl.org/
+es.host={{ web_es_head }}
+es.cluster={{ es_cluster_name }}
+rest.url.eg={{ rest_url_ens }}
+rest.url.ens={{ rest_url_ens }}
 solr.expression.url={{ solr_expression_url }}
 solr.experiments.url={{ solr_experiments_url }}
+
 eva.rest.url=https://www.ebi.ac.uk/eva/webservices/rest/v1
+
 spring.jersey.applicationPath=/api
+
 debug=false
+
 {% if ega_url is defined %}
 ebisc.rest.url=https://cells.ebisc.org/api/v0/cell-lines
 ebisc.rest.username={{ ebisc_user }}
@@ -15,8 +19,10 @@ ebisc.rest.api_token={{ ebisc_token }}
 ebisc.ega.url={{ ega_url }}
 ebisc.ega.accession={{ ebisc_accession }}
 {% endif %}
+
 security.basic.enabled=false
-spring.profiles.active={{ profile }}
+spring.spring_profiles.active={{ web_spring_profile }}
+
 {% if keystore_name is defined %}
 server.ssl.key-store={{ keystore_name }}
 server.ssl.key-store-password={{ key_password }}
@@ -29,4 +35,4 @@ http.proxyPort={{ proxy_port }}
 https.proxyHost={{ proxy_host }}
 https.proxyPort={{ proxy_port }}
 {% endif %}
-server.port={{ webapp_port }}
+server.port={{ web_port }}

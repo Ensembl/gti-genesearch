@@ -57,61 +57,32 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
+@SpringBootApplication
 @ActiveProfiles("eva_mongo")
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-public class MongoEndpointTests {
+public class MongoEndpointTests extends WebAppTests {
 
-    @Value("${local.server.port}")
-    int port;
 
-    private final String VARIANTS_FETCH = "variants/fetch";
-    private final String VARIANTS_QUERY = "variants/query";
-
-    static Logger log = LoggerFactory.getLogger(MongoEndpointTests.class);
-    static ESSearch geneSearch;
-    static ESSearch genomeSearch;
-    static ESTestClient esTestClient;
     static MongoCollection<Document> mongoCollection;
     static MongoTestServer mongoTestServer;
     static MongoSearch search;
 
 
+    RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
+
     @BeforeClass
     public static void setUp() throws IOException {
-        // create our ES test server once only
-        log.info("Setting up");
-        esTestClient = new ESTestClient();
-        // index a sample of JSON
-        log.info("Reading documents");
-        String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
-        log.info("Creating test index");
-        String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
-        esTestClient.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
-        esTestClient.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
+        // initSetUp();
+        // Adding Variants
         String variantJson = DataUtils.readGzipResource("/variants.json.gz");
         mongoTestServer = new MongoTestServer();
         mongoTestServer.indexData(variantJson);
     }
 
-    @Autowired
-    EndpointSearchProvider provider;
-
-    RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
-
-    protected String getServiceUrl(String extension) {
-        String base_path = "http://localhost:" + port;
-        if (extension == null)
-            return base_path;
-        else
-            return base_path + "/api/" + extension;
-
-    }
-
     @Before
     public void injectSearch() {
         // ensure we always use our test instances
-        provider.setESClient(esTestClient.getClient());
+        // super.injectSearch();
         ((EVAMongoEndpointProvider) provider).setMongoCollection(mongoTestServer.getCollection());
     }
 

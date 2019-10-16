@@ -2,3 +2,5 @@ checkout
 java.tar.gz
 vars.yml
 *.retry
+environments/prod/hosts
+environments/test/hosts

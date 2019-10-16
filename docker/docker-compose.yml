@@ -1,0 +1,12 @@
+version: '2'
+services:
+  elasticsearch:
+    image: 'elasticsearch:6.6.1'
+    environment:
+      - cluster.name=genesearch
+  elasticsearch-hq:
+    image: elastichq/elasticsearch-hq
+    ports:
+      - '5000:5000'
+    environment:
+      - 'HQ_DEFAULT_URL=http://gti-es-test.ebi.ac.uk:9200'

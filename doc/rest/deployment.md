@@ -32,7 +32,6 @@ Ensembl data options:
 * `es.port` - port of Elastic cluster head node (default is `9300`)
 * `es.node` - if `true`, join cluster as node (rather as transport client)
 * `es.cluster` - name of elastic cluster
-* `rest.url.eg` - base URL for EG REST
 * `rest.url.ens` - base URL for Ensembl REST
 
 EVA-related options (depending if an EVA profile is used):

@@ -11,25 +11,25 @@
 #     limitations under the License.#
 #
 ---
-- name: Create base directory
+- name: Check/Create Java destination directories
   file:
-    path: "{{ base_dir }}"
+    path: "{{ base_dir }}/jvm/"
     state: directory
+    mode: 0755
     recurse: yes
-- name: Download Java
-  local_action:
-    module: command curl -L -C - -b "oraclelicense=accept-securebackup-cookie" "{{ java_url }}" -o java.tar.gz
-    args:
-      warn: "false"
-      creates: "java.tar.gz"
-- name: Create Java directory
-  file:
-    path: "{{ java_dir }}"
-    state: directory
-    recurse: yes
+  register: jvm_dir
+- name: Download JAVA
+  get_url:
+    url: "{{ java_url }}"
+    dest: "{{ src_dir }}/java.tar.gz"
+    headers:
+      Cookie: "oraclelicense+accept-securebackup-cookie"
+  register: jvm_download
 - name: Unpack Java
   unarchive:
-    src: ./java.tar.gz
-    dest: "{{ java_dir }}"
+    src: "{{ src_dir }}/java.tar.gz"
+    dest: "{{ jvm_dir.path }}"
     extra_opts: ['--strip-components=1']
-    creates: "{{ java_dir }}/bin/java"
+    creates: "{{ jvm_dir.path }}/bin/java"
+    remote_src: "{{ 'no' if inventory_hostname == 'localhost' else 'yes' }}"
+  register: jvm_path

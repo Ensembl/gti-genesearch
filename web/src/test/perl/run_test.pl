@@ -49,8 +49,8 @@ else {
 }
 my $logger = Log::Log4perl->get_logger();
 
-$opts->{uri}        ||= 'http://gti-es-0.ebi.ac.uk:8080/api/genes';
-$opts->{es_uri}     ||= 'http://gti-es-0.ebi.ac.uk:9200';
+$opts->{uri}        ||= 'http://gti-custom-download-staging.ebi.ac.uk:8080/api/genes';
+$opts->{es_uri}     ||= 'http://gti-elastic-staging-1.ebi.ac.uk:9200';
 $opts->{action}     ||= 'query';
 $opts->{iterations} ||= 5;
 $opts->{limit}      ||= 100;

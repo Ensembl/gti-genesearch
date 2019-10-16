@@ -10,5 +10,10 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-es_url : https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.3/elasticsearch-2.3.3.tar.gz
-
+---
+- name: start web
+  shell: "{{ web_dir }}/webapp.sh start"
+- name: stop web
+  shell: "{{ web_dir }}/webapp.sh stop"
+- name: restart web
+  shell: "{{ web_dir }}/webapp.sh restart"

@@ -1,6 +1,12 @@
 plugins {
     id "org.springframework.boot" version "2.1.6.RELEASE"
 }
+configurations {
+    all*.exclude module: 'spring-boot-starter-logging'
+    compile.exclude module: "spring-boot-starter-tomcat"
+    compile.exclude group: "org.slf4j", module: "slf4j-log4j12"
+}
+
 
 apply plugin: "io.spring.dependency-management"
 
@@ -19,6 +25,5 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-actuator:$springBootStackVersion")
     compile("org.springframework.boot:spring-boot-starter-jersey:$springBootStackVersion")
     compile("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider")
-
     testCompile("org.springframework.boot:spring-boot-starter-test:$springBootStackVersion")
 }

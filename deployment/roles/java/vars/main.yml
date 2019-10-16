@@ -10,5 +10,8 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
-java_dir : "{{ base_dir }}/java"
-java_url : http://download.oracle.com/otn-pub/java/jdk/8u171-b11/512cd62ec5174c3487ac17c61aaa89e8/jdk-8u171-linux-x64.tar.gz
+# Java src dir
+java_src_dir: "{{ base_dir }}/src"
+# Java destination dir
+java_dir : "{{ base_dir }}/bin/java"
+java_url : https://download.java.net/openjdk/jdk8u40/ri/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz

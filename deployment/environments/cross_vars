@@ -1,0 +1,55 @@
+# ..  See the NOTICE file distributed with this work for additional information
+#     regarding copyright ownership.
+#     Licensed under the Apache License, Version 2.0 (the "License");
+#     you may not use this file except in compliance with the License.
+#     You may obtain a copy of the License at
+#       http://www.apache.org/licenses/LICENSE-2.0
+#     Unless required by applicable law or agreed to in writing, software
+#     distributed under the License is distributed on an "AS IS" BASIS,
+#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#     See the License for the specific language governing permissions and
+#     limitations under the License.#
+#
+
+###############
+# GLOBAL  CFG #
+###############
+src_dir: "{{ base_dir}}/src"
+# JAVA Options
+java_dir: "{{ src_dir }}/java"
+log_dir: "{{ base_dir }}/logs"
+# SSL enabled ? (From vars.yml)
+enable_ssl: "{{ false if not keystore_name else true }}"
+
+
+###############
+# ELASTIC CFG #
+###############
+es_version: 6.8.3
+es_dir: "{{ base_dir }}/es"
+es_logs: "{{ base_dir }}/logs"
+es_data: "{{ base_dir }}/data"
+es_pid: "{{ es_dir }}/es.pid"
+es_hosts: "{{ groups['es_head'] + groups['es_data'] }}"
+es_min_masters: "{{ (groups['es_data']|length + groups['es_head']|length)/2 + 1 }}"
+es_cluster_name: "genesearch"
+es_node_name: "{{ inventory_hostname.split('.')[0] | lower }}"
+
+##################
+# WEB APP CONFIG #
+##################
+# active spring_profile
+web_spring_profile: default
+# git tag to use (MUST MATCH GRADLE VERSION)
+webapp_version: 0.2
+
+web_dir: "{{ base_dir }}/web"
+web_pid: "{{ web_dir }}/web.pid"
+web_port: 8080
+web_java_xmx: "-Xmx{{ web_java_heap|default('2G')}}"
+web_java_proxy: "-Dhttps.proxyHost={{ web_proxy_host }} -Dhttps.proxyPort={{ web_proxy_port }}"
+web_java_opts: "{{ web_java_xmx }} {{ web_java_proxy if web_proxy_host is defined else '' }} "
+# ES head node to contact
+web_es_head: "{{ groups['es_head'][0] }}"
+# Ensembl REST services
+rest_url_ens: http://rest.ensembl.org/

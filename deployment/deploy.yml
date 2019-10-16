@@ -11,37 +11,48 @@
 #     limitations under the License.#
 #
 ---
-- hosts: es-data
-  remote_user : "{{ remote_user_name }}"
+- name: Install Java src
+  hosts: all
   vars_files:
     - vars.yml
-    - es-data-vars.yml
   roles:
     - common
     - java
-    - es_core
+  tags:
+    - common
+- hosts: es_head
+  name: Deploy ES Head node
+  remote_user: "{{ remote_user_name }}"
+  vars_files:
+    - vars.yml
+  roles:
+    - es_deploy
     - es_configure
   environment:
-    http_proxy: "{{ cache_proxy }}"
-- hosts: es-head
-  remote_user : "{{ remote_user_name }}"
+    http_proxy: "{{ cache_proxy | default({}) }}"
+  tags:
+    - es_head
+- hosts: es_data:!localhost
+  name: Deploy ES Data node
+  remote_user: "{{ remote_user_name }}"
   vars_files:
     - vars.yml
-    - es-head-vars.yml
   roles:
-    - common
-    - java
-    - es_core
+    - es_deploy
     - es_configure
+  tags:
+    - es_data
   environment:
-    http_proxy: "{{ cache_proxy }}"
-- hosts: web-head
-  remote_user : "{{ remote_user_name }}"
+    http_proxy: "{{ cache_proxy | default({}) }}"
+- hosts: web_head
+  remote_user: "{{ remote_user_name }}"
   vars_files:
     - vars.yml
   roles:
-    - common
-    - java
+#    - common
+#    - java
+    - webapp
+  tags:
     - webapp
   environment:
-    http_proxy: "{{ cache_proxy }}"
+    http_proxy: "{{ cache_proxy | default({}) }}"

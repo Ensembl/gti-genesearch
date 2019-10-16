@@ -11,5 +11,6 @@
 #     limitations under the License.#
 #
 ---
-- name: kill java
+# TODO fix because it kills all java app on host !
+- name: kill java web
   shell: pgrep -u $USER java | while read p; do xargs kill -KILL $p; done

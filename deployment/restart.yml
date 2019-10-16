@@ -12,23 +12,21 @@
 #
 # create a fresh config file and restart each server
 ---
-- hosts: es-data
+- hosts: es_data
   remote_user : "{{ remote_user_name }}"
   vars_files:
     - vars.yml
-    - es-data-vars.yml
   roles:
     - common
     - es_configure
-- hosts: es-head
-  remote_user : ensprod  
+- hosts: es_head
+  remote_user : "{{ remote_user_name }}"
   vars_files:
     - vars.yml
-    - es-head-vars.yml
   roles:
     - common
     - es_configure
-- hosts: web-head
+- hosts: web_head
   remote_user : "{{ remote_user_name }}"
   vars_files:
     - vars.yml

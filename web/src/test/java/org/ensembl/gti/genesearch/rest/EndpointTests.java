@@ -52,67 +52,23 @@ import static org.junit.Assert.*;
 
 /**
  * @author dstaines
- *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
+@SpringBootApplication
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-public class EndpointTests {
+public class EndpointTests extends WebAppTests {
 
 
-    @Value("${local.server.port}")
-    int port;
-
-    private String GENES_FETCH = "genes/fetch";
-    private String GENES_QUERY = "genes/query";
-    private String GENOMES_FETCH = "genomes/fetch";
-    private String GENOMES_QUERY = "genomes/query";
-    private String GENOMES_SELECT = "genomes/select";
-    private String TRANSCRIPTS_FETCH = "transcripts/fetch";
-    private String TRANSCRIPTS_QUERY = "transcripts/query";
-    private String INFO = "genes/info";
-
-    private static Logger log = LoggerFactory.getLogger(EndpointTests.class);
-    private static ESTestClient esTestClient;
-
-    static ESSearch geneSearch;
-    static ESSearch genomeSearch;
-
-    @BeforeClass
-    public static void setUp() throws IOException {
-        // create our ES test server once only
-        log.info("Setting up ");
-        esTestClient = new ESTestClient();
-        log.info("Reading documents");
-        String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
-        String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
-        log.info("Creating test index");
-        esTestClient.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
-        esTestClient.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
-
-    }
-
-    @Autowired
-    EndpointSearchProvider provider;
-
-    static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {};
-    static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {};
-    static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {};
+    static final TypeReference<Map<String, Object>> MAP_REF = new TypeReference<Map<String, Object>>() {
+    };
+    static final TypeReference<List<Map<String, Object>>> LIST_REF = new TypeReference<List<Map<String, Object>>>() {
+    };
+    static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {
+    };
 
     private RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
-
-    private String getServiceUrl(String uri) {
-        return "http://localhost:" + port + "/api/" + uri;
-    }
-
-    @Before
-    public void injectSearch() {
-        // ensure we always use our test instances
-        log.info("Inject search " + esTestClient.getClient());
-        provider.setESClient(esTestClient.getClient());
-    }
 
     @Test
     public void testQueryGetEndpoint() {
@@ -507,11 +463,9 @@ public class EndpointTests {
     /**
      * Helper method for invoking a URI as GET and parsing the result into a
      * hash
-     * 
-     * @param url
-     *            URL template
-     * @param params
-     *            bind parameters for URL
+     *
+     * @param url    URL template
+     * @param params bind parameters for URL
      * @return object retrieved from GET
      */
     public static <T> T getUrlToObject(TypeReference<T> type, RestTemplate restTemplate, String url, Object... params) {
@@ -534,18 +488,15 @@ public class EndpointTests {
     /**
      * Helper method to invoke a JSON POST method with the supplied object and
      * then return the resulting object
-     * 
+     *
      * @param restTemplate
-     * @param url
-     *            URL
-     * @param json
-     *            object to post
-     * @param params
-     *            URL bind params
+     * @param url          URL
+     * @param json         object to post
+     * @param params       URL bind params
      * @return object retrieved from POST
      */
     public static <T> T postUrlToObject(TypeReference<T> type, RestTemplate restTemplate, String url, String json,
-            Object... params) {
+                                        Object... params) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -566,6 +517,8 @@ public class EndpointTests {
     @AfterClass
     public static void tearDown() {
         log.info("Disconnecting server");
-        esTestClient.disconnect();
+        if (esTestClient != null) {
+            esTestClient.disconnect();
+        }
     }
 }

@@ -9,7 +9,7 @@ allprojects {
     ext {
         springStackVersion = "5.1.8.RELEASE"
         springBootStackVersion = "2.1.6.RELEASE"
-        elasticStackVersion = "6.8.1"
+        elasticStackVersion = "6.8.3"
     }
 
     sourceCompatibility = 1.8
@@ -65,7 +65,12 @@ allprojects {
 
 project(':test') {
     version = "1.0"
-    jar
+    dependencies {
+        compile 'com.github.fakemongo:fongo:2.0.9'
+        compile "org.testcontainers:elasticsearch:1.11.1"
+        testCompile 'com.github.stefanbirkner:system-rules:1.19.0'
+        testCompile project(":search")
+    }
 }
 
 project(':search'){
@@ -73,5 +78,5 @@ project(':search'){
 }
 
 project(':web') {
-    version = "0.1"
+    version = "0.2"
 }

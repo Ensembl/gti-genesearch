@@ -1,6 +1,6 @@
-[es-data]
+[es_data]
 localhost
-[es-head]
+[es_head]
 localhost
-[web-head]
+[web_head]
 localhost

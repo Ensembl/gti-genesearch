@@ -1,18 +1,56 @@
-cluster.name: {{ es_cluster }}
-node.name: ${HOSTNAME}
-path.data: {{ es_logs }}
-path.logs: {{ es_data }}
-network.host: ${HOSTNAME}
-discovery.zen.ping.multicast.enabled: false
-discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
-discovery.zen.minimum_master_nodes: {{ min_masters }}
-node.max_local_storage_nodes: 1
+# ---------------------------------- Cluster -----------------------------------
+#
+cluster.name: {{ es_cluster_name }}
+#
+# ------------------------------------ Node ------------------------------------
+#
+node.name: {{ es_node_name | default(inventory_hostname) }}
+node.max_local_storage_nodes: {{ es_max_local_storage_nodes | default("50") }}
+node.data: {{ es_node_data }}
+node.master: {{ es_node_master }}
+#
+# ----------------------------------- Paths ------------------------------------
+#
+path.data: {{ es_data }}
+#
+path.logs: {{ es_logs }}
+#
+# ----------------------------------- Memory -----------------------------------
+#
+#bootstrap.memory_lock: true
+bootstrap.system_call_filter: false
+#
+# ---------------------------------- Network -----------------------------------
+#
 http.cors.enabled: true
 http.cors.allow-origin: "*"
-node.data: false
-node.master: false
-bootstrap.system_call_filter: false
+network.host: {{ inventory_hostname }}
+transport.host: {{ inventory_hostname }}
+# TODO deal with this parameter according to environment
+{% if es_discovery_type is defined %}
+discovery.type: single-node
+{% endif %}
+http.enabled: {{ es_http_enabled | default("true") }}
+http.port: {{ es_port | default("9200") }}
+transport.tcp.port:  {{ es_transport_port | default("9300") }}
+#
+# --------------------------------- Discovery ----------------------------------
+#TODO
+# The default list of hosts is ["127.0.0.1", "[::1]"]
+# discovery.zen.ping.unicast.hosts: ["host1", "host2"]
+{% if inventory_hostname != "localhost" %}
+discovery.zen.ping.unicast.hosts: [{{ '\"' + es_hosts|join('\", \"' )+'\"'}}]
+{% endif %}
+# Prevent the "split brain" by configuring the majority of nodes (total number of master-eligible nodes / 2 + 1):
+# discovery.zen.minimum_master_nodes: {{ es_min_masters|default(1) }}
+#
+# ---------------------------------- Gateway -----------------------------------
+#
+#gateway.recover_after_nodes: 3
+#
+# ---------------------------------- Various -----------------------------------
+#
+# action.destructive_requires_name: true
 # Bulk pool
-threadpool.bulk.type: fixed
-threadpool.bulk.size: 60
-threadpool.bulk.queue_size: 300
+# thread_pool.bulk.size: {{ es_head_thread_pool_bulk_size | default( ansible_processor_cores ) }}
+thread_pool.bulk.queue_size: {{ es_head_thread_pool_bulk_queue_size| default( ansible_processor_cores ) }}

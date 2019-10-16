@@ -12,7 +12,7 @@
 #
 - name: "Build webapp jar"
   local_action:
-    module: command ./gradlew :web:bootRepackage
+    module: command ./gradlew :web:build -x test
     args:
       chdir: ../
       creates: "../web/build/libs/{{ jar_name }}"
@@ -39,4 +39,4 @@
     src: "webapp.sh.j2"
     dest: "{{ web_dir }}/webapp.sh"
     mode: 0700
-  notify: start web
+  notify: restart web

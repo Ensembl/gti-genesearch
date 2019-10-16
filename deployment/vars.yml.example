@@ -1,47 +1,41 @@
+# ..  See the NOTICE file distributed with this work for additional information
+#     regarding copyright ownership.
+#     Licensed under the Apache License, Version 2.0 (the "License");
+#     you may not use this file except in compliance with the License.
+#     You may obtain a copy of the License at
+#       http://www.apache.org/licenses/LICENSE-2.0
+#     Unless required by applicable law or agreed to in writing, software
+#     distributed under the License is distributed on an "AS IS" BASIS,
+#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#     See the License for the specific language governing permissions and
+#     limitations under the License.#
+#
+
+###############
+# GLOBAL  CFG #
+###############
 # remote_user
-remote_user_name : ensprod
+remote_user_name: remoteusername
+# Remote Applications root base dir
+base_dir: /home/genesearch
 
-# location to deploy ES & Java
-base_dir : /data/search
-# optional proxy for working behind a firewall
-proxy_host : TODO
-proxy_port : TODO
-http_proxy : "http://{{ proxy_host }}:{{ proxy_port }}"
+# SSL params if need be
+# keystore_name :
+# key_alias :
+# key_password :
 
-## ES
-es_logs : "{{ base_dir }}/es_logs"
-es_data : "{{ base_dir }}/es_data"
-es_cluster : genesearch
-es_dir : "{{ base_dir }}/es"
-es_pid_file : {{ base_dir }}/es.pid
-# list of hosts that make up the ES cluster
-es_hosts: "{{ groups['es-head'] + groups['es-data'] }}"   
-# should be total_nodes/2+1
-min_masters : 5
-es_heap : 16g
+# Other remote platforms parameters
+# SOLR credentials
+solr_expression_url: TODO
+solr_experiments_url: TODO
 
-## WEBAPP
-web_dir : "{{ base_dir }}/web"
-web_pid_file : {{ base_dir }}/web.pid
-webapp_port : 8080
-# git tag to use (must match gradle version)
-webapp_version: 0.1
-# RAM for head node
-java_opts : "-Xmx2g -Dhttps.proxyHost={{ proxy_host }} -Dhttps.proxyPort={{ proxy_port }}"
-# solr credentials
-solr_expression_url : TODO
-solr_experiments_url : TODO
-# ES node to contact
-es_head : 127.0.0.1
-# ebisc details
-ebisc_user : TODO
-ebisc_token : TODO
-ebisc_accession : TODO
-ega_url : TODO
-# ssl
-keystore_name : keystore.p12
-key_alias : TODO
-key_password : TODO
-# active profile
-profile : default
+# EBISC details
+ebisc_user: TODO
+ebisc_token: TODO
+ebisc_accession: TODO
 
+# EGA details
+ega_url: TODO
+
+# EVA details
+eva_rest_url: TODO

@@ -10,27 +10,22 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.#
 #
----
-- name: Create ES directory
-  file:
-    path: "{{ es_dir }}"
-    state: directory
-    recurse: yes
-- name: Create ES logs directory
-  file:
-    path: "{{ base_dir }}/es_logs"
-    state: directory
-    recurse: yes
-- name: Download and unpack Elastic
-  unarchive:
-    src: "{{ es_url }}"
-    dest: "{{ es_dir }}"
-    remote_src: yes
-    extra_opts: ['--strip-components=1']
-    creates: "{{ es_dir }}/bin/elasticsearch"
-- name: Install control script
-  template:
-    src: elastic.sh.j2
-    dest: "{{ es_dir }}/elastic.sh"
-    mode: 0700
+env: dev
+
+#####################
+# ELASTIC LOCAL CFG #
+#####################
+es_java_heap: 512M
+es_min_masters: 1
+es_cluster_name: "genesearch"
+es_node_name: "local-node"
+es_max_local_storage_nodes: 5
+es_discovery_type: "single-node"
+
+##################
+# WEB APP CONFIG #
+##################
+web_java_heap: 512M
+web_proxy_host: None
+web_proxy_port: None
 

@@ -29,7 +29,7 @@ import java.util.Map;
 public class SearchErrorController implements ErrorController {
     private static final String PATH = "/error";
 
-    @Value("${debug}")
+    @Value("#{new Boolean('${debug}')}")
     private boolean debug;
 
     @Autowired
