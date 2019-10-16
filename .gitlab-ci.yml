@@ -32,14 +32,58 @@ test:
   script:
     - ./gradlew test:cleanTest test:test
     - ./gradlew search:cleanTest search:test
-#   - ./gradlew web:cleanTest web:test
+    - ./gradlew web:cleanTest web:compileJava -x test
 
 deploy:
   stage: deploy
+  before_script:
+    - apt-get -qq update && apt-get -qq install -y python3
+    - apt-get -qq install -y python python-virtualenv python-pip
+    - virtualenv -p python3 .deployment
+    - source ./.deployment/bin/activate
+    - pip install -r requirements.txt
   script:
-    - ./deploy
+    - cd deployement
+    - ansible-playbook deploy.xml -i environments/test
   only:
     - master
+  after_script:
+    - echo "Deploy complete"
+
+deploy-stage:
+  stage: deploy
+  before_script:
+    - apt-get -qq update && apt-get -qq install -y python3
+    - apt-get -qq install -y python python-virtualenv python-pip
+    - virtualenv -p python3 .deployment
+    - source ./.deployment/bin/activate
+    - pip install -r requirements.txt
+  script:
+    - cd deployement
+    - ansible-playbook deploy.xml -i environments/stage
+  only:
+    - master
+    - tags
+  after_script:
+    - echo "Stage deploy complete"
+
+# TODO deploy to release ? :
+# deploy-live:
+#   stage: release
+#   before_script:
+#     - apt-get -qq update && apt-get -qq install -y python3
+#     - apt-get -qq install -y python python-virtualenv python-pip
+#     - virtualenv -p python3 .deployment
+#     - source ./.deployment/bin/activate
+#     - pip install -r requirements.txt
+#   script:
+#     - cd deployement
+#     - ansible-playbook deploy.xml -i environments/prod
+#   only:
+#     - master
+#     - tags
+#   after_script:
+#     - echo "Stage deploy complete"
 
 after_script:
   - echo "End CI"
