@@ -51,9 +51,8 @@ public class ESTestClient {
 
     private static Client client;
     private static Logger log = LoggerFactory.getLogger(ESTestClient.class);
-    private static ElasticsearchContainer container;
 
-    public ESTestClient() throws RuntimeException {
+    public ESTestClient() throws RuntimeException, UnknownHostException, ConnectTransportException {
         /**
          *
          * REMOVED embedded cluster - prerequisites to test : either env var pointing to actual ES node or a local ES node from docker
@@ -73,14 +72,7 @@ public class ESTestClient {
             log.info(String.format("Connected to ES %s test server", clusterName));
         } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
             log.info("ES server error: " + e.getMessage());
-            log.info("Create one with docker");
-            container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:6.8.1");
-            container.start();
-            settings = Settings.builder().put("cluster.name", "docker-cluster").build();
-            transportAddress = new TransportAddress(container.getTcpHost());
-            client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
-            client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMinutes(5)).execute().actionGet();
-            log.info(String.format("Connected to embedded ES %s test server", clusterName));
+            throw e;
         }
     }
 
@@ -183,11 +175,6 @@ public class ESTestClient {
      */
     public void disconnect() {
         if (client != null) client.close();
-        if (container != null) container.close();
-    }
-
-    public boolean hasContainer() {
-        return (container != null);
     }
 
     public boolean hasClient() {
