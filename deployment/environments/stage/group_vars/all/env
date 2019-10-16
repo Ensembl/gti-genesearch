@@ -17,8 +17,7 @@ env: dev
 #####################
 es_java_heap: 8G
 es_cluster_name: "genesearch"
-es_max_local_storage_nodes: 5
-
+es_max_local_storage_nodes: 30
 es_head_thread_pool_bulk_size: 30
 es_head_thread_pool_bulk_queue_size: 150
 
