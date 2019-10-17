@@ -7,8 +7,8 @@ services:
     command: [ "bin/elasticsearch", "-Ediscovery.type=single-node" ]
 
 stages:
-  - build
   - test
+  - build
   - deploy
 
 before_script:
