@@ -51,7 +51,6 @@ public class ESTestClient {
 
     private static Client client;
     private static Logger log = LoggerFactory.getLogger(ESTestClient.class);
-    private static ElasticsearchContainer container;
 
     public ESTestClient() throws RuntimeException, UnknownHostException {
         /**
@@ -176,11 +175,6 @@ public class ESTestClient {
      */
     public void disconnect() {
         if (client != null) client.close();
-        if (container != null) container.close();
-    }
-
-    public boolean hasContainer() {
-        return (container != null);
     }
 
     public boolean hasClient() {

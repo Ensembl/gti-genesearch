@@ -1,6 +1,11 @@
 
 image: java:8-jdk
 
+services:
+  - name: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
+    alias: elasticsearch
+    command: [ "bin/elasticsearch", "-Ediscovery.type=single-node" ]
+
 stages:
   - build
   - test
