@@ -71,7 +71,7 @@ public class ESTestClient {
             client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMinutes(5)).execute().actionGet();
             log.info(String.format("Connected to ES %s test server", clusterName));
         } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
-            log.error(String.format("ES server connexion error %s:%s [%s]: %s", elasticHost, port, clusterName, e.getMessage()));
+            log.error(String.format("ES server connexion error %s:%s [%s]: %s", elasticHost, port, clusterName, e));
             throw e;
         }
     }

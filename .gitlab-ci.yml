@@ -15,6 +15,9 @@ before_script:
   - echo `pwd`
   - echo "$CI_BUILD_NAME, $CI_BUILD_REF_NAME $CI_BUILD_STAGE"
   - export GRADLE_USER_HOME=`pwd`/.gradle
+  - echo "$HOSTS_TEST" > "$(pwd)/deployment/environments/test/hosts"
+  - echo "$HOSTS_STAGE" > "$(pwd)/deployment/environments/stage/hosts"
+  - echo "$HOSTS_VARS" > "$(pwd)/deployment/vars.yml"
 
 cache:
   paths:
