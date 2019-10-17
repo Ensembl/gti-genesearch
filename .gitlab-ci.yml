@@ -2,7 +2,9 @@
 image: java:8-jdk
 
 services:
-  - docker: dind
+  - name: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
+    alias: elasticsearch
+    command: [ "bin/elasticsearch", "-Ediscovery.type=single-node" ]
 
 stages:
   - test
@@ -32,10 +34,7 @@ build:
 
 test:
   stage: test
-  before_script:
-    - docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:6.8.4
   script:
-    - curl "http://elasticsearch:9200/_cat/health"
     - ./gradlew test:cleanTest test:test
     - ./gradlew search:cleanTest search:test
     - ./gradlew web:cleanTest web:compileJava -x test
@@ -51,6 +50,7 @@ deploy:
     - pip install -r requirements.txt
   script:
     - cd deployment
+    - echo "$HOSTS_TEST" > "$(pwd)/environments/test/hosts"
     - ansible-playbook deploy.xml -i environments/test
   only:
     - master
@@ -68,7 +68,8 @@ deploy-stage:
     - pip install -r requirements.txt
   script:
     - cd deployment
-    - ansible-playbook deploy.xml -i environments/stage
+    - echo "$HOSTS_STAGE" > "$(pwd)/environments/stage/hosts"
+    - ansible-playbook deploy.xml -i stage_host
   only:
     - master
     - tags
