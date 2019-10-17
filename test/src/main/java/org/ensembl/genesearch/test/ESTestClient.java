@@ -52,7 +52,7 @@ public class ESTestClient {
     private static Client client;
     private static Logger log = LoggerFactory.getLogger(ESTestClient.class);
 
-    public ESTestClient() throws RuntimeException, UnknownHostException, ConnectTransportException {
+    public ESTestClient() throws RuntimeException, UnknownHostException {
         /**
          *
          * REMOVED embedded cluster - prerequisites to test : either env var pointing to actual ES node or a local ES node from docker
@@ -71,7 +71,7 @@ public class ESTestClient {
             client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMinutes(5)).execute().actionGet();
             log.info(String.format("Connected to ES %s test server", clusterName));
         } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
-            log.info("ES server error: " + e.getMessage());
+            log.error(String.format("ES server connexion error %s:%s [%s]: %s", elasticHost, port, clusterName, e.getMessage()));
             throw e;
         }
     }
