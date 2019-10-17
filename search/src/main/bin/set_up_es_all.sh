@@ -12,26 +12,39 @@
 #     limitations under the License.#
 #
 
+
 dir=$(dirname $0)
 url=$1
-type=$2
-name=$3
-n=$4
+release=$2
+n=$3
+r=$4
 if [[ -z "$n" ]]; then
     n=8
 fi
 
-if [[ -z "$url" ]] || [[ -z "$type" ]] || [[ -z "$name" ]]; then
-    echo "Usage: $0 <url> <type> <name> [shardN]" 1>&2 
+if [[ -z "$r" ]]; then
+    n=0
+fi
+
+if [[ -z "$url" ]] ||  [[ -z "$release" ]] ; then
+    echo "Usage: $0 <url> <release> [shardN] [Replicas]" 1>&2
     exit 1
 fi
 
 echo "Setting up $url $type $name"
 
 # delete the old index
-echo "Deleting old index"
-curl -XDELETE "${url}/$name" 
-echo
 # create a new index
-echo "Creating index"
-sed -e "s/SHARDN/$n/" ${dir}/../resources/indexes/${type}_index.json | curl -XPUT -d @- -H "Content-Type: application/json" "${url}/${name}"
+resources=${dir}/../resources/indexes/
+for filename in `ls ${resources}`; do
+  echo $filename | rev | cut -d'_' -f2- | rev
+  type=`echo ${filename} | rev | cut -d'_' -f2- | rev`
+  echo "Type ${type}"
+  name="${type}s"
+  echo "Deleting old index ${name}"
+  curl -XDELETE "${url}/${name}"
+  echo
+  echo "Creating index "
+  sed -e "s/SHARDN/$n/" -e "s/REPLICAS/$r/" ${dir}/../resources/indexes/${type}_index.json | curl -XPUT -d @- -H "Content-Type: application/json" "${url}/${name}"
+done
+

@@ -6,8 +6,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -20,17 +19,19 @@ public class TestServerTest {
     public final EnvironmentVariables environ = new EnvironmentVariables();
 
     @Test
-    public void testNoEnvironmentSet() {
+    public void testNoEnvironmentSet() throws Exception {
         assumeTrue(System.getenv("ES_HOST") == null);
         ESTestClient testClient = new ESTestClient();
+        assertNotNull(testClient.getClient());
         assertTrue(testClient.hasContainer());
     }
 
     @Test
-    public void testExternalRunning() {
+    public void testExternalRunning() throws Exception {
         assumeTrue(System.getenv("ES_HOST") != null);
         ESTestClient testClient = new ESTestClient();
         // ES test server is "Outside" Test Client - no inner container set as expected
+        assertNotNull(testClient.getClient());
         assertFalse(testClient.hasContainer());
     }
 

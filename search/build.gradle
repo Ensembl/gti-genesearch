@@ -1,8 +1,10 @@
 // Search Engin system dependencies
 apply plugin: "application"
 
+
 test {
     systemProperty "tests.security.manager", false
+    testLogging.showStandardStreams = true
     minHeapSize = "512m"
     maxHeapSize = "4096m"
 }
@@ -10,6 +12,7 @@ test {
 mainClassName = "org.ensembl.genesearch.clients.IdLookupClient"
 
 dependencies {
+
     compile "org.codelibs.elasticsearch.module:analysis-common:6.8.2"
     compile "org.apache.commons:commons-lang3:3.4"
     compile "commons-io:commons-io:2.4"

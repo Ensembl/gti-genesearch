@@ -52,7 +52,7 @@ public class WebAppTests {
     }
 
     @BeforeClass
-    public static void initSetUp() throws IOException {
+    public static void initSetUp() throws Exception {
         // create our ES test server once only
         log.info("Setting up ");
         esTestClient = new ESTestClient();
