@@ -50,6 +50,7 @@ deploy:
     - pip install -r requirements.txt
   script:
     - cd deployment
+    - echo "$HOSTS_TEST" > "$(pwd)/environments/test/hosts"
     - ansible-playbook deploy.xml -i environments/test
   only:
     - master
@@ -67,7 +68,8 @@ deploy-stage:
     - pip install -r requirements.txt
   script:
     - cd deployment
-    - ansible-playbook deploy.xml -i environments/stage
+    - echo "$HOSTS_STAGE" > "$(pwd)/environments/stage/hosts"
+    - ansible-playbook deploy.xml -i stage_host
   only:
     - master
     - tags
