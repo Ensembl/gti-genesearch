@@ -52,7 +52,7 @@ public class ESTestClient {
     private static Client client;
     private static Logger log = LoggerFactory.getLogger(ESTestClient.class);
 
-    public ESTestClient() throws RuntimeException, UnknownHostException, ConnectTransportException {
+    public ESTestClient() throws RuntimeException, UnknownHostException {
         /**
          *
          * REMOVED embedded cluster - prerequisites to test : either env var pointing to actual ES node or a local ES node from docker

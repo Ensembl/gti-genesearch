@@ -23,6 +23,7 @@ public class TestServerTest {
         assumeTrue(System.getenv("ES_HOST") == null);
         ESTestClient testClient = new ESTestClient();
         assertNotNull(testClient.getClient());
+        assertTrue(testClient.hasContainer());
     }
 
     @Test
@@ -31,6 +32,7 @@ public class TestServerTest {
         ESTestClient testClient = new ESTestClient();
         // ES test server is "Outside" Test Client - no inner container set as expected
         assertNotNull(testClient.getClient());
+        assertFalse(testClient.hasContainer());
     }
 
 }
