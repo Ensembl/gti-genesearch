@@ -11,7 +11,7 @@ public class AbstractESTestCase {
     static ESTestClient esTestClient;
 
     @BeforeClass
-    public static void setUp(){
+    public static void setUp() throws Exception {
         // index a sample of JSON
         esTestClient = new ESTestClient();
         // only create index when using docker, local test server should be up and set up already
