@@ -1,10 +1,5 @@
 image: java:8-jdk
 
-services:
-  - name: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
-    alias: elasticsearch
-    command: [ "bin/elasticsearch", "-Ediscovery.type=single-node" ]
-
 stages:
   - test
   - build
@@ -33,13 +28,22 @@ build:
     expire_in: 1 week
   only:
     - master
+    - tags
 
 test:
   stage: test
+  services:
+    - name: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
+      alias: elasticsearch
+      command: [ "bin/elasticsearch", "-Ediscovery.type=single-node" ]
   script:
     - ./gradlew test:cleanTest test:test
     - ./gradlew search:cleanTest search:test
     - ./gradlew web:cleanTest web:compileJava -x test
+  only:
+    changes:
+      - "**/*.java"
+      - "**/resources/*/*.json"
 
 deploy:
   stage: deploy
@@ -52,12 +56,12 @@ deploy:
     - pip install -r requirements.txt
   script:
     - cd deployment
-    - echo "$HOSTS_TEST" > "$(pwd)/environments/test/hosts"
     - ansible-playbook deploy.xml -i environments/test
   only:
     - master
+    - tags
   after_script:
-    - echo "Deploy complete"
+    - echo "Test deploy complete"
 
 deploy-stage:
   stage: deploy
@@ -70,7 +74,6 @@ deploy-stage:
     - pip install -r requirements.txt
   script:
     - cd deployment
-    - echo "$HOSTS_STAGE" > "$(pwd)/environments/stage/hosts"
     - ansible-playbook deploy.xml -i stage_host
   only:
     - master
@@ -78,23 +81,22 @@ deploy-stage:
   after_script:
     - echo "Stage deploy complete"
 
-# TODO deploy to release ? :
-# deploy-live:
-#   stage: release
-#   before_script:
-#     - apt-get -qq update && apt-get -qq install -y python3
-#     - apt-get -qq install -y python python-virtualenv python-pip
-#     - virtualenv -p python3 .deployment
-#     - source ./.deployment/bin/activate
-#     - pip install -r requirements.txt
-#   script:
-#     - cd deployement
-#     - ansible-playbook deploy.xml -i environments/prod
-#   only:
-#     - master
-#     - tags
-#   after_script:
-#     - echo "Stage deploy complete"
+deploy-live:
+   stage: deploy
+   before_script:
+     - apt-get -qq update && apt-get -qq install -y python3
+     - apt-get -qq install -y python python-virtualenv python-pip
+     - virtualenv -p python3 .deployment
+     - source ./.deployment/bin/activate
+     - pip install -r requirements.txt
+   script:
+     - cd deployement
+     - ansible-playbook deploy.xml -i environments/prod
+   only:
+     - /^release-.*/
+     - tags
+   after_script:
+     - echo "LIVE deploy complete"
 
 after_script:
   - echo "End CI"
