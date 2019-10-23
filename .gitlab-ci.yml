@@ -58,8 +58,9 @@ deploy:
     - cd deployment
     - ansible-playbook deploy.xml -i environments/test
   only:
-    - master
     - tags
+  except:
+    - branches
   after_script:
     - echo "Test deploy complete"
 
@@ -76,8 +77,9 @@ deploy-stage:
     - cd deployment
     - ansible-playbook deploy.xml -i stage_host
   only:
-    - master
     - tags
+  except:
+    - branches
   after_script:
     - echo "Stage deploy complete"
 
@@ -94,7 +96,6 @@ deploy-live:
      - ansible-playbook deploy.xml -i environments/prod
    only:
      - /^release-.*/
-     - tags
    after_script:
      - echo "LIVE deploy complete"
 
