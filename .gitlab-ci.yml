@@ -59,7 +59,7 @@ deploy:
     - cd deployment
     - ansible-playbook deploy.xml -i environments/test
   only:
-    - /^feature.*/
+    - master
     - tags
   after_script:
     - echo "Test deploy complete"
