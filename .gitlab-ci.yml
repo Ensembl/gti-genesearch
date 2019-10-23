@@ -83,7 +83,7 @@ deploy-stage:
     - echo "Stage deploy complete"
 
 deploy-live:
-   stage: release
+   stage: deploy
    before_script:
      - apt-get -qq update && apt-get -qq install -y python3
      - apt-get -qq install -y python python-virtualenv python-pip
