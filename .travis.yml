@@ -30,7 +30,6 @@ matrix:
       - git clone --branch master --depth 1 https://github.com/Ensembl/ensembl-test.git
 
       install:
-      - cpanm --sudo -v --installdeps --with-recommends --notest --cpanfile ensembl/cpanfile .
       - cpanm --sudo -v --installdeps --notest --cpanfile ensembl-hive/cpanfile .
       - export PERL5LIB=$PERL5LIB:$PWD/bioperl-live
       - cpanm --sudo -v --installdeps --notest .
@@ -44,10 +43,10 @@ matrix:
 
       script: ./travisci/harness.sh
 
-      notifications:
-        email:
-          on_success: always
-          on_failure: always
-        slack:
-          secure: BkrSPAkOM5aTOpeyO9vZnHdZ0LF1PLk0r2HtcXN2eTMyiHoGXkl6VUjdAL8EkzI4gunW2GProdSIjHpf60WdiEmKAulMdJRI+xyUbuxnY31mwiikS9HYwqmPBbMTf0Mh2pMBngZRFs+gaFZDUMTfLfp+8MQfU1R54yb6hPuVt5I=
+notifications:
+  email:
+    on_success: always
+    on_failure: always
+  slack:
+    secure: BkrSPAkOM5aTOpeyO9vZnHdZ0LF1PLk0r2HtcXN2eTMyiHoGXkl6VUjdAL8EkzI4gunW2GProdSIjHpf60WdiEmKAulMdJRI+xyUbuxnY31mwiikS9HYwqmPBbMTf0Mh2pMBngZRFs+gaFZDUMTfLfp+8MQfU1R54yb6hPuVt5I=
 
