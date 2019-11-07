@@ -24,18 +24,16 @@ matrix:
         - mysql
         - docker
       sudo: required
+      addons:
+        apt:
+          packages:
+            - graphviz
       before_install:
-      - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH"
-      - export ENSEMBL_BRANCH=master
-      - if [[ $TRAVIS_BRANCH =~ ^release\/[0-9]+$ ]]; then export ENSEMBL_BRANCH=$TRAVIS_BRANCH; fi
-      - echo "ENSEMBL_BRANCH=$ENSEMBL_BRANCH"
-      - git clone --branch $ENSEMBL_BRANCH --depth 1 https://github.com/Ensembl/ensembl-test.git
-      - git clone --branch $ENSEMBL_BRANCH --depth 1 https://github.com/Ensembl/ensembl.git
+      - git clone --branch master --depth 1 https://github.com/Ensembl/ensembl-test.git
       - git clone --branch master --depth 1 https://github.com/Ensembl/ensembl-hive.git
       - git clone --branch release-1-6-924 --depth 1 https://github.com/bioperl/bioperl-live.git
 
       install:
-      - cpanm --sudo -v --installdeps --with-recommends --notest --cpanfile ensembl/cpanfile .
       - cpanm --sudo -v --installdeps --notest --cpanfile ensembl-hive/cpanfile .
       - export PERL5LIB=$PERL5LIB:$PWD/bioperl-live
       - cpanm --sudo -v --installdeps --notest .
