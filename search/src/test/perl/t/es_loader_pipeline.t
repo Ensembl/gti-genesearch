@@ -21,7 +21,7 @@ use Bio::EnsEMBL::Test::RunPipeline;
 use FindBin qw( $Bin );
 use Search::Elasticsearch;
 
-my $es_url = "http://elasticsearch:9200";
+my $es_url = "http://localhost:9200";
 my $options= "-dumps_dir $Bin";
 $options .= " -es_url $es_url";
 

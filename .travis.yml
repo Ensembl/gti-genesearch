@@ -44,7 +44,7 @@ matrix:
       before_script:
         - docker pull docker.elastic.co/elasticsearch/elasticsearch:6.8.3
         - docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:6.8.3
-        - ./search/src/main/bin/set_up_es_all.sh -url http://elasticsearch:9200 -release test
+        - ./search/src/main/bin/set_up_es_all.sh -url http://localhost:9200 -release test
 
       script: ./travisci/harness.sh
 
