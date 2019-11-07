@@ -38,7 +38,7 @@ matrix:
       - export PERL5LIB=$PERL5LIB:$PWD/bioperl-live
       - cpanm --sudo -v --installdeps --notest .
       - cpanm --sudo -n Devel::Cover::Report::Coveralls
-      - cp travisci/MultiTestDB.conf.travisci  modules/t/MultiTestDB.conf
+      - cp travisci/MultiTestDB.conf.travisci  search/src/test/perl/t/MultiTestDB.conf
       - mysql -u root -h localhost -e 'GRANT ALL PRIVILEGES ON *.* TO "travis"@"%"'
 
       before_script:
