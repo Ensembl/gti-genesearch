@@ -54,7 +54,7 @@ sub pipeline_analyses {
         {
             -logic_name  => 'JsonFileFactory',
             -module      => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::JsonFileFactory',
-            -meadow_type => 'LOCAL',
+            -rc_name    => 'default',
             -input_ids   => [ { dumps_dir => $self->o('dumps_dir') } ],
             -parameters  => { blacklist => $self->o('blacklist') },
             -flow_into   => {
@@ -74,7 +74,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexGenomeJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
@@ -88,7 +87,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexGenesJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
@@ -102,7 +100,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexVariantsJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
@@ -116,7 +113,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexProbesJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
@@ -130,7 +126,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexProbesetsJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
@@ -144,7 +139,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexExternalFeaturesJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
@@ -158,7 +152,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexMirnaJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
@@ -172,7 +165,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexPeaksJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
@@ -186,7 +178,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexMotifsJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
@@ -200,7 +191,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexRegulatoryFeaturesJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
@@ -214,7 +204,6 @@ sub pipeline_analyses {
         {
             -logic_name    => 'IndexTranscriptionFactorsJsonFile',
             -module        => 'Bio::EnsEMBL::GTI::GeneSearch::Pipeline::IndexJsonFile',
-            -meadow_type   => 'LSF',
             -hive_capacity => 10,
             -rc_name       => 'default',
             -parameters    => {
