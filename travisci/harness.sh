@@ -1,8 +1,11 @@
 #!/bin/bash
 
-export PERL5LIB=$PWD/bioperl-live:$PWD/ensembl-test/modules:$PWD/ensembl-taxonomy/modules:$PWD/ensembl-production/modules:$PWD/ensembl/modules:$PWD/search/src/main/perl/lib/:$PWD/search/src/test/perl/t/:$PWD/ensembl-hive/modules
+export PERL5LIB=$PWD/bioperl-live:$PWD/ensembl-test/modules:$PWD/ensembl-orm/modules:$PWD/ensembl-taxonomy/modules:$PWD/ensembl-production/modules:$PWD/ensembl/modules:$PWD/search/src/main/perl/lib/:$PWD/search/src/test/perl/t/:$PWD/ensembl-hive/modules
 export TEST_AUTHOR=$USER
 export ENSEMBL_CVS_ROOT_DIR=$PWD
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD/htslib
+
+export PATH=$PATH:$PWD/htslib
 
 
 echo "Running test suite"
