@@ -33,6 +33,7 @@ matrix:
       - git clone --branch master --depth 1 https://github.com/Ensembl/ensembl-hive.git
       - git clone --branch release-1-6-924 --depth 1 https://github.com/bioperl/bioperl-live.git
       - git clone --branch master --depth 1 https://github.com/Ensembl/ensembl.git
+      - git clone --branch master --depth 1 https://github.com/Ensembl/ensembl-production.git
 
       install:
       - cpanm --sudo -v --installdeps --with-recommends --notest --cpanfile ensembl/cpanfile .
