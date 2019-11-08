@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PERL5LIB=$PWD/bioperl-live:$PWD/ensembl-test/modules:$PWD/search/src/main/perl/lib/:$PWD/search/src/test/perl/t/:$PWD/ensembl-hive/modules
+export PERL5LIB=$PWD/bioperl-live:$PWD/ensembl-test/modules:$PWD/ensembl/modules:$PWD/search/src/main/perl/lib/:$PWD/search/src/test/perl/t/:$PWD/ensembl-hive/modules
 export TEST_AUTHOR=$USER
 
 
