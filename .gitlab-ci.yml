@@ -30,7 +30,7 @@ build:
     - master
     - tags
 
-test:
+test_java:
   stage: test
   services:
     - name: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
@@ -75,7 +75,7 @@ deploy-stage:
     - pip install -r requirements.txt
   script:
     - cd deployment
-    - ansible-playbook deploy.xml -i stage_host
+    - ansible-playbook deploy.xml -i environments/stage
   only:
     - tags
   except:
