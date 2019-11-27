@@ -20,7 +20,7 @@ import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.clients.ClientBuilder;
-import org.ensembl.genesearch.impl.DivisionAwareSequenceSearch;
+import org.ensembl.genesearch.impl.SequenceSearch;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.ESSearchFlatten;
 import org.ensembl.genesearch.impl.ExpressionSearch;
@@ -77,8 +77,6 @@ public class EndpointSearchProvider {
 
     @Value("${rest.url.ens}")
     protected String ensRestUrl;
-    @Value("${rest.url.eg}")
-    protected String egRestUrl;
 
     @Value("${solr.expression.url:}")
     protected String solrAnalyticsUrl;
@@ -165,8 +163,7 @@ public class EndpointSearchProvider {
     private void registerEnsemblRestSearches(SearchRegistry reg) {
         // Ensembl REST searches
         DataTypeInfo seqType = DataTypeInfo.fromResource("/datatypes/sequences_datatype_info.json");
-        Search seqSearch = new DivisionAwareSequenceSearch(registry.getSearch(SearchType.GENOMES), seqType,
-                getEnsRestUrl(), getEgRestUrl());
+        Search seqSearch = new SequenceSearch(registry.getSearch(SearchType.GENOMES), seqType, getEnsRestUrl());
         reg.registerSearch(SearchType.SEQUENCES, seqSearch);
     }
 
@@ -215,14 +212,6 @@ public class EndpointSearchProvider {
 
     public void setEnsRestUrl(String ensRestUrl) {
         this.ensRestUrl = ensRestUrl;
-    }
-
-    public String getEgRestUrl() {
-        return egRestUrl;
-    }
-
-    public void setEgRestUrl(String egRestUrl) {
-        this.egRestUrl = egRestUrl;
     }
 
     public Search getTranscriptSearch() {

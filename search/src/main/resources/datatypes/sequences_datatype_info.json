@@ -38,6 +38,15 @@
       "facet": "false",
       "display": "true",
       "search": "false"
+    },
+    {
+      "type": "TEXT",
+      "displayName": "cDNA_sequence",
+      "name": "cdna_seq",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
     }
   ]
 }

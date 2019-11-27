@@ -35,11 +35,10 @@ import org.slf4j.LoggerFactory;
  * Delegating search which uses EG or e! REST depending on division for the
  * query. An instance of {@link Search} for genomes is used to determine if a
  * genome is from Ensembl or EG
- * 
- * @author dstaines
  *
+ * @author dstaines
  */
-public class DivisionAwareSequenceSearch implements Search {
+public class SequenceSearch implements Search {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -50,43 +49,29 @@ public class DivisionAwareSequenceSearch implements Search {
     public static final String DIVISION = "division";
     private final Search genomeSearch;
     private final EnsemblRestSequenceSearch eSearch;
-    private final EnsemblRestSequenceSearch egSearch;
     protected Set<String> isEnsembl;
 
     /**
-     * @param genomeSearch
-     *            search for retrieving genome information
-     * @param dataType
-     *            data type for sequence searches
-     * @param eSearchUri
-     *            URI of Ensembl REST
-     * @param egSearchUri
-     *            URI of EG REST
+     * @param genomeSearch search for retrieving genome information
+     * @param dataType     data type for sequence searches
+     * @param eSearchUri   URI of Ensembl REST
      */
-    public DivisionAwareSequenceSearch(Search genomeSearch, DataTypeInfo dataType, String eSearchUri,
-            String egSearchUri) {
-        this(genomeSearch, new EnsemblRestSequenceSearch(eSearchUri, dataType),
-                new EnsemblRestSequenceSearch(egSearchUri, dataType));
+    public SequenceSearch(Search genomeSearch, DataTypeInfo dataType, String eSearchUri) {
+        this(genomeSearch, new EnsemblRestSequenceSearch(eSearchUri, dataType));
     }
 
     /**
-     * @param genomeSearch
-     *            search for retrieving genome information
-     * @param eSearch
-     *            REST search pointing to Ensembl
-     * @param egSearch
-     *            REST search pointing to EG
+     * @param genomeSearch search for retrieving genome information
+     * @param eSearch      REST search pointing to Ensembl
      */
-    public DivisionAwareSequenceSearch(Search genomeSearch, EnsemblRestSequenceSearch eSearch,
-            EnsemblRestSequenceSearch egSearch) {
+    public SequenceSearch(Search genomeSearch, EnsemblRestSequenceSearch eSearch) {
         this.genomeSearch = genomeSearch;
         this.eSearch = eSearch;
-        this.egSearch = egSearch;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#fetch(java.util.function.Consumer,
      * java.util.List, org.ensembl.genesearch.QueryOutput)
      */
@@ -100,38 +85,14 @@ public class DivisionAwareSequenceSearch implements Search {
                 throw new IllegalArgumentException("Sequence search requires a nested query containing id/query query");
             }
             String genome = q.getFieldName();
-            if (isEnsembl(genome)) {
-                log.info("Dispatching " + genome + " to E");
-                eSearch.fetch(consumer, Arrays.asList(q.getSubQueries()), fieldNames);
-            } else {
-                log.info("Dispatching " + genome + " to EG");
-                egSearch.fetch(consumer, Arrays.asList(q.getSubQueries()), fieldNames);
-            }
+            log.info("Dispatching " + genome + " to REST End Point");
+            eSearch.fetch(consumer, Arrays.asList(q.getSubQueries()), fieldNames);
         }
-    }
-
-    /**
-     * Utility to use division to determine if a genome comes from Ensembl
-     * 
-     * @param genome
-     *            name of genome
-     * @return true if genome is from Ensembl
-     */
-    protected boolean isEnsembl(String genome) {
-        if (isEnsembl == null) {
-            isEnsembl = new HashSet<>();
-            genomeSearch.fetch(g -> {
-                if (ENSEMBL.equals(g.get(DIVISION))) {
-                    isEnsembl.add((String) g.get(ID));
-                }
-            }, Collections.emptyList(), QueryOutput.build(Arrays.asList(ID, DIVISION)));
-        }
-        return isEnsembl.contains(genome);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#fetchByIds(java.util.List,
      * java.lang.String[])
      */
@@ -142,20 +103,20 @@ public class DivisionAwareSequenceSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#query(java.util.List,
      * org.ensembl.genesearch.QueryOutput, java.util.List, int, int,
      * java.util.List)
      */
     @Override
     public QueryResult query(List<Query> queries, QueryOutput output, List<String> facets, int offset, int limit,
-            List<String> sorts) {
+                             List<String> sorts) {
         throw new UnsupportedOperationException();
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.ensembl.genesearch.Search#fetchByIds(java.util.function.Consumer,
      * java.lang.String[])
@@ -167,7 +128,7 @@ public class DivisionAwareSequenceSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#select(java.lang.String, int, int)
      */
     @Override
@@ -177,7 +138,7 @@ public class DivisionAwareSequenceSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#getDataType()
      */
     @Override
@@ -187,12 +148,12 @@ public class DivisionAwareSequenceSearch implements Search {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.ensembl.genesearch.Search#up()
      */
     @Override
     public boolean up() {
-        return eSearch.up() && egSearch.up();
+        return eSearch.up();
     }
 
 }

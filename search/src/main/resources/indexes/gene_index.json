@@ -671,6 +671,11 @@
         "strand": {
           "type": "short"
         },
+        "version": {
+          "type": "keyword",
+          "index": true,
+          "norms": false
+        },
         "FGDB": {
           "type": "keyword",
           "index": true,
