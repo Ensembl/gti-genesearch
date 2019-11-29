@@ -1,12 +1,78 @@
-version: '2'
+version: '2.2'
 services:
   elasticsearch:
-    image: 'elasticsearch:6.6.1'
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
+    container_name: elastic
     environment:
-      - cluster.name=genesearch
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "http.cors.enabled=true"
+      - "http.cors.allow-origin=*"
+      - "http.host=0.0.0.0"
+      - network.host=0.0.0.0
+      - network.publish_host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:99200
+      - 9300:99300
+    networks:
+      - esnet
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
+    container_name: elastic2
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elastic"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - esnet
+  kibana:
+    image: 'docker.elastic.co/kibana/kibana:6.8.3'
+    container_name: kibana-dev
+    environment:
+      SERVER_NAME: kibana.local
+      ELASTICSEARCH_URL: http://elastic:99200
+    ports:
+      - '5601:85601'
+    networks:
+      - esnet
   elasticsearch-hq:
     image: elastichq/elasticsearch-hq
-    ports:
-      - '5000:5000'
+    container_name: elastic-hq-dev
     environment:
-      - 'HQ_DEFAULT_URL=http://gti-es-test.ebi.ac.uk:9200'
+      - HQ_DEFAULT_URL=http://elastic:99200
+      - HQ_DEBUG=False
+    ports:
+      - '5000:85000'
+    networks:
+      - esnet
+  solr:
+    image: solr
+    ports:
+      - "8983:88983"
+    volumes:
+      - core2:/opt/solr/server/solr/core2
+    networks:
+      - esnet
+volumes:
+  esdata1:
+    driver: local
+  esdata2:
+    driver: local
+  core2:
+    driver: local
+networks:
+  esnet:
