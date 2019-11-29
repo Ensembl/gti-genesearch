@@ -14,27 +14,10 @@
 
 package org.ensembl.genesearch.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
-import org.ensembl.genesearch.Query;
-import org.ensembl.genesearch.QueryOutput;
-import org.ensembl.genesearch.QueryResult;
-import org.ensembl.genesearch.Search;
-import org.ensembl.genesearch.SearchType;
+import org.ensembl.genesearch.*;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldInfo;
 import org.ensembl.genesearch.info.FieldType;
@@ -42,11 +25,14 @@ import org.ensembl.genesearch.utils.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
+
 /**
  * Base implementation for a search that can join between searches
- * 
- * @author dstaines
  *
+ * @author dstaines
  */
 public abstract class JoinMergeSearch implements Search {
 
@@ -170,7 +156,7 @@ public abstract class JoinMergeSearch implements Search {
      * Search types for which we need a proper join
      */
     protected final Map<SearchType, JoinStrategy> joinTargets = new HashMap<>();
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger log = LoggerFactory.getLogger(JoinMergeSearch.class);
     /**
      * primary search
      */

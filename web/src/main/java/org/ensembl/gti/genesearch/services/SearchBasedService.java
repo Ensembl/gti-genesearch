@@ -14,12 +14,6 @@
 
 package org.ensembl.gti.genesearch.services;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.query.DataTypeAwareQueryHandler;
@@ -29,15 +23,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Base class for services dealing with SearchProviders
- * 
- * @author dstaines
  *
+ * @author dstaines
+ * @author mchakiachvili
  */
 public abstract class SearchBasedService {
 
-	final Logger log = LoggerFactory.getLogger(this.getClass());
+	final static Logger log = LoggerFactory.getLogger(SearchBasedService.class);
 	private QueryHandler handler;
 	protected final EndpointSearchProvider provider;
 

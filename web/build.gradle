@@ -4,7 +4,6 @@ plugins {
 configurations {
     all*.exclude module: 'spring-boot-starter-logging'
     compile.exclude module: "spring-boot-starter-tomcat"
-    compile.exclude group: "org.slf4j", module: "slf4j-log4j12"
 }
 
 

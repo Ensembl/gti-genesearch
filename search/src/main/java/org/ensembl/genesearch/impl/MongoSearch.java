@@ -14,16 +14,8 @@
 
 package org.ensembl.genesearch.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
-
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Projections;
 import org.bson.Document;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
@@ -33,8 +25,9 @@ import org.ensembl.genesearch.info.DataTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Projections;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 /**
  * Implementation of {@link Search} that uses a Mongo database. Uses
@@ -48,7 +41,7 @@ import com.mongodb.client.model.Projections;
  */
 public class MongoSearch implements Search {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(MongoSearch.class);
 
     private static final String MONGO_ID = "_id";
     private final DataTypeInfo dataType;

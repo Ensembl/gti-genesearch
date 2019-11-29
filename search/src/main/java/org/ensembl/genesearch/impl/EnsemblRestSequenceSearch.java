@@ -14,15 +14,6 @@
 
 package org.ensembl.genesearch.impl;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.util.CollectionUtils;
 import org.ensembl.genesearch.Query;
@@ -39,11 +30,19 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 /**
  * {@link Search} using an Ensembl-style REST API to retrieve sequences
- * 
- * @author dstaines
  *
+ * @author dstaines
  */
 public class EnsemblRestSequenceSearch implements Search {
 
@@ -67,7 +66,7 @@ public class EnsemblRestSequenceSearch implements Search {
 
     public final static String SEQUENCE_ID = "/sequence/id";
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static Logger log = LoggerFactory.getLogger(EnsemblRestSequenceSearch.class);
 
     private final String baseUrl;
     private final int batchSize;

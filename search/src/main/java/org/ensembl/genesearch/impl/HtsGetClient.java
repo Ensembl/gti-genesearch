@@ -13,40 +13,28 @@
  */
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import htsjdk.samtools.util.BufferedLineReader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.utils.VcfUtils;
 import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RequestCallback;
-import org.springframework.web.client.ResponseExtractor;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import htsjdk.samtools.util.BufferedLineReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Client class encapsulating controlled access to VCF over htsget API. Skeleton
@@ -68,7 +56,7 @@ public class HtsGetClient {
 
     protected final static String DATASETS_URL = "/access/v2/datasets?session={session}";
     protected final static String FILES_URL = "/access/v2/datasets/{dataset}/files?session={session}";
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger log = LoggerFactory.getLogger(HtsGetClient.class);
 
     protected final RestTemplate restTemplate;
 

@@ -14,14 +14,6 @@
 
 package org.ensembl.genesearch.impl;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
@@ -30,6 +22,11 @@ import org.ensembl.genesearch.info.DataTypeInfo;
 import org.ensembl.genesearch.info.FieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Delegating search which uses EG or e! REST depending on division for the
@@ -40,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SequenceSearch implements Search {
 
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger log = LoggerFactory.getLogger(SequenceSearch.class);
 
     public static final String SEQUENCE = "sequence";
     public static final String SPECIES = "species";
@@ -49,7 +46,6 @@ public class SequenceSearch implements Search {
     public static final String DIVISION = "division";
     private final Search genomeSearch;
     private final EnsemblRestSequenceSearch eSearch;
-    protected Set<String> isEnsembl;
 
     /**
      * @param genomeSearch search for retrieving genome information

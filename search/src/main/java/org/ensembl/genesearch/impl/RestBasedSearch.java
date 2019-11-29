@@ -13,15 +13,8 @@
  */
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
 import org.ensembl.genesearch.QueryResult;
@@ -34,8 +27,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Abstract class that can be extended to use a generic REST backend. Assumes that
@@ -48,7 +47,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class RestBasedSearch implements Search {
 
     protected final DataTypeInfo info;
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger log = LoggerFactory.getLogger(RestBasedSearch.class);
     protected final ObjectMapper mapper = new ObjectMapper();
 
     public RestBasedSearch(DataTypeInfo info) {

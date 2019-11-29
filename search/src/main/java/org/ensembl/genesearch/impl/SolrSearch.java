@@ -14,15 +14,6 @@
 
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -40,25 +31,29 @@ import org.ensembl.genesearch.info.FieldInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 /**
  * Simple {@link Search} implementation using an instance of {@link SolrClient}
- * 
+ * <p>
  * Supports sorting but not faceting
- * 
- * @author dstaines
  *
+ * @author dstaines
  */
 public class SolrSearch implements Search {
 
 	private static final int PAGESIZE = 1000;
 	private final SolrClient solr;
 	private final DataTypeInfo dataType;
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(SolrSearch.class);
 	private final Optional<FieldInfo> idField;
 
 	/**
 	 * Build a new search instance using the supplied client
-	 * 
+	 *
 	 * @param solr
 	 *            client to use
 	 * @param dataType

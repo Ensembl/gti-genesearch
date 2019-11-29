@@ -13,19 +13,8 @@
  */
 package org.ensembl.genesearch.impl;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.Proxy.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.QueryOutput;
@@ -40,8 +29,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Simple {@link Search} using EBiSC REST service to retrieve metadata for cell
@@ -55,7 +50,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class CellLineSearch implements Search {
 
     private static final String CELL_LINE_NAME = "name";
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected static final Logger log = LoggerFactory.getLogger(CellLineSearch.class);
 
     private final String url;
     private final String user;

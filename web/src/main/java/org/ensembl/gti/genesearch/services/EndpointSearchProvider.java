@@ -20,15 +20,7 @@ import org.elasticsearch.client.Client;
 import org.ensembl.genesearch.Search;
 import org.ensembl.genesearch.SearchType;
 import org.ensembl.genesearch.clients.ClientBuilder;
-import org.ensembl.genesearch.impl.SequenceSearch;
-import org.ensembl.genesearch.impl.ESSearch;
-import org.ensembl.genesearch.impl.ESSearchFlatten;
-import org.ensembl.genesearch.impl.ExpressionSearch;
-import org.ensembl.genesearch.impl.GeneSearch;
-import org.ensembl.genesearch.impl.SearchRegistry;
-import org.ensembl.genesearch.impl.SolrSearch;
-import org.ensembl.genesearch.impl.TranscriptSearch;
-import org.ensembl.genesearch.impl.VariantSearch;
+import org.ensembl.genesearch.impl.*;
 import org.ensembl.genesearch.info.DataTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +30,13 @@ import org.springframework.beans.factory.annotation.Value;
  * Utility class to allow construction and injection of searches for REST
  * endpoints. Base class sets up common services allowing addition of different
  * variation implementations
- * 
+ * <p>
  * This uses an instance of {@link SearchRegistry} (which itself is used across
  * different searches where joins are needed. These two classes are different in
  * how they are used, though do similar things.
- * 
- * @author dstaines
  *
+ * @author dstaines
+ * @author mchakiachvili
  */
 public class EndpointSearchProvider {
 
@@ -68,8 +60,6 @@ public class EndpointSearchProvider {
     protected String clusterName;
     @Value("${es.port:9300}")
     protected int port;
-    @Value("${es.node}")
-    protected boolean node;
     @Value("${es.genes.index:genes}")
     protected String genesIndex = ESSearch.GENES_INDEX;
     @Value("${es.genomes.index:genomes}")
@@ -78,9 +68,9 @@ public class EndpointSearchProvider {
     @Value("${rest.url.ens}")
     protected String ensRestUrl;
 
-    @Value("${solr.expression.url:}")
+    @Value("${solr.expression.url}")
     protected String solrAnalyticsUrl;
-    @Value("${solr.experiments.url:}")
+    @Value("${solr.experiments.url}")
     protected String solrExperimentsUrl;
 
     public EndpointSearchProvider() {
@@ -88,13 +78,7 @@ public class EndpointSearchProvider {
 
     public Client getESClient() {
         if (client == null) {
-            if (node) {
-                log.info("Joining ES cluster " + this.clusterName + " via " + this.hostName);
-                client = ClientBuilder.buildClusterClient(this.clusterName, this.hostName);
-            } else {
-                log.info("Connecting to ES cluster " + this.clusterName + " on " + this.hostName + ":" + this.port);
-                client = ClientBuilder.buildTransportClient(this.clusterName, this.hostName, this.port);
-            }
+            client = ClientBuilder.buildClient(this.clusterName, this.hostName, this.port);
         }
         return client;
     }
@@ -110,8 +94,10 @@ public class EndpointSearchProvider {
         return solrAnalyticsClient;
     }
 
-    public void getSolrAnalyticsClient(SolrClient solrClient) {
+    public void setSolrAnalyticsClient(SolrClient solrClient) {
+
         this.solrAnalyticsClient = solrClient;
+
     }
 
     public SolrClient getSolrExperimentsClient() {
@@ -121,7 +107,8 @@ public class EndpointSearchProvider {
         return solrExperimentsClient;
     }
 
-    public void getSolrExperimentsClient(SolrClient solrClient) {
+    public void setSolrExperimentsClient(SolrClient solrClient) {
+
         this.solrExperimentsClient = solrClient;
     }
 
@@ -183,19 +170,19 @@ public class EndpointSearchProvider {
     }
 
     public Search getGeneSearch() {
-        if (geneSearch == null) {
-            geneSearch = new GeneSearch(getRegistry());
-            assertHasSearch(geneSearch, "gene");
+        if (this.geneSearch == null) {
+            this.geneSearch = new GeneSearch(getRegistry());
+            assertHasSearch(this.geneSearch, "gene");
         }
-        return geneSearch;
+        return this.geneSearch;
     }
 
     public Search getGenomeSearch() {
-        if (genomeSearch == null) {
-            genomeSearch = getRegistry().getSearch(SearchType.GENOMES);
-            assertHasSearch(genomeSearch, "genome");
+        if (this.genomeSearch == null) {
+            this.genomeSearch = getRegistry().getSearch(SearchType.GENOMES);
+            assertHasSearch(this.genomeSearch, "genome");
         }
-        return genomeSearch;
+        return this.genomeSearch;
     }
 
     public void setGeneSearch(Search search) {
@@ -228,7 +215,7 @@ public class EndpointSearchProvider {
 
     public Search getVariantSearch() {
         if (variantSearch == null) {
-            variantSearch = new VariantSearch(getRegistry());
+            variantSearch = new VariantSearch(getRegistry()); //.getSearch(SearchType.VARIANTS); //new VariantSearch();
             assertHasSearch(variantSearch, "variant");
         }
         return variantSearch;
@@ -269,10 +256,9 @@ public class EndpointSearchProvider {
     /**
      * Helper method to assert that we have a particular search and throw an
      * exception if we don't
-     * 
+     *
      * @param search
-     * @param name
-     *            name to use in message
+     * @param name   name to use in message
      */
     protected static void assertHasSearch(Search search, String name) {
         if (search == null) {

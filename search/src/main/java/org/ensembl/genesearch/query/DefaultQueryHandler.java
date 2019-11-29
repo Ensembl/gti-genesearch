@@ -14,24 +14,19 @@
 
 package org.ensembl.genesearch.query;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.ensembl.genesearch.Query;
 import org.ensembl.genesearch.info.FieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Transform supplied JSON string or nested map structure into a list of
@@ -43,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class DefaultQueryHandler implements QueryHandler {
 
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
+    protected Logger log = LoggerFactory.getLogger(DefaultQueryHandler.class);
 
     private static final Pattern NUMBER_PATTERN = Pattern.compile("([<>]=?)?-?[0-9.]+(--?[0-9.]+)?");
 
