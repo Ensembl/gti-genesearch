@@ -13,22 +13,15 @@
  */
 package org.ensembl.genesearch.clients;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.node.Node;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Utility class for creating an Elastic client from specification in an
@@ -63,32 +56,21 @@ public class ClientBuilder {
 
     public static Client buildClient(ClientParams params) {
         Client client = null;
-        if (params.joinCluster) {
-            client = buildClusterClient(params.clusterName, params.hostName);
-        } else if (!isEmpty(params.clusterName)) {
-            client = buildTransportClient(params.clusterName, params.hostName, params.port);
+        boolean sniff = Boolean.parseBoolean(System.getProperty("es.sniff", "true"));
+        Settings settings = Settings.builder().put("cluster.name", params.clusterName)
+                .put("client.transport.sniff", sniff)
+                .build();
+        log.info("Connecting to " + params.hostName + ":" + params.port);
+        try {
+            client = new PreBuiltTransportClient(settings).
+                    addTransportAddress(new TransportAddress(InetAddress.getByName(params.hostName), params.port));
+        } catch (UnknownHostException e) {
+            throw new ClientBuilderException(e.getMessage(), e);
         }
         return client;
     }
 
-    public static Client buildClusterClient(String clusterName, String hostName) {
-        // on startup
-        log.info("Joining cluster " + clusterName);
-        try {
-            boolean sniff = Boolean.parseBoolean(System.getProperty("es.sniff", "true"));
-            Settings settings = Settings.builder().put("cluster.name", clusterName)
-                    .put("client.transport.sniff", sniff)
-                    .build();
-            return new PreBuiltTransportClient(settings)
-                    .addTransportAddress(new TransportAddress(InetAddress.getByName(hostName), 9300));
-        } catch (IOException e) {
-            throw new ClientBuilderException(e.getMessage(), e);
-        }
-
-
-    }
-
-    public static Client buildTransportClient(String clusterName, String hostName, int port) {
+    public static Client buildClient(String clusterName, String hostName, int port) {
         boolean sniff = Boolean.parseBoolean(System.getProperty("es.sniff", "true"));
         Settings settings = Settings.builder().put("cluster.name", clusterName)
                 .put("client.transport.sniff", sniff)

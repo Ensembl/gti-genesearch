@@ -8,5 +8,4 @@ test {
 
 dependencies {
     compile "de.bwaldvogel:mongo-java-server:1.17.1"
-    compile "org.testcontainers:elasticsearch:1.11.4"
 }

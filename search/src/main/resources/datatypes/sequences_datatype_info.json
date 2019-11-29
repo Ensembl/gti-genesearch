@@ -10,7 +10,7 @@
       "sort": "false",
       "facet": "false",
       "display": "true",
-      "search": "false"
+      "search": "true"
     },
     {
       "type": "TEXT",
@@ -40,12 +40,57 @@
       "search": "false"
     },
     {
-      "type": "TEXT",
-      "displayName": "cDNA_sequence",
-      "name": "cdna_seq",
+      "type": "ENUM",
+      "displayName": "Sequence Type",
+      "name": "type",
       "sort": "false",
       "facet": "false",
-      "display": "true",
+      "display": "false",
+      "search": "true",
+      "values": [
+        "genomic",
+        "cds",
+        "cdna",
+        "protein"
+      ]
+    },
+    {
+      "type": "NUMBER",
+      "displayName": "Expand 5 prime",
+      "name": "expand_5prime",
+      "sort": "false",
+      "facet": "false",
+      "display": "false",
+      "search": "true"
+    },
+    {
+      "type": "NUMBER",
+      "displayName": "Expand 3 prime",
+      "name": "expand_3prime",
+      "sort": "false",
+      "facet": "false",
+      "display": "false",
+      "search": "true"
+    },
+    {
+      "type": "ENUM",
+      "displayName": "Format",
+      "name": "format",
+      "sort": "false",
+      "facet": "false",
+      "display": "false",
+      "search": "true",
+      "values": [
+        "fasta"
+      ]
+    },
+    {
+      "type": "TEXT",
+      "displayName": "Species",
+      "name": "species",
+      "sort": "false",
+      "facet": "false",
+      "display": "false",
       "search": "true"
     }
   ]

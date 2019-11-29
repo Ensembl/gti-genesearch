@@ -17,7 +17,7 @@ package org.ensembl.genesearch.test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
@@ -30,8 +30,6 @@ import org.elasticsearch.transport.ConnectTransportException;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
-import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -50,7 +48,7 @@ import java.util.Map;
 public class ESTestClient {
 
     private static Client client;
-    private static Logger log = LoggerFactory.getLogger(ESTestClient.class);
+    static Logger log = LoggerFactory.getLogger(ESTestClient.class);
 
     public ESTestClient() throws RuntimeException, UnknownHostException {
         /**
@@ -63,15 +61,12 @@ public class ESTestClient {
         String elasticHost = System.getenv("ES_HOST") == null ? "localhost" : System.getenv("ES_HOST");
         String clusterName = System.getenv("ES_CLUSTER_NAME") == null ? "docker-cluster" : System.getenv("ES_CLUSTER_NAME");
         String port = System.getenv("ES_PORT") == null ? "9300" : System.getenv("ES_PORT");
-        log.info(String.format("Connection to ES %s:%s - %s ", elasticHost, port, clusterName));
         try {
             transportAddress = new TransportAddress(InetAddress.getByName(elasticHost), Integer.parseInt(port));
             settings = Settings.builder().put("cluster.name", clusterName).build();
             client = new PreBuiltTransportClient(settings).addTransportAddress(transportAddress);
             client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMinutes(5)).execute().actionGet();
-            log.info(String.format("Connected to ES %s test server", clusterName));
         } catch (UnknownHostException | ConnectTransportException | NoNodeAvailableException e) {
-            log.error(String.format("ES server connexion error %s:%s [%s]: %s", elasticHost, port, clusterName, e));
             throw e;
         }
     }
@@ -85,32 +80,23 @@ public class ESTestClient {
      */
     public void createIndex(String index, String type) {
         try {
-            log.info("Reading " + index + " mapping (keep index " + System.getProperty("keep_index", "false") + ")");
             // slurp the mapping file into memory
             String geneMapping = IOUtils.toString(ESTestClient.class.getResourceAsStream("/indexes/" + type + "_index.json"), Charset.defaultCharset());
             geneMapping = geneMapping.replaceAll("SHARDN", "5");
             geneMapping = geneMapping.replaceAll("REPLICAS", "0");
-            Map<String, Object> elasticIndexObj = mapper.readValue(geneMapping,
-                    new TypeReference<Map<String, Object>>() {
-                    }
-            );
+            Map<String, Object> elasticIndexObj = mapper.readValue(geneMapping, new TypeReference<Map<String, Object>>() {
+            });
 
             if (client.admin().indices().prepareExists(index).execute().actionGet().isExists()) {
-                log.info("Index already exists...");
-                if (! Boolean.parseBoolean(System.getProperty("keep_index", "false"))) {
-                    log.info("Resetting...");
+                if (!Boolean.parseBoolean(System.getProperty("keep_index", "false"))) {
                     client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
-                    log.info("Index cleaned up");
                 }
-            } else {
-                log.info("Index doesn't exists...\nCreating...");
             }
-            if (! Boolean.parseBoolean(System.getProperty("keep_index", "false"))) {
+            if (!Boolean.parseBoolean(System.getProperty("keep_index", "false"))) {
                 // only recreate mapping if index has been reset
                 Map<String, Object> mappingObj = (Map<String, Object>) elasticIndexObj.get("mappings");
                 client.admin().indices().prepareCreate(index).setSettings((Map<String, Object>) elasticIndexObj.get("settings")).get();
                 client.admin().indices().preparePutMapping(index).setType(type).setSource(mapper.writeValueAsString(mappingObj.get(type)), XContentType.JSON).get();
-                log.info("Mapping created");
             }
 
 
@@ -137,8 +123,6 @@ public class ESTestClient {
     public void indexTestDocs(String json, String index, String type) {
         try {
 
-            log.info("Indexing [Index:" + index + "][Type:" + type + "]");
-
             int n = 0;
             List<Map<String, Object>> docs = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {
             });
@@ -149,7 +133,6 @@ public class ESTestClient {
             }
             // wait for indices to be built
             client.admin().indices().refresh(new RefreshRequest(index)).actionGet();
-            log.info("Indexed " + n + " documents");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -166,7 +149,6 @@ public class ESTestClient {
     protected void indexTestDoc(Map<String, Object> doc, String index, String type) throws
             JsonProcessingException {
         String id = String.valueOf(doc.get("id"));
-        log.info("Id used " + id);
         client.prepareIndex(index, type, id).setSource(mapper.writeValueAsString(doc), XContentType.JSON).execute().actionGet();
     }
 
@@ -177,7 +159,4 @@ public class ESTestClient {
         if (client != null) client.close();
     }
 
-    public boolean hasClient() {
-        return (client != null);
-    }
 }

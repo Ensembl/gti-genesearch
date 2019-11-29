@@ -14,24 +14,21 @@
 
 package org.ensembl.genesearch.test;
 
+import com.mongodb.MongoClient;
+import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoCollection;
+import de.bwaldvogel.mongo.MongoServer;
+import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
+import org.apache.commons.io.IOUtils;
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoServerException;
-import com.mongodb.ServerAddress;
-import de.bwaldvogel.mongo.MongoServer;
-import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
-import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-// import com.github.fakemongo.Fongo;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
 /**
  * Utility to create and load an in-memory Mongo test server using
