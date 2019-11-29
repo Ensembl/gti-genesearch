@@ -28,7 +28,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,9 +38,9 @@ import static org.junit.Assert.*;
 
 /**
  * Basic tests for REST-based sequence retrieval mechanism
- * 
- * @author dstaines
  *
+ * @author dstaines
+ * @author mchakiachvili
  */
 public class EnsemblRestSequenceSearchTest {
 
@@ -128,7 +128,7 @@ public class EnsemblRestSequenceSearchTest {
     }
 
     private List<String> getIds(String name) throws IOException {
-        return IOUtils.readLines(this.getClass().getResourceAsStream(name), Charset.forName("UTF-8"));
+        return IOUtils.readLines(EnsemblRestSequenceSearchTest.class.getResourceAsStream(name), StandardCharsets.UTF_8);
     }
 
     @Test

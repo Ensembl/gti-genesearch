@@ -13,5 +13,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity security) throws Exception
     {
         security.httpBasic().disable();
+        // TODO check if this is not too much allowed.
+        security.csrf().disable();
     }
 }

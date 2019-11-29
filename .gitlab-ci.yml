@@ -39,7 +39,7 @@ test:
   script:
     - ./gradlew test:cleanTest test:test
     - ./gradlew search:cleanTest search:test
-    - ./gradlew web:cleanTest web:compileJava -x test
+    - ./gradlew web:cleanTest web:test
   only:
     changes:
       - "**/*.java"

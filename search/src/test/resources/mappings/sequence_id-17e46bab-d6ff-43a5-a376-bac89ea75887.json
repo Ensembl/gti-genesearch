@@ -2,13 +2,15 @@
   "id" : "17e46bab-d6ff-43a5-a376-bac89ea75887",
   "name" : "sequence_id",
   "request" : {
-    "url" : "/sequence/id?species=homo_sapiens&multiple_sequences=1",
-    "method" : "POST",
-    "bodyPatterns" : [ {
-      "equalToJson" : "{\"ids\":[\"ENSG00000280477\",\"ENSG00000282817\",\"ENSG00000282584\",\"ENSG00000282663\",\"ENSG00000279195\",\"ENSG00000282119\",\"ENSG00000281277\",\"ENSG00000282437\",\"ENSG00000282566\",\"ENSG00000281324\",\"ENSG00000282559\",\"ENSG00000280975\",\"ENSG00000282530\",\"ENSG00000281987\",\"ENSG00000282095\",\"ENSG00000282298\",\"ENSG00000282212\",\"ENSG00000282424\",\"ENSG00000280831\",\"ENSG00000282583\",\"ENSG00000281660\",\"ENSG00000281818\"]}",
-      "ignoreArrayOrder" : false,
-      "ignoreExtraElements" : false
-    } ]
+    "url": "/sequence/id?species=homo_sapiens&type=cdna&multiple_sequences=1",
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{\"ids\":[\"ENSG00000280477\",\"ENSG00000282817\",\"ENSG00000282584\",\"ENSG00000282663\",\"ENSG00000279195\",\"ENSG00000282119\",\"ENSG00000281277\",\"ENSG00000282437\",\"ENSG00000282566\",\"ENSG00000281324\",\"ENSG00000282559\",\"ENSG00000280975\",\"ENSG00000282530\",\"ENSG00000281987\",\"ENSG00000282095\",\"ENSG00000282298\",\"ENSG00000282212\",\"ENSG00000282424\",\"ENSG00000280831\",\"ENSG00000282583\",\"ENSG00000281660\",\"ENSG00000281818\"]}",
+        "ignoreArrayOrder": false,
+        "ignoreExtraElements": false
+      }
+    ]
   },
   "response" : {
     "status" : 200,

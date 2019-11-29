@@ -53,8 +53,6 @@ public class SequenceSearchTest {
     }
 
     private List<Query> buildQuery(List<String> ids, Query... qs) {
-        search.isEnsembl = new HashSet<>();
-        search.isEnsembl.add("homo_sapiens");
         List<Query> subQ = new ArrayList<>();
         subQ.add(new Query(FieldType.TERM, "id", false, ids));
         subQ.add(new Query(FieldType.TERM, "species", false, "homo_sapiens"));
@@ -77,7 +75,7 @@ public class SequenceSearchTest {
     @Test
     public void testMultipleGenes() throws IOException {
         List<String> ids = getIds("/gene_ids.txt");
-        List<Query> queries = buildQuery(ids);
+        List<Query> queries = buildQuery(ids, new Query(FieldType.ENUM, "type", false, "cdna"));
         SearchResult result = search.fetch(queries, QueryOutput.build(Collections.emptyList()));
         List<Map<String, Object>> seqs = result.getResults();
         assertEquals("Checking correct number of sequences", ids.size(), seqs.size());
@@ -135,7 +133,7 @@ public class SequenceSearchTest {
     }
 
     private List<String> getIds(String name) throws IOException {
-        return IOUtils.readLines(this.getClass().getResourceAsStream(name), StandardCharsets.UTF_8);
+        return IOUtils.readLines(SequenceSearchTest.class.getResourceAsStream(name), StandardCharsets.UTF_8);
     }
 
     @Test

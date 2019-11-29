@@ -13,9 +13,10 @@
  */
 package org.ensembl.genesearch.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import htsjdk.samtools.util.BufferedLineReader;
+import org.ensembl.genesearch.utils.VcfUtils.ColumnFormat;
+import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,18 +24,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-//import org.apache.lucene.search.CachingWrapperQuery;
-import org.ensembl.genesearch.utils.VcfUtils.ColumnFormat;
-import org.ensembl.genesearch.utils.VcfUtils.VcfFormat;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
-import htsjdk.samtools.util.BufferedLineReader;
+//import org.apache.lucene.search.CachingWrapperQuery;
 
 public class VcfUtilsTest {
 
 	@Test
 	public void testSpec() throws IOException {
-		BufferedLineReader vcfR = new BufferedLineReader(this.getClass().getResourceAsStream("/spec_sample.vcf"));
+		BufferedLineReader vcfR = new BufferedLineReader(VcfUtilsTest.class.getResourceAsStream("/spec_sample.vcf"));
 		VcfFormat format = VcfFormat.readFormat(vcfR);
 		// ##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With
 		// Data">
@@ -73,7 +71,7 @@ public class VcfUtilsTest {
 
 	@Test
 	public void testSpecGenotype() throws IOException {
-		BufferedLineReader vcfR = new BufferedLineReader(this.getClass().getResourceAsStream("/spec_sample.vcf"));
+		BufferedLineReader vcfR = new BufferedLineReader(VcfUtilsTest.class.getResourceAsStream("/spec_sample.vcf"));
 		VcfFormat format = VcfFormat.readFormat(vcfR);
 		String[] genotypes = format.getGenotypes();
 		assertEquals("Genotypes found", 3, genotypes.length);
@@ -135,7 +133,7 @@ public class VcfUtilsTest {
 
 	@Test
 	public void testVEP() {
-		BufferedLineReader vcfR = new BufferedLineReader(this.getClass().getResourceAsStream("/vep_sample.vcf"));
+		BufferedLineReader vcfR = new BufferedLineReader(VcfUtilsTest.class.getResourceAsStream("/vep_sample.vcf"));
 		VcfFormat format = VcfFormat.readFormat(vcfR);
 		List<Map<String, Object>> variants = vcfR.lines().map(l -> VcfUtils.vcfLineToMap(l, format))
 				.collect(Collectors.toList());
@@ -147,7 +145,8 @@ public class VcfUtilsTest {
 
 	@Test
 	public void testVEPGT() {
-		BufferedLineReader vcfR = new BufferedLineReader(this.getClass().getResourceAsStream("/spec_sample_vep.vcf"));
+		BufferedLineReader vcfR = new BufferedLineReader(VcfUtilsTest.class
+				.getResourceAsStream("/spec_sample_vep.vcf"));
 		VcfFormat format = VcfFormat.readFormat(vcfR);
 		List<Map<String, Object>> variants = vcfR.lines().map(l -> VcfUtils.vcfLineToMap(l, format))
 				.collect(Collectors.toList());
