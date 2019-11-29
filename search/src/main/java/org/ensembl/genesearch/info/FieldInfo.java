@@ -13,26 +13,35 @@
  */
 package org.ensembl.genesearch.info;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Encapsulates information about a field. This information should be given to a
  * client so that it can determine what operations are supported.
- * 
+ * <p>
  * Typically, this is used to prevent clients from executing unsupported or very
  * expensive operations.
- * 
- * @author dstaines
  *
+ * @author dstaines
+ * @author mchakiachvili
  */
 public class FieldInfo {
-    
+
+    private static Logger log = LoggerFactory.getLogger(FieldInfo.class);
+
     public static FieldInfo clone(String path, FieldInfo info) {
-        FieldInfo newInfo = new FieldInfo(path+"."+info.getName(), info.getType());
+        FieldInfo newInfo = new FieldInfo(path + "." + info.getName(), info.getType());
+        log.debug("New Info %s %s ", path + "." + info.getName(), info.getType());
         newInfo.setDisplayName(info.getDisplayName());
         newInfo.setDisplay(info.isDisplay());
         newInfo.setFacet(info.isFacet());
         newInfo.setSearch(info.isSearch());
-        newInfo.setSort(info.isSort());        
-        return newInfo;        
+        newInfo.setSort(info.isSort());
+        if (newInfo.type.equals(FieldType.ENUM)) {
+            newInfo.setValues(info.getValues());
+        }
+        return newInfo;
     }
 
     private boolean display;
@@ -46,6 +55,8 @@ public class FieldInfo {
     private boolean search;
 
     private boolean sort;
+
+    private String[] values;
 
     private FieldType type = FieldType.TEXT;
 
@@ -111,6 +122,14 @@ public class FieldInfo {
 
     public void setType(FieldType type) {
         this.type = type;
+    }
+
+    public String[] getValues() {
+        return values;
+    }
+
+    public void setValues(String[] values) {
+        this.values = values;
     }
 
     @Override

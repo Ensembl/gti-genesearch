@@ -16,20 +16,12 @@ package org.ensembl.gti.genesearch.rest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ensembl.genesearch.impl.ESSearch;
-import org.ensembl.genesearch.test.ESTestClient;
-import org.ensembl.genesearch.utils.DataUtils;
 import org.ensembl.gti.genesearch.services.Application;
-import org.ensembl.gti.genesearch.services.EndpointSearchProvider;
 import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,12 +31,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -54,9 +47,13 @@ import static org.junit.Assert.*;
  * @author dstaines
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootApplication(exclude = {
+        SecurityAutoConfiguration.class,
+        ManagementWebSecurityAutoConfiguration.class
+})
 @SpringBootTest(classes = Application.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@SpringBootApplication
+        webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@TestPropertySource(properties = "server.port=8080")
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 public class EndpointTests extends WebAppTests {
 
@@ -68,11 +65,15 @@ public class EndpointTests extends WebAppTests {
     static final TypeReference<List<String>> STRING_LIST_REF = new TypeReference<List<String>>() {
     };
 
+
+    @Autowired
+    private TestRestTemplate testRestTemplate;
+
     private RestTemplate restTemplate = new TestRestTemplate().getRestTemplate();
 
     @Test
     public void testQueryGetEndpoint() {
-        Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, getServiceUrl(GENES_QUERY));
+        Map<String, Object> result = getUrlToObject(MAP_REF, testRestTemplate.getRestTemplate(), getServiceUrl(GENES_QUERY));
         assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
         assertEquals("Checking limited results retrieved", 10, ((List<?>) result.get("results")).size());
         List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
@@ -100,7 +101,7 @@ public class EndpointTests extends WebAppTests {
 
     @Test
     public void testQueryPostEndpoint() {
-        Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, getServiceUrl(GENES_QUERY), "{}");
+        Map<String, Object> result = postUrlToObject(MAP_REF, testRestTemplate.getRestTemplate(), getServiceUrl(GENES_QUERY), "{}");
         assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
         List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
         assertEquals("Checking limited results retrieved", 10, results.size());
@@ -266,7 +267,7 @@ public class EndpointTests extends WebAppTests {
 
     @Test
     public void testTranscriptsQueryPostEndpoint() {
-        Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, getServiceUrl(TRANSCRIPTS_QUERY),
+        Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, getServiceUrl(TRANSCRIPTS_QUERY + "/"),
                 "{\"fields\":[\"id\",\"name\"]}");
         assertEquals("Checking all results found", 598, Long.parseLong(result.get("resultCount").toString()));
         List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
@@ -303,6 +304,7 @@ public class EndpointTests extends WebAppTests {
         assertEquals("seq_region_name found", "seq_region_name", fields.get(2).get("name"));
     }
 
+    @Test
     public void testTranscriptsOffsetQueryGetEndpoint() {
         String url1 = getServiceUrl(TRANSCRIPTS_QUERY) + "?query={query}" + "&limit=2" + "&fields=id";
         String url2 = getServiceUrl(TRANSCRIPTS_QUERY) + "?query={query}" + "&limit=2&offset=1" + "&fields=id";
@@ -311,6 +313,7 @@ public class EndpointTests extends WebAppTests {
                 "{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
         Map<String, Object> response2 = getUrlToObject(MAP_REF, restTemplate, url2,
                 "{\"genome\":\"nanoarchaeum_equitans_kin4_m\"}");
+
         List<Map<String, Object>> results1 = (List<Map<String, Object>>) (response1.get("results"));
         List<Map<String, Object>> results2 = (List<Map<String, Object>>) (response2.get("results"));
 
@@ -402,8 +405,8 @@ public class EndpointTests extends WebAppTests {
     @Test
     public void testGenomeQueryGetEndpoint() {
         Map<String, Object> result = getUrlToObject(MAP_REF, restTemplate, getServiceUrl(GENOMES_QUERY));
-        assertEquals("Checking all results found", 4, Long.parseLong(result.get("resultCount").toString()));
-        assertEquals("Checking limited results retrieved", 4, ((List<?>) result.get("results")).size());
+        assertEquals("Checking all results found", 5, Long.parseLong(result.get("resultCount").toString()));
+        assertEquals("Checking limited results retrieved", 5, ((List<?>) result.get("results")).size());
         List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
         assertTrue("ID found", results.get(0).containsKey("id"));
     }
@@ -411,9 +414,9 @@ public class EndpointTests extends WebAppTests {
     @Test
     public void testGenomeQueryPostEndpoint() {
         Map<String, Object> result = postUrlToObject(MAP_REF, restTemplate, getServiceUrl(GENOMES_QUERY), "{}");
-        assertEquals("Checking all results found", 4, Long.parseLong(result.get("resultCount").toString()));
+        assertEquals("Checking all results found", 5, Long.parseLong(result.get("resultCount").toString()));
         List<Map<String, Object>> results = (List<Map<String, Object>>) (result.get("results"));
-        assertEquals("Checking limited results retrieved", 4, results.size());
+        assertEquals("Checking limited results retrieved", 5, results.size());
         assertTrue("ID found", results.get(0).containsKey("id"));
     }
 
@@ -421,7 +424,7 @@ public class EndpointTests extends WebAppTests {
     public void testGenomeFetchGetEndpoint() {
         Map<String, Object> results = getUrlToObject(MAP_REF, restTemplate, getServiceUrl(GENOMES_FETCH));
         List<Map<String, Object>> result = (List<Map<String, Object>>) results.get("results");
-        assertEquals("Checking all results found", 4, result.size());
+        assertEquals("Checking all results found", 5, result.size());
         assertTrue("ID found", result.get(0).containsKey("id"));
     }
 
@@ -429,7 +432,7 @@ public class EndpointTests extends WebAppTests {
     public void testGenomeFetchPostEndpoint() {
         Map<String, Object> results = postUrlToObject(MAP_REF, restTemplate, getServiceUrl(GENOMES_FETCH), "{}");
         List<Map<String, Object>> result = (List<Map<String, Object>>) results.get("results");
-        assertEquals("Checking all results found", 4, result.size());
+        assertEquals("Checking all results found", 5, result.size());
         assertTrue("ID found", result.get(0).containsKey("id"));
     }
 
@@ -469,6 +472,7 @@ public class EndpointTests extends WebAppTests {
      * @return object retrieved from GET
      */
     public static <T> T getUrlToObject(TypeReference<T> type, RestTemplate restTemplate, String url, Object... params) {
+        log.info("Queried url: " + url);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class, params);
         log.info("Queried url: " + url);
         log.info("Get response status: " + response.getStatusCode());
@@ -477,9 +481,7 @@ public class EndpointTests extends WebAppTests {
         T map = null;
         try {
             map = new ObjectMapper().readValue(response.getBody(), type);
-        } catch (IOException e) {
-            fail(e.getMessage());
-        } catch (NullPointerException e) {
+        } catch (IOException | NullPointerException e) {
             fail(e.getMessage());
         }
         return map;
@@ -499,12 +501,12 @@ public class EndpointTests extends WebAppTests {
                                         Object... params) {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
             headers.setContentType(MediaType.APPLICATION_JSON);
-            log.trace("Invoking " + url + " with " + json);
+            log.info("Invoking " + url + " with " + json);
             HttpEntity<String> entity = new HttpEntity<String>(json, headers);
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-            log.trace("Post response: " + response.getBody());
+            log.info("Post status Code: " + response.getStatusCode());
             return new ObjectMapper().readValue(response.getBody(), type);
 
         } catch (IOException e) {
@@ -516,9 +518,7 @@ public class EndpointTests extends WebAppTests {
 
     @AfterClass
     public static void tearDown() {
-        log.info("Disconnecting server");
-        if (esTestClient != null) {
-            esTestClient.disconnect();
-        }
+        log.info("Disconnecting from ES server");
+        esTestClient.disconnect();
     }
 }

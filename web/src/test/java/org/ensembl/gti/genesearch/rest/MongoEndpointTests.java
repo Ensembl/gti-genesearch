@@ -16,25 +16,17 @@ package org.ensembl.gti.genesearch.rest;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
-import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.impl.MongoSearch;
-import org.ensembl.genesearch.test.ESTestClient;
 import org.ensembl.genesearch.test.MongoTestServer;
 import org.ensembl.genesearch.utils.DataUtils;
 import org.ensembl.gti.genesearch.services.Application;
 import org.ensembl.gti.genesearch.services.EVAMongoEndpointProvider;
-import org.ensembl.gti.genesearch.services.EndpointSearchProvider;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -42,7 +34,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.web.client.RestTemplate;
-
 
 import java.io.IOException;
 import java.util.List;
@@ -54,6 +45,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author dstaines
+ * @author mchakiachvili
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -81,8 +73,6 @@ public class MongoEndpointTests extends WebAppTests {
 
     @Before
     public void injectSearch() {
-        // ensure we always use our test instances
-        // super.injectSearch();
         ((EVAMongoEndpointProvider) provider).setMongoCollection(mongoTestServer.getCollection());
     }
 
@@ -121,6 +111,6 @@ public class MongoEndpointTests extends WebAppTests {
     @AfterClass
     public static void tearDown() {
         log.info("Disconnecting server");
-        esTestClient.disconnect();
+        mongoTestServer.disconnect();
     }
 }

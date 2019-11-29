@@ -3,19 +3,32 @@ package org.ensembl.gti.genesearch.rest;
 import org.ensembl.genesearch.impl.ESSearch;
 import org.ensembl.genesearch.test.ESTestClient;
 import org.ensembl.genesearch.utils.DataUtils;
+import org.ensembl.gti.genesearch.services.Application;
 import org.ensembl.gti.genesearch.services.EndpointSearchProvider;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import java.io.IOException;
+import static org.junit.Assert.assertNotNull;
 
-import static org.junit.Assert.*;
-
+/**
+ * @author mchakiachvili
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = Application.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootApplication
+@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 public class WebAppTests {
 
 
@@ -36,10 +49,6 @@ public class WebAppTests {
     static Logger log = LoggerFactory.getLogger(EndpointTests.class);
     static ESTestClient esTestClient;
 
-    static ESSearch geneSearch;
-    static ESSearch genomeSearch;
-
-
     @Autowired
     EndpointSearchProvider provider;
 
@@ -54,7 +63,6 @@ public class WebAppTests {
     @BeforeClass
     public static void initSetUp() throws Exception {
         // create our ES test server once only
-        log.info("Setting up ");
         esTestClient = new ESTestClient();
 
         esTestClient.createIndex(ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
@@ -69,11 +77,9 @@ public class WebAppTests {
         esTestClient.createIndex(ESSearch.PEAKS_INDEX, ESSearch.PEAK_ESTYPE);
         esTestClient.createIndex(ESSearch.TRANSCRIPTION_FACTORS_INDEX, ESSearch.TRANSCRIPTION_FACTOR_ESTYPE);
 
-        log.info("Reading documents");
-        //String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
+        String geneJson = DataUtils.readGzipResource("/nanoarchaeum_equitans_kin4_m_genes.json.gz");
         String genomeJson = DataUtils.readGzipResource("/genomes.json.gz");
-        log.info("Creating test index");
-        //esTestClient.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
+        esTestClient.indexTestDocs(geneJson, ESSearch.GENES_INDEX, ESSearch.GENE_ESTYPE);
         esTestClient.indexTestDocs(genomeJson, ESSearch.GENOMES_INDEX, ESSearch.GENOME_ESTYPE);
 
     }
@@ -81,12 +87,12 @@ public class WebAppTests {
     @Before
     public void injectSearch() {
         // ensure we always use our test instances
-        log.info("Inject search " + esTestClient.getClient());
+        log.info("Inject search " + esTestClient.getClient() + " for provider " + provider);
         provider.setESClient(esTestClient.getClient());
     }
 
     @Test
-    public void testInit(){
+    public void testInit() {
         log.info("Test Init Cluster ");
         assertNotNull(esTestClient);
     }
