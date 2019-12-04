@@ -1,4 +1,4 @@
-version: '2.2'
+version: '2.4'
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
@@ -19,8 +19,8 @@ services:
     volumes:
       - esdata1:/usr/share/elasticsearch/data
     ports:
-      - 9200:99200
-      - 9300:99300
+      - 9200:9200
+      - 9300:9300
     networks:
       - esnet
   elasticsearch2:
@@ -44,25 +44,25 @@ services:
     container_name: kibana-dev
     environment:
       SERVER_NAME: kibana.local
-      ELASTICSEARCH_URL: http://elastic:99200
+      ELASTICSEARCH_URL: http://elasticsearch:9200
     ports:
-      - '5601:85601'
+      - '5601:5601'
     networks:
       - esnet
   elasticsearch-hq:
     image: elastichq/elasticsearch-hq
     container_name: elastic-hq-dev
     environment:
-      - HQ_DEFAULT_URL=http://elastic:99200
+      - HQ_DEFAULT_URL=http://elasticsearch:9200
       - HQ_DEBUG=False
     ports:
-      - '5000:85000'
+      - '5000:5000'
     networks:
       - esnet
   solr:
     image: solr
     ports:
-      - "8983:88983"
+      - "8983:8983"
     volumes:
       - core2:/opt/solr/server/solr/core2
     networks:
