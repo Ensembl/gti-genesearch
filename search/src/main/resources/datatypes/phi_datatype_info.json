@@ -1,0 +1,42 @@
+{
+  "name": "phi",
+  "targets": [],
+  "fieldInfo": [
+    {
+      "displayName": "condition",
+      "name": "condition",
+      "type": "TERM",
+      "search": "true",
+      "facet": "true",
+      "sort": "true",
+      "display": "true"
+    },
+    {
+      "search": "true",
+      "facet": "true",
+      "sort": "true",
+      "display": "true",
+      "name": "host",
+      "displayName": "host",
+      "type": "TERM"
+    },
+    {
+      "type": "TERM",
+      "displayName": "phenotype",
+      "name": "phenotype",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "search": "true",
+      "facet": "true",
+      "sort": "true",
+      "display": "true",
+      "name": "term",
+      "displayName": "term",
+      "type": "TERM"
+    }
+  ]
+}

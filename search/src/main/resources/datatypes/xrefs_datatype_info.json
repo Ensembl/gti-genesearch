@@ -1,0 +1,52 @@
+{
+  "name": "xrefs",
+  "targets": [
+  ],
+  "fieldInfo": [
+    {
+      "facet": "true",
+      "display": "true",
+      "sort": "true",
+      "search": "true",
+      "type": "TERM",
+      "name": "dbname",
+      "displayName": "dbname"
+    },
+    {
+      "search": "true",
+      "facet": "true",
+      "sort": "true",
+      "display": "true",
+      "displayName": "display_name",
+      "name": "display_name",
+      "type": "TERM"
+    },
+    {
+      "name": "linkage_types",
+      "displayName": "linkage_types",
+      "type": "NESTED",
+      "search": "false",
+      "sort": "false",
+      "facet": "false",
+      "display": "true"
+    },
+    {
+      "facet": "true",
+      "display": "true",
+      "sort": "true",
+      "search": "true",
+      "type": "TERM",
+      "displayName": "parents",
+      "name": "parents"
+    },
+    {
+      "type": "TERM",
+      "displayName": "primary_id",
+      "name": "primary_id",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    }
+  ]
+}

@@ -57,33 +57,6 @@
       "search": "false"
     },
     {
-      "type": "TERM",
-      "displayName": "Assembly accession",
-      "name": "assembly.accession",
-      "sort": "true",
-      "facet": "false",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Assembly name",
-      "name": "assembly.name",
-      "sort": "true",
-      "facet": "false",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Assembly level",
-      "name": "assembly.level",
-      "sort": "true",
-      "facet": "true",
-      "display": "true",
-      "search": "true"
-    },
-    {
       "type": "NESTED",
       "displayName": "Organism",
       "name": "organism",
@@ -91,78 +64,6 @@
       "facet": "false",
       "display": "true",
       "search": "false"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Organism display name",
-      "name": "organism.display_name",
-      "sort": "true",
-      "facet": "true",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Organism name",
-      "name": "organism.name",
-      "sort": "true",
-      "facet": "true",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Aliases",
-      "name": "organism.aliases",
-      "sort": "true",
-      "facet": "true",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Species taxonomy ID",
-      "name": "organism.species_taxonomy_id",
-      "sort": "true",
-      "facet": "true",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Taxonomy ID",
-      "name": "organism.taxonomy_id",
-      "sort": "true",
-      "facet": "true",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Serotype",
-      "name": "organism.serotype",
-      "sort": "true",
-      "facet": "true",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Strain",
-      "name": "organism.strain",
-      "sort": "true",
-      "facet": "true",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Lineage taxonomy ID(s)",
-      "name": "organism.lineage",
-      "sort": "false",
-      "facet": "false",
-      "display": "false",
-      "search": "true"
     },
     {
       "type": "TERM",

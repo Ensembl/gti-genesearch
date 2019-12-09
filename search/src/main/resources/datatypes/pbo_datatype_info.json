@@ -1,0 +1,33 @@
+{
+  "name": "pbo",
+  "targets": [],
+  "fieldInfo": [
+    {
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true",
+      "type": "TERM",
+      "displayName": "evidence",
+      "name": "evidence"
+    },
+    {
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true",
+      "type": "TERM",
+      "displayName": "parents",
+      "name": "parents"
+    },
+    {
+      "name": "term",
+      "displayName": "term",
+      "type": "TERM",
+      "search": "true",
+      "facet": "true",
+      "sort": "true",
+      "display": "true"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "name": "organism",
+  "targets": [
+  ],
+  "fieldInfo": [
+    {
+      "type": "TERM",
+      "displayName": "Organism display name",
+      "name": "display_name",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Organism name",
+      "name": "name",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Aliases",
+      "name": "aliases",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Species taxonomy ID",
+      "name": "species_taxonomy_id",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Taxonomy ID",
+      "name": "taxonomy_id",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Serotype",
+      "name": "serotype",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Strain",
+      "name": "strain",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Lineage taxonomy ID(s)",
+      "name": "lineage",
+      "sort": "false",
+      "facet": "false",
+      "display": "false",
+      "search": "true"
+    }
+  ]
+}

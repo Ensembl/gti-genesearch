@@ -94,15 +94,6 @@
       "search": "false"
     },
     {
-      "type": "TERM",
-      "displayName": "Associated gene name",
-      "name": "annot.ct.gn",
-      "sort": "false",
-      "facet": "false",
-      "display": "true",
-      "search": "true"
-    },
-    {
       "type": "NESTED",
       "displayName": "Associated gene",
       "name": "annot.ct",
@@ -110,6 +101,15 @@
       "facet": "false",
       "display": "true",
       "search": "false"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Associated gene name",
+      "name": "annot.ct.gn",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
     },
     {
       "type": "TERM",

@@ -1,0 +1,34 @@
+{
+  "name": "fypo",
+  "targets": [
+  ],
+  "fieldInfo": [
+    {
+      "facet": "true",
+      "display": "true",
+      "sort": "true",
+      "search": "true",
+      "type": "TERM",
+      "name": "evidence",
+      "displayName": "evidence"
+    },
+    {
+      "search": "true",
+      "display": "true",
+      "facet": "true",
+      "sort": "true",
+      "displayName": "parents",
+      "name": "parents",
+      "type": "TERM"
+    },
+    {
+      "search": "true",
+      "facet": "true",
+      "display": "true",
+      "sort": "true",
+      "name": "term",
+      "displayName": "term",
+      "type": "TERM"
+    }
+  ]
+}

@@ -264,15 +264,6 @@
     },
     {
       "type": "TERM",
-      "displayName": "PL",
-      "name": "genotypes.PL",
-      "sort": "false",
-      "facet": "false",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "TERM",
       "displayName": "Genotype",
       "name": "genotypes.genotype",
       "sort": "false",

@@ -221,6 +221,15 @@
       "search": "true"
     },
     {
+      "type": "TERM",
+      "displayName": "PL",
+      "name": "PL",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
       "type": "NUMBER",
       "displayName": "Protein position",
       "name": "protein_pos",

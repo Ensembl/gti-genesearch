@@ -1,0 +1,33 @@
+{
+  "name": "phi",
+  "targets": [],
+  "fieldInfo": [
+    {
+      "type": "TEXT",
+      "name": "phenotypes.description",
+      "displayName": "phenotypes.description",
+      "facet": "true",
+      "display": "true",
+      "sort": "true",
+      "search": "true"
+    },
+    {
+      "name": "phenotypes.name",
+      "displayName": "phenotypes.name",
+      "type": "TEXT",
+      "search": "true",
+      "facet": "true",
+      "display": "true",
+      "sort": "true"
+    },
+    {
+      "search": "true",
+      "facet": "true",
+      "sort": "true",
+      "display": "true",
+      "name": "phenotypes.source",
+      "displayName": "phenotypes.source",
+      "type": "TEXT"
+    }
+  ]
+}

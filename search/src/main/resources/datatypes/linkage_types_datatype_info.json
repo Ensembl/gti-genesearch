@@ -1,0 +1,52 @@
+{
+  "name": "linkage_types",
+  "targets": [
+  ],
+  "fieldInfo": [
+    {
+      "type": "TERM",
+      "name": "evidence",
+      "displayName": "evidence",
+      "facet": "true",
+      "sort": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "search": "false",
+      "facet": "false",
+      "display": "true",
+      "sort": "false",
+      "name": "source",
+      "displayName": "source",
+      "type": "NESTED"
+    },
+    {
+      "search": "true",
+      "facet": "true",
+      "sort": "true",
+      "display": "true",
+      "name": "source.dbname",
+      "displayName": "source.dbname",
+      "type": "TERM"
+    },
+    {
+      "type": "TERM",
+      "name": "source.display_id",
+      "displayName": "source.display_id",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true",
+      "type": "TERM",
+      "displayName": "source.primary_id",
+      "name": "source.primary_id"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "assembly",
+  "targets": [
+  ],
+  "fieldInfo": [
+    {
+      "type": "TERM",
+      "displayName": "Assembly accession",
+      "name": "assembly.accession",
+      "sort": "true",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Assembly name",
+      "name": "assembly.name",
+      "sort": "true",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Assembly level",
+      "name": "assembly.level",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    }
+  ]
+}

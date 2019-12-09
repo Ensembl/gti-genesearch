@@ -1,0 +1,42 @@
+{
+  "name": "go",
+  "targets": [],
+  "fieldInfo": [
+    {
+      "displayName": "evidence",
+      "name": "evidence",
+      "type": "TERM",
+      "search": "true",
+      "facet": "true",
+      "sort": "true",
+      "display": "true"
+    },
+    {
+      "displayName": "parents",
+      "name": "parents",
+      "type": "TERM",
+      "search": "true",
+      "facet": "true",
+      "display": "true",
+      "sort": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "term",
+      "name": "term",
+      "facet": "true",
+      "sort": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "name": "GO_expanded",
+      "displayName": "GO_expanded",
+      "facet": "true",
+      "sort": "true",
+      "display": "true",
+      "search": "true"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "donor",
+  "targets": [
+  ],
+  "fieldInfo": [
+    {
+      "type": "TERM",
+      "displayName": "Biosamples ID",
+      "name": "biosamples_id",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Country of Origin",
+      "name": "country_of_origin",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "NESTED",
+      "displayName": "Donor disease",
+      "name": "diseases",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "false"
+    }
+  ]
+}

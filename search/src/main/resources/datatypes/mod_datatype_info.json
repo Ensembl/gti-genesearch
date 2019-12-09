@@ -1,0 +1,33 @@
+{
+  "name": "mod",
+  "targets": [],
+  "fieldInfo": [
+    {
+      "displayName": "evidence",
+      "name": "evidence",
+      "type": "TERM",
+      "search": "true",
+      "display": "true",
+      "facet": "true",
+      "sort": "true"
+    },
+    {
+      "name": "parents",
+      "displayName": "parents",
+      "type": "TERM",
+      "search": "true",
+      "facet": "true",
+      "display": "true",
+      "sort": "true"
+    },
+    {
+      "displayName": "term",
+      "name": "term",
+      "type": "TERM",
+      "search": "true",
+      "facet": "true",
+      "sort": "true",
+      "display": "true"
+    }
+  ]
+}

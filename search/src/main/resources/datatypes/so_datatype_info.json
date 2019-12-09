@@ -1,0 +1,34 @@
+{
+  "name": "SO",
+  "targets": [
+  ],
+  "fieldInfo": [
+    {
+      "type": "TERM",
+      "name": "evidence",
+      "displayName": "evidence",
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "sort": "true",
+      "facet": "true",
+      "display": "true",
+      "search": "true",
+      "type": "TERM",
+      "displayName": "parents",
+      "name": "parents"
+    },
+    {
+      "name": "term",
+      "displayName": "term",
+      "type": "TERM",
+      "search": "true",
+      "display": "true",
+      "facet": "true",
+      "sort": "true"
+    }
+  ]
+}

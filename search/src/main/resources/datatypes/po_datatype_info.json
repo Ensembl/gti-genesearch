@@ -1,0 +1,34 @@
+{
+  "name": "PO",
+  "targets": [
+  ],
+  "fieldInfo": [
+    {
+      "type": "TERM",
+      "name": "evidence",
+      "displayName": "evidence",
+      "facet": "true",
+      "sort": "true",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "displayName": "parents",
+      "name": "parents",
+      "type": "TERM",
+      "search": "true",
+      "facet": "true",
+      "sort": "true",
+      "display": "true"
+    },
+    {
+      "facet": "true",
+      "sort": "true",
+      "display": "true",
+      "search": "true",
+      "type": "TERM",
+      "displayName": "term",
+      "name": "term"
+    }
+  ]
+}

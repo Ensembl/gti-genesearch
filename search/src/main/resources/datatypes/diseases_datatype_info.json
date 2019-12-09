@@ -1,10 +1,12 @@
 {
-  "name": "cell_lines",
+  "name": "diseases",
+  "targets": [
+  ],
   "fieldInfo": [
     {
       "type": "TERM",
-      "displayName": "alternative_names",
-      "name": "Alternative names",
+      "displayName": "Donor disease affected status",
+      "name": "diseases.affected_status",
       "sort": "false",
       "facet": "false",
       "display": "true",
@@ -12,17 +14,8 @@
     },
     {
       "type": "TERM",
-      "displayName": "availability",
-      "name": "Availability",
-      "sort": "false",
-      "facet": "false",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "ID",
-      "displayName": "biosamples_id",
-      "name": "BioSamples ID",
+      "displayName": "Donor disease carrier",
+      "name": "diseases.carrier",
       "sort": "false",
       "facet": "false",
       "display": "true",
@@ -30,26 +23,8 @@
     },
     {
       "type": "TERM",
-      "displayName": "Depositor name",
-      "name": "depositor.name",
-      "sort": "false",
-      "facet": "false",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "NESTED",
-      "displayName": "Donor",
-      "name": "donor",
-      "sort": "false",
-      "facet": "false",
-      "display": "true",
-      "search": "false"
-    },
-    {
-      "type": "TERM",
-      "displayName": "ECACC catalogue number",
-      "name": "ecacc_cat_no",
+      "displayName": "Donor disease stage",
+      "name": "diseases.disease_stage",
       "sort": "false",
       "facet": "false",
       "display": "true",
@@ -57,8 +32,8 @@
     },
     {
       "type": "TERM",
-      "displayName": "Name",
-      "name": "name",
+      "displayName": "Donor disease name (free text)",
+      "name": "diseases.free_text_name",
       "sort": "false",
       "facet": "false",
       "display": "true",
@@ -66,8 +41,8 @@
     },
     {
       "type": "TERM",
-      "displayName": "Non-disease associated phenotypes",
-      "name": "non_disease_associated_phenotypes",
+      "displayName": "Donor disease name",
+      "name": "diseases.name",
       "sort": "false",
       "facet": "false",
       "display": "true",
@@ -75,26 +50,8 @@
     },
     {
       "type": "TERM",
-      "displayName": "Primary cell type",
-      "name": "primary_cell_type.name",
-      "sort": "false",
-      "facet": "false",
-      "display": "true",
-      "search": "true"
-    },
-    {
-      "type": "NESTED",
-      "displayName": "Primary disease",
-      "name": "primary_disease",
-      "sort": "false",
-      "facet": "false",
-      "display": "true",
-      "search": "false"
-    },
-    {
-      "type": "TERM",
-      "displayName": "Primary disease name",
-      "name": "primary_disease.name",
+      "displayName": "Donor disease notes",
+      "name": "diseases.notes",
       "sort": "false",
       "facet": "false",
       "display": "true",
@@ -102,8 +59,8 @@
     },
     {
       "type": "TERM",
-      "displayName": "Primary disease URL",
-      "name": "primary_disease.purl",
+      "displayName": "Donor primary disease",
+      "name": "diseases.primary_disease",
       "sort": "false",
       "facet": "false",
       "display": "true",
@@ -111,8 +68,44 @@
     },
     {
       "type": "TERM",
-      "displayName": "Primary disease synonyms",
-      "name": "primary_disease.synonyms",
+      "displayName": "Donor disease URL",
+      "name": "diseases.purl",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor disease synonyms",
+      "name": "diseases.synonyms",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor ethnicity",
+      "name": "ethnicity",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor gender",
+      "name": "gender",
+      "sort": "false",
+      "facet": "false",
+      "display": "true",
+      "search": "true"
+    },
+    {
+      "type": "TERM",
+      "displayName": "Donor age",
+      "name": "donor_age",
       "sort": "false",
       "facet": "false",
       "display": "true",
