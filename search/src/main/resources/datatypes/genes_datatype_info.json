@@ -2112,36 +2112,7 @@
       "search": "false",
       "facet": "false",
       "display": "true",
-      "sort": "false",
-      "fieldInfo": [
-        {
-          "search": "true",
-          "facet": "true",
-          "sort": "true",
-          "display": "true",
-          "displayName": "homologues.description",
-          "name": "homologues.description",
-          "type": "TERM"
-        },
-        {
-          "search": "true",
-          "sort": "true",
-          "facet": "true",
-          "display": "true",
-          "displayName": "homologues.genome",
-          "name": "homologues.genome",
-          "type": "TERM"
-        },
-        {
-          "search": "true",
-          "sort": "true",
-          "facet": "true",
-          "display": "true",
-          "displayName": "homologues.stable_id",
-          "name": "homologues.stable_id",
-          "type": "TERM"
-        }
-      ]
+      "sort": "false"
     },
     {
       "name": "id",
